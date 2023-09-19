@@ -1,0 +1,61 @@
+{
+  "summaryTrendStats": [
+    "avg",
+    "min",
+    "med",
+    "max",
+    "p(95)",
+    "p(99)",
+    "p(99.99)",
+    "count"
+  ],
+  "stages": [
+    {
+      "duration": "2m",
+      "target": 100
+    },
+    {
+      "duration": "5m",
+      "target": 100
+    },
+    {
+      "duration": "2m",
+      "target": 200
+    },
+    {
+      "duration": "5m",
+      "target": 200
+    },
+    {
+      "duration": "2m",
+      "target": 300
+    },
+    {
+      "duration": "5m",
+      "target": 300
+    },
+    {
+      "duration": "2m",
+      "target": 400
+    },
+    {
+      "duration": "5m",
+      "target": 400
+    },
+    {
+      "duration": "10m",
+      "target": 0
+    }
+  ],
+  "thresholds": {
+    "http_req_failed": [
+      "rate<0.001"
+    ],
+    "http_req_duration": [
+      "p(99)<5000"
+    ],
+    "http_req_duration{bizEventMethod:GetOrganizationReceipt}": [
+      "p(95)<1500"
+    ]
+  }
+}

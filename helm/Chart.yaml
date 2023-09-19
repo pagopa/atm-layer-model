@@ -1,0 +1,10 @@
+apiVersion: v2
+name: pagopareceiptpdfservice
+description: Microservice pagopa-receipt-pdf-service
+type: application
+version: 0.33.0
+appVersion: 0.7.0
+dependencies:
+  - name: microservice-chart
+    version: 2.4.0
+    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"

@@ -1,0 +1,72 @@
+info:
+  title: Common components for Payment Notice related services
+  version: 2.1.0
+  description: Payment Notice related services common components for Multi-channel Integration Layer of SW Client Project
+  contact:
+    name: Antonio Tarricone
+    email: antonio.tarricone@pagopa.it
+
+components:
+  # ========================================================
+  # Schemas
+  # ========================================================
+  schemas:
+    Category:
+      description: Transfer category
+      type: string
+      pattern: "^[ -~]{0,1024}$"
+      example: "KTM"
+
+    EuroCents:
+      description: Amount in euro cents
+      type: integer
+      format: int64
+      minimum: 1
+      maximum: 99999999999
+      example: 12345
+
+    NoticeNumber:
+      description: Notice number
+      type: string
+      pattern: "^[0-9]{18}$"
+      example: "485564829563528563"
+
+    PaTaxCode:
+      description: Tax code of the creditor company
+      type: string
+      pattern: "^[0-9]{11}$"
+      example: "15376371009"
+
+    PaymentMethod:
+      description: Method used to pay notice/s
+      type: string
+      enum:
+        - PAGOBANCOMAT
+        - DEBIT_CARD
+        - CREDIT_CARD
+        - PAYMENT_CARD # To be used only if the client is unable to choose among PAGOBANCOMAT, DEBIT_CARD or CREDIT_CARD.
+        - BANK_ACCOUNT
+        - CASH
+      example: "PAGOBANCOMAT"
+
+    TransactionId:
+      description: Transaction ID
+      type: string
+      pattern: "^[a-zA-Z0-9]{32}$"
+      example: "517a4216840E461fB011036A0fd134E1"
+
+    Transfer:
+      description: Transfer essential data
+      type: object
+      additionalProperties: false
+      properties:
+        paTaxCode:
+          $ref: '#/components/schemas/PaTaxCode'
+        category:
+          $ref: '#/components/schemas/Category'
+      required:
+        - paTaxCode
+        - category
+      example:
+        paTaxCode: "15376371009"
+        category: "KTM"
