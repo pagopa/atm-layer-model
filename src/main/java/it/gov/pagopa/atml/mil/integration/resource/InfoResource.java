@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @Path("/info")
 @Tag(name = "Info", description = "Info operations")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class InfoResource {
 
     private final Logger logger = LoggerFactory.getLogger(InfoResource.class);
