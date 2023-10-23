@@ -8,7 +8,9 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +28,11 @@ public class ModelResource {
     ModelService modelService;
 
     @GET
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public String info(@BeanParam String s) throws IOException {
+    public String info(@QueryParam("string") String s) throws IOException {
         String xml = modelService.decodeBase64(s);
         logger.info("String file: "+xml);
-        return "your file has the following hashcode: "+xml;
+        return "String file: "+xml;
     }
 }

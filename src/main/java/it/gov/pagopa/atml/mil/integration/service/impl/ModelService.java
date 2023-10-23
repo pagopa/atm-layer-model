@@ -13,6 +13,7 @@ public class ModelService {
 
     public String decodeBase64 (String s) throws IOException {
         byte [] array = ModelUtils.base64ToByteArray(s);
-        return ModelUtils.byteArrayToString(array);
+        String result = ModelUtils.byteArrayToString(array);
+        return result;
     }
 }
