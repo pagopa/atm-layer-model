@@ -6,11 +6,14 @@ import lombok.Data;
 import org.jboss.resteasy.reactive.PartType;
 
 import java.io.File;
-import java.io.InputStream;
 
 @Data
 public class ModelEntity {
     @FormParam("file")
     @PartType(MediaType.APPLICATION_XML)
-    public File file;
+    private File file;
+
+    @FormParam("metadata")
+    @PartType(MediaType.APPLICATION_JSON)
+    private Metadata metadata;
 }

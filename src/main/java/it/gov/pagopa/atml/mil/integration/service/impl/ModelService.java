@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import com.google.common.io.Files;
 import java.security.NoSuchAlgorithmException;
 
 @ApplicationScoped
@@ -19,6 +20,7 @@ public class ModelService {
     }
 
     public String calculateSha256(File file) throws NoSuchAlgorithmException, IOException {
+        //TODO: Controllare che il file sia un xml .bpmn
         byte[] array = ModelUtils.toSha256ByteArray(file);
         return ModelUtils.toHexString(array);
     }
