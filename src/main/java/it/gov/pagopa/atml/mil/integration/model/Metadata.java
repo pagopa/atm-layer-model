@@ -1,7 +1,10 @@
 package it.gov.pagopa.atml.mil.integration.model;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class Metadata {
 
     private String function; //enum
@@ -10,5 +13,5 @@ public class Metadata {
 
     private String bpmnKey;
 
-    private List<BankAccountKey> associations;
+    private List<BankKey> associations;
 }
