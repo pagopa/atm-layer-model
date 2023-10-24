@@ -33,7 +33,7 @@ public class BankKeyValidator implements ConstraintValidator<BankKeyConstraint, 
     }
 
     @Override
-    public boolean isValid(BankKey bankKey, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(BankKey bankKey, ConstraintValidatorContext constraintValidatorContext) throws RuntimeException{
         boolean isValid = false;
         if (bankKey.getBranchId() == null) {
             if (bankKey.getTerminalId() == null) {

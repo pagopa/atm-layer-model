@@ -2,18 +2,20 @@ package it.gov.pagopa.atml.mil.integration.model;
 
 import it.gov.pagopa.atml.mil.integration.constraint.BankKeyConstraint;
 import it.gov.pagopa.atml.mil.integration.enumeration.FunctionEnum;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class Metadata {
-    @NotNull
+    @NonNull
     private FunctionEnum function; //enum
-    @NotNull
+    @NonNull
     private String fileName; //no extension
-    @NotNull
+    @NonNull
     private String bpmnKey;
     @BankKeyConstraint
     private List<BankKey> bankKeyList;
