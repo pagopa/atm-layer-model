@@ -1,9 +1,10 @@
 package it.gov.pagopa.atml.mil.integration.resource;
 
-import it.gov.pagopa.atml.mil.integration.model.ModelEntity;
+import it.gov.pagopa.atml.mil.integration.model.dto.ModelDto;
 import it.gov.pagopa.atml.mil.integration.service.impl.ModelService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -42,7 +43,7 @@ public class ModelResource {
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_XML)
-    public String saveBPMN(@RequestBody ModelEntity modelEntity) throws NoSuchAlgorithmException, IOException {
-        return modelService.calculateSha256(modelEntity.getFile());
+    public String saveBPMN(@RequestBody ModelDto modelEntity) throws NoSuchAlgorithmException, IOException {
+        return modelService.calculateSha256(modelEntity.getFile())+"\n"+"these are your metadata: "+modelEntity.getMetadata().toString();
     }
 }
