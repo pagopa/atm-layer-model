@@ -16,8 +16,7 @@ public class ModelServiceImpl implements ModelService {
     @Override
     public String decodeBase64(String s) throws IOException {
         byte[] array = ModelUtils.base64ToByteArray(s);
-        String result = ModelUtils.byteArrayToString(array);
-        return result;
+        return ModelUtils.byteArrayToString(array);
     }
 
     @Override
