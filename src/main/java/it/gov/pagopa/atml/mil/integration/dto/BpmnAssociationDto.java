@@ -1,6 +1,6 @@
-package it.gov.pagopa.atml.mil.integration.model.dto;
+package it.gov.pagopa.atml.mil.integration.dto;
 
-import it.gov.pagopa.atml.mil.integration.model.Metadata;
+import it.gov.pagopa.atml.mil.integration.model.AssociationMetadata;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.core.MediaType;
@@ -12,7 +12,7 @@ import java.io.File;
 
 @Data
 @NoArgsConstructor
-public class ModelDto {
+public class BpmnAssociationDto {
     @FormParam("file")
     @PartType(MediaType.APPLICATION_XML)
     private File file;
@@ -20,5 +20,5 @@ public class ModelDto {
     @FormParam("metadata")
     @PartType(MediaType.APPLICATION_JSON)
     @Valid
-    private Metadata metadata;
+    private AssociationMetadata associationMetadata;
 }

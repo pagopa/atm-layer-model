@@ -1,4 +1,4 @@
-package it.gov.pagopa.atml.mil.integration.utils;
+package it.gov.pagopa.atml.mil.integration.validator;
 
 import it.gov.pagopa.atml.mil.integration.constraint.BankKeyConstraint;
 import it.gov.pagopa.atml.mil.integration.model.BankKey;

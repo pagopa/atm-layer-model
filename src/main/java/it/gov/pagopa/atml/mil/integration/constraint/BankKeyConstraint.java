@@ -1,6 +1,6 @@
 package it.gov.pagopa.atml.mil.integration.constraint;
 
-import it.gov.pagopa.atml.mil.integration.utils.BankKeyValidator;
+import it.gov.pagopa.atml.mil.integration.validator.BankKeyValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import jakarta.validation.constraintvalidation.SupportedValidationTarget;

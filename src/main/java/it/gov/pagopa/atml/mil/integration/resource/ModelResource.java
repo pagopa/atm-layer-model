@@ -1,9 +1,12 @@
 package it.gov.pagopa.atml.mil.integration.resource;
 
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atml.mil.integration.model.Metadata;
-import it.gov.pagopa.atml.mil.integration.model.dto.ModelDto;
+import it.gov.pagopa.atml.mil.integration.entity.BpmnVersion;
+import it.gov.pagopa.atml.mil.integration.model.AssociationMetadata;
+import it.gov.pagopa.atml.mil.integration.dto.BpmnCreationDto;
+import it.gov.pagopa.atml.mil.integration.dto.BpmnAssociationDto;
 import it.gov.pagopa.atml.mil.integration.service.impl.ModelServiceImpl;
+import it.gov.pagopa.atml.mil.integration.utils.BpmnDtoConverter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -32,6 +35,8 @@ public class ModelResource {
     @Inject
     ModelServiceImpl modelService;
 
+
+
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
@@ -42,11 +47,19 @@ public class ModelResource {
     }
 
     @POST
-    @Path("/upload")
+    @Path("/association")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Metadata> saveBPMN(@RequestBody @Valid ModelDto modelEntity) throws NoSuchAlgorithmException, IOException {
+    public Uni<AssociationMetadata> associateBPMN(@RequestBody @Valid BpmnAssociationDto modelEntity) throws NoSuchAlgorithmException, IOException {
         //modelService.calculateSha256(modelEntity.getFile()); calcolo sha256
-        return Uni.createFrom().item(modelEntity.getMetadata());
+        return Uni.createFrom().item(modelEntity.getAssociationMetadata());
+    }
+
+    @POST
+    @Path("/create")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<BpmnVersion> createBPMN(@RequestBody @Valid BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
+        return Uni.createFrom().item(BpmnDtoConverter.converter(bpmnCreationDto));
     }
 }

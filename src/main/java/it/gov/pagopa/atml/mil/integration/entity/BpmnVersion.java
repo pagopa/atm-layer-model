@@ -1,19 +1,32 @@
-package it.gov.pagopa.atml.mil.integration.model;
+package it.gov.pagopa.atml.mil.integration.entity;
 
-import io.vertx.ext.auth.impl.hash.SHA256;
+import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import it.gov.pagopa.atml.mil.integration.enumeration.FunctionEnum;
 import it.gov.pagopa.atml.mil.integration.enumeration.StatusEnum;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
-public class ModelEntity {
+@Entity
+@IdClass(BpmnVersionPK.class)
+@Setter
+@NoArgsConstructor
+public class BpmnVersion extends PanacheEntityBase {
 
-    private UUID bpmnId;
+    @Id
+    public UUID bpmnId;
 
-    private int modelVersion;
+    @Id
+    private Integer modelVersion;
 
     private String deployedFileName;
 
@@ -23,11 +36,12 @@ public class ModelEntity {
 
     private StatusEnum status;
 
-    private SHA256 sha256;
+    private String sha256;
 
-    private boolean enabled;
+    @Column(columnDefinition = "boolean default true")
+    private Boolean enabled;
 
-    private int definitionVersionCamunda;
+    private Integer definitionVersionCamunda;
 
     private String camundaDefinitionId;
 
@@ -39,6 +53,7 @@ public class ModelEntity {
 
     @CreationTimestamp
     private Timestamp createdAt;
+
     @UpdateTimestamp
     private Timestamp lastUpdatedAt;
 
