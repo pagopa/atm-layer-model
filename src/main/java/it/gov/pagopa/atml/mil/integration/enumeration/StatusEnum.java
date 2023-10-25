@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Status {
+public enum StatusEnum {
     CREATED("CREATED"),
     WAITING_DEPLOY("WAITING_DEPLOY"),
     DEPLOYED("DEPLOYED");

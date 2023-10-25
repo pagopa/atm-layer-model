@@ -1,7 +1,7 @@
 package it.gov.pagopa.atml.mil.integration.model;
 
 import io.vertx.ext.auth.impl.hash.SHA256;
-import it.gov.pagopa.atml.mil.integration.enumeration.Status;
+import it.gov.pagopa.atml.mil.integration.enumeration.StatusEnum;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -20,7 +20,7 @@ public class ModelEntity {
 
     private String functionType;
 
-    private Status status;
+    private StatusEnum status;
 
     private SHA256 sha256;
 
