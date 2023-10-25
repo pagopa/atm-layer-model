@@ -2,6 +2,8 @@ package it.gov.pagopa.atml.mil.integration.model;
 
 import it.gov.pagopa.atml.mil.integration.constraint.BankKeyConstraint;
 import it.gov.pagopa.atml.mil.integration.enumeration.FunctionEnum;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -11,12 +13,12 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class Metadata {
-    @NonNull
+    @NotNull(message = "The function cannot be null")
     private FunctionEnum function; //enum
-    @NonNull
+    @NotNull(message = "The filename cannot be null")
     private String fileName; //no extension
-    @NonNull
+    @NotNull(message = "The BPMN key cannot be null")
     private String bpmnKey;
-    @BankKeyConstraint
-    private List<BankKey> bankKeyList;
+    @NotNull(message = "The Bank Key list cannot be null")
+    private List<@BankKeyConstraint @Valid BankKey> bankKeyList;
 }

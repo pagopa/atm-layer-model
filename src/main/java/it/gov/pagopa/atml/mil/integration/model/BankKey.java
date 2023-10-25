@@ -1,5 +1,6 @@
 package it.gov.pagopa.atml.mil.integration.model;
 
+import it.gov.pagopa.atml.mil.integration.constraint.BankKeyConstraint;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,12 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 public class BankKey {
 
-    @NonNull
+    @NotNull(message = "The acquirerId cannot be null")
     private String acquirerId;
 
-    @Nullable
     private String branchId;
 
-    @Nullable
     private List<String> terminalId;
 }
