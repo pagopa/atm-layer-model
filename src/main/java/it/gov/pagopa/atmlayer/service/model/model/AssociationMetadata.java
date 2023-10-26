@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
 import it.gov.pagopa.atmlayer.service.model.constraint.BankKeyConstraint;
+import it.gov.pagopa.atmlayer.service.model.dto.BankKeyDto;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionEnum;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -19,5 +20,5 @@ public class AssociationMetadata {
     @NotNull(message = "The BPMN key cannot be null")
     private String bpmnKey;
     @NotNull(message = "The Bank Key list cannot be null")
-    private List<@BankKeyConstraint @Valid BankKey> bankKeyList;
+    private List<@BankKeyConstraint @Valid BankKeyDto> bankKeyDtoList;
 }

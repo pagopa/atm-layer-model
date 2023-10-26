@@ -2,10 +2,10 @@ package it.gov.pagopa.atmlayer.service.model.exception.mapper;
 
 import io.quarkus.arc.properties.IfBuildProperty;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
-import it.gov.pagopa.atmlayer.service.model.utils.ConstraintViolationMappingUtils;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerRestException;
 import it.gov.pagopa.atmlayer.service.model.model.ATMLayerErrorResponse;
 import it.gov.pagopa.atmlayer.service.model.model.ATMLayerValidationErrorResponse;
+import it.gov.pagopa.atmlayer.service.model.utils.ConstraintViolationMappingUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolation;

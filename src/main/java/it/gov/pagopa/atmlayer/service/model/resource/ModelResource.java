@@ -1,10 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
-import it.gov.pagopa.atmlayer.service.model.model.AssociationMetadata;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
-import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.service.impl.ModelServiceImpl;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnDtoConverter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,7 +24,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 @ApplicationScoped
-@Path("/model")
+@Path("atm-layer/model")
 @Tag(name = "Model", description = "Model operations")
 public class ModelResource {
 
@@ -36,30 +34,32 @@ public class ModelResource {
     ModelServiceImpl modelService;
 
 
+//    @GET
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.TEXT_PLAIN)
+//    public String getEncodedFile(@QueryParam("string") String s) throws IOException {
+//        String xml = modelService.decodeBase64(s);
+//        logger.info("String file: " + xml);
+//        return "String file: " + xml;
+//    }
 
-    @GET
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getEncodedFile(@QueryParam("string") String s) throws IOException {
-        String xml = modelService.decodeBase64(s);
-        logger.info("String file: "+xml);
-        return "String file: "+xml;
-    }
-
-    @POST
-    @Path("/association")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<AssociationMetadata> associateBPMN(@RequestBody @Valid BpmnAssociationDto modelEntity) throws NoSuchAlgorithmException, IOException {
-        //modelService.calculateSha256(modelEntity.getFile()); calcolo sha256
-        return Uni.createFrom().item(modelEntity.getAssociationMetadata());
-    }
+//    @PUT
+//    @Path("/associations/{UUID}/version/{version}")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Uni<BpmnVersion> associateBPMN(@PathParam("UUID")String uuid, @PathParam("version") String version, @RequestBody @Valid BpmnAssociationDto modelEntity) throws NoSuchAlgorithmException, IOException {
+//        UUID uuidValue = UUID.fromString(uuid);
+//        int versionValue = Integer.parseInt(version);
+//        BpmnVersionPK bpmnVersionPK = new BpmnVersionPK(uuidValue, versionValue);
+//        return modelService.findByPk(bpmnVersionPK);
+//    }
 
     @POST
     @Path("/create")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnVersion> createBPMN(@RequestBody @Valid BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
-        return Uni.createFrom().item(BpmnDtoConverter.converter(bpmnCreationDto));
+        BpmnVersion bpmnVersion = BpmnDtoConverter.converter(bpmnCreationDto);
+        return modelService.save(bpmnVersion);
     }
 }

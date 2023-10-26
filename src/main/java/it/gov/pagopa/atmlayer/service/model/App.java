@@ -2,7 +2,6 @@ package it.gov.pagopa.atmlayer.service.model;
 
 import io.quarkus.runtime.Startup;
 import it.gov.pagopa.atmlayer.service.model.model.ErrorResponse;
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Components;
@@ -36,7 +35,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
                 }),
         info = @Info(title = "ATM Layer - MIL Integration service", version = "0.0.1-SNAPSHOT"))
-@ApplicationPath("/api")
 @Startup
 public class App extends Application {
 }

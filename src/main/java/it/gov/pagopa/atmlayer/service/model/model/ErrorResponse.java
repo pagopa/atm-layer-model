@@ -17,17 +17,17 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @RegisterForReflection
 public class ErrorResponse {
 
-  private String type;
+    private String type;
 
-  @Schema(example = "Internal Server Error")
-  private String title;
+    @Schema(example = "Internal Server Error")
+    private String title;
 
-  @Schema(example = "500")
-  private int status;
+    @Schema(example = "500")
+    private int status;
 
-  @Schema(example = "An unexpected error has occurred. Please contact support.")
-  private String detail;
+    @Schema(example = "An unexpected error has occurred. Please contact support.")
+    private String detail;
 
-  @Schema(example = "PDFS-500")
-  private String instance;
+    @Schema(example = "PDFS-500")
+    private String instance;
 }

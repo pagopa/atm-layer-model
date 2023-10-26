@@ -11,9 +11,10 @@ import java.util.Objects;
 @Getter
 public class AtmLayerException extends Exception {
 
-    /** Error code of this exception
+    /**
+     * Error code of this exception
      * -- GETTER --
-     *  Returns error code
+     * Returns error code
      *
      * @return Error code of this exception
      */
@@ -23,7 +24,7 @@ public class AtmLayerException extends Exception {
      * Constructs new exception with provided error code and message
      *
      * @param errorCode Error code
-     * @param message Detail message
+     * @param message   Detail message
      */
     public AtmLayerException(AppErrorCodeEnum errorCode, String message) {
         super(message);
@@ -34,8 +35,8 @@ public class AtmLayerException extends Exception {
      * Constructs new exception with provided error code, message and cause
      *
      * @param errorCode Error code
-     * @param message Detail message
-     * @param cause Exception causing the constructed one
+     * @param message   Detail message
+     * @param cause     Exception causing the constructed one
      */
     public AtmLayerException(AppErrorCodeEnum errorCode, String message, Throwable cause) {
         super(message, cause);

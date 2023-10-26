@@ -1,8 +1,14 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
+import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
 import it.gov.pagopa.atmlayer.service.model.service.ModelService;
 import it.gov.pagopa.atmlayer.service.model.utils.ModelUtils;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -12,6 +18,9 @@ import java.security.NoSuchAlgorithmException;
 @ApplicationScoped
 @Slf4j
 public class ModelServiceImpl implements ModelService {
+
+    @Inject
+    BpmnVersionRepository bpmnVersionRepository;
 
     @Override
     public String decodeBase64(String s) throws IOException {
@@ -24,5 +33,16 @@ public class ModelServiceImpl implements ModelService {
         //TODO: Controllare che il file sia un xml .bpmn
         byte[] array = ModelUtils.toSha256ByteArray(file);
         return ModelUtils.toHexString(array);
+    }
+
+    @Override
+    @WithTransaction
+    public Uni<BpmnVersion> save(BpmnVersion bpmnVersion) {
+        return bpmnVersionRepository.persist(bpmnVersion);
+    }
+
+    @Override
+    public Uni<BpmnVersion> findByPk(BpmnVersionPK bpmnVersionPK) {
+        return bpmnVersionRepository.findById(bpmnVersionPK);
     }
 }

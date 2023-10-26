@@ -37,7 +37,7 @@ public class AtmLayerRestException extends ClientErrorException {
         this.statusCode = statusCode.getStatusCode();
 
     }
-    
+
     public AtmLayerRestException(String message, Response.Status status, Throwable cause, String type, List<String> errors) {
         super(message, status, cause);
         this.message = message;

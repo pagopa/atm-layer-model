@@ -19,13 +19,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Retention(RUNTIME)
 @Constraint(validatedBy = BankKeyValidator.class)
-@Target({ElementType.TYPE_USE, FIELD, METHOD, PARAMETER, ANNOTATION_TYPE })
+@Target({ElementType.TYPE_USE, FIELD, METHOD, PARAMETER, ANNOTATION_TYPE})
 @SupportedValidationTarget(ANNOTATED_ELEMENT)
 @Documented
 public @interface BankKeyConstraint {
     String message() default "{the BankKey is invalid}";
 
-    Class<?>[] groups() default { };
+    Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default { };
+    Class<? extends Payload>[] payload() default {};
 }

@@ -5,13 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 public class CreationMetadata {
-    @NotNull(message = "bpmn id cannot be null")
-    private UUID bpmnId;
     @NotNull(message = "model version cannot be null")
     private int modelVersion;
     @NotNull(message = "deployed file name cannot be null")

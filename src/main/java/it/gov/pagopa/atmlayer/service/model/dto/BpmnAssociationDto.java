@@ -1,24 +1,15 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
-import it.gov.pagopa.atmlayer.service.model.model.AssociationMetadata;
+import it.gov.pagopa.atmlayer.service.model.constraint.BankKeyConstraint;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.core.MediaType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.jboss.resteasy.reactive.PartType;
 
-import java.io.File;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class BpmnAssociationDto {
-    @FormParam("file")
-    @PartType(MediaType.APPLICATION_XML)
-    private File file;
 
-    @FormParam("metadata")
-    @PartType(MediaType.APPLICATION_JSON)
-    @Valid
-    private AssociationMetadata associationMetadata;
+    private List<@BankKeyConstraint @Valid BankKeyDto> bankKeyDtoList;
 }
