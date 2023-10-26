@@ -112,13 +112,13 @@ spec:
               value: "{{ .Values.milAdapter.tokenCacheMaxEntries }}"
           volumeMounts:
           - name: secrets-store-inline-1
-            mountPath: "/mnt/secrets-store"
+            mountPath: "/mnt/secrets-store/1"
             readOnly: true
           - name: secrets-store-inline-2
-            mountPath: "/mnt/secrets-store"
+            mountPath: "/mnt/secrets-store/2"
             readOnly: true
           - name: secrets-store-inline-3
-            mountPath: "/mnt/secrets-store"
+            mountPath: "/mnt/secrets-store/3"
             readOnly: true
 
   strategy:
