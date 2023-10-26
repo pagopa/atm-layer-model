@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+  k6:
+    image: grafana/k6
+    container_name: k6
+    volumes:
+      - '${PWD}/src:/scripts'
+    environment:
+      - OCP_APIM_SUBSCRIPTION_KEY=${ocp_apim_subscription_key}
+      - VARS=${env}.environment.json
+      - TEST_TYPE=/scripts/test-types/${type}.json
+      - K6_OUT=influxdb=http://nginx:8086/${db_name}
+    command: run /scripts/${script}.js
+    depends_on:
+      - nginx
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    volumes:
+      - '${PWD}/nginx/nginx.conf:/etc/nginx/nginx.conf'
+    environment:
+      - ENVIRONMENT=${env}
+    ports:
+      - "8086:8086"
+      - "80:80"
+

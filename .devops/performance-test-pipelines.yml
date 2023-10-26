@@ -1,0 +1,83 @@
+# azure-pipelines.yml
+trigger: none
+
+parameters:
+  - name: "ENVIRONMENT"
+    displayName: "Environment"
+    type: string
+    values:
+      - "dev"
+      - "uat"
+    default: "uat"
+  - name: "TEST_TYPE"
+    displayName: "Test type"
+    type: string
+    values:
+      - "load"
+      - "spike"
+      - "stress"
+      - "constant"
+    default: "constant"
+  - name: "SCRIPT"
+    displayName: "Script name"
+    type: string
+    values:
+      - "receipt_service"
+    default: "receipt_service"
+  - name: "DB_NAME"
+    displayName: "DB name"
+    type: string
+    values:
+      - pagopa_receipt_pdf_servicek6
+variables:
+  ${{ if eq(parameters['ENVIRONMENT'], 'dev') }}:
+    poolImage: 'pagopa-dev-loadtest-linux'
+    API_SUBSCRIPTION_KEY: "$(DEV_API_SUBSCRIPTION_KEY)"
+    blobStorageConnectionString : "$(DEV_BLOB_STORAGE_CONNECTION_STRING)"
+    receiptCosmosConnectionString: "$(DEV_RECEIPT_COSMOS_DB_CONNECTION_STRING)"
+  ${{ if eq(parameters['ENVIRONMENT'], 'uat') }}:
+    poolImage: 'pagopa-uat-loadtest-linux'
+    API_SUBSCRIPTION_KEY: "$(UAT_API_SUBSCRIPTION_KEY)"
+    blobStorageConnectionString : "$(UAT_BLOB_STORAGE_CONNECTION_STRING)"
+    receiptCosmosConnectionString: "$(UAT_RECEIPT_COSMOS_DB_CONNECTION_STRING)"
+
+pool:
+  name: $(poolImage)
+
+steps:
+  - script: |
+      cd ./performance-test/src
+      docker pull grafana/k6
+    displayName: Pull k6 image
+  - script: |
+      cd ./performance-test/src
+      docker build -f ./DockerfilePre -t exec-node .
+      docker run --rm --name initToRunk6 \
+      -e BLOB_STORAGE_CONN_STRING=${BLOB_STORAGE_CONN_STRING} \
+      -e COSMOS_RECEIPTS_CONN_STRING=${COSMOS_RECEIPTS_CONN_STRING} \
+      -e ENVIRONMENT_STRING="${ENVIRONMENT_STRING}" \
+      exec-node 
+    displayName: Precondition run perf test
+    env:
+      COSMOS_RECEIPTS_CONN_STRING: ${{ variables.receiptCosmosConnectionString }}
+      BLOB_STORAGE_CONN_STRING: ${{ variables.blobStorageConnectionString }}
+      ENVIRONMENT_STRING: ${{ parameters.ENVIRONMENT }}
+  - script: |
+      cd ./performance-test
+      sh ./run_performance_test.sh ${{ parameters.ENVIRONMENT }} ${{ parameters.TEST_TYPE }} ${{ parameters.SCRIPT }} ${{ parameters.DB_NAME}} $OCP_APIM_SUBSCRIPTION_KEY
+    displayName: Run k6 ${{ parameters.SCRIPT }} on ${{ parameters.ENVIRONMENT }}
+    env:
+      OCP_APIM_SUBSCRIPTION_KEY: ${{ variables.API_SUBSCRIPTION_KEY }}
+  - script: |
+      cd ./performance-test/src
+      docker build -f ./DockerfilePost -t exec-node .
+      docker run --rm --name initToRunk6 \
+      -e BLOB_STORAGE_CONN_STRING=${BLOB_STORAGE_CONN_STRING} \
+      -e COSMOS_RECEIPTS_CONN_STRING=${COSMOS_RECEIPTS_CONN_STRING} \
+      -e ENVIRONMENT_STRING="${ENVIRONMENT_STRING}" \
+      exec-node       
+    displayName: Teardown run perf test   
+    env:
+      COSMOS_RECEIPTS_CONN_STRING: ${{ variables.receiptCosmosConnectionString }}
+      BLOB_STORAGE_CONN_STRING: ${{ variables.blobStorageConnectionString }}
+      ENVIRONMENT_STRING: ${{ parameters.ENVIRONMENT }}

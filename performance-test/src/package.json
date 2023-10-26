@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@azure/cosmos": "^3.17.3",
+    "@azure/storage-blob": "^12.15.0"
+  },
+  "scripts" : {
+    "start-precondition" : "export $(cat .env | xargs) && node ./scripts/pre_condition_script.js",
+    "start-teardown" : "export $(cat .env | xargs) && node ./scripts/teardown_script.js"
+  }
+}
