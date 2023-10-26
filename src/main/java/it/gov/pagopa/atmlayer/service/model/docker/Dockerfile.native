@@ -8,7 +8,7 @@ RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline
 COPY src /code/src
 ARG QUARKUS_PROFILE
 ARG APP_NAME
-RUN ./mvnw package -Pnative -Dquarkus.application.name=$APP_NAME -Dquarkus.profile=$QUARKUS_PROFILE
+RUN ./mvnw package -Pnative -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod
 
 ## Stage 2 : create the docker final image
 FROM quay.io/quarkus/quarkus-micro-image:2.0
