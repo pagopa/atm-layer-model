@@ -4,9 +4,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>it.gov.pagopa</groupId>
-    <artifactId>atm-layer-mil-integration</artifactId>
+    <artifactId>atm-layer-mil-model</artifactId>
     <version>0.0.1</version>
-    <name>atm-layer-mil-integration</name>
+    <name>atm-layer-mil-model</name>
     <properties>
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <jacoco.version>0.8.7</jacoco.version>
