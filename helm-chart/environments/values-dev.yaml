@@ -103,7 +103,7 @@ ingress:
   hosts:
     - host:
       paths:
-        - path: /
+        - path: /api/v1/model
           pathType: Prefix
   tls: []
   #  - secretName: chart-example-tls

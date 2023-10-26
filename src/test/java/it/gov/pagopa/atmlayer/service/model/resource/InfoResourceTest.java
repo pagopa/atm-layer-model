@@ -23,7 +23,7 @@ class InfoResourceTest {
     void infoSuccess() {
         String responseString =
                 given()
-                        .when().get("/api/info")
+                        .when().get("/api/v1/model/info")
                         .then()
                         .statusCode(200)
                         .contentType("application/json")
