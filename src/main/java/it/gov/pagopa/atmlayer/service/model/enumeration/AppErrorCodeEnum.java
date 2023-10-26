@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public enum AppErrorCodeEnum {
 
-    ATML_MI_500("ATML_MI_500", "An unexpected error has occurred, see logs for more info");
+    ATMLM_500("ATMLM_500", "An unexpected error has occurred, see logs for more info");
 
     private final String errorCode;
     private final String errorMessage;

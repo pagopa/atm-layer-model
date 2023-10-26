@@ -14,7 +14,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Jacksonized
 @JsonPropertyOrder({"name", "version", "environment", "description"})
 public class InfoResponse {
-    @Schema(example = "pagopa-atm layer-pdf-service")
+    @Schema(example = "atm-layer-model")
     private String name;
 
     @Schema(example = "1.2.3")
@@ -23,6 +23,6 @@ public class InfoResponse {
     @Schema(example = "dev")
     private String environment;
 
-    @Schema(example = "Receipt PDF Service")
+    @Schema(example = "ATM Layer - Model Service")
     private String description;
 }

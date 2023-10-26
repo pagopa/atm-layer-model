@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkus.arc.properties.UnlessBuildProperty;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.dto.PersonDto;
@@ -22,6 +23,7 @@ import java.time.Month;
 @Path("/person")
 @Tag(name = "Person", description = "Person operations")
 @UnlessBuildProperty(name = "app.execution-mode", stringValue = "READ", enableIfMissing = true)
+@UnlessBuildProfile("prod")
 public class PersonResourceWrite {
 
     private final Logger logger = LoggerFactory.getLogger(PersonResourceWrite.class);

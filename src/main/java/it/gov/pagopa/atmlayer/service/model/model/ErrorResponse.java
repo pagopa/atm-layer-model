@@ -28,6 +28,6 @@ public class ErrorResponse {
   @Schema(example = "An unexpected error has occurred. Please contact support.")
   private String detail;
 
-  @Schema(example = "PDFS-500")
+  @Schema(example = "ATMLM-500")
   private String instance;
 }

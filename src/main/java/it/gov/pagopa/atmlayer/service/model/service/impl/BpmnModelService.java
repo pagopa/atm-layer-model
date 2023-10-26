@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 
 @ApplicationScoped
 @Slf4j
-public class ModelServiceImpl implements ModelService {
+public class BpmnModelService implements ModelService {
 
     @Inject
     BpmnVersionRepository bpmnVersionRepository;

@@ -30,7 +30,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                                                            "title": "Internal Server Error",
                                                            "status": 500,
                                                            "detail": "An unexpected error has occurred. Please contact support.",
-                                                           "instance": "ATML_MI_500"
+                                                           "instance": "ATMLM_500"
                                                          }""")),
 
                 }),

@@ -16,7 +16,7 @@ public class BpmnCreationDto {
     @PartType(MediaType.APPLICATION_XML)
     private File file;
 
-    @FormParam("metadata")
+    @FormParam("creationMetadata")
     @PartType(MediaType.APPLICATION_JSON)
     private CreationMetadata creationMetadata;
 }
