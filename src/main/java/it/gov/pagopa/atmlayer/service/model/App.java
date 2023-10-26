@@ -36,7 +36,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
                 }),
         info = @Info(title = "ATM Layer - MIL Integration service", version = "0.0.1-SNAPSHOT"))
-@ApplicationPath("/api")
+@ApplicationPath("/api/v1/model")
 @Startup
 public class App extends Application {
 }
