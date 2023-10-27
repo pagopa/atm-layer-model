@@ -100,6 +100,10 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>netty-nio-client</artifactId>
         </dependency>
+       <dependency>
+            <groupId>io.quarkiverse.amazonservices</groupId>
+            <artifactId>quarkus-amazon-sts</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkiverse.logging.logback</groupId>
             <artifactId>quarkus-logging-logback</artifactId>
