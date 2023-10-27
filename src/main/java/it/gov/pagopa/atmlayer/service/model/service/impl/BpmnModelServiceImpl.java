@@ -5,7 +5,7 @@ import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
-import it.gov.pagopa.atmlayer.service.model.service.ModelService;
+import it.gov.pagopa.atmlayer.service.model.service.BpmnModelService;
 import it.gov.pagopa.atmlayer.service.model.utils.ModelUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 
 @ApplicationScoped
 @Slf4j
-public class BpmnModelService implements ModelService {
+public class BpmnModelServiceImpl implements BpmnModelService {
 
     @Inject
     BpmnVersionRepository bpmnVersionRepository;
@@ -43,6 +43,10 @@ public class BpmnModelService implements ModelService {
 
     @Override
     public Uni<BpmnVersion> findByPk(BpmnVersionPK bpmnVersionPK) {
-        return bpmnVersionRepository.findById(bpmnVersionPK);
+        try {
+            return bpmnVersionRepository.findById(bpmnVersionPK);
+        } catch (Exception e){
+            throw new RuntimeException("non trovato");
+        }
     }
 }
