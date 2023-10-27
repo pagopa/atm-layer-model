@@ -43,7 +43,7 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
     @Column(name = "status")
     private StatusEnum status;
 
-    @Column(name = "sha256")
+    @Column(name = "sha256", unique = true)
     private String sha256;
 
     @Column(name = "enabled", columnDefinition = "boolean default true")

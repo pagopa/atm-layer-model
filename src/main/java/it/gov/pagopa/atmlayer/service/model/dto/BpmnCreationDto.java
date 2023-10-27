@@ -1,6 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
-import it.gov.pagopa.atmlayer.service.model.model.CreationMetadata;
+import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionEnum;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.core.MediaType;
 import lombok.Data;
@@ -16,7 +16,6 @@ public class BpmnCreationDto {
     @PartType(MediaType.APPLICATION_XML)
     private File file;
 
-    @FormParam("creationMetadata")
-    @PartType(MediaType.APPLICATION_JSON)
-    private CreationMetadata creationMetadata;
+    @FormParam("functionType")
+    private FunctionEnum function;
 }

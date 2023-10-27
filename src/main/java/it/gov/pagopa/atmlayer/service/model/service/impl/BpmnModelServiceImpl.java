@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
@@ -42,11 +43,8 @@ public class BpmnModelServiceImpl implements BpmnModelService {
     }
 
     @Override
+    @WithSession
     public Uni<BpmnVersion> findByPk(BpmnVersionPK bpmnVersionPK) {
-        try {
-            return bpmnVersionRepository.findById(bpmnVersionPK);
-        } catch (Exception e){
-            throw new RuntimeException("non trovato");
-        }
+        return bpmnVersionRepository.findById(bpmnVersionPK);
     }
 }
