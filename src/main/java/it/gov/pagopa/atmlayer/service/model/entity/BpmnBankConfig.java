@@ -5,6 +5,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +22,12 @@ import java.sql.Timestamp;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "bpmn_bank_config")
 public class BpmnBankConfig extends PanacheEntityBase implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 2192727048075093200L;
+
     @EmbeddedId
     private BpmnBankConfigPK bpmnBankConfigPK;
 
