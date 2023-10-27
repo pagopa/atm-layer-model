@@ -20,8 +20,10 @@ public class BpmnVersionPK implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -6327455979830016850L;
+
+    @Column(name = "bpmn_id")
     private UUID bpmnId;
 
-    @Column(columnDefinition = "int default 1")
+    @Column(name = "model_version", columnDefinition = "int default 1")
     private int modelVersion;
 }
