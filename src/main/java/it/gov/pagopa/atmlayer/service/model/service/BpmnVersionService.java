@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-public interface BpmnModelService {
+public interface BpmnVersionService {
 
     String decodeBase64(String s) throws IOException;
 

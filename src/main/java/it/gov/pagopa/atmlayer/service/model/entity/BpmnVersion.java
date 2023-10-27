@@ -26,8 +26,6 @@ import java.util.UUID;
 @Table(name = "bpmn_version")
 public class BpmnVersion extends PanacheEntityBase implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 3353950790095221978L;
     @EmbeddedId
     private BpmnVersionPK bpmnVersionPK;
 

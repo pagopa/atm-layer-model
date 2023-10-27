@@ -17,8 +17,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BpmnBankConfigPK implements Serializable {
-    @Serial
-    private static final long serialVersionUID = -9140657073094910845L;
 
     @NotNull(message = "bpmn id cannot be null")
     private UUID bpmnId;

@@ -3,9 +3,12 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
-import it.gov.pagopa.atmlayer.service.model.service.BpmnModelService;
+import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
+import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnDtoMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -23,6 +26,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -33,7 +37,10 @@ public class ModelResource {
 
 
     @Inject
-    BpmnModelService bpmnModelService;
+    BpmnVersionService bpmnVersionService;
+
+    @Inject
+    BpmnBankConfigService bpmnBankConfigService;
 
 
 //    @GET
@@ -49,12 +56,28 @@ public class ModelResource {
     @Path("/associations/{UUID}/version/{version}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<BpmnVersion> associateBPMN(@PathParam("UUID") String uuid, @PathParam("version") String version, @RequestBody @Valid BpmnAssociationDto bpmnAssociationDto) throws NoSuchAlgorithmException, IOException {
+    public Uni<Void> associateBPMN(@PathParam("UUID") String uuid, @PathParam("version") String version, @RequestBody @Valid BpmnAssociationDto bpmnAssociationDto) throws NoSuchAlgorithmException, IOException {
         UUID uuidValue = UUID.fromString(uuid);
         int versionValue = Integer.parseInt(version);
         BpmnVersionPK bpmnVersionPK = new BpmnVersionPK(uuidValue, versionValue);
-        BpmnVersion bpmnVersion = new BpmnVersion();
-        return bpmnModelService.findByPk(bpmnVersionPK);
+        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
+        bpmnBankConfigPK.setBpmnId(uuidValue);
+        bpmnBankConfigPK.setBpmnModelVersion(versionValue);
+        bpmnBankConfigPK.setAcquirerId("1");
+        bpmnBankConfigPK.setBranchId("1");
+        bpmnBankConfigPK.setTerminalId("1");
+        BpmnBankConfigPK bpmnBankConfigPK2 = new BpmnBankConfigPK();
+        bpmnBankConfigPK2.setBpmnId(uuidValue);
+        bpmnBankConfigPK2.setBpmnModelVersion(versionValue);
+        bpmnBankConfigPK2.setAcquirerId("1");
+        bpmnBankConfigPK2.setBranchId("1");
+        bpmnBankConfigPK2.setTerminalId("2");
+        BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
+        BpmnBankConfig bpmnBankConfig1 = new BpmnBankConfig();
+        bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);
+        bpmnBankConfig1.setBpmnBankConfigPK(bpmnBankConfigPK2);
+
+        return bpmnBankConfigService.saveList(List.of(bpmnBankConfig, bpmnBankConfig1));
     }
 
     @POST
@@ -63,6 +86,6 @@ public class ModelResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnVersion> createBPMN(@RequestBody @Valid BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = BpmnDtoMapper.toBpmnVersion(bpmnCreationDto);
-        return bpmnModelService.save(bpmnVersion);
+        return bpmnVersionService.save(bpmnVersion);
     }
 }

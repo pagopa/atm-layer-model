@@ -6,7 +6,7 @@ import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
-import it.gov.pagopa.atmlayer.service.model.service.BpmnModelService;
+import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.utils.ModelUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
 
 @ApplicationScoped
 @Slf4j
-public class BpmnModelServiceImpl implements BpmnModelService {
+public class BpmnVersionImpl implements BpmnVersionService {
 
     @Inject
     BpmnVersionRepository bpmnVersionRepository;

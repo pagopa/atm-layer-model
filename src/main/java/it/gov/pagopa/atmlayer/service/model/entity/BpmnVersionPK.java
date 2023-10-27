@@ -18,8 +18,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class BpmnVersionPK implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = -6327455979830016850L;
 
     @Column(name = "bpmn_id")
     private UUID bpmnId;

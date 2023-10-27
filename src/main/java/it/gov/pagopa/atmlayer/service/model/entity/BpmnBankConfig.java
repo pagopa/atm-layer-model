@@ -25,9 +25,6 @@ import java.sql.Timestamp;
 @Table(name = "bpmn_bank_config")
 public class BpmnBankConfig extends PanacheEntityBase implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 2192727048075093200L;
-
     @EmbeddedId
     private BpmnBankConfigPK bpmnBankConfigPK;
 
