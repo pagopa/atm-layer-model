@@ -4,7 +4,7 @@ import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnModelService;
-import it.gov.pagopa.atmlayer.service.model.utils.BpmnDtoConverter;
+import it.gov.pagopa.atmlayer.service.model.utils.BpmnDtoMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -56,7 +56,7 @@ public class ModelResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnVersion> createBPMN(@RequestBody @Valid BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
-        BpmnVersion bpmnVersion = BpmnDtoConverter.converter(bpmnCreationDto);
+        BpmnVersion bpmnVersion = BpmnDtoMapper.toBpmnVersion(bpmnCreationDto);
         return bpmnModelService.save(bpmnVersion);
     }
 }

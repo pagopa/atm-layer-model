@@ -13,14 +13,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @ApplicationScoped
-public class BpmnDtoConverter {
+public class BpmnDtoMapper {
 
-    public static BpmnVersion converter(BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
+    public static BpmnVersion toBpmnVersion(BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = new BpmnVersion();
         BpmnVersionPK bpmnVersionPK = new BpmnVersionPK();
         CreationMetadata creationMetadata = bpmnCreationDto.getCreationMetadata();
         bpmnVersionPK.setBpmnId(UUID.randomUUID());
-        bpmnVersionPK.setModelVersion(creationMetadata.getModelVersion());
+        bpmnVersionPK.setModelVersion(1);
         bpmnVersion.setBpmnVersionPK(bpmnVersionPK);
         bpmnVersion.setDeployedFileName(creationMetadata.getDeployedFileName());
         bpmnVersion.setDefinitionKey(creationMetadata.getDefinitionKey());

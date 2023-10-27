@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CreationMetadata {
-    @NotNull(message = "model version cannot be null")
-    private int modelVersion;
     @NotNull(message = "deployed file name cannot be null")
     private String deployedFileName;
     @NotNull(message = "definition key file name cannot be null")
