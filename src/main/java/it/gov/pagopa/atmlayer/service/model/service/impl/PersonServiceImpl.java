@@ -45,7 +45,6 @@ public class PersonServiceImpl implements PersonService {
                     String errorMessage = String.format("User with id %s not found", id);
                     log.error(errorMessage);
                     return AtmLayerException.builder()
-                            .message(errorMessage)
                             .statusCode(Response.Status.NOT_FOUND).build();
                 });
 
