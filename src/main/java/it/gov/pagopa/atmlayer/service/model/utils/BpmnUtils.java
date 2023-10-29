@@ -1,6 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
 import com.google.common.io.Files;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.File;
@@ -10,9 +12,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
-public class ModelUtils {
+public class BpmnUtils {
 
     public static byte[] fileToByteArray(File file) throws IOException {
         return Files.toByteArray(file);
@@ -42,6 +47,14 @@ public class ModelUtils {
 
     public static String byteArrayToString(byte[] byteArray) {
         return new String(byteArray, StandardCharsets.UTF_8);
+    }
+
+    public static Set<BpmnVersionPK> extractBpmnUUIDFromAssociations(List<BpmnBankConfig> associations) {
+        return associations.stream().map(association -> BpmnVersionPK.builder()
+                .bpmnId(association.getBpmnBankConfigPK().getBpmnId())
+                .modelVersion(association.getBpmnBankConfigPK().getBpmnModelVersion())
+                .build()
+        ).collect(Collectors.toSet());
     }
 
 }

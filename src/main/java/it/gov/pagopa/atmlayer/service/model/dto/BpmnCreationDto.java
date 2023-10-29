@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.core.MediaType;
 import lombok.Data;
@@ -14,8 +15,10 @@ import java.io.File;
 public class BpmnCreationDto {
     @FormParam("file")
     @PartType(MediaType.APPLICATION_XML)
+    @NotNull(message = "bpmn file is required")
     private File file;
 
     @FormParam("functionType")
-    private FunctionEnum function;
+    @NotNull(message = "function type is required")
+    private functionTypeEnum functionType;
 }

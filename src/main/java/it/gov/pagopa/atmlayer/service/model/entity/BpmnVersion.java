@@ -1,20 +1,20 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -36,7 +36,8 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
     private String definitionKey;
 
     @Column(name = "function_type")
-    private FunctionEnum functionType;
+    @Enumerated(EnumType.STRING)
+    private functionTypeEnum functionType;
 
     @Column(name = "status")
     private StatusEnum status;

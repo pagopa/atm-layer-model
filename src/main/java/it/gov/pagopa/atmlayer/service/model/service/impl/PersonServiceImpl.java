@@ -4,7 +4,7 @@ import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.Person;
-import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerRestException;
+import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.PersonRepository;
 import it.gov.pagopa.atmlayer.service.model.service.PersonService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -44,7 +44,7 @@ public class PersonServiceImpl implements PersonService {
                 {
                     String errorMessage = String.format("User with id %s not found", id);
                     log.error(errorMessage);
-                    return AtmLayerRestException.builder()
+                    return AtmLayerException.builder()
                             .message(errorMessage)
                             .statusCode(Response.Status.NOT_FOUND).build();
                 });

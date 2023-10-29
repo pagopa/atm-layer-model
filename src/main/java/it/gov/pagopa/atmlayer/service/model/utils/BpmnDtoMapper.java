@@ -4,8 +4,6 @@ import it.gov.pagopa.atmlayer.service.model.dto.BankKeyDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BranchDto;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
@@ -28,7 +26,7 @@ public class BpmnDtoMapper {
         bpmnVersionPK.setBpmnId(UUID.randomUUID());
         bpmnVersionPK.setModelVersion(1);
         bpmnVersion.setBpmnVersionPK(bpmnVersionPK);
-        bpmnVersion.setFunctionType(bpmnCreationDto.getFunction());
+        bpmnVersion.setFunctionType(bpmnCreationDto.getFunctionType());
         bpmnVersion.setStatus(StatusEnum.CREATED);
         bpmnVersion.setSha256(calculateSha256(bpmnCreationDto.getFile()));
         bpmnVersion.setEnabled(true);
@@ -52,20 +50,20 @@ public class BpmnDtoMapper {
 
     public static String calculateSha256(File file) throws NoSuchAlgorithmException, IOException {
         //TODO: Controllare che il file sia un xml .bpmn
-        byte[] array = ModelUtils.toSha256ByteArray(file);
-        return ModelUtils.toHexString(array);
+        byte[] array = BpmnUtils.toSha256ByteArray(file);
+        return BpmnUtils.toHexString(array);
     }
 
     public static List<AssociationKey> getAllAssociation(BpmnAssociationDto bpmnAssociationDto) {
         List<AssociationKey> associationKeys = new ArrayList<>();
         List<BankKeyDto> bankKeyDtoList = bpmnAssociationDto.getBankKeyDtoList();
-        for (BankKeyDto bankKeyDto: bankKeyDtoList) {
+        for (BankKeyDto bankKeyDto : bankKeyDtoList) {
             String acquirerId = bankKeyDto.getAcquirerId();
             List<BranchDto> branchDtoList = bankKeyDto.getBranches();
-            for (BranchDto branchDto: branchDtoList) {
+            for (BranchDto branchDto : branchDtoList) {
                 String branchId = branchDto.getBranchId();
                 List<String> terminalIdList = branchDto.getTerminalId();
-                for (String terminalId: terminalIdList) {
+                for (String terminalId : terminalIdList) {
                     AssociationKey associationKey = new AssociationKey(acquirerId, terminalId, branchId);
                     associationKeys.add(associationKey);
                 }

@@ -1,45 +1,79 @@
 package it.gov.pagopa.atmlayer.service.model.exception;
 
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.core.Response;
+import lombok.Builder;
 import lombok.Getter;
-
-import java.util.Objects;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
  * Base exception for PDF receipts service exceptions
  */
 @Getter
-public class AtmLayerException extends Exception {
+public class AtmLayerException extends ClientErrorException {
 
-    /** Error code of this exception
-     * -- GETTER --
-     *  Returns error code
-     *
-     * @return Error code of this exception
-     */
-    private final AppErrorCodeEnum errorCode;
+    @Schema(example = "Validation Error")
+    private final String type;
 
-    /**
-     * Constructs new exception with provided error code and message
-     *
-     * @param errorCode Error code
-     * @param message Detail message
-     */
-    public AtmLayerException(AppErrorCodeEnum errorCode, String message) {
-        super(message);
-        this.errorCode = Objects.requireNonNull(errorCode);
+    @Schema(example = "500")
+    private final int statusCode;
+
+    private String message;
+
+    private String errorCode;
+
+    @Builder
+    public AtmLayerException(Response.Status statusCode, AppErrorCodeEnum errorCodeEnum) {
+        super(errorCodeEnum.getErrorMessage(), statusCode);
+        this.message = errorCodeEnum.getErrorMessage();
+        this.type = errorCodeEnum.getType().name();
+        this.statusCode = statusCode.getStatusCode();
+        this.errorCode = errorCodeEnum.getErrorCode();
     }
 
-    /**
-     * Constructs new exception with provided error code, message and cause
-     *
-     * @param errorCode Error code
-     * @param message Detail message
-     * @param cause Exception causing the constructed one
-     */
-    public AtmLayerException(AppErrorCodeEnum errorCode, String message, Throwable cause) {
-        super(message, cause);
-        this.errorCode = Objects.requireNonNull(errorCode);
+    @Builder
+    public AtmLayerException(String message, Response.Status statusCode, AppErrorCodeEnum errorCodeEnum) {
+        super(message, statusCode);
+        this.message = message;
+        this.type = errorCodeEnum.getType().name();
+        this.statusCode = statusCode.getStatusCode();
+        this.errorCode = errorCodeEnum.getErrorCode();
     }
+
+    @Builder
+    public AtmLayerException(Response.Status statusCode, AppErrorCodeEnum errorCodeEnum, Throwable cause) {
+        super(errorCodeEnum.getErrorMessage(), statusCode, cause);
+        this.message = errorCodeEnum.getErrorMessage();
+        this.type = errorCodeEnum.getType().name();
+        this.statusCode = statusCode.getStatusCode();
+        this.errorCode = errorCodeEnum.getErrorCode();
+    }
+
+    @Builder
+    public AtmLayerException(String message, Response.Status statusCode, AppErrorCodeEnum errorCodeEnum, Throwable cause) {
+        super(message, statusCode, cause);
+        this.message = message;
+        this.type = errorCodeEnum.getType().name();
+        this.statusCode = statusCode.getStatusCode();
+        this.errorCode = errorCodeEnum.getErrorCode();
+    }
+
+    @Builder
+    public AtmLayerException(String message, Response.Status status, Throwable cause, String type) {
+        super(message, status, cause);
+        this.message = message;
+        this.type = type;
+        this.statusCode = status.getStatusCode();
+    }
+
+    @Builder
+    public AtmLayerException(String message, Response.Status status, String type) {
+        super(message, status);
+        this.message = message;
+        this.type = type;
+        this.statusCode = status.getStatusCode();
+    }
+
 
 }

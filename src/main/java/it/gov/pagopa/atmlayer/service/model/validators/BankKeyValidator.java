@@ -1,4 +1,4 @@
-package it.gov.pagopa.atmlayer.service.model.validator;
+package it.gov.pagopa.atmlayer.service.model.validators;
 
 import it.gov.pagopa.atmlayer.service.model.constraint.BankKeyConstraint;
 import it.gov.pagopa.atmlayer.service.model.dto.BankKeyDto;

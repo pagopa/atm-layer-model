@@ -1,10 +1,12 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +15,6 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -29,7 +30,8 @@ public class BpmnBankConfig extends PanacheEntityBase implements Serializable {
     private BpmnBankConfigPK bpmnBankConfigPK;
 
     @Column(name = "function_type")
-    private FunctionEnum functionType;
+    @Enumerated(EnumType.STRING)
+    private functionTypeEnum functionType;
 
     @Column(name = "enabled", columnDefinition = "boolean default true")
     private Boolean enabled;
