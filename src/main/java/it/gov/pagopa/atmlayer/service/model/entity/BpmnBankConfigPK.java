@@ -1,0 +1,33 @@
+package it.gov.pagopa.atmlayer.service.model.entity;
+
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.UUID;
+
+@Embeddable
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class BpmnBankConfigPK implements Serializable {
+
+    @NotNull(message = "bpmn id cannot be null")
+    private UUID bpmnId;
+
+    @NotNull(message = "bpmn model version cannot be null")
+    private int bpmnModelVersion;
+
+    @NotNull(message = "acquirer id cannot be null")
+    private String acquirerId;
+
+    private String branchId;
+
+    private String terminalId;
+}

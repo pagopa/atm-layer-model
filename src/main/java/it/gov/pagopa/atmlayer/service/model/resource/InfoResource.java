@@ -1,13 +1,10 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
 import io.smallrye.common.annotation.NonBlocking;
-import it.gov.pagopa.atmlayer.service.model.model.DemoValidation;
 import it.gov.pagopa.atmlayer.service.model.model.InfoResponse;
 import it.gov.pagopa.atmlayer.service.model.repository.PersonRepository;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -24,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * Resource class that expose the API to retrieve info about the service
  */
 @Path("/info")
-@Tag(name = "Info", description = "Info operations")
+@Tag(name = "Info", description = "Application info")
 public class InfoResource {
 
     private final Logger logger = LoggerFactory.getLogger(InfoResource.class);
@@ -41,7 +38,7 @@ public class InfoResource {
     @Inject
     PersonRepository personRepository;
 
-    @Operation(summary = "Get info of ATM Layer - MIL Integration services")
+    @Operation(summary = "Application info - ATM Layer - Model")
     @APIResponses(
             value = {
                     @APIResponse(ref = "#/components/responses/InternalServerError"),
@@ -64,21 +61,7 @@ public class InfoResource {
                 .name(name)
                 .version(version)
                 .environment(environment)
-                .description("ATM Layer - MIL Integration Service")
-                .build();
-    }
-
-    ;
-
-    @POST
-    public InfoResponse demoValidation(@Valid DemoValidation example) {
-        logger.info("Info environment: [{}] - name: [{}] - version: [{}]", environment, name, version);
-
-        return InfoResponse.builder()
-                .name(name)
-                .version(version)
-                .environment(environment)
-                .description("Receipt PDF Service")
+                .description("ATM Layer - Model Service")
                 .build();
     }
 }

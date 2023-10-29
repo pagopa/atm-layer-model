@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.model.mil.AuthPayload;
 import it.gov.pagopa.atmlayer.service.model.model.mil.MILAccessToken;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 @Path("/auth")
 @Tag(name = "Auth", description = "Auth operations")
+@UnlessBuildProfile("prod")
 public class AuthResource {
 
     private final Logger logger = LoggerFactory.getLogger(AuthResource.class);
