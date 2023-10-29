@@ -15,17 +15,12 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @ApplicationScoped
 public class BpmnDtoMapper {
 
     public static BpmnVersion toBpmnVersion(BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = new BpmnVersion();
-        BpmnVersionPK bpmnVersionPK = new BpmnVersionPK();
-        bpmnVersionPK.setBpmnId(UUID.randomUUID());
-        bpmnVersionPK.setModelVersion(1);
-        bpmnVersion.setBpmnVersionPK(bpmnVersionPK);
         bpmnVersion.setFunctionType(bpmnCreationDto.getFunctionType());
         bpmnVersion.setStatus(StatusEnum.CREATED);
         bpmnVersion.setSha256(calculateSha256(bpmnCreationDto.getFile()));

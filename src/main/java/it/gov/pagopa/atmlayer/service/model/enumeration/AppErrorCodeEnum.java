@@ -13,8 +13,8 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_
 public enum AppErrorCodeEnum {
 
     ATMLM_500("ATMLM_500", "An unexpected error has occurred, see logs for more info", GENERIC),
-    FILE_WITH_SAME_CONTENT_ALREADY_EXIST("ATMLM_4000001", "A file with the same content already Exist", CONSTRAINT_VIOLATION),
-    FILE_DOES_NOT_EXIST("ATMLM_4000002", "The referenced File does not exists", NOT_EXISTING_REFERENCED_ENTITY);
+    BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST("ATMLM_4000001", "A BPMN file with the same content already Exist", CONSTRAINT_VIOLATION),
+    BPMN_FILE_DOES_NOT_EXIST("ATMLM_4000002", "The referenced BPMN file does not exists", NOT_EXISTING_REFERENCED_ENTITY);
 
     private final String errorCode;
     private final String errorMessage;

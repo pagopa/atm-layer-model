@@ -1,13 +1,16 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,10 +27,17 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @Table(name = "bpmn_version")
+@IdClass(BpmnVersionPK.class)
 public class BpmnVersion extends PanacheEntityBase implements Serializable {
 
-    @EmbeddedId
-    private BpmnVersionPK bpmnVersionPK;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "bpmn_id", nullable = false, updatable = false)
+    @Id
+    private UUID bpmnId;
+
+    @Column(name = "model_version", nullable = false)
+    @Id
+    private Long modelVersion = 1L;
 
     @Column(name = "deployed_file_name")
     private String deployedFileName;

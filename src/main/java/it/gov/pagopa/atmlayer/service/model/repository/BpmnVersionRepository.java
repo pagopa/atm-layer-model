@@ -8,6 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion, BpmnVersionPK> {
@@ -16,7 +17,8 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
     }
 
     public Uni<List<BpmnVersion>> findByIds(Set<BpmnVersionPK> ids) {
-        return find("where bpmnVersionPK in ?1", ids).list();
+        Set<String> bpmnIdVersion = ids.stream().map(x -> x.getBpmnId().toString().concat("_".concat(x.getModelVersion().toString()))).collect(Collectors.toSet());
+        return find("where concat(bpmnId,'_',modelVersion) in ?1", bpmnIdVersion).list();
     }
 
 }

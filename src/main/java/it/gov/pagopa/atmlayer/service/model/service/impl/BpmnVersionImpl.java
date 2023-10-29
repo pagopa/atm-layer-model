@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
 
 @ApplicationScoped
 @Slf4j
@@ -61,7 +61,7 @@ public class BpmnVersionImpl implements BpmnVersionService {
         return this.findBySHA256(bpmnVersion.getSha256())
                 .onItem().transform(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException("A BPMN file with the same content already exists", Response.Status.BAD_REQUEST, FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
+                        throw new AtmLayerException("A BPMN file with the same content already exists", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
                     }
                     return x;
                 }))
