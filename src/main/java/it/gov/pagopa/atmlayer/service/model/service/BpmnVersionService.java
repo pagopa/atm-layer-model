@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 public interface BpmnVersionService {
 
@@ -29,5 +30,9 @@ public interface BpmnVersionService {
     Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK);
 
     Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionTypeEnum, List<BpmnBankConfig> bpmnBankConfigs);
+
+    Uni<BpmnVersion> setDeployInProgress(UUID uuid, Long version);
+
+    public Uni<Boolean> checkBpmnFileExistence(UUID id, Long modelVersion);
 
 }

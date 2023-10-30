@@ -108,7 +108,14 @@ public class BpmnResource {
 //    @Produces(MediaType.APPLICATION_JSON)
 //    public Uni<BpmnVersion> deployBPMN(@PathParam("uuid") UUID uuid,
 //                                       @PathParam("version") Long version){
-//
-//    }
+//        bpmnVersionService.checkBpmnFileExistence(uuid,version)
+//                .onItem()
+//                .transform(x -> {
+//                    if (x) {
+//                        bpmnVersionService.setDeployInProgress(uuid, version);
+//                    }
+//                });
+//        }
+
 
 }
