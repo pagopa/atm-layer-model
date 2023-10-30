@@ -102,4 +102,13 @@ public class BpmnResource {
         BpmnVersion bpmnVersion = BpmnDtoMapper.toBpmnVersion(bpmnCreationDto);
         return bpmnVersionService.save(bpmnVersion);
     }
+
+//    @POST
+//    @Path("/deploy/{uuid}/version/{version}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Uni<BpmnVersion> deployBPMN(@PathParam("uuid") UUID uuid,
+//                                       @PathParam("version") Long version){
+//
+//    }
+
 }
