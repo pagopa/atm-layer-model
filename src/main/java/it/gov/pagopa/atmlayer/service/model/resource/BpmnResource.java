@@ -1,15 +1,13 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
-import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnDtoMapper;
@@ -38,6 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
 
 @ApplicationScoped
 @Path("/bpmn")
@@ -82,42 +81,19 @@ public class BpmnResource {
     }
 
     @PUT
-    @Path("/bank/{acquirerId}/associations/function/{functionType}/{id}")
+    @Path("/bank/{acquirerId}/associations/function/{functionType}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<List<BpmnBankConfig>> associateBPMN(@PathParam("acquirerId") String acquirerId,
-                                                   @PathParam("functionType") functionTypeEnum functionTypeEnum,
-                                                   @PathParam("id") UUID id,
+                                                   @PathParam("functionType") FunctionTypeEnum functionTypeEnum,
                                                    @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto) throws NoSuchAlgorithmException, IOException {
 
-        // TO DO, metodo che dal DTO estrae la lista di configs
-        List<BpmnBankConfig> configs = extractConfigs(acquirerId, functionTypeEnum, id);
+        List<BpmnBankConfig> configs = getAcquirerConfigs(bpmnAssociationDto, acquirerId, functionTypeEnum);
         Set<BpmnVersionPK> bpmnIds = BpmnUtils.extractBpmnUUIDFromAssociations(configs);
         return bpmnEntityValidator.validateExistence(bpmnIds)
                 .onItem().transformToUni(x -> this.bpmnVersionService.putAssociations(acquirerId, functionTypeEnum, configs));
     }
 
-    private static List<BpmnBankConfig> extractConfigs(String acquirerId, functionTypeEnum functionTypeEnum, UUID id) {
-        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
-        bpmnBankConfigPK.setBpmnId(id);
-        bpmnBankConfigPK.setBpmnModelVersion(1L);
-        bpmnBankConfigPK.setAcquirerId(acquirerId);
-        bpmnBankConfigPK.setBranchId("1");
-        bpmnBankConfigPK.setTerminalId("1");
-        BpmnBankConfigPK bpmnBankConfigPK2 = new BpmnBankConfigPK();
-        bpmnBankConfigPK2.setBpmnId(id);
-        bpmnBankConfigPK2.setBpmnModelVersion(1L);
-        bpmnBankConfigPK2.setAcquirerId(acquirerId);
-        bpmnBankConfigPK2.setBranchId("1");
-        bpmnBankConfigPK2.setTerminalId("2");
-        BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
-        BpmnBankConfig bpmnBankConfig1 = new BpmnBankConfig();
-        bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);
-        bpmnBankConfig.setFunctionType(functionTypeEnum);
-        bpmnBankConfig1.setBpmnBankConfigPK(bpmnBankConfigPK2);
-        bpmnBankConfig1.setFunctionType(functionTypeEnum);
-        return List.of(bpmnBankConfig, bpmnBankConfig1);
-    }
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)

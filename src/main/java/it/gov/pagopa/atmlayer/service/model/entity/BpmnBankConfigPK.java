@@ -29,8 +29,10 @@ public class BpmnBankConfigPK implements Serializable {
     @NotNull(message = "acquirer id cannot be null")
     @Column(name = "acquirer_id")
     private String acquirerId;
+
     @Column(name = "branch_id")
-    private String branchId;
+    private String branchId = "null";
+
     @Column(name = "terminal_id")
-    private String terminalId;
+    private String terminalId = "null";
 }

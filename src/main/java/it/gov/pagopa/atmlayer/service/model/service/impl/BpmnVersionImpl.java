@@ -8,7 +8,7 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
-import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
@@ -83,7 +83,7 @@ public class BpmnVersionImpl implements BpmnVersionService {
 
     @Override
     @WithTransaction
-    public Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, functionTypeEnum functionType, List<BpmnBankConfig> bpmnBankConfigs) {
+    public Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionType, List<BpmnBankConfig> bpmnBankConfigs) {
         Uni<Long> deleteExistingUni = this.bpmnBankConfigService.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
         return deleteExistingUni
                 .onItem()
@@ -92,7 +92,7 @@ public class BpmnVersionImpl implements BpmnVersionService {
                 .transformToUni(y -> this.bpmnBankConfigService.findByAcquirerIdAndFunctionType(acquirerId, functionType));
     }
 
-    private static Uni<List<BpmnBankConfig>> addFunctionTypeToAssociations(List<BpmnBankConfig> bpmnBankConfigs, functionTypeEnum functionType) {
+    private static Uni<List<BpmnBankConfig>> addFunctionTypeToAssociations(List<BpmnBankConfig> bpmnBankConfigs, FunctionTypeEnum functionType) {
         return Multi.createFrom().items(bpmnBankConfigs.stream()).onItem().transform(bpmnBankConfig -> {
             bpmnBankConfig.setFunctionType(functionType);
             return bpmnBankConfig;

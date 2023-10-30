@@ -4,7 +4,7 @@ import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
-import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +28,6 @@ public interface BpmnVersionService {
 
     Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK);
 
-    Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, functionTypeEnum functionTypeEnum, List<BpmnBankConfig> bpmnBankConfigs);
+    Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionTypeEnum, List<BpmnBankConfig> bpmnBankConfigs);
 
 }

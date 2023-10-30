@@ -1,20 +1,13 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
-import it.gov.pagopa.atmlayer.service.model.dto.BankKeyDto;
-import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
-import it.gov.pagopa.atmlayer.service.model.dto.BranchDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
-import it.gov.pagopa.atmlayer.service.model.model.AssociationKey;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 
 @ApplicationScoped
 public class BpmnDtoMapper {
@@ -49,22 +42,5 @@ public class BpmnDtoMapper {
         return BpmnUtils.toHexString(array);
     }
 
-    public static List<AssociationKey> getAllAssociation(BpmnAssociationDto bpmnAssociationDto) {
-        List<AssociationKey> associationKeys = new ArrayList<>();
-        List<BankKeyDto> bankKeyDtoList = bpmnAssociationDto.getBankKeyDtoList();
-        for (BankKeyDto bankKeyDto : bankKeyDtoList) {
-            String acquirerId = bankKeyDto.getAcquirerId();
-            List<BranchDto> branchDtoList = bankKeyDto.getBranches();
-            for (BranchDto branchDto : branchDtoList) {
-                String branchId = branchDto.getBranchId();
-                List<String> terminalIdList = branchDto.getTerminalId();
-                for (String terminalId : terminalIdList) {
-                    AssociationKey associationKey = new AssociationKey(acquirerId, terminalId, branchId);
-                    associationKeys.add(associationKey);
-                }
-            }
 
-        }
-        return associationKeys;
-    }
 }

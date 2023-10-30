@@ -3,7 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
-import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnBankConfigRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -20,12 +20,12 @@ public class BpmnBankConfigService {
         return bankConfigRepository.persist(bpmnBankConfigs);
     }
 
-    public Uni<List<BpmnBankConfig>> findByAcquirerIdAndFunctionType(String acquirerId, functionTypeEnum functionType){
+    public Uni<List<BpmnBankConfig>> findByAcquirerIdAndFunctionType(String acquirerId, FunctionTypeEnum functionType){
         return this.bankConfigRepository.findByAcquirerIdAndFunctionType(acquirerId,functionType);
     }
 
     @WithTransaction
-    public Uni<Long> deleteByAcquirerIdAndFunctionType(String acquirerId, functionTypeEnum functionTypeEnum) {
+    public Uni<Long> deleteByAcquirerIdAndFunctionType(String acquirerId, FunctionTypeEnum functionTypeEnum) {
         return this.bankConfigRepository.deleteByAcquirerIdAndFunctionType(acquirerId, functionTypeEnum);
     }
 }
