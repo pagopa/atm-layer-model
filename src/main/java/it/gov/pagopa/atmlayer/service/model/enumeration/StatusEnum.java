@@ -7,8 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum StatusEnum {
     CREATED("CREATED"),
-    WAITING_DEPLOY("WAITING_DEPLOY"),
-    DEPLOYED("DEPLOYED");
+    WAITING_DEPLOY("DEPLOY_IN_PROGRESS"),
+    DEPLOYED("DEPLOYED"),
+    DEPLOY_ERROR("DEPLOY_ERROR");
 
     private String value;
 

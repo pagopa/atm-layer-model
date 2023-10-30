@@ -90,7 +90,7 @@ public class BpmnResource {
 
         List<BpmnBankConfig> configs = getAcquirerConfigs(bpmnAssociationDto, acquirerId, functionTypeEnum);
         Set<BpmnVersionPK> bpmnIds = BpmnUtils.extractBpmnUUIDFromAssociations(configs);
-        return bpmnEntityValidator.validateExistence(bpmnIds)
+        return bpmnEntityValidator.validateExistenceAndStatus(bpmnIds)
                 .onItem().transformToUni(x -> this.bpmnVersionService.putAssociations(acquirerId, functionTypeEnum, configs));
     }
 
