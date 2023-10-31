@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnIdDto;
@@ -17,6 +16,7 @@ import org.apache.commons.text.StringSubstitutor;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -47,6 +47,11 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
         log.info("Requesting to write file {} in Object Store at path  {}", file.getName(), path);
         return objectStoreService.uploadFile(file, path, ResourceTypeEnum.BPMN, completeName);
 
+    }
+
+    @Override
+    public Uni<URL> generatePresignedUrl(String objectKey) {
+        return this.objectStoreService.generatePresignedUrl(objectKey);
     }
 
     private String calculatePath(BpmnIdDto bpmnVersionPK) {
