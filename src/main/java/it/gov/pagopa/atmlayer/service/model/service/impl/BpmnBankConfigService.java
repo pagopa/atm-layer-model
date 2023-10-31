@@ -9,6 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class BpmnBankConfigService {
@@ -27,5 +28,9 @@ public class BpmnBankConfigService {
     @WithTransaction
     public Uni<Long> deleteByAcquirerIdAndFunctionType(String acquirerId, FunctionTypeEnum functionTypeEnum) {
         return this.bankConfigRepository.deleteByAcquirerIdAndFunctionType(acquirerId, functionTypeEnum);
+    }
+
+    public Uni<Optional<BpmnBankConfig>> findByTriadAndFunction(String acquirerId, String branchId, String terminalId, FunctionTypeEnum functionTypeEnum) {
+        return this.bankConfigRepository.findByTriadAndFunctionType(acquirerId, branchId, terminalId, functionTypeEnum).onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
     }
 }

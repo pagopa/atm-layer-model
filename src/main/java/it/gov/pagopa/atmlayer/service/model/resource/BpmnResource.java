@@ -10,9 +10,11 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
+import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnDtoMapper;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
 import it.gov.pagopa.atmlayer.service.model.validators.BpmnEntityValidator;
@@ -36,6 +38,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -49,6 +52,10 @@ import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerCo
 public class BpmnResource {
     @Inject
     BpmnVersionService bpmnVersionService;
+
+    @Inject
+    BpmnBankConfigService bpmnBankConfigService;
+
     @Inject
     BpmnEntityValidator bpmnEntityValidator;
     @Inject
@@ -119,5 +126,29 @@ public class BpmnResource {
                     return bpmnVersionService.setDeployInProgress(uuid, version);
                 });
         return processClient.deploy("url");
+    }
+
+    @GET
+    @Path("/function/{functionType}/bank{acquirerId}/branch/{branchId}/terminal/{terminalId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Optional<BpmnVersion>> findBPMNByTriad (@PathParam("functionType") FunctionTypeEnum functionTypeEnum,
+                                             @PathParam("acquirerId") String acquirerId,
+                                             @PathParam("branchId") String branchId,
+                                             @PathParam("terminalId") String terminalId) {
+        return bpmnBankConfigService.findByTriadAndFunction(acquirerId, branchId, terminalId, functionTypeEnum)
+                .onItem()
+                .transformToUni(x1 -> {
+                    if (x1.isPresent()) {
+                        return bpmnVersionService.findByPk(new BpmnVersionPK(x1.get().getBpmnBankConfigPK().getBpmnId(), x1.get().getBpmnBankConfigPK().getBpmnModelVersion()));
+                    }
+                    return bpmnBankConfigService.findByTriadAndFunction(acquirerId, branchId, BankConfigUtilityValues.NULL_VALUE.getValue(), functionTypeEnum)
+                            .onItem()
+                            .transformToUni(x2 -> {
+                                if (x2.isPresent()) {
+                                    return bpmnVersionService.findByPk(new BpmnVersionPK(x2.get().getBpmnBankConfigPK().getBpmnId(), x2.get().getBpmnBankConfigPK().getBpmnModelVersion()));
+                                }
+                                return Uni.createFrom().item(new BpmnVersion());
+                            });
+                });
     }
 }
