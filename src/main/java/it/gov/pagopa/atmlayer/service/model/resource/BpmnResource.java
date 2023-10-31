@@ -7,6 +7,7 @@ import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
+import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
@@ -34,6 +35,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
@@ -103,19 +105,21 @@ public class BpmnResource {
         return bpmnVersionService.save(bpmnVersion);
     }
 
-//    @POST
-//    @Path("/deploy/{uuid}/version/{version}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Uni<BpmnVersion> deployBPMN(@PathParam("uuid") UUID uuid,
-//                                       @PathParam("version") Long version){
-//        bpmnVersionService.checkBpmnFileExistence(uuid,version)
-//                .onItem()
-//                .transform(x -> {
-//                    if (x) {
-//                        bpmnVersionService.setDeployInProgress(uuid, version);
-//                    }
-//                });
-//        }
+    @POST
+    @Path("/deploy/{uuid}/version/{version}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<BpmnVersion> deployBPMN(@PathParam("uuid") UUID uuid,
+                                       @PathParam("version") Long version){
+        return bpmnVersionService.checkBpmnFileExistence(uuid,version)
+                .onItem()
+                .transformToUni(x -> {
+                    if (!x) {
+                        String errorMessage = "The referenced BPMN file can not be deployed";
+                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED);
+                    }
+                    return bpmnVersionService.setDeployInProgress(uuid, version);
+                });
+        }
 
 
 }
