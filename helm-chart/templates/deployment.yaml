@@ -21,19 +21,7 @@ spec:
     spec:
       serviceAccountName: {{ include "chart-1.serviceAccountName" . }}
       volumes:
-      - name: secrets-store-inline-1
-        csi:
-          driver: secrets-store.csi.k8s.io
-          readOnly: true 
-          volumeAttributes:
-            secretProviderClass: {{ .Values.secretProviderClass.name }}
-      - name: secrets-store-inline-2
-        csi:
-          driver: secrets-store.csi.k8s.io
-          readOnly: true 
-          volumeAttributes:
-            secretProviderClass: {{ .Values.secretProviderClass.name }}
-      - name: secrets-store-inline-3
+      - name: secrets-store-inline
         csi:
           driver: secrets-store.csi.k8s.io
           readOnly: true 
@@ -46,79 +34,32 @@ spec:
             - containerPort: {{ .Values.service.port }}
           imagePullPolicy: Always
           env:
-            - name: MIL_ADAPTER_ENGINE_URL
-              value: "{{ .Values.camundaWebUser.address }}"
-            - name: MIL_ADAPTER_DISABLE_BACKOFF_STRATEGY
-              value: "{{ .Values.milAdapter.disableBackoffStrategy }}"
-            - name: MIL_ADAPTER_LOCK_DURATION
-              value: "{{ .Values.milAdapter.lockDuration }}"
-            - name: MIL_ADAPTER_ASYNC_RESPONSE_TIMEOUT
-              value: "{{ .Values.milAdapter.asyncResponseTimeout }}"
-            - name: MIL_ADAPTER_ENGINE_ACCOUNT_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.camundaWebUser.credentialsSecretName }}
-                  key: {{ .Values.camundaWebUser.credentialsSecretKeys.username }}
-            - name: MIL_ADAPTER_ENGINE_ACCOUNT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.camundaWebUser.credentialsSecretName }}
-                  key: {{ .Values.camundaWebUser.credentialsSecretKeys.password }}
-            - name: MIL_ADAPTER_MIL_BASE_PATH
-              value: "{{ .Values.milAdapter.milBasePath }}"
-            - name: MIL_ADAPTER_MIL_AUTH_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.milAuth.credentialsSecretName }}
-                  key: {{ .Values.milAuth.credentialsSecretKeys.clientId }}
-            - name: MIL_ADAPTER_MIL_AUTH_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.milAuth.credentialsSecretName }}
-                  key: {{ .Values.milAuth.credentialsSecretKeys.clientSecret }}
-            - name: MIL_ADAPTER_ENGINE_DB_BASE_URL
+            - name: MODEL_DB_TYPE
+              value: "{{ .Values.database.type }}"
+            - name: MODEL_DB_URL
               value: "{{ .Values.database.url }}"
-            - name: MIL_ADAPTER_ENGINE_DB_NAME
-              value: "{{ .Values.database.db_name }}"
-            - name: MIL_ADAPTER_ENGINE_DB_SCHEMA
-              value: "{{ .Values.database.schema }}"
-            - name: MIL_ADAPTER_ENGINE_DB_USERNAME
+            - name: MODEL_DB_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.database.credentialsSecretName }}
                   key: {{ .Values.database.credentialsSecretKeys.username }}
-            - name: MIL_ADAPTER_ENGINE_DB_PASSWORD
+            - name: MODEL_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.database.credentialsSecretName }}
                   key: {{ .Values.database.credentialsSecretKeys.password }}
-            - name: MIL_ADAPTER_ENGINE_DB_DRIVER
-              value: "{{ .Values.database.driver }}"
-            - name: MIL_ADAPTER_ENABLE_INTERCEPTOR_LOGGING
-              value: "{{ .Values.milAdapter.enableInterceptorLogging }}"
-            - name: MIL_ADAPTER_LOG_ENGINE_INPUT_VARIABLES
-              value: "{{ .Values.milAdapter.logEngineInputVariables }}"
-            - name: MIL_ADAPTER_REST_READ_TIMEOUT
-              value: "{{ .Values.milAdapter.restReadTimeout }}"
-            - name: MIL_ADAPTER_REST_CONNECTION_TIMEOUT
-              value: "{{ .Values.milAdapter.restConnectionTmieout }}"
-            - name: MIL_ADAPTER_MIL_AUTH_RELATIVE_PATH
-              value: "{{ .Values.milAdapter.milAuthRelativePath }}"
-            - name: MIL_ADAPTER_MIL_AUTH_CLIENT_CREDENTIALS
-              value: "{{ .Values.milAdapter.milAuthClientCredentials }}"
-            - name: MIL_ADAPTER_TOKEN_CACHE_NAME
-              value: "{{ .Values.milAdapter.tokenCacheName }}"
-            - name: MIL_ADAPTER_TOKEN_CACHE_MAX_ENTRIES
-              value: "{{ .Values.milAdapter.tokenCacheMaxEntries }}"
+            - name: MODEL_OBJECT_STORE_REGION
+              value: "{{ .Values.objectStore.region }}"
+            - name: MODEL_OBJECT_STORE_TYPE
+              value: "{{ .Values.objectStore.type }}"
+            - name: MODEL_OBJECT_STORE_BUCKET_NAME
+              value: "{{ .Values.objectStore.bucket_name }}"
+            - name: MODEL_OBJECT_STORE_BPMN_TEMPLATE_PATH
+              value: "{{ .Values.objectStore.bpmn_template_path }}"
+
           volumeMounts:
-          - name: secrets-store-inline-1
+          - name: secrets-store-inline
             mountPath: "/mnt/secrets-store/1"
-            readOnly: true
-          - name: secrets-store-inline-2
-            mountPath: "/mnt/secrets-store/2"
-            readOnly: true
-          - name: secrets-store-inline-3
-            mountPath: "/mnt/secrets-store/3"
             readOnly: true
 
   strategy:

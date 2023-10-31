@@ -16,42 +16,20 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-milAdapter:
-  disableBackoffStrategy: true
-  lockDuration: 20000
-  asyncResponseTimeout: 20000
-  milBasePath: https://mil-d-apim.azure-api.net
-  enableInterceptorLogging: true
-  logEngineInputVariables: true
-  restReadTimeout: 20000
-  restConnectionTmieout: 20000
-  milAuthRelativePath: /mil-auth/token
-  milAuthClientCredentials: client_credentials
-  tokenCacheName: token-cache
-  tokenCacheMaxEntries: 100
-
-milAuth:
-  credentialsSecretName: "pagopa-dev-atm-layer-model-mil-auth"
-  credentialsSecretKeys:
-    clientId: CLIENT_ID
-    clientSecret: CLIENT_SECRET
-
-camundaWebUser:
-  address: http://pagopa-dev-atm-layer-wf-engine.pagopa.svc.cluster.local:8080
-  credentialsSecretName: "pagopa-dev-atm-layer-model-camunda"
-  credentialsSecretKeys:
-    username: WEB_USER
-    password: WEB_PASSWORD
-
 database:
-  driver: org.postgresql.Driver
-  url: jdbc:postgresql://pagopa-dev-atm-layer-rds.cluster-cyezwzpjc2tj.eu-south-1.rds.amazonaws.com:5431
+  type: postgresql
+  url: postgresql://pagopa-dev-atm-layer-rds.cluster-cyezwzpjc2tj.eu-south-1.rds.amazonaws.com:5431/pagopadb?search_path=atm_layer_model
   db_name: pagopadb
-  schema: atm_layer_engine
   credentialsSecretName: "pagopa-dev-atm-layer-model-database"
   credentialsSecretKeys:
-    username: DB_USERNAME
-    password: DB_PASSWORD
+    username: USERNAME_DB
+    password: PASSWORD_DB
+
+objectStore:
+  region: eu-south-1
+  type: AWS_S3
+  bucket_name: pagopa-dev-atm-layer-s3-model
+  bpmn_template_path: /BPMN/files/UUID/[uuid]/VERSION/[version]
 
 secretProviderClass:
   name: atm-layer-model-secrets
@@ -83,7 +61,7 @@ deployment:
   name: pagopa-dev-atm-layer-model
   annotations:
     reloader.stakater.com/auto: "true"
-    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-mil-adapter-database, pagopa-dev-atm-layer-mil-adapter-camunda, pagopa-dev-atm-layer-mil-adapter-mil-auth
+    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-model-database
 
 service:
   name: pagopa-dev-atm-layer-model
