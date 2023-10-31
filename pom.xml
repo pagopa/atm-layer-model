@@ -4,9 +4,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>it.gov.pagopa</groupId>
-    <artifactId>atm-layer-mil-model</artifactId>
+    <artifactId>atm-layer-model</artifactId>
     <version>0.0.1</version>
-    <name>atm-layer-mil-model</name>
+    <name>atm-layer-model</name>
     <properties>
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <jacoco.version>0.8.7</jacoco.version>
@@ -21,6 +21,7 @@
         <quarkus.openapi.generator.version>2.2.10</quarkus.openapi.generator.version>
         <quarkus-amazon-services.version>2.4.5</quarkus-amazon-services.version>
         <quarkus.logging.logback.version>1.1.1</quarkus.logging.logback.version>
+        <apache.common.text.version>1.11.0</apache.common.text.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.0.0</surefire-plugin.version>
         <mockito.core.version>5.4.0</mockito.core.version>
@@ -85,6 +86,10 @@
             <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-context-propagation</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkiverse.amazonservices</groupId>
             <artifactId>quarkus-amazon-s3</artifactId>
         </dependency>
@@ -100,7 +105,7 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>netty-nio-client</artifactId>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>io.quarkiverse.amazonservices</groupId>
             <artifactId>quarkus-amazon-sts</artifactId>
         </dependency>
@@ -113,6 +118,11 @@
             <groupId>io.quarkiverse.openapi.generator</groupId>
             <artifactId>quarkus-openapi-generator</artifactId>
             <version>${quarkus.openapi.generator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${apache.common.text.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

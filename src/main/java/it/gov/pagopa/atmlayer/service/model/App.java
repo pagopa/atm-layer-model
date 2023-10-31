@@ -2,7 +2,6 @@ package it.gov.pagopa.atmlayer.service.model;
 
 import io.quarkus.runtime.Startup;
 import it.gov.pagopa.atmlayer.service.model.model.ErrorResponse;
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Components;
@@ -31,12 +30,11 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                                                            "title": "Internal Server Error",
                                                            "status": 500,
                                                            "detail": "An unexpected error has occurred. Please contact support.",
-                                                           "instance": "ATML_MI_500"
+                                                           "instance": "ATMLM_500"
                                                          }""")),
 
                 }),
-        info = @Info(title = "ATM Layer - MIL Integration service", version = "0.0.1-SNAPSHOT"))
-@ApplicationPath("/api/v1/model")
+        info = @Info(title = "ATM Layer - Model service", version = "0.0.1-SNAPSHOT"))
 @Startup
 public class App extends Application {
 }

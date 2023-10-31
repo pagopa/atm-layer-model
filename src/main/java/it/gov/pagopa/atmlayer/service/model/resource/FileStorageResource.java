@@ -3,10 +3,14 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnIdDto;
 import it.gov.pagopa.atmlayer.service.model.model.filestorage.FileObject;
 import it.gov.pagopa.atmlayer.service.model.model.filestorage.FormData;
+import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.resource.filestorage.FileStorageCommonResource;
+import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -14,49 +18,48 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import mutiny.zero.flow.adapters.AdaptersToFlow;
 import org.jboss.resteasy.reactive.RestMulti;
 import org.reactivestreams.Publisher;
-import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Path("/async-s3")
 public class FileStorageResource extends FileStorageCommonResource {
     @Inject
     S3AsyncClient s3;
+    @Inject
+    ObjectStoreProperties objectStoreProperties;
+
+    @Inject
+    BpmnFileStorageService bpmnFileStorageService;
+
+    @GET
+    @Path("type")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Uni<Void> getTye() {
+        bpmnFileStorageService.uploadFile(new BpmnIdDto(UUID.randomUUID(), 1L), new File("prova"), "prova");
+
+        return Uni.createFrom().nullItem();
+    }
 
     @POST
     @Path("upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Uni<Response> uploadFile(FormData formData) throws Exception {
+    public Uni<Response> uploadFile(@Valid FormData formData) throws Exception {
 
-        if (formData.filename == null || formData.filename.isEmpty()) {
-            return Uni.createFrom().item(Response.status(Status.BAD_REQUEST).build());
-        }
-
-        if (formData.mimetype == null || formData.mimetype.isEmpty()) {
-            return Uni.createFrom().item(Response.status(Status.BAD_REQUEST).build());
-        }
-
-        return Uni.createFrom()
-                .completionStage(() -> {
-                    return s3.putObject(buildPutRequest(formData), AsyncRequestBody.fromFile(formData.data));
-                })
-                .onItem().ignore().andSwitchTo(Uni.createFrom().item(Response.created(null).build()))
-                .onFailure().recoverWithItem(th -> {
-                    th.printStackTrace();
-                    return Response.serverError().build();
-                });
+        return bpmnFileStorageService.uploadFile(new BpmnIdDto(UUID.randomUUID(), 1L), formData.data, formData.filename)
+                .onItem().ignore().andSwitchTo(Uni.createFrom().item(Response.created(null).build()));
     }
 
     @GET
@@ -76,7 +79,7 @@ public class FileStorageResource extends FileStorageCommonResource {
     @GET
     public Uni<List<FileObject>> listFiles() {
         ListObjectsRequest listRequest = ListObjectsRequest.builder()
-                .bucket(bucketName)
+                .bucket(objectStoreProperties.bucket().name())
                 .build();
 
         return Uni.createFrom().completionStage(() -> s3.listObjects(listRequest))
