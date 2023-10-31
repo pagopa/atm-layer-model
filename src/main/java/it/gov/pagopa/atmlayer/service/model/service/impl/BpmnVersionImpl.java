@@ -5,6 +5,8 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployedProcessInfoDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
@@ -24,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -33,104 +36,148 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @ApplicationScoped
 @Slf4j
 public class BpmnVersionImpl implements BpmnVersionService {
-    @Inject
-    BpmnVersionRepository bpmnVersionRepository;
-    @Inject
-    BpmnBankConfigService bpmnBankConfigService;
 
-    @Override
-    public String decodeBase64(String s) {
-        byte[] array = BpmnUtils.base64ToByteArray(s);
-        return BpmnUtils.byteArrayToString(array);
-    }
+  @Inject
+  BpmnVersionRepository bpmnVersionRepository;
+  @Inject
+  BpmnBankConfigService bpmnBankConfigService;
 
-    @Override
-    public Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet) {
-        return this.bpmnVersionRepository.findByIds(bpmnVersionPKSet);
-    }
+  @Override
+  public String decodeBase64(String s) {
+    byte[] array = BpmnUtils.base64ToByteArray(s);
+    return BpmnUtils.byteArrayToString(array);
+  }
 
-    @Override
-    public String calculateSHA256(File file) throws NoSuchAlgorithmException, IOException {
-        //TODO: Controllare che il file sia un xml .bpmn
-        byte[] array = BpmnUtils.toSha256ByteArray(file);
-        return BpmnUtils.toHexString(array);
-    }
+  @Override
+  public Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet) {
+    return this.bpmnVersionRepository.findByIds(bpmnVersionPKSet);
+  }
 
-    @Override
-    @WithTransaction
-    public Uni<BpmnVersion> save(BpmnVersion bpmnVersion) {
-        return this.findBySHA256(bpmnVersion.getSha256())
-                .onItem().transform(Unchecked.function(x -> {
-                    if (x.isPresent()) {
-                        throw new AtmLayerException("A BPMN file with the same content already exists", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
-                    }
-                    return x;
-                }))
-                .onItem().transformToUni(t -> this.bpmnVersionRepository.persist(bpmnVersion));
-    }
+  @Override
+  public String calculateSHA256(File file) throws NoSuchAlgorithmException, IOException {
+    //TODO: Controllare che il file sia un xml .bpmn
+    byte[] array = BpmnUtils.toSha256ByteArray(file);
+    return BpmnUtils.toHexString(array);
+  }
 
-    @Override
-    @WithSession
-    public Uni<Optional<BpmnVersion>> findBySHA256(String sha256) {
-        return this.bpmnVersionRepository.findBySHA256(sha256)
-                .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
-    }
+  @Override
+  @WithTransaction
+  public Uni<BpmnVersion> save(BpmnVersion bpmnVersion) {
+    return this.findBySHA256(bpmnVersion.getSha256())
+        .onItem().transform(Unchecked.function(x -> {
+          if (x.isPresent()) {
+            throw new AtmLayerException("A BPMN file with the same content already exists",
+                Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
+          }
+          return x;
+        }))
+        .onItem().transformToUni(t -> this.bpmnVersionRepository.persist(bpmnVersion));
+  }
 
-    @Override
-    @WithSession
-    public Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK) {
-        return bpmnVersionRepository.findById(bpmnVersionPK).onItem().transformToUni(bpmnVersion -> Uni.createFrom().item(Optional.ofNullable(bpmnVersion)));
-    }
+  @Override
+  @WithSession
+  public Uni<Optional<BpmnVersion>> findBySHA256(String sha256) {
+    return this.bpmnVersionRepository.findBySHA256(sha256)
+        .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
+  }
 
-    @Override
-    @WithTransaction
-    public Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionType, List<BpmnBankConfig> bpmnBankConfigs) {
-        Uni<Long> deleteExistingUni = this.bpmnBankConfigService.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
-        return deleteExistingUni
-                .onItem()
-                .transformToUni(x -> this.bpmnBankConfigService.saveList(bpmnBankConfigs))
-                .onItem()
-                .transformToUni(y -> this.bpmnBankConfigService.findByAcquirerIdAndFunctionType(acquirerId, functionType));
-    }
+  @Override
+  @WithSession
+  public Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK) {
+    return bpmnVersionRepository.findById(bpmnVersionPK).onItem()
+        .transformToUni(bpmnVersion -> Uni.createFrom().item(Optional.ofNullable(bpmnVersion)));
+  }
 
-    private static Uni<List<BpmnBankConfig>> addFunctionTypeToAssociations(List<BpmnBankConfig> bpmnBankConfigs, FunctionTypeEnum functionType) {
-        return Multi.createFrom().items(bpmnBankConfigs.stream()).onItem().transform(bpmnBankConfig -> {
-            bpmnBankConfig.setFunctionType(functionType);
-            return bpmnBankConfig;
-        }).collect().asList();
-    }
+  @Override
+  @WithTransaction
+  public Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionType,
+      List<BpmnBankConfig> bpmnBankConfigs) {
+    Uni<Long> deleteExistingUni = this.bpmnBankConfigService.deleteByAcquirerIdAndFunctionType(
+        acquirerId, functionType);
+    return deleteExistingUni
+        .onItem()
+        .transformToUni(x -> this.bpmnBankConfigService.saveList(bpmnBankConfigs))
+        .onItem()
+        .transformToUni(y -> this.bpmnBankConfigService.findByAcquirerIdAndFunctionType(acquirerId,
+            functionType));
+  }
 
-    @Override
-    @WithTransaction
-    public Uni<BpmnVersion> setBpmnVersionStatus(UUID id, Long modelVersion, StatusEnum status) {
-        BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
-        return this.findByPk(key)
-                .onItem()
-                .transformToUni(optionalBpmn -> {
-                            if (optionalBpmn.isEmpty()) {
-                                String errorMessage = String.format("One or some of the referenced BPMN files do not exists: %s", key);
-                                throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
-                            }
-                            BpmnVersion bpmnToDeploy = optionalBpmn.get();
-                            bpmnToDeploy.setStatus(status);
-                            return this.bpmnVersionRepository.persist(bpmnToDeploy);
-                        }
-                );
-    }
+  private static Uni<List<BpmnBankConfig>> addFunctionTypeToAssociations(
+      List<BpmnBankConfig> bpmnBankConfigs, FunctionTypeEnum functionType) {
+    return Multi.createFrom().items(bpmnBankConfigs.stream()).onItem().transform(bpmnBankConfig -> {
+      bpmnBankConfig.setFunctionType(functionType);
+      return bpmnBankConfig;
+    }).collect().asList();
+  }
 
-    @Override
-    public Uni<Boolean> checkBpmnFileExistence(UUID id, Long modelVersion) {
-        BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
-        return this.findByPk(key)
-                .onItem()
-                .transform(optionalBpmn -> {
-                            if (optionalBpmn.isEmpty()) {
-                                String errorMessage = String.format("One or some of the referenced BPMN files do not exists: %s", key);
-                                throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
-                            }
-                            BpmnVersion bpmnVersion = optionalBpmn.get();
-                            return bpmnVersion.getStatus().equals(StatusEnum.CREATED) || bpmnVersion.getStatus().equals(StatusEnum.DEPLOY_ERROR);
-                        }
-                );
-    }
+  @Override
+  @WithTransaction
+  public Uni<BpmnVersion> setBpmnVersionStatus(UUID id, Long modelVersion, StatusEnum status) {
+    BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
+    return this.findByPk(key)
+        .onItem()
+        .transformToUni(optionalBpmn -> {
+              if (optionalBpmn.isEmpty()) {
+                String errorMessage = String.format(
+                    "One or some of the referenced BPMN files do not exists: %s", key);
+                throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
+                    AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
+              }
+              BpmnVersion bpmnToDeploy = optionalBpmn.get();
+              bpmnToDeploy.setStatus(status);
+              return this.bpmnVersionRepository.persist(bpmnToDeploy);
+            }
+        );
+  }
+
+  @Override
+  public Uni<Boolean> checkBpmnFileExistence(UUID id, Long modelVersion) {
+    BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
+    return this.findByPk(key)
+        .onItem()
+        .transform(optionalBpmn -> {
+              if (optionalBpmn.isEmpty()) {
+                String errorMessage = String.format(
+                    "One or some of the referenced BPMN files do not exists: %s", key);
+                throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
+                    AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
+              }
+              BpmnVersion bpmnVersion = optionalBpmn.get();
+              return bpmnVersion.getStatus().equals(StatusEnum.CREATED) || bpmnVersion.getStatus()
+                  .equals(StatusEnum.DEPLOY_ERROR);
+            }
+        );
+  }
+
+  @Override
+  @WithTransaction
+  public Uni<BpmnVersion> setDeployInfo(UUID id, Long modelVersion, DeployResponseDto response) {
+    BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
+    return this.findByPk(key)
+        .onItem()
+        .transformToUni(optionalBpmn -> {
+          if (optionalBpmn.isEmpty()) {
+            String errorMessage = String.format(
+                "One or some of the referenced BPMN files do not exists: %s", key);
+            throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
+                AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
+          }
+          BpmnVersion bpmnVersion = optionalBpmn.get();
+          Map<String, DeployedProcessInfoDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
+          Optional<DeployedProcessInfoDto> optionalDeployedProcessInfo = deployedProcessDefinitions.values()
+              .stream().findFirst();
+          if (optionalDeployedProcessInfo.isEmpty()) {
+            throw new RuntimeException("empty process info");
+          }
+          DeployedProcessInfoDto deployedProcessInfo = optionalDeployedProcessInfo.get();
+          bpmnVersion.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
+          bpmnVersion.setDeploymentId(deployedProcessInfo.getDeploymentId());
+          bpmnVersion.setCamundaDefinitionId(deployedProcessInfo.getId());
+          bpmnVersion.setDefinitionKey(deployedProcessInfo.getKey());
+          bpmnVersion.setDeployedFileName(deployedProcessInfo.getName());
+          bpmnVersion.setDescription(deployedProcessInfo.getDescription());
+          bpmnVersion.setResource(deployedProcessInfo.getResource());
+          return this.bpmnVersionRepository.persist(bpmnVersion);
+        });
+  }
 }

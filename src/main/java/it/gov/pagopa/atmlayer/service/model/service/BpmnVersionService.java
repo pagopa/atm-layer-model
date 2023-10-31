@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
@@ -16,21 +17,25 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface BpmnVersionService {
-    String decodeBase64(String s) throws IOException;
 
-    Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet);
+  String decodeBase64(String s) throws IOException;
 
-    String calculateSHA256(File file) throws NoSuchAlgorithmException, IOException;
+  Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet);
 
-    Uni<BpmnVersion> save(BpmnVersion bpmnVersion);
+  String calculateSHA256(File file) throws NoSuchAlgorithmException, IOException;
 
-    public Uni<Optional<BpmnVersion>> findBySHA256(String sha256);
+  Uni<BpmnVersion> save(BpmnVersion bpmnVersion);
 
-    Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK);
+  public Uni<Optional<BpmnVersion>> findBySHA256(String sha256);
 
-    Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionTypeEnum, List<BpmnBankConfig> bpmnBankConfigs);
+  Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK);
 
-    Uni<BpmnVersion> setBpmnVersionStatus(UUID id, Long modelVersion, StatusEnum status);
+  Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionTypeEnum,
+      List<BpmnBankConfig> bpmnBankConfigs);
 
-    public Uni<Boolean> checkBpmnFileExistence(UUID id, Long modelVersion);
+  Uni<BpmnVersion> setBpmnVersionStatus(UUID id, Long modelVersion, StatusEnum status);
+
+  public Uni<Boolean> checkBpmnFileExistence(UUID id, Long modelVersion);
+
+  public Uni<BpmnVersion> setDeployInfo(UUID id, Long modelVersion, DeployResponseDto response);
 }

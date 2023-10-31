@@ -5,6 +5,7 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
@@ -47,13 +48,14 @@ import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerCo
 @Tag(name = "BPMN", description = "BPMN operations")
 @Slf4j
 public class BpmnResource {
-    @Inject
-    BpmnVersionService bpmnVersionService;
-    @Inject
-    BpmnEntityValidator bpmnEntityValidator;
-    @Inject
-    @RestClient
-    ProcessClient processClient;
+
+  @Inject
+  BpmnVersionService bpmnVersionService;
+  @Inject
+  BpmnEntityValidator bpmnEntityValidator;
+  @Inject
+  @RestClient
+  ProcessClient processClient;
 //    @GET
 //    @Consumes(MediaType.APPLICATION_JSON)
 //    @Produces(MediaType.TEXT_PLAIN)
@@ -63,70 +65,76 @@ public class BpmnResource {
 //        return "String file: " + xml;
 //    }
 
-    @GET
-    @Path("/{bpmnId}/version/{version}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<BpmnVersion> getEncodedFile(@PathParam("bpmnId") UUID bpmnId,
-                                           @PathParam("version") Long version) {
-        BpmnVersionPK key = BpmnVersionPK.builder()
-                .bpmnId(bpmnId)
-                .modelVersion(version)
-                .build();
-        return this.bpmnVersionService.findByPk(key)
-                .onItem()
-                .transform(Unchecked.function(x -> {
-                    if (x.isEmpty()) {
-                        throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
-                    }
-                    return x.get();
-                }));
-    }
+  @GET
+  @Path("/{bpmnId}/version/{version}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Uni<BpmnVersion> getEncodedFile(@PathParam("bpmnId") UUID bpmnId,
+      @PathParam("version") Long version) {
+    BpmnVersionPK key = BpmnVersionPK.builder()
+        .bpmnId(bpmnId)
+        .modelVersion(version)
+        .build();
+    return this.bpmnVersionService.findByPk(key)
+        .onItem()
+        .transform(Unchecked.function(x -> {
+          if (x.isEmpty()) {
+            throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
+          }
+          return x.get();
+        }));
+  }
 
-    @PUT
-    @Path("/bank/{acquirerId}/associations/function/{functionType}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<BpmnBankConfig>> associateBPMN(@PathParam("acquirerId") String acquirerId,
-                                                   @PathParam("functionType") FunctionTypeEnum functionTypeEnum,
-                                                   @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto) throws NoSuchAlgorithmException, IOException {
-        List<BpmnBankConfig> configs = getAcquirerConfigs(bpmnAssociationDto, acquirerId, functionTypeEnum);
-        Set<BpmnVersionPK> bpmnIds = BpmnUtils.extractBpmnUUIDFromAssociations(configs);
-        return bpmnEntityValidator.validateExistenceAndStatus(bpmnIds)
-                .onItem().transformToUni(x -> this.bpmnVersionService.putAssociations(acquirerId, functionTypeEnum, configs));
-    }
+  @PUT
+  @Path("/bank/{acquirerId}/associations/function/{functionType}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Uni<List<BpmnBankConfig>> associateBPMN(@PathParam("acquirerId") String acquirerId,
+      @PathParam("functionType") FunctionTypeEnum functionTypeEnum,
+      @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto)
+      throws NoSuchAlgorithmException, IOException {
+    List<BpmnBankConfig> configs = getAcquirerConfigs(bpmnAssociationDto, acquirerId,
+        functionTypeEnum);
+    Set<BpmnVersionPK> bpmnIds = BpmnUtils.extractBpmnUUIDFromAssociations(configs);
+    return bpmnEntityValidator.validateExistenceAndStatus(bpmnIds)
+        .onItem().transformToUni(
+            x -> this.bpmnVersionService.putAssociations(acquirerId, functionTypeEnum, configs));
+  }
 
-    @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<BpmnVersion> createBPMN(@RequestBody(required = true) @Valid BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
-        BpmnVersion bpmnVersion = BpmnDtoMapper.toBpmnVersion(bpmnCreationDto);
-        return bpmnVersionService.save(bpmnVersion);
-    }
+  @POST
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Uni<BpmnVersion> createBPMN(
+      @RequestBody(required = true) @Valid BpmnCreationDto bpmnCreationDto)
+      throws NoSuchAlgorithmException, IOException {
+    BpmnVersion bpmnVersion = BpmnDtoMapper.toBpmnVersion(bpmnCreationDto);
+    return bpmnVersionService.save(bpmnVersion);
+  }
 
-    @POST
-    @Path("/deploy/{uuid}/version/{version}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<BpmnVersion> deployBPMN(@PathParam("uuid") UUID uuid,
-                                       @PathParam("version") Long version) {
-        return bpmnVersionService.checkBpmnFileExistence(uuid, version)
-                .onItem()
-                .transformToUni(x -> {
-                    if (!x) {
-                        String errorMessage = "The referenced BPMN file can not be deployed";
-                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED);
-                    }
-                    return bpmnVersionService.setBpmnVersionStatus(uuid, version, StatusEnum.WAITING_DEPLOY);
-                })
-                .onItem()
-                .transformToUni(bpmnWaiting -> {
-                    try {
-                        processClient.deploy("url");
-                        return bpmnVersionService.setBpmnVersionStatus(uuid, version, StatusEnum.DEPLOYED);
-                    } catch (Exception e) {
-                        bpmnVersionService.setBpmnVersionStatus(uuid, version, StatusEnum.DEPLOY_ERROR);
-                        throw new RuntimeException("deploy failed");
-                    }
-                });
-    }
+  @POST
+  @Path("/deploy/{uuid}/version/{version}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Uni<BpmnVersion> deployBPMN(@PathParam("uuid") UUID uuid,
+      @PathParam("version") Long version) {
+    return bpmnVersionService.checkBpmnFileExistence(uuid, version)
+        .onItem()
+        .transformToUni(x -> {
+          if (!x) {
+            String errorMessage = "The referenced BPMN file can not be deployed";
+            throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
+                AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED);
+          }
+          return bpmnVersionService.setBpmnVersionStatus(uuid, version, StatusEnum.WAITING_DEPLOY);
+        })
+        .onItem()
+        .transformToUni(bpmnWaiting -> {
+          return processClient.deploy("url")
+              .onItem()
+              .transformToUni(response -> bpmnVersionService.setDeployInfo(uuid, version, response))
+              .onItem()
+              .transformToUni(bpmnUpdated -> bpmnVersionService.setBpmnVersionStatus(uuid, version,
+                  StatusEnum.DEPLOYED));
+          // return bpmnVersionService.setBpmnVersionStatus(uuid, version, StatusEnum.DEPLOYED);
+        });
+  }
 }

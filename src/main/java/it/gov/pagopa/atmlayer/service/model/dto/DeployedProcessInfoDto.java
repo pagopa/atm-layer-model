@@ -17,7 +17,7 @@ public class DeployedProcessInfoDto {
     private String category;
     private String description;
     private String name;
-    private Long version;
+    private Integer version;
     private String resource;
     private UUID deploymentId;
     private String diagram;
