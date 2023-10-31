@@ -5,7 +5,7 @@ import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BranchDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
+import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.AssociationKey;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -24,6 +24,7 @@ public class BpmnDtoMapper {
         bpmnVersion.setFunctionType(bpmnCreationDto.getFunctionType());
         bpmnVersion.setStatus(StatusEnum.CREATED);
         bpmnVersion.setSha256(calculateSha256(bpmnCreationDto.getFile()));
+        bpmnVersion.setDeployedFileName(bpmnCreationDto.getFilename().concat(".").concat(ResourceTypeEnum.BPMN.getExtension()));
         bpmnVersion.setEnabled(true);
         return bpmnVersion;
     }

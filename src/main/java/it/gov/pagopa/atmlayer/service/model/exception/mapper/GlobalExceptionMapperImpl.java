@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.exception.mapper;
 
 import io.quarkus.arc.properties.IfBuildProperty;
+import io.smallrye.mutiny.CompositeException;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.ATMLayerErrorResponse;
 import it.gov.pagopa.atmlayer.service.model.model.ATMLayerValidationErrorResponse;
@@ -41,12 +42,17 @@ public class GlobalExceptionMapperImpl {
 
     @ServerExceptionMapper
     public RestResponse<ATMLayerErrorResponse> genericExceptionMapper(AtmLayerException exception) {
-        if (exception.getStatusCode() == INTERNAL_SERVER_ERROR.getStatusCode()) {
-            String message = "Generic Error";
-            logger.error("Generic error found: ", exception);
-            return buildErrorResponse(INTERNAL_SERVER_ERROR, message);
-        }
+//        if (exception.getStatusCode() == INTERNAL_SERVER_ERROR.getStatusCode()) {
+//            String message = "Generic Error";
+//            logger.error("Generic error found: ", exception);
+//            return buildErrorResponse(INTERNAL_SERVER_ERROR, message);
+//        }
         return buildErrorResponse(exception);
+    }
+
+    @ServerExceptionMapper
+    public RestResponse<ATMLayerErrorResponse> compositeException(CompositeException exception) {
+        return buildErrorResponse(new AtmLayerException(exception));
     }
 
     @ServerExceptionMapper

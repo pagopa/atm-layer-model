@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum AppErrorType {
     GENERIC,
     VALIDATION,
+    INTERNAL,
     CONSTRAINT_VIOLATION,
     NOT_EXISTING_REFERENCED_ENTITY
 }

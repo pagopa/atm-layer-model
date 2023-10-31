@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.CONSTRAINT_VIOLATION;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.GENERIC;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INTERNAL;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_EXISTING_REFERENCED_ENTITY;
 
 /**
@@ -14,7 +15,8 @@ public enum AppErrorCodeEnum {
 
     ATMLM_500("ATMLM_500", "An unexpected error has occurred, see logs for more info", GENERIC),
     BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST("ATMLM_4000001", "A BPMN file with the same content already Exist", CONSTRAINT_VIOLATION),
-    BPMN_FILE_DOES_NOT_EXIST("ATMLM_4000002", "The referenced BPMN file does not exists", NOT_EXISTING_REFERENCED_ENTITY);
+    BPMN_FILE_DOES_NOT_EXIST("ATMLM_4000002", "The referenced BPMN file does not exists", NOT_EXISTING_REFERENCED_ENTITY),
+    OBJECT_STORE_SAVE_FILE_ERROR("ATMLM_4000100", "Error on persisting file on Object Store ", INTERNAL);
 
     private final String errorCode;
     private final String errorMessage;

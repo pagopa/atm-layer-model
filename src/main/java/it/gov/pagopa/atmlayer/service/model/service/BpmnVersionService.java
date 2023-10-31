@@ -24,10 +24,13 @@ public interface BpmnVersionService {
 
     Uni<BpmnVersion> save(BpmnVersion bpmnVersion);
 
+    Uni<Boolean> delete(BpmnVersionPK bpmnVersionPK);
+
     public Uni<Optional<BpmnVersion>> findBySHA256(String sha256);
 
     Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK);
 
     Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, functionTypeEnum functionTypeEnum, List<BpmnBankConfig> bpmnBankConfigs);
 
+    Uni<BpmnVersion> saveAndUpload(BpmnVersion bpmnVersion, File file, String filename);
 }

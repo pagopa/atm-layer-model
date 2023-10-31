@@ -1,6 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
-import io.smallrye.mutiny.Multi;
+import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
@@ -11,6 +11,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnDtoMapper;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
@@ -19,6 +20,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -50,6 +52,8 @@ public class BpmnResource {
     BpmnVersionService bpmnVersionService;
     @Inject
     BpmnEntityValidator bpmnEntityValidator;
+    @Inject
+    BpmnFileStorageService bpmnFileStorageService;
 
 
 //    @GET
@@ -122,8 +126,20 @@ public class BpmnResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    @NonBlocking
     public Uni<BpmnVersion> createBPMN(@RequestBody(required = true) @Valid BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = BpmnDtoMapper.toBpmnVersion(bpmnCreationDto);
-        return bpmnVersionService.save(bpmnVersion);
+        return bpmnVersionService.saveAndUpload(bpmnVersion, bpmnCreationDto.getFile(), bpmnCreationDto.getFilename());
+    }
+
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{bpmnId}/version/{version}")
+    public Uni<Void> deleteBpmn(@PathParam("bpmnId") UUID bpmnId,
+                                @PathParam("version") Long version) {
+
+        return this.bpmnVersionService.delete(new BpmnVersionPK(bpmnId, version))
+                .onItem().ignore().andSwitchTo(Uni.createFrom().voidItem());
     }
 }
