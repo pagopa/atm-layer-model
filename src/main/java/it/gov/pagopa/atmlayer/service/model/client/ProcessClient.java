@@ -17,5 +17,5 @@ public interface ProcessClient {
   @Path("/api/v1/processes/deploy")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(MediaType.APPLICATION_JSON)
-  public Uni<Response> deploy(@FormParam("url") String url);
+  Uni<Response> deploy(@FormParam("url") String url);
 }
