@@ -35,7 +35,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
@@ -45,14 +44,10 @@ import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerCo
 @Tag(name = "BPMN", description = "BPMN operations")
 @Slf4j
 public class BpmnResource {
-
-
     @Inject
     BpmnVersionService bpmnVersionService;
     @Inject
     BpmnEntityValidator bpmnEntityValidator;
-
-
 //    @GET
 //    @Consumes(MediaType.APPLICATION_JSON)
 //    @Produces(MediaType.TEXT_PLAIN)
@@ -89,13 +84,11 @@ public class BpmnResource {
     public Uni<List<BpmnBankConfig>> associateBPMN(@PathParam("acquirerId") String acquirerId,
                                                    @PathParam("functionType") FunctionTypeEnum functionTypeEnum,
                                                    @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto) throws NoSuchAlgorithmException, IOException {
-
         List<BpmnBankConfig> configs = getAcquirerConfigs(bpmnAssociationDto, acquirerId, functionTypeEnum);
         Set<BpmnVersionPK> bpmnIds = BpmnUtils.extractBpmnUUIDFromAssociations(configs);
         return bpmnEntityValidator.validateExistenceAndStatus(bpmnIds)
                 .onItem().transformToUni(x -> this.bpmnVersionService.putAssociations(acquirerId, functionTypeEnum, configs));
     }
-
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -109,8 +102,8 @@ public class BpmnResource {
     @Path("/deploy/{uuid}/version/{version}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnVersion> deployBPMN(@PathParam("uuid") UUID uuid,
-                                       @PathParam("version") Long version){
-        return bpmnVersionService.checkBpmnFileExistence(uuid,version)
+                                       @PathParam("version") Long version) {
+        return bpmnVersionService.checkBpmnFileExistence(uuid, version)
                 .onItem()
                 .transformToUni(x -> {
                     if (!x) {
@@ -119,7 +112,5 @@ public class BpmnResource {
                     }
                     return bpmnVersionService.setDeployInProgress(uuid, version);
                 });
-        }
-
-
+    }
 }

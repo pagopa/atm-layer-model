@@ -29,15 +29,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_EXISTING_REFERENCED_ENTITY;
 
 @ApplicationScoped
 @Slf4j
 public class BpmnVersionImpl implements BpmnVersionService {
-
     @Inject
     BpmnVersionRepository bpmnVersionRepository;
-
     @Inject
     BpmnBankConfigService bpmnBankConfigService;
 
@@ -106,34 +103,34 @@ public class BpmnVersionImpl implements BpmnVersionService {
     @Override
     @WithTransaction
     public Uni<BpmnVersion> setDeployInProgress(UUID id, Long modelVersion) {
-        BpmnVersionPK key= new BpmnVersionPK(id, modelVersion);
+        BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
         return this.findByPk(key)
                 .onItem()
-                .transformToUni(optionalBpmn ->{
-                    if (optionalBpmn.isEmpty()){
-                        String errorMessage = String.format("One or some of the referenced BPMN files do not exists: %s", key);
-                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
-                    }
-                    BpmnVersion bpmnToDeploy = optionalBpmn.get();
-                    bpmnToDeploy.setStatus(StatusEnum.WAITING_DEPLOY);
-                    return this.bpmnVersionRepository.persist(bpmnToDeploy);
-                }
+                .transformToUni(optionalBpmn -> {
+                            if (optionalBpmn.isEmpty()) {
+                                String errorMessage = String.format("One or some of the referenced BPMN files do not exists: %s", key);
+                                throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
+                            }
+                            BpmnVersion bpmnToDeploy = optionalBpmn.get();
+                            bpmnToDeploy.setStatus(StatusEnum.WAITING_DEPLOY);
+                            return this.bpmnVersionRepository.persist(bpmnToDeploy);
+                        }
                 );
     }
 
     @Override
     public Uni<Boolean> checkBpmnFileExistence(UUID id, Long modelVersion) {
-        BpmnVersionPK key= new BpmnVersionPK(id, modelVersion);
+        BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
         return this.findByPk(key)
                 .onItem()
                 .transform(optionalBpmn -> {
-                    if (optionalBpmn.isEmpty()) {
-                        String errorMessage = String.format("One or some of the referenced BPMN files do not exists: %s", key);
-                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
-                    }
-                    BpmnVersion bpmnVersion=optionalBpmn.get();
-                    return bpmnVersion.getStatus().equals(StatusEnum.CREATED) || bpmnVersion.getStatus().equals(StatusEnum.DEPLOY_ERROR);
-                }
+                            if (optionalBpmn.isEmpty()) {
+                                String errorMessage = String.format("One or some of the referenced BPMN files do not exists: %s", key);
+                                throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
+                            }
+                            BpmnVersion bpmnVersion = optionalBpmn.get();
+                            return bpmnVersion.getStatus().equals(StatusEnum.CREATED) || bpmnVersion.getStatus().equals(StatusEnum.DEPLOY_ERROR);
+                        }
                 );
     }
 }
