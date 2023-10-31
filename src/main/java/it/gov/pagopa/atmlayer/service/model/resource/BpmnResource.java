@@ -131,23 +131,28 @@ public class BpmnResource {
     @GET
     @Path("/function/{functionType}/bank{acquirerId}/branch/{branchId}/terminal/{terminalId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Optional<BpmnVersion>> findBPMNByTriad (@PathParam("functionType") FunctionTypeEnum functionTypeEnum,
-                                             @PathParam("acquirerId") String acquirerId,
-                                             @PathParam("branchId") String branchId,
-                                             @PathParam("terminalId") String terminalId) {
-        return bpmnBankConfigService.findByTriadAndFunction(acquirerId, branchId, terminalId, functionTypeEnum)
+    public Uni<Optional<BpmnVersion>> findBPMNByTriad(@PathParam("functionType") FunctionTypeEnum functionTypeEnum,
+                                                      @PathParam("acquirerId") String acquirerId,
+                                                      @PathParam("branchId") String branchId,
+                                                      @PathParam("terminalId") String terminalId) {
+        return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionTypeEnum)
                 .onItem()
                 .transformToUni(x1 -> {
                     if (x1.isPresent()) {
                         return bpmnVersionService.findByPk(new BpmnVersionPK(x1.get().getBpmnBankConfigPK().getBpmnId(), x1.get().getBpmnBankConfigPK().getBpmnModelVersion()));
                     }
-                    return bpmnBankConfigService.findByTriadAndFunction(acquirerId, branchId, BankConfigUtilityValues.NULL_VALUE.getValue(), functionTypeEnum)
-                            .onItem()
-                            .transformToUni(x2 -> {
+                    return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, BankConfigUtilityValues.NULL_VALUE.getValue(), functionTypeEnum)
+                            .onItem().transformToUni(x2 -> {
                                 if (x2.isPresent()) {
                                     return bpmnVersionService.findByPk(new BpmnVersionPK(x2.get().getBpmnBankConfigPK().getBpmnId(), x2.get().getBpmnBankConfigPK().getBpmnModelVersion()));
                                 }
-                                return Uni.createFrom().item(new BpmnVersion());
+                                return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, BankConfigUtilityValues.NULL_VALUE.getValue(), BankConfigUtilityValues.NULL_VALUE.getValue(), functionTypeEnum)
+                                        .onItem().transformToUni(Unchecked.function(x3 -> {
+                                            if (x3.isPresent()) {
+                                                return bpmnVersionService.findByPk(new BpmnVersionPK(x3.get().getBpmnBankConfigPK().getBpmnId(), x3.get().getBpmnBankConfigPK().getBpmnModelVersion()));
+                                            }
+                                            throw new AtmLayerException("No runnable BPMN found for selection", Response.Status.BAD_REQUEST, AppErrorCodeEnum.NO_BPMN_FOUND_FOR_CONFIGURATION);
+                                        }));
                             });
                 });
     }
