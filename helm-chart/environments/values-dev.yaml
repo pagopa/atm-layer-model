@@ -61,7 +61,7 @@ deployment:
   name: pagopa-dev-atm-layer-model
   annotations:
     reloader.stakater.com/auto: "true"
-    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-mil-adapter-database, pagopa-dev-atm-layer-mil-adapter-camunda, pagopa-dev-atm-layer-mil-adapter-mil-auth
+    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-model-database
 
 service:
   name: pagopa-dev-atm-layer-model
