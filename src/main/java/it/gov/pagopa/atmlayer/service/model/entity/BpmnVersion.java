@@ -1,8 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.functionTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -47,9 +47,10 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
 
     @Column(name = "function_type")
     @Enumerated(EnumType.STRING)
-    private functionTypeEnum functionType;
+    private FunctionTypeEnum functionType;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private StatusEnum status;
 
     @Column(name = "sha256", unique = true)
@@ -86,4 +87,5 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
 
     @Column(name = "last_updated_by")
     private String lastUpdatedBy;
+
 }

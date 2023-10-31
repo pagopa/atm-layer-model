@@ -6,6 +6,5 @@ import org.mapstruct.Mapper;
 
 @Mapper
 public interface BpmnVersionMapper {
-
     BpmnCreationDto toDto(BpmnVersion bpmnVersion);
 }

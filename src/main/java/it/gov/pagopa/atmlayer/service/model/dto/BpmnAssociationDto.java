@@ -1,15 +1,24 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
-import it.gov.pagopa.atmlayer.service.model.constraint.BankKeyConstraint;
-import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class BpmnAssociationDto {
 
-    private List<@BankKeyConstraint @Valid BankKeyDto> bankKeyDtoList;
+    private UUID defaultTemplateId;
+
+    private Long defaultTemplateVersion;
+
+    private List<BranchConfigs> branchesConfigs;
 }
