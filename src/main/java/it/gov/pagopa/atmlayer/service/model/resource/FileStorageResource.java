@@ -3,10 +3,10 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnIdDto;
 import it.gov.pagopa.atmlayer.service.model.model.filestorage.FileObject;
 import it.gov.pagopa.atmlayer.service.model.model.filestorage.FormData;
+import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.resource.filestorage.FileStorageCommonResource;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import jakarta.inject.Inject;
@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 public class FileStorageResource extends FileStorageCommonResource {
     @Inject
     S3AsyncClient s3;
+    @Inject
+    ObjectStoreProperties objectStoreProperties;
 
     @Inject
     BpmnFileStorageService bpmnFileStorageService;
@@ -77,7 +79,7 @@ public class FileStorageResource extends FileStorageCommonResource {
     @GET
     public Uni<List<FileObject>> listFiles() {
         ListObjectsRequest listRequest = ListObjectsRequest.builder()
-                .bucket(bucketName)
+                .bucket(objectStoreProperties.bucket().name())
                 .build();
 
         return Uni.createFrom().completionStage(() -> s3.listObjects(listRequest))
