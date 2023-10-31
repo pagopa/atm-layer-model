@@ -102,7 +102,7 @@ public class BpmnVersionImpl implements BpmnVersionService {
 
     @Override
     @WithTransaction
-    public Uni<BpmnVersion> setDeployInProgress(UUID id, Long modelVersion) {
+    public Uni<BpmnVersion> setBpmnVersionStatus(UUID id, Long modelVersion, StatusEnum status) {
         BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
         return this.findByPk(key)
                 .onItem()
@@ -112,7 +112,7 @@ public class BpmnVersionImpl implements BpmnVersionService {
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
                             }
                             BpmnVersion bpmnToDeploy = optionalBpmn.get();
-                            bpmnToDeploy.setStatus(StatusEnum.WAITING_DEPLOY);
+                            bpmnToDeploy.setStatus(status);
                             return this.bpmnVersionRepository.persist(bpmnToDeploy);
                         }
                 );

@@ -5,12 +5,12 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
-import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnDtoMapper;
@@ -107,17 +107,26 @@ public class BpmnResource {
     @POST
     @Path("/deploy/{uuid}/version/{version}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<DeployResponseDto> deployBPMN(@PathParam("uuid") UUID uuid,
-                                             @PathParam("version") Long version) {
-        bpmnVersionService.checkBpmnFileExistence(uuid, version)
+    public Uni<BpmnVersion> deployBPMN(@PathParam("uuid") UUID uuid,
+                                       @PathParam("version") Long version) {
+        return bpmnVersionService.checkBpmnFileExistence(uuid, version)
                 .onItem()
                 .transformToUni(x -> {
                     if (!x) {
                         String errorMessage = "The referenced BPMN file can not be deployed";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED);
                     }
-                    return bpmnVersionService.setDeployInProgress(uuid, version);
+                    return bpmnVersionService.setBpmnVersionStatus(uuid, version, StatusEnum.WAITING_DEPLOY);
+                })
+                .onItem()
+                .transformToUni(bpmnWaiting -> {
+                    try {
+                        processClient.deploy("url");
+                        return bpmnVersionService.setBpmnVersionStatus(uuid, version, StatusEnum.DEPLOYED);
+                    } catch (Exception e) {
+                        bpmnVersionService.setBpmnVersionStatus(uuid, version, StatusEnum.DEPLOY_ERROR);
+                        throw new RuntimeException("deploy failed");
+                    }
                 });
-        return processClient.deploy("url");
     }
 }

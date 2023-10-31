@@ -5,6 +5,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface BpmnVersionService {
-
     String decodeBase64(String s) throws IOException;
-
 
     Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet);
 
@@ -31,8 +30,7 @@ public interface BpmnVersionService {
 
     Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionTypeEnum, List<BpmnBankConfig> bpmnBankConfigs);
 
-    Uni<BpmnVersion> setDeployInProgress(UUID uuid, Long version);
+    Uni<BpmnVersion> setBpmnVersionStatus(UUID id, Long modelVersion, StatusEnum status);
 
     public Uni<Boolean> checkBpmnFileExistence(UUID id, Long modelVersion);
-
 }
