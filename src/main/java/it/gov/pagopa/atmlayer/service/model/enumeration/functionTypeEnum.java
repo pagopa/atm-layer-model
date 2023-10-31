@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum functionTypeEnum {
+public enum FunctionTypeEnum {
     MENU("MENU"),
     SPONTANEOUS_PAYMENT("SPONTANEOUS_PAYMENT");
 
