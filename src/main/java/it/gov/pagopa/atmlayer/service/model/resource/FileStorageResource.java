@@ -27,6 +27,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 
 import java.io.File;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.List;
@@ -74,6 +75,13 @@ public class FileStorageResource extends FileStorageCommonResource {
                         .map(FileStorageResource::toBuffer),
                 response -> Map.of("Content-Disposition", List.of("attachment;filename=" + objectKey), "Content-Type",
                         List.of(response.response().contentType())));
+    }
+
+    @GET
+    @Path("presigned-url/{objectKey}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<URL> getPresigned(String objectKey) {
+        return bpmnFileStorageService.generatePresignedUrl(objectKey);
     }
 
     @GET
