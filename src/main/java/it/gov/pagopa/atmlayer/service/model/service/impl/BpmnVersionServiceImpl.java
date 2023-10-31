@@ -20,8 +20,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.context.ManagedExecutor;
-import org.eclipse.microprofile.context.ThreadContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,11 +43,6 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Inject
     BpmnFileStorageService bpmnFileStorageService;
-
-    @Inject
-    ThreadContext threadContext;
-    @Inject
-    ManagedExecutor managedExecutor;
 
     @Override
     public String decodeBase64(String s) {
