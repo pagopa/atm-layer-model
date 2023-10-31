@@ -2,8 +2,10 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
@@ -29,6 +31,7 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -48,6 +51,9 @@ public class BpmnResource {
     BpmnVersionService bpmnVersionService;
     @Inject
     BpmnEntityValidator bpmnEntityValidator;
+    @Inject
+    @RestClient
+    ProcessClient processClient;
 //    @GET
 //    @Consumes(MediaType.APPLICATION_JSON)
 //    @Produces(MediaType.TEXT_PLAIN)
@@ -101,9 +107,9 @@ public class BpmnResource {
     @POST
     @Path("/deploy/{uuid}/version/{version}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<BpmnVersion> deployBPMN(@PathParam("uuid") UUID uuid,
-                                       @PathParam("version") Long version) {
-        return bpmnVersionService.checkBpmnFileExistence(uuid, version)
+    public Uni<DeployResponseDto> deployBPMN(@PathParam("uuid") UUID uuid,
+                                             @PathParam("version") Long version) {
+        bpmnVersionService.checkBpmnFileExistence(uuid, version)
                 .onItem()
                 .transformToUni(x -> {
                     if (!x) {
@@ -112,5 +118,6 @@ public class BpmnResource {
                     }
                     return bpmnVersionService.setDeployInProgress(uuid, version);
                 });
+        return processClient.deploy("url");
     }
 }

@@ -19,5 +19,8 @@ public class DeployResponseDto {
     private String source;
     private String deploymentTime;
     private String tenantId;
-    private DeployedProcessInfoDto deployedProcessInfoDto;
+    private DeployedProcessDefinitionsDto deployedProcessDefinitionsDto;
+    private String deployedCaseDefinitions;
+    private String deployedDecisionDefinitions;
+    private String deployedDecisionRequirementsDefinitions;
 }

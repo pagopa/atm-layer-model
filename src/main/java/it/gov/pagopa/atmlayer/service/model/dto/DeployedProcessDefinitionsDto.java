@@ -11,7 +11,4 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DeployedProcessDefinitionsDto {
     private DeployedProcessInfoDto deployedProcessInfoDto;
-    private String deployedCaseDefinitions;
-    private String deployedDecisionDefinitions;
-    private String deployedDecisionRequirementsDefinitions;
 }
