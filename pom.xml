@@ -25,6 +25,7 @@
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.0.0</surefire-plugin.version>
         <mockito.core.version>5.4.0</mockito.core.version>
+        <google.guava.version>32.1.3-jre</google.guava.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -141,10 +142,6 @@
             <version>${mapstruct.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-opentelemetry</artifactId>
-        </dependency>
 
         <!-- TEST -->
         <dependency>
@@ -178,6 +175,11 @@
             <artifactId>mockito-core</artifactId>
             <version>${mockito.core.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${google.guava.version}</version>
         </dependency>
 
     </dependencies>

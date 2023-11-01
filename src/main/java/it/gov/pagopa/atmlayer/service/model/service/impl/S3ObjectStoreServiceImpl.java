@@ -47,21 +47,21 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
 
     @Override
     public Uni<URL> generatePresignedUrl(String objectKey) {
-        try (S3Presigner presigner = S3Presigner.create()) {
-            GetObjectRequest getObjectRequest = fileStorageS3Utils.buildGetRequest(objectKey);
 
-            // Genera un URL prefirmato per l'oggetto
-            GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
-                    .signatureDuration(Duration.ofMinutes(10))  // The URL will expire in 10 minutes.
-                    .getObjectRequest(getObjectRequest)
-                    .build();
+        GetObjectRequest getObjectRequest = fileStorageS3Utils.buildGetRequest(objectKey);
 
-            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(getObjectPresignRequest);
-            String myURL = presignedRequest.url().toString();
-            log.info("Presigned URL to upload a file to: [{}]", myURL);
+        // Genera un URL prefirmato per l'oggetto
+        GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(10))  // The URL will expire in 10 minutes.
+                .getObjectRequest(getObjectRequest)
+                .build();
 
-            return Uni.createFrom().item(presignedRequest.url());
-        }
+        PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(getObjectPresignRequest);
+        String myURL = presignedRequest.url().toString();
+        log.info("Presigned URL to upload a file to: [{}]", myURL);
+
+        return Uni.createFrom().item(presignedRequest.url());
+
     }
 
     public Uni<PutObjectResponse> uploadFile(File file, String path, ResourceTypeEnum fileType, String filename) {
