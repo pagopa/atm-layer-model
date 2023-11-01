@@ -50,7 +50,6 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
 
         GetObjectRequest getObjectRequest = fileStorageS3Utils.buildGetRequest(objectKey);
 
-        // Genera un URL prefirmato per l'oggetto
         GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(10))  // The URL will expire in 10 minutes.
                 .getObjectRequest(getObjectRequest)
@@ -58,7 +57,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
 
         PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(getObjectPresignRequest);
         String myURL = presignedRequest.url().toString();
-        log.info("Presigned URL to upload a file to: [{}]", myURL);
+        log.info("Generated GET pre-signedUrl [{}]", myURL);
 
         return Uni.createFrom().item(presignedRequest.url());
 

@@ -2,14 +2,15 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedProcessInfoDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
@@ -17,21 +18,21 @@ import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
-import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 
@@ -48,21 +49,13 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @Inject
     BpmnFileStorageService bpmnFileStorageService;
 
-    @Override
-    public String decodeBase64(String s) {
-        byte[] array = BpmnUtils.base64ToByteArray(s);
-        return BpmnUtils.byteArrayToString(array);
-    }
+    @Inject
+    @RestClient
+    ProcessClient processClient;
 
     @Override
     public Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet) {
         return this.bpmnVersionRepository.findByIds(bpmnVersionPKSet);
-    }
-
-    @Override
-    public String calculateSHA256(File file) throws NoSuchAlgorithmException, IOException {
-        byte[] array = BpmnUtils.toSha256ByteArray(file);
-        return BpmnUtils.toHexString(array);
     }
 
     @Override
@@ -124,10 +117,8 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .transformToUni(y -> this.bpmnBankConfigService.findByAcquirerIdAndFunctionType(acquirerId, functionType));
     }
 
-    @Override
     @WithTransaction
-    public Uni<BpmnVersion> setBpmnVersionStatus(UUID id, Long modelVersion, StatusEnum status) {
-        BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
+    public Uni<BpmnVersion> setBpmnVersionStatus(BpmnVersionPK key, StatusEnum status) {
         return this.findByPk(key)
                 .onItem()
                 .transformToUni(Unchecked.function(optionalBpmn -> {
@@ -144,15 +135,13 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 );
     }
 
-    @Override
-    public Uni<Boolean> checkBpmnFileExistence(UUID id, Long modelVersion) {
-        BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
-        return this.findByPk(key)
+    private Uni<Boolean> checkBpmnFileExistence(BpmnVersionPK bpmnVersionPK) {
+        return this.findByPk(bpmnVersionPK)
                 .onItem()
                 .transform(Unchecked.function(optionalBpmn -> {
                             if (optionalBpmn.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced BPMN files do not exists: %s", key);
+                                        "One or some of the referenced BPMN files do not exists: %s", bpmnVersionPK);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
                             }
@@ -180,10 +169,50 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 });
     }
 
-    @Override
+    public Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK) {
+        return this.checkBpmnFileExistence(bpmnVersionPK)
+                .onItem()
+                .transformToUni(Unchecked.function(x -> {
+                    if (!x) {
+                        String errorMessage = "The referenced BPMN file can not be deployed";
+                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
+                                AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED);
+                    }
+                    return this.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.WAITING_DEPLOY);
+                }))
+                .onItem()
+                .transformToUni(bpmnWaiting -> {
+                    ResourceFile resourceFile = bpmnWaiting.getResourceFile();
+                    if (Objects.isNull(resourceFile) || StringUtils.isBlank(resourceFile.getStorageKey())) {
+                        String errorMessage = String.format("No file associated to BPMN or no storage key found: %s", new BpmnVersionPK(bpmnWaiting.getBpmnId(), bpmnWaiting.getModelVersion()));
+                        log.error(errorMessage);
+                        return Uni.createFrom().failure
+                                (new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS));
+                    }
+                    return this.bpmnFileStorageService.generatePresignedUrl(resourceFile.getStorageKey())
+                            .onFailure().recoverWithUni(failure -> {
+                                log.error(failure.getMessage());
+                                return this.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOY_ERROR)
+                                        .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Fail to generate presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                            });
+                })
+                .onItem().transformToUni(presignedUrl -> {
+
+                    return processClient.deploy(presignedUrl.toString())
+                            .onFailure().recoverWithUni(failure -> {
+                                log.error(failure.getMessage());
+                                return this.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOY_ERROR)
+                                        .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                            })
+                            .onItem()
+                            .transformToUni(response -> this.setDeployInfo(bpmnVersionPK, response));
+                });
+
+
+    }
+
     @WithTransaction
-    public Uni<BpmnVersion> setDeployInfo(UUID id, Long modelVersion, DeployResponseDto response) {
-        BpmnVersionPK key = new BpmnVersionPK(id, modelVersion);
+    public Uni<BpmnVersion> setDeployInfo(BpmnVersionPK key, DeployResponseDto response) {
         return this.findByPk(key)
                 .onItem()
                 .transformToUni(Unchecked.function(optionalBpmn -> {
@@ -208,14 +237,8 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     bpmnVersion.setDeployedFileName(deployedProcessInfo.getName());
                     bpmnVersion.setDescription(deployedProcessInfo.getDescription());
                     bpmnVersion.setResource(deployedProcessInfo.getResource());
+                    bpmnVersion.setStatus(StatusEnum.DEPLOYED);
                     return this.bpmnVersionRepository.persist(bpmnVersion);
                 }));
-    }
-
-    private static Uni<List<BpmnBankConfig>> addFunctionTypeToAssociations(List<BpmnBankConfig> bpmnBankConfigs, FunctionTypeEnum functionType) {
-        return Multi.createFrom().items(bpmnBankConfigs.stream()).onItem().transform(bpmnBankConfig -> {
-            bpmnBankConfig.setFunctionType(functionType);
-            return bpmnBankConfig;
-        }).collect().asList();
     }
 }
