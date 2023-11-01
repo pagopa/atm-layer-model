@@ -1,13 +1,16 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
 import io.smallrye.common.annotation.NonBlocking;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
@@ -35,6 +38,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -42,6 +46,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -148,37 +153,32 @@ public class BpmnResource {
 
         return this.bpmnVersionService.deploy(new BpmnVersionPK(uuid, version))
                 .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn)));
-//        return bpmnVersionService.checkBpmnFileExistence(uuid, version)
-//                .onItem()
-//                .transformToUni(Unchecked.function(x -> {
-//                    if (!x) {
-//                        String errorMessage = "The referenced BPMN file can not be deployed";
-//                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
-//                                AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED);
-//                    }
-//                    return bpmnVersionService.setBpmnVersionStatus(uuid, version, StatusEnum.WAITING_DEPLOY);
-//                }))
-//                .onItem()
-//                .transformToUni(bpmnWaiting -> {
-//                    ResourceFile resourceFile = bpmnWaiting.getResourceFile();
-//                    if (Objects.isNull(resourceFile) || StringUtils.isBlank(resourceFile.getStorageKey())) {
-//                        String errorMessage = String.format("No file associated to BPMN or no storage key found: %s", new BpmnVersionPK(bpmnWaiting.getBpmnId(), bpmnWaiting.getModelVersion()));
-//                        log.error(errorMessage);
-//                        return Uni.createFrom().failure
-//                                (new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS));
-//                    }
-//                    return this.bpmnFileStorageService.generatePresignedUrl(resourceFile.getStorageKey());
-//                })
-//                .onItem().transformToUni(presignedUrl -> {
-//
-//                    return processClient.deploy(presignedUrl.toString())
-//                            .onItem()
-//                            .transformToUni(response -> bpmnVersionService.setDeployInfo(uuid, version, response))
-//                            .onItem()
-//                            .transformToUni(bpmnUpdated -> bpmnVersionService.setBpmnVersionStatus(uuid, version,
-//                                    StatusEnum.DEPLOYED))
-//                            .onItem().transformToUni(bpmn -> Uni.createFrom().item(bpmnVersionMapper.toDTO(bpmn)));
-//                });
+    }
+
+    @GET
+    @Path("/download/{uuid}/version/{version}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Multi<Buffer> downloadBpmn(@PathParam("uuid") UUID bpmnId,
+                                      @PathParam("version") Long version) {
+
+        BpmnVersionPK key = BpmnVersionPK.builder()
+                .bpmnId(bpmnId)
+                .modelVersion(version)
+                .build();
+        return this.bpmnVersionService.findByPk(key)
+                .onItem().transformToMulti(
+                        Unchecked.function(bpmn -> {
+                            if (bpmn.isEmpty()) {
+                                throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
+                            }
+                            ResourceFile resourceFile = bpmn.get().getResourceFile();
+                            if (Objects.isNull(resourceFile) || StringUtils.isBlank(resourceFile.getStorageKey())) {
+                                String errorMessage = String.format("No file associated to BPMN or no storage key found: %s", key);
+                                log.error(errorMessage);
+                                throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
+                            }
+                            return this.bpmnFileStorageService.download(resourceFile.getStorageKey());
+                        }));
     }
 
     @GET

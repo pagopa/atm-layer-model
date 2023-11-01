@@ -1,9 +1,11 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
@@ -20,6 +22,7 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
+import org.jboss.resteasy.reactive.RestMulti;
 
 import java.io.File;
 import java.net.URL;
@@ -77,6 +80,10 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
     @Override
     public Uni<URL> generatePresignedUrl(String objectKey) {
         return this.objectStoreService.generatePresignedUrl(objectKey);
+    }
+
+    public RestMulti<Buffer> download(String storageKey) {
+        return this.objectStoreService.download(storageKey);
     }
 
     private String calculatePath(BpmnIdDto bpmnVersionPK) {

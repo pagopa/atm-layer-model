@@ -1,6 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
+import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
@@ -12,8 +14,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import mutiny.zero.flow.adapters.AdaptersToFlow;
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.resteasy.reactive.RestMulti;
+import org.reactivestreams.Publisher;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
+import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -23,7 +29,10 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 
 import java.io.File;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @ApplicationScoped
@@ -61,6 +70,23 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
 
         return Uni.createFrom().item(presignedRequest.url());
 
+    }
+
+    public Buffer toBuffer(ByteBuffer bytebuffer) {
+        byte[] result = new byte[bytebuffer.remaining()];
+        bytebuffer.get(result);
+        return Buffer.buffer(result);
+    }
+
+    @Override
+    public RestMulti<Buffer> download(String key) {
+        return RestMulti.fromUniResponse(Uni.createFrom()
+                        .completionStage(() -> s3.getObject(fileStorageS3Utils.buildGetRequest(key),
+                                AsyncResponseTransformer.toPublisher())),
+                response -> Multi.createFrom().safePublisher(AdaptersToFlow.publisher((Publisher<ByteBuffer>) response))
+                        .map(this::toBuffer),
+                response -> Map.of("Content-Disposition", List.of("attachment;filename="), "Content-Type",
+                        List.of(response.response().contentType())));
     }
 
 

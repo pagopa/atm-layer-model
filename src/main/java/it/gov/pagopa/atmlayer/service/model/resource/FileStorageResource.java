@@ -1,3 +1,4 @@
+
 package it.gov.pagopa.atmlayer.service.model.resource;
 
 import io.smallrye.mutiny.Multi;
@@ -55,9 +56,15 @@ public class FileStorageResource extends FileStorageCommonResource {
                         .completionStage(() -> s3.getObject(buildGetRequest(objectKey),
                                 AsyncResponseTransformer.toPublisher())),
                 response -> Multi.createFrom().safePublisher(AdaptersToFlow.publisher((Publisher<ByteBuffer>) response))
-                        .map(FileStorageResource::toBuffer),
+                        .map(this::toBuffer),
                 response -> Map.of("Content-Disposition", List.of("attachment;filename=" + objectKey), "Content-Type",
                         List.of(response.response().contentType())));
+    }
+
+    public Buffer toBuffer(ByteBuffer bytebuffer) {
+        byte[] result = new byte[bytebuffer.remaining()];
+        bytebuffer.get(result);
+        return Buffer.buffer(result);
     }
 
     @GET
@@ -75,12 +82,6 @@ public class FileStorageResource extends FileStorageCommonResource {
 
         return Uni.createFrom().completionStage(() -> s3.listObjects(listRequest))
                 .onItem().transform(result -> toFileItems(result));
-    }
-
-    private static Buffer toBuffer(ByteBuffer bytebuffer) {
-        byte[] result = new byte[bytebuffer.remaining()];
-        bytebuffer.get(result);
-        return Buffer.buffer(result);
     }
 
     private List<FileObject> toFileItems(ListObjectsResponse objects) {
