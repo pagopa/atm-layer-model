@@ -2,8 +2,6 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 
 import io.smallrye.common.annotation.NonBlocking;
 import it.gov.pagopa.atmlayer.service.model.model.InfoResponse;
-import it.gov.pagopa.atmlayer.service.model.repository.PersonRepository;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
@@ -35,8 +33,6 @@ public class InfoResource {
     @ConfigProperty(name = "app.environment", defaultValue = "local")
     String environment;
 
-    @Inject
-    PersonRepository personRepository;
 
     @Operation(summary = "Application info - ATM Layer - Model")
     @APIResponses(

@@ -5,8 +5,6 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedProcessInfoDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
@@ -16,7 +14,6 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
-import it.gov.pagopa.atmlayer.service.model.model.BpmnIdDto;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
@@ -167,24 +164,19 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     }
 
     @Override
+    @WithTransaction
     public Uni<BpmnVersion> saveAndUpload(BpmnVersion bpmnVersion, File file, String filename) {
-        Context context = Vertx.currentContext();
         return this.save(bpmnVersion)
                 .onItem().transformToUni(record -> {
-                    return this.bpmnFileStorageService.uploadFile(new BpmnIdDto(record.getBpmnId(), record.getModelVersion()), file, filename)
-                            .emitOn(command -> context.runOnContext(x -> command.run()))
+                    return this.bpmnFileStorageService.uploadFile(bpmnVersion, file, filename)
                             .onFailure().recoverWithUni(failure -> {
-                                // If upload fails, delete the BpmnVersion
-                                return this.delete(new BpmnVersionPK(record.getBpmnId(), record.getModelVersion()))
-                                        .onFailure().recoverWithUni(exceptionOnRollback -> {
-                                            return Uni.createFrom().failure(new AtmLayerException("Failed to write File on Object Store and attempt to recover failed too. Bpmn Entity could not be rollbacked", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
-                                        })
-                                        .onItem().transformToUni(deleteResult -> {
-                                            // Create an exception and propagate it
-                                            return Uni.createFrom().failure(new AtmLayerException("Failed to write File on Object Store. Bpmn Entity has been rollbacked", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
-                                        });
+                                log.error(failure.getMessage());
+                                return Uni.createFrom().failure(new AtmLayerException("Failed to save BPMN in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                             })
-                            .onItem().transformToUni(putObjectResponse -> Uni.createFrom().item(record));
+                            .onItem().transformToUni(putObjectResponse -> {
+                                log.info("Completed BPMN Creation");
+                                return Uni.createFrom().item(record);
+                            });
                 });
     }
 

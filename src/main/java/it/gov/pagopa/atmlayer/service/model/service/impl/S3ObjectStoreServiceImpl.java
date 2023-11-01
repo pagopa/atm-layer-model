@@ -5,6 +5,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import it.gov.pagopa.atmlayer.service.model.service.S3ObjectStoreService;
 import it.gov.pagopa.atmlayer.service.model.utils.FileStorageS3Utils;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,7 +17,6 @@ import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
@@ -64,7 +64,8 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
 
     }
 
-    public Uni<PutObjectResponse> uploadFile(File file, String path, ResourceTypeEnum fileType, String filename) {
+
+    public Uni<ObjectStorePutResponse> uploadFile(File file, String path, ResourceTypeEnum fileType, String filename) {
         if (StringUtils.isBlank(filename)) {
             String errorMessage = String.format("S3 File Upload - invalid filename %s", filename);
             log.error(errorMessage);
@@ -82,11 +83,9 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
             log.error(errorMessage);
             throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
         }
-
-        return Uni.createFrom().future(() -> {
-                    PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, fileType.getMimetype(), path);
-                    return s3.putObject(putObjectRequest, AsyncRequestBody.fromFile(file));
-                })
+        PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, fileType.getMimetype(), path);
+        return Uni.createFrom().future(() -> s3.putObject(putObjectRequest, AsyncRequestBody.fromFile(file)))
+                .onItem().transformToUni(res -> Uni.createFrom().item(ObjectStorePutResponse.builder().storage_key(putObjectRequest.key()).build()))
                 .onFailure().transform(error -> {
                     String errorMessage = "Error in uploading file to S3";
                     log.error(errorMessage, error);

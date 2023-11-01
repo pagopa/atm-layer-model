@@ -30,6 +30,11 @@ public class BpmnUtils {
         return Files.toByteArray(file);
     }
 
+    public static String calculateSha256(File file) throws NoSuchAlgorithmException, IOException {
+        byte[] array = BpmnUtils.toSha256ByteArray(file);
+        return BpmnUtils.toHexString(array);
+    }
+
     public static byte[] encodeToBase64(byte[] array) {
         return Base64.getEncoder().encode(array);
     }

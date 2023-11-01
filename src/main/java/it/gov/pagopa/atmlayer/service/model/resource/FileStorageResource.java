@@ -45,23 +45,6 @@ public class FileStorageResource extends FileStorageCommonResource {
     @Inject
     BpmnFileStorageService bpmnFileStorageService;
 
-    @GET
-    @Path("type")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Uni<Void> getTye() {
-        bpmnFileStorageService.uploadFile(new BpmnIdDto(UUID.randomUUID(), 1L), new File("prova"), "prova");
-
-        return Uni.createFrom().nullItem();
-    }
-
-    @POST
-    @Path("upload")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Uni<Response> uploadFile(@Valid FormData formData) throws Exception {
-
-        return bpmnFileStorageService.uploadFile(new BpmnIdDto(UUID.randomUUID(), 1L), formData.data, formData.filename)
-                .onItem().ignore().andSwitchTo(Uni.createFrom().item(Response.created(null).build()));
-    }
 
     @GET
     @Path("download/{objectKey}")

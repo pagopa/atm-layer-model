@@ -33,9 +33,6 @@ public class BpmnBankConfig extends PanacheEntityBase implements Serializable {
     @Enumerated(EnumType.STRING)
     private FunctionTypeEnum functionType;
 
-    @Column(name = "enabled", columnDefinition = "boolean default true")
-    private Boolean enabled;
-
     @CreationTimestamp
     @Column(name = "created_at")
     private Timestamp createdAt;
