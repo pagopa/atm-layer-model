@@ -33,8 +33,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
+import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.extractIdValue;
 
 @ApplicationScoped
 @Slf4j
@@ -102,6 +104,13 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     @WithSession
+    public Uni<Optional<BpmnVersion>> findByDefinitionKey(String definitionKey) {
+        return this.bpmnVersionRepository.findByDefinitionKey(definitionKey)
+                .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
+    }
+
+    @Override
+    @WithSession
     public Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK) {
         return bpmnVersionRepository.findById(bpmnVersionPK).onItem().transformToUni(bpmnVersion -> Uni.createFrom().item(Optional.ofNullable(bpmnVersion)));
     }
@@ -155,6 +164,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @Override
     @WithTransaction
     public Uni<BpmnVersion> saveAndUpload(BpmnVersion bpmnVersion, File file, String filename) {
+        String definitionKey = extractIdValue(file);
         return this.save(bpmnVersion)
                 .onItem().transformToUni(record -> {
                     return this.bpmnFileStorageService.uploadFile(bpmnVersion, file, filename)
@@ -163,11 +173,14 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                 return Uni.createFrom().failure(new AtmLayerException("Failed to save BPMN in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                             })
                             .onItem().transformToUni(putObjectResponse -> {
+                                bpmnVersion.setDefinitionKey(definitionKey);
                                 log.info("Completed BPMN Creation");
                                 return Uni.createFrom().item(record);
                             });
                 });
     }
+
+//
 
     public Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK) {
         return this.checkBpmnFileExistence(bpmnVersionPK)

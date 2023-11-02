@@ -24,6 +24,8 @@ public interface BpmnVersionService {
 
     Uni<Optional<BpmnVersion>> findBySHA256(String sha256);
 
+    Uni<Optional<BpmnVersion>> findByDefinitionKey(String definitionKey);
+
     Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK);
 
     Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionTypeEnum, List<BpmnBankConfig> bpmnBankConfigs);

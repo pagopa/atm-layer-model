@@ -20,4 +20,8 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
         Set<String> bpmnIdVersion = ids.stream().map(x -> x.getBpmnId().toString().concat("_".concat(x.getModelVersion().toString()))).collect(Collectors.toSet());
         return find("where concat(bpmnId,'_',modelVersion) in ?1", bpmnIdVersion).list();
     }
+
+    public Uni<BpmnVersion> findByDefinitionKey(String definitionKey) {
+        return find("definitionKey", definitionKey).firstResult();
+    }
 }
