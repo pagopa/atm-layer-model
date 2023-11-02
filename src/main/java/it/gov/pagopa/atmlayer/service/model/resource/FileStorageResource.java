@@ -1,24 +1,19 @@
 
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
-import it.gov.pagopa.atmlayer.service.model.model.BpmnIdDto;
 import it.gov.pagopa.atmlayer.service.model.model.filestorage.FileObject;
-import it.gov.pagopa.atmlayer.service.model.model.filestorage.FormData;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.resource.filestorage.FileStorageCommonResource;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import mutiny.zero.flow.adapters.AdaptersToFlow;
 import org.jboss.resteasy.reactive.RestMulti;
 import org.reactivestreams.Publisher;
@@ -27,16 +22,15 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 
-import java.io.File;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Path("/async-s3")
+@UnlessBuildProfile(anyOf = {"prod", "native"})
 public class FileStorageResource extends FileStorageCommonResource {
     @Inject
     S3AsyncClient s3;
