@@ -4,6 +4,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.FileParsingUtilityValues
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -14,9 +15,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.MALFORMED_FILE;
 
 @ApplicationScoped
+@Slf4j
 public class FileUtils {
 
     public static String extractIdValue(File file) {
@@ -27,7 +31,8 @@ public class FileUtils {
             builder = factory.newDocumentBuilder();
             document = builder.parse(file);
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage());
+            throw new AtmLayerException("Malformed File", Response.Status.BAD_REQUEST, MALFORMED_FILE);
         }
         Element definitionsElement = (Element) document.getElementsByTagName(FileParsingUtilityValues.TAG_NAME.getValue()).item(0);
         String definitionKey = definitionsElement.getAttribute(FileParsingUtilityValues.ATTRIBUTE.getValue());

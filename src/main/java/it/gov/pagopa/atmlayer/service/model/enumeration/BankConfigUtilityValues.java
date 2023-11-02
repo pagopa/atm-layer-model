@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum BankConfigUtilityValues {
-    NULL_VALUE("NULL");
+    NULL_VALUE("ALL");
 
     private String value;
 }

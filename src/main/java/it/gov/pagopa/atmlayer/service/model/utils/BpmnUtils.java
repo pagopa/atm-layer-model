@@ -20,6 +20,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -80,10 +82,12 @@ public class BpmnUtils {
         if (bpmnAssociationDto.getBranchesConfigs() != null && !bpmnAssociationDto.getBranchesConfigs().isEmpty()) {
             for (BranchConfigs branchConfig : bpmnAssociationDto.getBranchesConfigs()) {
                 BpmnBankConfig bpmnBankConfigBranchDefault = new BpmnBankConfig();
-                BpmnBankConfigPK bpmnBankConfigPKBranch = getBpmnBankConfigPK(bpmnAssociationDto, acquirerId, branchConfig);
-                bpmnBankConfigBranchDefault.setFunctionType(functionTypeEnum);
-                bpmnBankConfigBranchDefault.setBpmnBankConfigPK(bpmnBankConfigPKBranch);
-                bpmnBankConfigs.add(bpmnBankConfigBranchDefault);
+                Optional<BpmnBankConfigPK> optionalBpmnBankConfigPKBranch = getBpmnBankConfigPK(bpmnAssociationDto, acquirerId, branchConfig);
+                if (optionalBpmnBankConfigPKBranch.isPresent()) {
+                    bpmnBankConfigBranchDefault.setFunctionType(functionTypeEnum);
+                    bpmnBankConfigBranchDefault.setBpmnBankConfigPK(optionalBpmnBankConfigPKBranch.get());
+                    bpmnBankConfigs.add(bpmnBankConfigBranchDefault);
+                }
                 if (branchConfig.getTerminals() != null && !branchConfig.getTerminals().isEmpty()) {
                     for (TerminalConfigs terminalConfig : branchConfig.getTerminals()) {
                         for (String terminalId : terminalConfig.getTerminalIds()) {
@@ -105,19 +109,18 @@ public class BpmnUtils {
         return bpmnBankConfigs;
     }
 
-    private static BpmnBankConfigPK getBpmnBankConfigPK(BpmnAssociationDto bpmnAssociationDto, String acquirerId, BranchConfigs branchConfig) {
-        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
-        if (branchConfig.getBranchDefaultTemplateId() == null && branchConfig.getBranchDefaultTemplateVersion() == null) {
-            bpmnBankConfigPK.setBpmnId(bpmnAssociationDto.getDefaultTemplateId());
-            bpmnBankConfigPK.setBpmnModelVersion(bpmnAssociationDto.getDefaultTemplateVersion());
-        } else {
-            bpmnBankConfigPK.setBpmnId(branchConfig.getBranchDefaultTemplateId());
-            bpmnBankConfigPK.setBpmnModelVersion(branchConfig.getBranchDefaultTemplateVersion());
+    private static Optional<BpmnBankConfigPK> getBpmnBankConfigPK(BpmnAssociationDto bpmnAssociationDto, String acquirerId, BranchConfigs branchConfig) {
+        if (Objects.isNull(branchConfig.getBranchDefaultTemplateId()) || Objects.isNull(branchConfig.getBranchDefaultTemplateVersion())) {
+            return Optional.empty();
         }
+        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
+        bpmnBankConfigPK.setBpmnId(branchConfig.getBranchDefaultTemplateId());
+        bpmnBankConfigPK.setBpmnModelVersion(branchConfig.getBranchDefaultTemplateVersion());
         bpmnBankConfigPK.setAcquirerId(acquirerId);
         bpmnBankConfigPK.setBranchId(branchConfig.getBranchId());
         bpmnBankConfigPK.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
-        return bpmnBankConfigPK;
+        return Optional.of(bpmnBankConfigPK);
+
     }
 
 }

@@ -8,11 +8,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +31,6 @@ import java.util.UUID;
 @IdClass(BpmnVersionPK.class)
 public class BpmnVersion extends PanacheEntityBase implements Serializable {
 
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "bpmn_id", nullable = false, updatable = false)
     @Id
     private UUID bpmnId;
@@ -92,5 +90,12 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
 
     @Column(name = "last_updated_by")
     private String lastUpdatedBy;
+
+    @PrePersist
+    public void generateUUID() {
+        if (getBpmnId() == null) {
+            setBpmnId(UUID.randomUUID());
+        }
+    }
 
 }

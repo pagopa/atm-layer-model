@@ -1,9 +1,12 @@
 package it.gov.pagopa.atmlayer.service.model.configurations;
 
 import io.quarkus.arc.profile.UnlessBuildProfile;
+import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
+import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -24,7 +27,7 @@ public class S3PreSignerLocal {
     private AwsCredentialsProvider getAwsCredentialProvider() {
         ObjectStoreProperties.Bucket bucketProps = objectStoreProperties.bucket();
         if (bucketProps.accessKey().isEmpty() || bucketProps.secretKey().isEmpty()) {
-            throw new RuntimeException("No AWS credentials provided for local configuration");
+            throw new AtmLayerException("No AWS credentials provided for local configuration", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.ATMLM_500);
         }
         AwsBasicCredentials awsBasicCredentials =
                 AwsBasicCredentials.create(bucketProps.accessKey().get(), bucketProps.secretKey().get());
