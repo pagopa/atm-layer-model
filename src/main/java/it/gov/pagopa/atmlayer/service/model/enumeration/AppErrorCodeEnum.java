@@ -10,6 +10,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYABLE_STATUS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYED_STATUS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_EXISTING_REFERENCED_ENTITY;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_UPGRADABLE;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_REFERENCED_ENTITY;
 
 /**
@@ -28,7 +29,8 @@ public enum AppErrorCodeEnum {
     MULTIPLE_BPMN_FILE_FOR_SINGLE_CONFIGURATION("ATMLM_4000007", "Multiple BPMN file found for a single configuration", INTERNAL),
     NO_BPMN_FOUND_FOR_CONFIGURATION("ATMLM_4000008", "No runnable BPMN found for configuration", NOT_VALID_REFERENCED_ENTITY),
     NO_FILE_OR_STORAGE_KEY_FOUND_FOR_BPMN("ATMLM_4000009", "No storage key or file found for BPMN", NOT_VALID_REFERENCED_ENTITY),
-    OBJECT_STORE_SAVE_FILE_ERROR("ATMLM_4000100", "Error on persisting file on Object Store ", INTERNAL);
+    OBJECT_STORE_SAVE_FILE_ERROR("ATMLM_4000010", "Error on persisting file on Object Store ", INTERNAL),
+    BPMN_FILE_CANNOT_BE_UPGRADED("ATMLM_4000011", "The referenced BPMN file can not be upgraded", NOT_UPGRADABLE);
 
     private final String errorCode;
     private final String errorMessage;

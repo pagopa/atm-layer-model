@@ -1,11 +1,13 @@
 package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 
 import java.io.File;
 import java.util.List;
@@ -31,6 +33,8 @@ public interface BpmnVersionService {
     Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK);
 
     Uni<BpmnVersion> saveAndUpload(BpmnVersion bpmnVersion, File file, String filename);
+
+    Uni<BpmnDTO> upgrade(BpmnUpgradeDto bpmnUpgradeDto);
 
 
 }
