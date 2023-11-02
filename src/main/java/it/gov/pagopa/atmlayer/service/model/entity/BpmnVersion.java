@@ -41,7 +41,7 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
     @Id
     private Long modelVersion = 1L;
 
-    @OneToOne(mappedBy = "bpmn",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "bpmn", cascade = CascadeType.ALL)
     ResourceFile resourceFile;
 
     @Column(name = "deployed_file_name")
@@ -76,7 +76,7 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
     @Column(name = "resource")
     private String resource;
 
-    @Column(name = "deployement_id")
+    @Column(name = "deployment_id")
     private UUID deploymentId;
 
     @CreationTimestamp
