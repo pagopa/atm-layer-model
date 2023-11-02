@@ -6,6 +6,7 @@ import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 
 import java.util.HashMap;
@@ -18,7 +19,7 @@ public class ObjectStoreStrategyConfig {
     @Inject
     Instance<ObjectStoreService> notificationStrategies;
 
-    @ApplicationScoped
+    @Singleton
     public Map<ObjectStoreStrategyEnum, ObjectStoreService> sendNotificationByType() {
         Map<ObjectStoreStrategyEnum, ObjectStoreService> serviceByType = new HashMap<>();
         notificationStrategies.forEach(objectStoreServiceStrategy -> serviceByType.put(objectStoreServiceStrategy.getType(), objectStoreServiceStrategy));

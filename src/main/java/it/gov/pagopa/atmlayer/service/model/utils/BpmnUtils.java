@@ -1,8 +1,14 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
 import com.google.common.io.Files;
+import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
+import it.gov.pagopa.atmlayer.service.model.dto.BranchConfigs;
+import it.gov.pagopa.atmlayer.service.model.dto.TerminalConfigs;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
+import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
+import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.File;
@@ -11,6 +17,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +28,11 @@ public class BpmnUtils {
 
     public static byte[] fileToByteArray(File file) throws IOException {
         return Files.toByteArray(file);
+    }
+
+    public static String calculateSha256(File file) throws NoSuchAlgorithmException, IOException {
+        byte[] array = BpmnUtils.toSha256ByteArray(file);
+        return BpmnUtils.toHexString(array);
     }
 
     public static byte[] encodeToBase64(byte[] array) {
@@ -55,6 +67,57 @@ public class BpmnUtils {
                 .modelVersion(association.getBpmnBankConfigPK().getBpmnModelVersion())
                 .build()
         ).collect(Collectors.toSet());
+    }
+
+    public static List<BpmnBankConfig> getAcquirerConfigs(BpmnAssociationDto bpmnAssociationDto, String acquirerId, FunctionTypeEnum functionTypeEnum) {
+        List<BpmnBankConfig> bpmnBankConfigs = new ArrayList<>();
+        BpmnBankConfig bpmnBankConfigAcquirerDefault = new BpmnBankConfig();
+        bpmnBankConfigAcquirerDefault.setBpmnBankConfigPK(new BpmnBankConfigPK(bpmnAssociationDto.getDefaultTemplateId(),
+                bpmnAssociationDto.getDefaultTemplateVersion(),
+                acquirerId, BankConfigUtilityValues.NULL_VALUE.getValue(), BankConfigUtilityValues.NULL_VALUE.getValue()));
+        bpmnBankConfigAcquirerDefault.setFunctionType(functionTypeEnum);
+        bpmnBankConfigs.add(bpmnBankConfigAcquirerDefault);
+        if (bpmnAssociationDto.getBranchesConfigs() != null && !bpmnAssociationDto.getBranchesConfigs().isEmpty()) {
+            for (BranchConfigs branchConfig : bpmnAssociationDto.getBranchesConfigs()) {
+                BpmnBankConfig bpmnBankConfigBranchDefault = new BpmnBankConfig();
+                BpmnBankConfigPK bpmnBankConfigPKBranch = getBpmnBankConfigPK(bpmnAssociationDto, acquirerId, branchConfig);
+                bpmnBankConfigBranchDefault.setFunctionType(functionTypeEnum);
+                bpmnBankConfigBranchDefault.setBpmnBankConfigPK(bpmnBankConfigPKBranch);
+                bpmnBankConfigs.add(bpmnBankConfigBranchDefault);
+                if (branchConfig.getTerminals() != null && !branchConfig.getTerminals().isEmpty()) {
+                    for (TerminalConfigs terminalConfig : branchConfig.getTerminals()) {
+                        for (String terminalId : terminalConfig.getTerminalIds()) {
+                            BpmnBankConfig bpmnBankConfigTerminal = new BpmnBankConfig();
+                            BpmnBankConfigPK bpmnBankConfigPKTerminal = new BpmnBankConfigPK();
+                            bpmnBankConfigPKTerminal.setBpmnId(terminalConfig.getTemplateId());
+                            bpmnBankConfigPKTerminal.setBpmnModelVersion(terminalConfig.getTemplateVersion());
+                            bpmnBankConfigPKTerminal.setAcquirerId(acquirerId);
+                            bpmnBankConfigPKTerminal.setBranchId(branchConfig.getBranchId());
+                            bpmnBankConfigPKTerminal.setTerminalId(terminalId);
+                            bpmnBankConfigTerminal.setFunctionType(functionTypeEnum);
+                            bpmnBankConfigTerminal.setBpmnBankConfigPK(bpmnBankConfigPKTerminal);
+                            bpmnBankConfigs.add(bpmnBankConfigTerminal);
+                        }
+                    }
+                }
+            }
+        }
+        return bpmnBankConfigs;
+    }
+
+    private static BpmnBankConfigPK getBpmnBankConfigPK(BpmnAssociationDto bpmnAssociationDto, String acquirerId, BranchConfigs branchConfig) {
+        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
+        if (branchConfig.getBranchDefaultTemplateId() == null && branchConfig.getBranchDefaultTemplateVersion() == null) {
+            bpmnBankConfigPK.setBpmnId(bpmnAssociationDto.getDefaultTemplateId());
+            bpmnBankConfigPK.setBpmnModelVersion(bpmnAssociationDto.getDefaultTemplateVersion());
+        } else {
+            bpmnBankConfigPK.setBpmnId(branchConfig.getBranchDefaultTemplateId());
+            bpmnBankConfigPK.setBpmnModelVersion(branchConfig.getBranchDefaultTemplateVersion());
+        }
+        bpmnBankConfigPK.setAcquirerId(acquirerId);
+        bpmnBankConfigPK.setBranchId(branchConfig.getBranchId());
+        bpmnBankConfigPK.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
+        return bpmnBankConfigPK;
     }
 
 }

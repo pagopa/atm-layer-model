@@ -1,14 +1,20 @@
 package it.gov.pagopa.atmlayer.service.model.service;
 
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
-import it.gov.pagopa.atmlayer.service.model.model.BpmnIdDto;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
+import org.jboss.resteasy.reactive.RestMulti;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 
 public interface BpmnFileStorageService {
-    Uni<PutObjectResponse> uploadFile(BpmnIdDto bpmnVersionPK, File file, String filename);
-    Uni<URL> generatePresignedUrl(String objectKey);
+    Uni<ResourceFile> uploadFile(BpmnVersion bpmn, File file, String filename);
+
+    Uni<URL> generatePresignedUrl(String storageKey);
+
+    RestMulti<Buffer> download(String storageKey);
 }
