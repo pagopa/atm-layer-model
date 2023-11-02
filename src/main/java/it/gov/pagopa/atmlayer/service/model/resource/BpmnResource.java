@@ -124,25 +124,8 @@ public class BpmnResource {
     @NonBlocking
     public Uni<BpmnDTO> createBPMN(@RequestBody(required = true) @Valid BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = bpmnVersionMapper.toEntityCreation(bpmnCreationDto);
-        String definitionKey = extractIdValue(bpmnCreationDto.getFile());
-        return bpmnVersionService.findByDefinitionKey(definitionKey)
-                .onItem().transformToUni(Unchecked.function(x -> {
-                    if (x.isPresent()) {
-                        throw new AtmLayerException(new AtmLayerException("definition key already exists in the database", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS));
-
-
-                    }
-                    return bpmnVersionService.saveAndUpload(bpmnVersion, bpmnCreationDto.getFile(), bpmnCreationDto.getFilename())
-                            .onItem().transformToUni(bpmn -> {
-                                return this.bpmnVersionService.findByPk(new BpmnVersionPK(bpmn.getBpmnId(), bpmn.getModelVersion()))
-                                        .onItem().transformToUni(optionalBpmn -> {
-                                            if (optionalBpmn.isEmpty()) {
-                                                return Uni.createFrom().failure(new AtmLayerException("Sync problem on bpmn creation", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
-                                            }
-                                            return Uni.createFrom().item(bpmnVersionMapper.toDTO(optionalBpmn.get()));
-                                        });
-                });
-                }));
+        return this.bpmnVersionService.createBPMN(bpmnVersion, bpmnCreationDto.getFile(), bpmnCreationDto.getFilename())
+                .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn)));
     }
 
     @DELETE

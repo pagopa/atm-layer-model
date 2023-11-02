@@ -180,7 +180,29 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 });
     }
 
-//
+    @Override
+    public Uni<BpmnVersion> createBPMN(BpmnVersion bpmnVersion, File file, String filename) {
+    String definitionKey = extractIdValue(file);
+        return findByDefinitionKey(definitionKey)
+                .onItem().transformToUni(Unchecked.function(x -> {
+                    if (x.isPresent()) {
+                        throw new AtmLayerException(new AtmLayerException("definition key already exists in the database", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS));
+
+
+                    }
+                    return saveAndUpload(bpmnVersion, file, filename)
+                            .onItem().transformToUni(bpmn -> {
+                                return this.findByPk(new BpmnVersionPK(bpmn.getBpmnId(), bpmn.getModelVersion()))
+                                        .onItem().transformToUni(optionalBpmn -> {
+                                            if (optionalBpmn.isEmpty()) {
+                                                return Uni.createFrom().failure(new AtmLayerException("Sync problem on bpmn creation", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
+                                            }
+                                            return Uni.createFrom().item(optionalBpmn.get());
+                                        });
+                            });
+                }));
+    }
+
 
     public Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK) {
         return this.checkBpmnFileExistence(bpmnVersionPK)

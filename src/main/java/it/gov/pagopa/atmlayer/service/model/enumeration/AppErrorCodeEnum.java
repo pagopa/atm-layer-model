@@ -10,6 +10,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYABLE_STATUS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYED_STATUS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_EXISTING_REFERENCED_ENTITY;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_FILE;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_REFERENCED_ENTITY;
 
 /**
@@ -29,7 +30,8 @@ public enum AppErrorCodeEnum {
     NO_BPMN_FOUND_FOR_CONFIGURATION("ATMLM_4000008", "No runnable BPMN found for configuration", NOT_VALID_REFERENCED_ENTITY),
     NO_FILE_OR_STORAGE_KEY_FOUND_FOR_BPMN("ATMLM_4000009", "No storage key or file found for BPMN", NOT_VALID_REFERENCED_ENTITY),
     OBJECT_STORE_SAVE_FILE_ERROR("ATMLM_4000100", "Error on persisting file on Object Store ", INTERNAL),
-    BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS("TMLM_4000101","A BPMN file with the same Camunda definition key already exists", CONSTRAINT_VIOLATION);
+    BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS("ATMLM_4000101","A BPMN file with the same Camunda definition key already exists", CONSTRAINT_VIOLATION),
+    BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY("ATMLM_4000102","BPMN file does not have a definition key",NOT_VALID_FILE);
 
     private final String errorCode;
     private final String errorMessage;

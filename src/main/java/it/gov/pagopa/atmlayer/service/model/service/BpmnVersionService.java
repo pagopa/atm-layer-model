@@ -34,5 +34,7 @@ public interface BpmnVersionService {
 
     Uni<BpmnVersion> saveAndUpload(BpmnVersion bpmnVersion, File file, String filename);
 
+    Uni<BpmnVersion> createBPMN(BpmnVersion bpmnVersion, File file, String filename);
+
 
 }
