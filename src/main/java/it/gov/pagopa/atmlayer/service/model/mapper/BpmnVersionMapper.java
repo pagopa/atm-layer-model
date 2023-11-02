@@ -45,6 +45,7 @@ public abstract class BpmnVersionMapper {
     bpmnVersion.setEnabled(true);
     bpmnVersion.setModelVersion(version);
     bpmnVersion.setDefinitionKey(definitionKey);
+    bpmnVersion.setBpmnId(bpmnUpgradeDto.getUuid());
     return bpmnVersion;
   }
 }
