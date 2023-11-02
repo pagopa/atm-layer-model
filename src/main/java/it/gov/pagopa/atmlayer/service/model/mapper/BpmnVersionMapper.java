@@ -36,7 +36,7 @@ public abstract class BpmnVersionMapper {
     @Mapping(target = "resourceFile.bpmn",ignore = true)
     public abstract BpmnVersion toEntity(BpmnDTO bpmnDTO);
 
-  public BpmnVersion toEntityUpgrade(BpmnUpgradeDto bpmnUpgradeDto, Long version) throws NoSuchAlgorithmException, IOException {
+  public BpmnVersion toEntityUpgrade(BpmnUpgradeDto bpmnUpgradeDto, Long version, String definitionKey) throws NoSuchAlgorithmException, IOException {
     BpmnVersion bpmnVersion = new BpmnVersion();
     bpmnVersion.setFunctionType(bpmnUpgradeDto.getFunctionType());
     bpmnVersion.setStatus(StatusEnum.CREATED);
@@ -44,6 +44,7 @@ public abstract class BpmnVersionMapper {
     bpmnVersion.setDeployedFileName(bpmnUpgradeDto.getFilename().concat(".").concat(ResourceTypeEnum.BPMN.getExtension()));
     bpmnVersion.setEnabled(true);
     bpmnVersion.setModelVersion(version);
+    bpmnVersion.setDefinitionKey(definitionKey);
     return bpmnVersion;
   }
 }
