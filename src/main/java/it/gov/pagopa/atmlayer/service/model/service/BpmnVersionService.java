@@ -26,6 +26,8 @@ public interface BpmnVersionService {
 
     Uni<Optional<BpmnVersion>> findBySHA256(String sha256);
 
+    Uni<Optional<BpmnVersion>> findByDefinitionKey(String definitionKey);
+
     Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK);
 
     Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionTypeEnum, List<BpmnBankConfig> bpmnBankConfigs);
@@ -35,6 +37,8 @@ public interface BpmnVersionService {
     Uni<BpmnVersion> saveAndUpload(BpmnVersion bpmnVersion, File file, String filename);
 
     Uni<BpmnDTO> upgrade(BpmnUpgradeDto bpmnUpgradeDto);
+
+    Uni<BpmnVersion> createBPMN(BpmnVersion bpmnVersion, File file, String filename);
 
 
 }
