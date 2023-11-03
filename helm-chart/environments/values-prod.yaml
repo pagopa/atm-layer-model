@@ -33,6 +33,7 @@ objectStore:
 
 secretProviderClass:
   name: atm-layer-model-secrets
+  env: prod
 
 serviceAccount:
   # Specifies whether a service account should be created
