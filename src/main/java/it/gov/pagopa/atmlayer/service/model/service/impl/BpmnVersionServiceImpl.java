@@ -195,7 +195,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         return findByDefinitionKey(definitionKey)
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException(new AtmLayerException("definition key already exists in the database", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS));
+                        throw new AtmLayerException("A BPMN with the same definitionKey already exists", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
                     }
                     return saveAndUpload(bpmnVersion, file, filename)
                             .onItem().transformToUni(bpmn -> {
