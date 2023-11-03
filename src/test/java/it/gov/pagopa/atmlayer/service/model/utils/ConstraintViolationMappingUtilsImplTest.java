@@ -27,7 +27,7 @@ class ConstraintViolationMappingUtilsImplTest {
         ConstraintViolation.class);
     when(constraintViolation.getMessage()).thenReturn("hello world");
     when(constraintViolation.getPropertyPath()).thenReturn(PathImpl.createRootPath());
-    assertEquals("hello world",
+    assertEquals(" hello world",
         constraintViolationMappingUtilsImpl.extractErrorMessage(constraintViolation));
     verify(constraintViolation).getPropertyPath();
     verify(constraintViolation).getMessage();
