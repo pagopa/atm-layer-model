@@ -81,6 +81,9 @@ public class BpmnResource {
     @Inject
     BpmnConfigMapper bpmnConfigMapper;
 
+    //@GET
+    //add getAll endpoint
+
     @GET
     @Path("/{bpmnId}/version/{version}")
     @Consumes(MediaType.APPLICATION_JSON)
