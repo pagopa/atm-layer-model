@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -26,7 +26,7 @@ public class BpmnUtilsTest {
 
     @BeforeEach
     void setUp() {
-        testFile = new File("C:\\DEV\\PagoPA\\ATM-LAYER\\GitHub\\model\\src\\test\\resources\\Test.bpmn");
+        testFile = new File("src/test/resources/Test.bpmn");
     }
 
     @Test
@@ -52,14 +52,14 @@ public class BpmnUtilsTest {
     @Test
     void testToSha256ByteArray() throws NoSuchAlgorithmException, IOException {
         byte[] sha256Array = BpmnUtils.toSha256ByteArray(testFile);
-        assertTrue(Arrays.equals(sha256Array, BpmnUtils.toSha256ByteArray(testFile)));
+        assertArrayEquals(sha256Array, BpmnUtils.toSha256ByteArray(testFile));
     }
 
     @Test
     void testBase64ToByteArray() {
         String base64 = "AQID";
         byte[] byteArray = BpmnUtils.base64ToByteArray(base64);
-        assertTrue(Arrays.equals(new byte[]{1, 2, 3}, byteArray));
+        assertArrayEquals(new byte[]{1, 2, 3}, byteArray);
     }
 
     @Test
