@@ -51,11 +51,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
-import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.extractIdValue;
 
 @ApplicationScoped
 @Path("/bpmn")
@@ -177,7 +174,7 @@ public class BpmnResource {
     }
 
     @GET
-    @Path("/function/{functionType}/bank{acquirerId}/branch/{branchId}/terminal/{terminalId}")
+    @Path("/function/{functionType}/bank/{acquirerId}/branch/{branchId}/terminal/{terminalId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnDTO> findBPMNByTriad(@PathParam("functionType") FunctionTypeEnum functionTypeEnum,
                                         @PathParam("acquirerId") String acquirerId,
@@ -212,7 +209,7 @@ public class BpmnResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/upgrade")
-    public Uni<BpmnDTO> upgradeBPMN(@Valid BpmnUpgradeDto bpmnUpgradeDto){
-      return bpmnVersionService.upgrade(bpmnUpgradeDto);
+    public Uni<BpmnDTO> upgradeBPMN(@Valid BpmnUpgradeDto bpmnUpgradeDto) {
+        return bpmnVersionService.upgrade(bpmnUpgradeDto);
     }
 }
