@@ -61,6 +61,11 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     BpmnVersionMapper bpmnVersionMapper;
 
     @Override
+    public Uni<List<BpmnVersion>> getAll() {
+        return this.bpmnVersionRepository.findAll().list();
+    }
+
+    @Override
     public Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet) {
         return this.bpmnVersionRepository.findByIds(bpmnVersionPKSet);
     }

@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
@@ -33,17 +32,12 @@ import java.util.Optional;
 @ApplicationScoped
 @Slf4j
 public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
-
     private final String BPMN_TEMPLATE_PATH_DEFAULT = "BPMN/files/UUID/${uuid}/VERSION/${version}";
-
     @Inject
     ObjectStoreStrategy objectStoreStrategy;
-
     private ObjectStoreService objectStoreService;
-
     @Inject
     ObjectStoreProperties objectStoreProperties;
-
     @Inject
     ResourceFileService resourceFileService;
 
@@ -74,7 +68,6 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem()
                 .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(bpmnVersion, objectStorePutResponse, filename));
-
     }
 
     @Override
