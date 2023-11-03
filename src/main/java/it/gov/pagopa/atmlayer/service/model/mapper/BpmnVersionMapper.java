@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
+import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
@@ -34,4 +35,17 @@ public abstract class BpmnVersionMapper {
     @Mapping(ignore = true, target = "enabled")
     @Mapping(target = "resourceFile.bpmn",ignore = true)
     public abstract BpmnVersion toEntity(BpmnDTO bpmnDTO);
+
+  public BpmnVersion toEntityUpgrade(BpmnUpgradeDto bpmnUpgradeDto, Long version, String definitionKey) throws NoSuchAlgorithmException, IOException {
+    BpmnVersion bpmnVersion = new BpmnVersion();
+    bpmnVersion.setFunctionType(bpmnUpgradeDto.getFunctionType());
+    bpmnVersion.setStatus(StatusEnum.CREATED);
+    bpmnVersion.setSha256(BpmnUtils.calculateSha256(bpmnUpgradeDto.getFile()));
+    bpmnVersion.setDeployedFileName(bpmnUpgradeDto.getFilename().concat(".").concat(ResourceTypeEnum.BPMN.getExtension()));
+    bpmnVersion.setEnabled(true);
+    bpmnVersion.setModelVersion(version);
+    bpmnVersion.setDefinitionKey(definitionKey);
+    bpmnVersion.setBpmnId(bpmnUpgradeDto.getUuid());
+    return bpmnVersion;
+  }
 }

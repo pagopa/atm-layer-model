@@ -7,6 +7,7 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
+import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
@@ -52,7 +53,9 @@ import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
+import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.extractIdValue;
 
 @ApplicationScoped
 @Path("/bpmn")
@@ -122,16 +125,8 @@ public class BpmnResource {
     @NonBlocking
     public Uni<BpmnDTO> createBPMN(@RequestBody(required = true) @Valid BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = bpmnVersionMapper.toEntityCreation(bpmnCreationDto);
-        return bpmnVersionService.saveAndUpload(bpmnVersion, bpmnCreationDto.getFile(), bpmnCreationDto.getFilename())
-                .onItem().transformToUni(bpmn -> {
-                    return this.bpmnVersionService.findByPk(new BpmnVersionPK(bpmn.getBpmnId(), bpmn.getModelVersion()))
-                            .onItem().transformToUni(optionalBpmn -> {
-                                if (optionalBpmn.isEmpty()) {
-                                    return Uni.createFrom().failure(new AtmLayerException("Sync problem on bpmn creation", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
-                                }
-                                return Uni.createFrom().item(bpmnVersionMapper.toDTO(optionalBpmn.get()));
-                            });
-                });
+        return this.bpmnVersionService.createBPMN(bpmnVersion, bpmnCreationDto.getFile(), bpmnCreationDto.getFilename())
+                .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn)));
     }
 
     @DELETE
@@ -211,5 +206,13 @@ public class BpmnResource {
                                         }));
                             });
                 });
+    }
+
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/upgrade")
+    public Uni<BpmnDTO> upgradeBPMN(@Valid BpmnUpgradeDto bpmnUpgradeDto){
+      return bpmnVersionService.upgrade(bpmnUpgradeDto);
     }
 }

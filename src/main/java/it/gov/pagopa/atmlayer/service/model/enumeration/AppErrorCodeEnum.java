@@ -5,11 +5,14 @@ import lombok.Getter;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.CONSTRAINT_VIOLATION;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.GENERIC;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INTERNAL;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INVALID_DEPLOY;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INVALID_FUNCTION_TYPE;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DELETABLE;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYABLE_STATUS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYED_STATUS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_EXISTING_REFERENCED_ENTITY;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_UPGRADABLE;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_FILE;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_REFERENCED_ENTITY;
 
 /**
@@ -28,7 +31,14 @@ public enum AppErrorCodeEnum {
     MULTIPLE_BPMN_FILE_FOR_SINGLE_CONFIGURATION("ATMLM_4000007", "Multiple BPMN file found for a single configuration", INTERNAL),
     NO_BPMN_FOUND_FOR_CONFIGURATION("ATMLM_4000008", "No runnable BPMN found for configuration", NOT_VALID_REFERENCED_ENTITY),
     NO_FILE_OR_STORAGE_KEY_FOUND_FOR_BPMN("ATMLM_4000009", "No storage key or file found for BPMN", NOT_VALID_REFERENCED_ENTITY),
-    OBJECT_STORE_SAVE_FILE_ERROR("ATMLM_4000100", "Error on persisting file on Object Store ", INTERNAL);
+    OBJECT_STORE_SAVE_FILE_ERROR("ATMLM_4000010", "Error on persisting file on Object Store ", INTERNAL),
+    BPMN_FILE_CANNOT_BE_UPGRADED("ATMLM_4000011", "The referenced BPMN file can not be upgraded", NOT_UPGRADABLE),
+    BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS("ATMLM_4000012","A BPMN file with the same Camunda definition key already exists", CONSTRAINT_VIOLATION),
+    BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY("ATMLM_4000013","BPMN file does not have a definition key",NOT_VALID_FILE),
+    MALFORMED_FILE("ATMLM_4000014","Cannot Read Input File",NOT_VALID_FILE),
+    SHA256_ERROR("ATMLM_4000015","Cannot calculate SHA256 of Input file",NOT_VALID_FILE),
+    DEPLOY_ERROR("ATMLM_4000016","Empty Process Infos in deploy payload",INVALID_DEPLOY);
+
 
     private final String errorCode;
     private final String errorMessage;

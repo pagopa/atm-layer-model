@@ -11,6 +11,8 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.UUID;
 
+import static it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues.NULL_VALUE;
+
 @Embeddable
 @Getter
 @Setter
@@ -31,8 +33,8 @@ public class BpmnBankConfigPK implements Serializable {
     private String acquirerId;
 
     @Column(name = "branch_id")
-    private String branchId = "null";
+    private String branchId = NULL_VALUE.getValue();
 
     @Column(name = "terminal_id")
-    private String terminalId = "null";
+    private String terminalId = NULL_VALUE.getValue();
 }

@@ -5,8 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum BankConfigUtilityValues {
-    NULL_VALUE("ALL");
+public enum FileParsingUtilityValues {
+    TAG_NAME("bpmn:process"),
+    ATTRIBUTE("id");
 
     private String value;
 }
