@@ -37,7 +37,7 @@ public class BpmnUtilsTest {
 
     @Test
     void testCalculateSha256() throws NoSuchAlgorithmException, IOException {
-        String expectedSha256 = "4e42373c2dbf12a9ec56839ef0b6a91ce54e624cdc342ee44b08483017193c7e";
+        String expectedSha256 = "21b7734025492d8c639e4177d73fb352aa26a90be462f1628879904429ae6c27";
         String actualSha256 = BpmnUtils.calculateSha256(testFile);
         assertEquals(expectedSha256, actualSha256);
     }

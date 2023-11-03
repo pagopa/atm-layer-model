@@ -35,6 +35,9 @@ public class FileUtils {
             throw new AtmLayerException("Malformed File", Response.Status.BAD_REQUEST, MALFORMED_FILE);
         }
         Element definitionsElement = (Element) document.getElementsByTagName(FileParsingUtilityValues.TAG_NAME.getValue()).item(0);
+        if (definitionsElement == null) {
+            throw new AtmLayerException("Failed to find definition key in the BPMN file", Response.Status.NOT_ACCEPTABLE, BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY);
+        }
         String definitionKey = definitionsElement.getAttribute(FileParsingUtilityValues.ATTRIBUTE.getValue());
             if (definitionKey.isBlank()) {
                 throw new AtmLayerException("Failed to find definition key in the BPMN file", Response.Status.NOT_ACCEPTABLE, BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY);
