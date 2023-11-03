@@ -59,7 +59,7 @@ spec:
 
           volumeMounts:
           - name: secrets-store-inline
-            mountPath: "/mnt/secrets-store/1"
+            mountPath: "/mnt/secrets-store"
             readOnly: true
 
   strategy:

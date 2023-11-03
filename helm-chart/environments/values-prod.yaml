@@ -8,21 +8,42 @@ image:
   repository: 00000000000.dkr.ecr.eu-south-1.amazonaws.com/xxxxxxx
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: prod
+  tag: latest
+
+namespace: pagopa
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+database:
+  type: postgresql
+  url: postgresql://pagopa-prod-atm-layer-rds.cluster-cyezwzpjc2tj.eu-south-1.rds.amazonaws.com:5431/pagopadb?search_path=atm_layer_model_schema
+  db_name: pagopadb
+  credentialsSecretName: "pagopa-prod-atm-layer-model-database"
+  credentialsSecretKeys:
+    username: USERNAME_DB
+    password: PASSWORD_DB
+
+objectStore:
+  region: eu-south-1
+  type: AWS_S3
+  bucket_name: pagopa-prod-atm-layer-s3-model
+  bpmn_template_path: /BPMN/files/UUID/[uuid]/VERSION/[version]
+
+secretProviderClass:
+  name: atm-layer-model-secrets
+  env: prod
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
-  annotations: {}
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::00000000000:role/pagopa-prod-atm-layer-xxxxxx-serviceaccount-role
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: xxxxxx
-  namespace: pagopa
+  name: pagopa-prod-atm-layer-model
 
 podAnnotations: {}
 
@@ -37,23 +58,31 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+deployment:
+  name: pagopa-prod-atm-layer-model
+  annotations:
+    reloader.stakater.com/auto: "true"
+    secret.reloader.stakater.com/reload: pagopa-prod-atm-layer-model-database
+
 service:
+  name: pagopa-prod-atm-layer-model
   type: NodePort
   port: 8080
 
 ingress:
-  enabled: false
+  enabled: true
+  name: pagopa-prod-atm-layer-model
   className: ""
   annotations: 
     kubernetes.io/ingress.class: "alb"
     alb.ingress.kubernetes.io/scheme: "internal"
     alb.ingress.kubernetes.io/group.name: "alb-controller"
-    alb.ingress.kubernetes.io/load-balancer-name: "pagopa-dev-atm-layer-alb-int"
+    alb.ingress.kubernetes.io/load-balancer-name: "pagopa-prod-atm-layer-alb-int"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTP": 8080}]'
   hosts:
-    - host: chart-example.local
+    - host:
       paths:
-        - path: /microservice5/
+        - path: /api/v1/model
           pathType: Prefix
   tls: []
   #  - secretName: chart-example-tls
@@ -84,7 +113,6 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
 
 Release:
   Time:
