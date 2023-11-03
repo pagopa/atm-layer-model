@@ -46,7 +46,7 @@ public class FileUtilsTest {
     public void extractIdValueOK() {
         try {
             String expectedValue = "demo11_06";
-            File file = new File("C:\\DEV\\PagoPA\\ATM-LAYER\\GitHub\\model\\src\\test\\resources\\Test.bpmn");
+            File file = new File("src/test/resources/Test.bpmn");
 
 
             String actualValue = extractIdValue(file);
@@ -59,7 +59,7 @@ public class FileUtilsTest {
 
     @Test
     public void extractIdValueKO() {
-        File fileNoKey = new File("C:\\DEV\\PagoPA\\ATM-LAYER\\GitHub\\model\\src\\test\\resources\\TestMalformed.bpmn");
+        File fileNoKey = new File("src/test/resources/TestMalformed.bpmn");
         AtmLayerException exception = assertThrows(AtmLayerException.class, () -> {
             extractIdValue(fileNoKey);
         });
