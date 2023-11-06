@@ -30,18 +30,14 @@ public class ResourceFileServiceImplTest {
 
     @Test
     public void testSaveResourceFile() {
-        // Crea un oggetto ResourceFile di esempio
         ResourceFile resourceFile = new ResourceFile();
         resourceFile.setFileName("test.txt");
         resourceFile.setResourceType(ResourceTypeEnum.BPMN);
 
-        // Configura il comportamento del mock per il metodo persist
         when(resourceFileRepository.persist(resourceFile)).thenReturn(Uni.createFrom().item(resourceFile));
 
-        // Esegui il metodo da testare
         Uni<ResourceFile> savedResourceFile = resourceFileService.save(resourceFile);
 
-        // Verifica che l'oggetto salvato corrisponda all'oggetto restituito
         ResourceFile result = savedResourceFile.await().indefinitely();
         assertEquals(resourceFile, result);
     }
