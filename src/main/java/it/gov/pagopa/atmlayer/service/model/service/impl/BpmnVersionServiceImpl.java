@@ -154,7 +154,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 );
     }
 
-    private Uni<Boolean> checkBpmnFileExistence(BpmnVersionPK bpmnVersionPK) {
+    public Uni<Boolean> checkBpmnFileExistence(BpmnVersionPK bpmnVersionPK) {
         return this.findByPk(bpmnVersionPK)
                 .onItem()
                 .transform(Unchecked.function(optionalBpmn -> {
