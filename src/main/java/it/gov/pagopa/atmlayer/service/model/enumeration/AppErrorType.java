@@ -16,5 +16,6 @@ public enum AppErrorType {
     INTERNAL,
     NOT_UPGRADABLE,
     NOT_VALID_FILE,
-    INVALID_DEPLOY
+    INVALID_DEPLOY,
+    ID_NOT_FOUND
 }

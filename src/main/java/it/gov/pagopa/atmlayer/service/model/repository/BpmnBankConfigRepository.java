@@ -39,4 +39,10 @@ public class BpmnBankConfigRepository implements PanacheRepositoryBase<BpmnBankC
                 "where b.bpmnBankConfigPK.branchId= :branchId and b.bpmnBankConfigPK.acquirerId = :acquirerId and b.functionType= :functionType " +
                 "and b.bpmnBankConfigPK.terminalId= :terminalId", params).list();
     }
+
+    public Uni<List<BpmnBankConfig>> findByAcquirerId(String acquirerId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("acquirerId", acquirerId);
+        return find("select b from BpmnBankConfig b where b.bpmnBankConfigPK.acquirerId = :acquirerId", params).list();
+    }
 }
