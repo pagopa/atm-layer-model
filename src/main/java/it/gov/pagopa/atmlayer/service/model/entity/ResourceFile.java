@@ -56,6 +56,13 @@ public class ResourceFile extends PanacheEntityBase implements Serializable {
     @JsonIgnore
     private BpmnVersion bpmn;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "workflow_resource_id", referencedColumnName = "workflow_resource_id")
+    })
+    @JsonIgnore
+    private WorkflowResource workflowResource;
+
     @NotNull
     @Column(name = "storage_key")
     private String storageKey;
