@@ -35,7 +35,7 @@ public class WorkflowResource extends PanacheEntityBase implements Serializable 
     @Id
     private UUID workflowResourceId;
 
-    @OneToOne(mappedBy = "workflow_resource", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "workflowResource", cascade = CascadeType.ALL)
     ResourceFile resourceFile;
 
     @Column(name = "deployed_file_name")

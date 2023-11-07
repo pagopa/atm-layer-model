@@ -14,6 +14,8 @@ public interface ObjectStoreProperties {
 
     Bpmn bpmn();
 
+    Dmn dmn();
+
     interface Bucket {
         String name();
 
@@ -28,6 +30,10 @@ public interface ObjectStoreProperties {
 
 
     interface Bpmn {
+        String pathTemplate();
+    }
+
+    interface Dmn {
         String pathTemplate();
     }
 

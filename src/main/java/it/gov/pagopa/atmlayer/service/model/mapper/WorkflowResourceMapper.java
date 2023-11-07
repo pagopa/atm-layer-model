@@ -30,7 +30,7 @@ public abstract class WorkflowResourceMapper {
 
     public abstract WorkflowResourceDTO toDTO(WorkflowResource workflowResource);
 
-    @Mapping(ignore = true, target = "enabled")
-    @Mapping(target = "resourceFile.dmn",ignore = true)
-    public abstract WorkflowResource toEntity(WorkflowResourceDTO workflowResourceDTO);
+//    @Mapping(ignore = true, target = "enabled")
+//    @Mapping(target = "resourceFile.dmn",ignore = true)
+//    public abstract WorkflowResource toEntity(WorkflowResourceDTO workflowResourceDTO);
 }
