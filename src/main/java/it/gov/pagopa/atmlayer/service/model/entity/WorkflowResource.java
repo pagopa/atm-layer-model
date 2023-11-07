@@ -55,9 +55,6 @@ public class WorkflowResource extends PanacheEntityBase implements Serializable 
     @Column(name = "sha256", unique = true)
     private String sha256;
 
-    @Column(name = "enabled", columnDefinition = "boolean default true")
-    private Boolean enabled;
-
     @Column(name = "definition_version_camunda")
     private Integer definitionVersionCamunda;
 
