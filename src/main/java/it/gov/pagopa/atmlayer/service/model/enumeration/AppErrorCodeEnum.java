@@ -5,6 +5,7 @@ import lombok.Getter;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.CONSTRAINT_VIOLATION;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.GENERIC;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INTERNAL;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INVALID_ARGUMENT;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INVALID_DEPLOY;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INVALID_FUNCTION_TYPE;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DELETABLE;
@@ -39,7 +40,8 @@ public enum AppErrorCodeEnum {
     MALFORMED_FILE("ATMLM_4000014","Cannot Read Input File",NOT_VALID_FILE),
     SHA256_ERROR("ATMLM_4000015","Cannot calculate SHA256 of Input file",NOT_VALID_FILE),
     DEPLOY_ERROR("ATMLM_4000016","Empty Process Infos in deploy payload",INVALID_DEPLOY),
-    NO_CONFIGURATION_FOR_ACQUIRER("ATMLM_4000017","No configuration found for the provided acquirer Id", ID_NOT_FOUND);
+    NO_CONFIGURATION_FOR_ACQUIRER("ATMLM_4000017","No configuration found for the provided acquirer Id", ID_NOT_FOUND),
+    METHOD_NOT_ALLOWED("ATMLM_4000018","Cannot invoke method", INVALID_ARGUMENT);
 
 
     private final String errorCode;

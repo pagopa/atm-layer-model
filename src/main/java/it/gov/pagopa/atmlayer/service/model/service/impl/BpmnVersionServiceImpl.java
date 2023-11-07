@@ -14,6 +14,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
@@ -59,6 +60,8 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     ProcessClient processClient;
     @Inject
     BpmnVersionMapper bpmnVersionMapper;
+
+    final ResourceTypeEnum resourceType = ResourceTypeEnum.BPMN;
 
     @Override
     public Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet) {
@@ -185,7 +188,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     public Uni<BpmnVersion> createBPMN(BpmnVersion bpmnVersion, File file, String filename) {
-        String definitionKey = extractIdValue(file);
+        String definitionKey = extractIdValue(file, resourceType);
         bpmnVersion.setDefinitionKey(definitionKey);
         return findByDefinitionKey(definitionKey)
                 .onItem().transformToUni(Unchecked.function(x -> {
@@ -289,11 +292,11 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     public Uni<BpmnDTO> upgrade(BpmnUpgradeDto bpmnUpgradeDto) {
-        String definitionKey = extractIdValue(bpmnUpgradeDto.getFile());
+        String definitionKey = extractIdValue(bpmnUpgradeDto.getFile(), resourceType);
         return this.getLatestVersion(bpmnUpgradeDto.getUuid(), bpmnUpgradeDto.getFunctionType())
                 .onItem()
                 .transform(Unchecked.function(latestBPMN -> {
-                    if (!extractIdValue(bpmnUpgradeDto.getFile()).equals(latestBPMN.getDefinitionKey())) {
+                    if (!extractIdValue(bpmnUpgradeDto.getFile(), resourceType).equals(latestBPMN.getDefinitionKey())) {
                         String errorMessage = "Definition keys differ, BPMN upgrade refused";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_UPGRADED);
