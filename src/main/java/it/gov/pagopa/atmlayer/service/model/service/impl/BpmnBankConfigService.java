@@ -7,18 +7,26 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnBankConfigRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BpmnBankConfigService {
     @Inject
     protected BpmnBankConfigRepository bankConfigRepository;
+
+    @Inject
+    BpmnConfigMapper bpmnConfigMapper;
 
     @WithTransaction
     public Uni<Void> saveList(List<BpmnBankConfig> bpmnBankConfigs) {
@@ -42,6 +50,22 @@ public class BpmnBankConfigService {
                     }
 
                     return Uni.createFrom().item(x.isEmpty() ? Optional.empty() : Optional.ofNullable(x.get(0)));
+                }));
+    }
+
+    public Uni<List<BpmnBankConfigDTO>> findByAcquirerId(String acquirerId) {
+        return bankConfigRepository.findByAcquirerId(acquirerId)
+                .onItem()
+                .transformToUni(Unchecked.function(configs -> {
+                    if (configs.isEmpty()) {
+                        throw new AtmLayerException("No BPMN configurations found for this bank", Response.Status.NOT_FOUND, AppErrorCodeEnum.NO_CONFIGURATION_FOR_ACQUIRER);
+                    } else {
+                        return Uni.createFrom().item(
+                                configs.stream()
+                                        .map(bpmnConfigMapper::toDTO)
+                                        .collect(Collectors.toList())
+                        );
+                    }
                 }));
     }
 }

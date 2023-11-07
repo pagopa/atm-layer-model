@@ -212,4 +212,11 @@ public class BpmnResource {
     public Uni<BpmnDTO> upgradeBPMN(@Valid BpmnUpgradeDto bpmnUpgradeDto) {
         return bpmnVersionService.upgrade(bpmnUpgradeDto);
     }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/associations/bank/{acquirerId}")
+    public Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") String acquirerId) {
+        return bpmnBankConfigService.findByAcquirerId(acquirerId);
+    }
 }
