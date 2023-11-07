@@ -33,7 +33,7 @@ public class WorkflowResource extends PanacheEntityBase implements Serializable 
     @Column(name = "workflow_resource_id", nullable = false, updatable = false)
     @GeneratedValue(generator = "UUID")
     @Id
-    private UUID bpmnId;
+    private UUID workflowResourceId;
 
     @OneToOne(mappedBy = "workflow_resource", cascade = CascadeType.ALL)
     ResourceFile resourceFile;
