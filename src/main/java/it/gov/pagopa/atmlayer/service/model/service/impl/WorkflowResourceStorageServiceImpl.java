@@ -92,7 +92,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         valuesMap.put("uuid", uuid.toString());
         valuesMap.put("RESOURCE_TYPE", resourceType.toString());
         StringSubstitutor stringSubstitutor = new StringSubstitutor(valuesMap);
-        Optional<String> workflowResourcePathTemplateProps = Optional.ofNullable(objectStoreProperties.dmn().pathTemplate());
+        Optional<String> workflowResourcePathTemplateProps = Optional.ofNullable(objectStoreProperties.workflowResource().pathTemplate());
         String pathTemplate = WORKFLOW_TEMPLATE_PATH_DEFAULT;
         if (workflowResourcePathTemplateProps.isPresent() && StringUtils.isNotBlank(workflowResourcePathTemplateProps.get())) {
             pathTemplate = workflowResourcePathTemplateProps.get();
