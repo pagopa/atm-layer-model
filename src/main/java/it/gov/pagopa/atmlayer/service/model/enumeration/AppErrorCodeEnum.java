@@ -43,7 +43,6 @@ public enum AppErrorCodeEnum {
     NO_CONFIGURATION_FOR_ACQUIRER("ATMLM_4000017","No configuration found for the provided acquirer Id", ID_NOT_FOUND),
     METHOD_NOT_ALLOWED("ATMLM_4000018","Cannot invoke method", INVALID_ARGUMENT),
     RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS("ATMLM_4000019","A resource with the same content already exists", CONSTRAINT_VIOLATION),
-    METHOD_NOT_ALLOWED("ATMLM_4000020","Cannot invoke method", INVALID_ARGUMENT),
     WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST("ATMLM_4000021","A Workflow Resource file with the same content already exists", CONSTRAINT_VIOLATION),
     WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS("ATMLM_4000022","A Workflow Resource file with the same Camunda definition key already exists", CONSTRAINT_VIOLATION),
     WORKFLOW_FILE_DOES_NOT_EXIST("ATMLM_4000023", "The referenced Workflow Resource file does not exist", NOT_EXISTING_REFERENCED_ENTITY),
