@@ -266,7 +266,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     bpmnVersion.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
                     bpmnVersion.setDeploymentId(deployedProcessInfo.getDeploymentId());
                     bpmnVersion.setCamundaDefinitionId(deployedProcessInfo.getId());
-                    bpmnVersion.setDefinitionKey(deployedProcessInfo.getKey());
+//                    bpmnVersion.setDefinitionKey(deployedProcessInfo.getKey());
                     bpmnVersion.setDeployedFileName(deployedProcessInfo.getName());
                     bpmnVersion.setDescription(deployedProcessInfo.getDescription());
                     bpmnVersion.setResource(deployedProcessInfo.getResource());
