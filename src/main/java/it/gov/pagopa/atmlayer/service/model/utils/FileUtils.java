@@ -19,6 +19,7 @@ import java.io.IOException;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.MALFORMED_FILE;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.METHOD_NOT_ALLOWED;
 
 @ApplicationScoped
 @Slf4j
