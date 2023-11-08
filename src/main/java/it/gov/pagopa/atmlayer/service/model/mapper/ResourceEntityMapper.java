@@ -20,4 +20,5 @@ public abstract class ResourceEntityMapper {
     }
 
     //TODO: IMPLEMENT toDto(ResourceEntity resourceEntity) METHOD
+    public abstract ResourceEntityDTO toDTO(ResourceEntity resourceEntity);
 }

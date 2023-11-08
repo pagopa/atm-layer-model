@@ -29,10 +29,8 @@ import java.security.NoSuchAlgorithmException;
 @Tag(name = "RESOURCES", description = "RESOURCES operations")
 @Slf4j
 public class ResourceEntityResource {
-
     @Inject
     ResourceEntityMapper resourceEntityMapper;
-
     @Inject
     ResourceEntityService resourceEntityService;
 
@@ -40,13 +38,11 @@ public class ResourceEntityResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @NonBlocking
-    public Uni<ResourceEntity> createResource(@RequestBody(required = true) @Valid ResourceCreationDto resourceCreationDto) throws NoSuchAlgorithmException, IOException {
-        ResourceEntity resourceEntity=resourceEntityMapper.toEntityCreation(resourceCreationDto);
-        return resourceEntityService.createResource(resourceEntity,resourceCreationDto.getFile(),resourceCreationDto.getFilename())
-                .onItem().transformToUni(resource -> Uni.createFrom().item(resource));
+    public Uni<ResourceEntityDTO> createResource(@RequestBody(required = true) @Valid ResourceCreationDto resourceCreationDto) throws NoSuchAlgorithmException, IOException {
+        ResourceEntity resourceEntity = resourceEntityMapper.toEntityCreation(resourceCreationDto);
+        return resourceEntityService.createResource(resourceEntity, resourceCreationDto.getFile(), resourceCreationDto.getFilename())
+                //.onItem().transformToUni(resource -> Uni.createFrom().item(resource));
                 //quando il metodo toDto è implementato nel mapper, sostituire con:
-                //.onItem().transformToUni(resource -> Uni.createFrom().item(resourceEntityMapper.toDTO(resource)));
-
+                .onItem().transformToUni(resource -> Uni.createFrom().item(resourceEntityMapper.toDTO(resource)));
     }
-
 }

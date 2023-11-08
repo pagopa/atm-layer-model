@@ -26,17 +26,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name = "resource_entity")
 public class ResourceEntity extends PanacheEntityBase implements Serializable {
-    @Column(name = "bpmn_id", nullable = false, updatable = false)
+    @Column(name = "resource_id", nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     private UUID resourceId;
-    //@OneToOne(mappedBy = "resourceEntity", cascade = CascadeType.ALL)
-    //ResourceFile resourceFile;
+    @OneToOne(mappedBy = "resourceEntity", cascade = CascadeType.ALL)
+    ResourceFile resourceFile;
     @Column(name = "sha256", unique = true)
     private String sha256;
-    @Column(name="resourceType")
+    @Column(name = "resourceType")
     ResourceTypeEnum resourceTypeEnum;
-    @Column(name="file_name")
+    @Column(name = "file_name")
     String fileName;
     @CreationTimestamp
     @Column(name = "created_at")
