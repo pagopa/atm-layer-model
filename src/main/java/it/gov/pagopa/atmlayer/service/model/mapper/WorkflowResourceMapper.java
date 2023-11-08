@@ -24,7 +24,8 @@ public abstract class WorkflowResourceMapper {
         workflowResource.setFunctionType(workflowCreationDto.getFunctionType());
         workflowResource.setStatus(StatusEnum.CREATED);
         workflowResource.setSha256(BpmnUtils.calculateSha256(workflowCreationDto.getFile()));
-        workflowResource.setDeployedFileName(workflowCreationDto.getFilename().concat(".").concat(ResourceTypeEnum.BPMN.getExtension()));
+        workflowResource.setDeployedFileName(workflowCreationDto.getFilename().concat(".").concat(workflowCreationDto.getResourceType().toString()));
+        workflowResource.setResourceType(workflowCreationDto.getResourceType());
         return workflowResource;
     }
 

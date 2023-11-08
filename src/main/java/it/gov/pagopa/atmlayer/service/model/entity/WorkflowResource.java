@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -47,6 +48,10 @@ public class WorkflowResource extends PanacheEntityBase implements Serializable 
     @Column(name = "function_type")
     @Enumerated(EnumType.STRING)
     private FunctionTypeEnum functionType;
+
+    @Column(name = "resource_type")
+    @Enumerated(EnumType.STRING)
+    private ResourceTypeEnum resourceType;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

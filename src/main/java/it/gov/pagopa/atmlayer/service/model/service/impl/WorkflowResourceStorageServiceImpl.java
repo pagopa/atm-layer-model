@@ -56,7 +56,8 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
     @Override
     public Uni<ResourceFile> uploadFile(WorkflowResource workflowResource, File file, String filename) {
         UUID uuid = workflowResource.getWorkflowResourceId();
-        String path = calculatePath(uuid);
+        ResourceTypeEnum resourceType = workflowResource.getResourceType();
+        String path = calculatePath(uuid, resourceType);
         String completeName = filename.concat(".").concat(ResourceTypeEnum.DMN.getExtension());
         log.info("Requesting to write file {} in Object Store at path  {}", file.getName(), path);
         Context context = Vertx.currentContext();
@@ -80,18 +81,19 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
 
     @Override
     public Uni<URL> generatePresignedUrl(String storageKey) {
-        return null;
+        return this.objectStoreService.generatePresignedUrl(storageKey);
     }
 
     @Override
     public RestMulti<Buffer> download(String storageKey) {
-        return null;
+        return this.objectStoreService.download(storageKey);
     }
 
     //TODO: fix {$RESOURCE_TYPE}
-    private String calculatePath(UUID uuid) {
+    private String calculatePath(UUID uuid, ResourceTypeEnum resourceType) {
         Map<String, String> valuesMap = new HashMap<>();
         valuesMap.put("uuid", uuid.toString());
+        valuesMap.put("RESOURCE_TYPE", resourceType.toString());
         StringSubstitutor stringSubstitutor = new StringSubstitutor(valuesMap);
         Optional<String> workflowResourcePathTemplateProps = Optional.ofNullable(objectStoreProperties.dmn().pathTemplate());
         String pathTemplate = WORKFLOW_TEMPLATE_PATH_DEFAULT;

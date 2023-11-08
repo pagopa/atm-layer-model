@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.FormParam;
@@ -27,4 +28,8 @@ public class WorkflowResourceCreationDto {
     @FormParam("functionType")
     @NotNull(message = "function type is required")
     private FunctionTypeEnum functionType;
+
+    @FormParam("resourceType")
+    @NotNull(message = "resource type is required")
+    private ResourceTypeEnum resourceType;
 }
