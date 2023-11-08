@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -51,7 +52,6 @@ public class WorkflowResourceResource {
     @Path("/deploy/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<WorkflowResourceDTO> deployBPMN(@PathParam("uuid") UUID uuid) {
-
         return this.workflowResourceService.deploy(uuid)
                 .onItem().transformToUni(workflow -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(workflow)));
     }

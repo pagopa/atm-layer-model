@@ -24,4 +24,6 @@ public interface WorkflowResourceService {
     Uni<WorkflowResource> createWorkflowResource(WorkflowResource workflowResource, File file, String filename);
 
     Uni<Boolean> delete(UUID uuid);
+
+//    Uni<WorkflowResource> update(UUID id, WorkflowResource workflowResource);
 }

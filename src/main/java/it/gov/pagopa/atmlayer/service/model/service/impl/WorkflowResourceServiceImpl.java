@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -252,4 +253,22 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     return Uni.createFrom().item(x.get());
                 })).onItem().transformToUni(y -> this.workflowResourceRepository.deleteById(uuid));
     }
+
+//    @Override
+//    public Uni<WorkflowResource> update(UUID id, WorkflowResource workflowResource) {
+//        log.info("Updating Workflow Resource with id {}", id.toString());
+//        return this.findById(id)
+//                .onItem()
+//                .transformToUni(Unchecked.function((x -> {
+//                    if (x.isEmpty()) {
+//                        throw new AtmLayerException(String.format("Workflow Resource with id %s does not exists", id), Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+//                    }
+//                    if (!StatusEnum.isEditable(x.get().getStatus())) {
+//                        throw new AtmLayerException(String.format("Workflow Resource with id %s is in status %s and cannot be " +
+//                                "deleted. Only Workflow Resource files in status %s can be deleted", id.toString(), x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_UPDATED_FOR_STATUS);
+//                    }
+//                    workflowResource.setWorkflowResourceId(id);
+//                    return this.workflowResourceRepository.persist(workflowResource);
+//                })));
+//    }
 }

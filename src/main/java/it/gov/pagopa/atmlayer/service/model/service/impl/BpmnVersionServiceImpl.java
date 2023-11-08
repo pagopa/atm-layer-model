@@ -100,9 +100,9 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     if (x.isEmpty()) {
                         throw new AtmLayerException(String.format("BPMN with id %s does not exists", bpmnVersionPK), Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
                     }
-                    if (!StatusEnum.isDeletable(x.get().getStatus())) {
+                    if (!StatusEnum.isEditable(x.get().getStatus())) {
                         throw new AtmLayerException(String.format("BPMN with id %s is in status %s and cannot be " +
-                                "deleted. Only BPMN files in status %s can be deleted", bpmnVersionPK.toString(), x.get().getStatus(), StatusEnum.getDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
+                                "deleted. Only BPMN files in status %s can be deleted", bpmnVersionPK.toString(), x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
                     }
                     return Uni.createFrom().item(x.get());
                 })).onItem().transformToUni(y -> this.bpmnVersionRepository.deleteById(bpmnVersionPK));
