@@ -24,9 +24,6 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 public class FileUtils {
 
     public static String extractIdValue(File file, WorkflowResourceTypeEnum workflowResourceTypeEnum) {
-        if (workflowResourceTypeEnum == WorkflowResourceTypeEnum.HTML){
-            throw new AtmLayerException("extractIdValue() cannot be invoked on HTML file", Response.Status.BAD_REQUEST, METHOD_NOT_ALLOWED);
-        }
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
         Document document = null;
