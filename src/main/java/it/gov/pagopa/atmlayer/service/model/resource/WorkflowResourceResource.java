@@ -3,16 +3,15 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.mapper.WorkflowResourceMapper;
-import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -55,5 +54,15 @@ public class WorkflowResourceResource {
 
         return this.workflowResourceService.deploy(uuid)
                 .onItem().transformToUni(workflow -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(workflow)));
+    }
+
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{uuid}")
+    public Uni<Void> deleteBpmn(@PathParam("uuid") UUID uuid) {
+
+        return this.workflowResourceService.delete(uuid)
+                .onItem().ignore().andSwitchTo(Uni.createFrom().voidItem());
     }
 }
