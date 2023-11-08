@@ -204,7 +204,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     return this.workflowResourceStorageService.uploadFile(workflowResource, file, filename)
                             .onFailure().recoverWithUni(failure -> {
                                 log.error(failure.getMessage());
-                                return Uni.createFrom().failure(new AtmLayerException("Failed to save Workflow Resource in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
+                                return Uni.createFrom().failure(new AtmLayerException("Failed to save Workflow Resource in Object Store. Workflow Resource creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                             })
                             .onItem().transformToUni(putObjectResponse -> {
                                 log.info("Completed Workflow Resource Creation");
@@ -245,9 +245,9 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     if (x.isEmpty()) {
                         throw new AtmLayerException(String.format("Workflow Resource with id %s does not exists", uuid), Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
-                    if (!StatusEnum.isDeletable(x.get().getStatus())) {
+                    if (!StatusEnum.isEditable(x.get().getStatus())) {
                         throw new AtmLayerException(String.format("Workflow Resource with id %s is in status %s and cannot be " +
-                                "deleted. Only Workflow Resource files in status %s can be deleted", uuid.toString(), x.get().getStatus(), StatusEnum.getDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS);
+                                "deleted. Only Workflow Resource files in status %s can be deleted", uuid.toString(), x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS);
                     }
                     return Uni.createFrom().item(x.get());
                 })).onItem().transformToUni(y -> this.workflowResourceRepository.deleteById(uuid));
