@@ -2,7 +2,6 @@ package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
@@ -21,7 +20,6 @@ public abstract class WorkflowResourceMapper {
 
     public WorkflowResource toEntityCreation(WorkflowResourceCreationDto workflowCreationDto) throws NoSuchAlgorithmException, IOException {
         WorkflowResource workflowResource = new WorkflowResource();
-        workflowResource.setFunctionType(workflowCreationDto.getFunctionType());
         workflowResource.setStatus(StatusEnum.CREATED);
         workflowResource.setSha256(BpmnUtils.calculateSha256(workflowCreationDto.getFile()));
         workflowResource.setDeployedFileName(workflowCreationDto.getFilename().concat(".").concat(workflowCreationDto.getResourceType().toString()));

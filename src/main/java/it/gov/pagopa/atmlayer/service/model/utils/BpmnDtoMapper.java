@@ -1,9 +1,5 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
-import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.File;

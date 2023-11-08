@@ -1,14 +1,12 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
-import jakarta.persistence.CascadeType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,7 +33,7 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
     @Column(name = "sha256", unique = true)
     private String sha256;
     @Column(name="resourceType")
-    ResourceTypeEnum resourceTypeEnum;
+    WorkflowResourceTypeEnum workflowResourceTypeEnum;
     @Column(name="file_name")
     String fileName;
     @CreationTimestamp

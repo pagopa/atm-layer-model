@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
-import it.gov.pagopa.atmlayer.service.model.enumeration.FileParsingUtilityValues;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
@@ -16,7 +15,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.MALFORMED_FILE;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.METHOD_NOT_ALLOWED;
@@ -25,8 +23,8 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @Slf4j
 public class FileUtils {
 
-    public static String extractIdValue(File file, ResourceTypeEnum resourceTypeEnum) {
-        if (resourceTypeEnum == ResourceTypeEnum.HTML){
+    public static String extractIdValue(File file, WorkflowResourceTypeEnum workflowResourceTypeEnum) {
+        if (workflowResourceTypeEnum == WorkflowResourceTypeEnum.HTML){
             throw new AtmLayerException("extractIdValue() cannot be invoked on HTML file", Response.Status.BAD_REQUEST, METHOD_NOT_ALLOWED);
         }
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -39,8 +37,8 @@ public class FileUtils {
             log.error(e.getMessage());
             throw new AtmLayerException("Malformed File", Response.Status.BAD_REQUEST, MALFORMED_FILE);
         }
-        Element definitionsElement = (Element) document.getElementsByTagName(resourceTypeEnum.getTagName()).item(0);
-        String definitionKey = definitionsElement.getAttribute(resourceTypeEnum.getAttribute());
+        Element definitionsElement = (Element) document.getElementsByTagName(workflowResourceTypeEnum.getTagName()).item(0);
+        String definitionKey = definitionsElement.getAttribute(workflowResourceTypeEnum.getAttribute());
             if (definitionKey.isBlank()) {
                 throw new AtmLayerException("Failed to find definition key in the BPMN file", Response.Status.NOT_ACCEPTABLE, BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY);
             }

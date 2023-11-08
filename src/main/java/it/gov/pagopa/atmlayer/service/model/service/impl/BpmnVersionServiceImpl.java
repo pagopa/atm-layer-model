@@ -14,7 +14,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
@@ -61,7 +61,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @Inject
     BpmnVersionMapper bpmnVersionMapper;
 
-    final ResourceTypeEnum resourceType = ResourceTypeEnum.BPMN;
+    final WorkflowResourceTypeEnum resourceType = WorkflowResourceTypeEnum.BPMN;
 
     @Override
     public Uni<List<BpmnVersion>> getAll() {

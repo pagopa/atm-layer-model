@@ -3,7 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.mapper;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
@@ -27,7 +27,7 @@ public abstract class BpmnVersionMapper {
         bpmnVersion.setFunctionType(bpmnCreationDto.getFunctionType());
         bpmnVersion.setStatus(StatusEnum.CREATED);
         bpmnVersion.setSha256(BpmnUtils.calculateSha256(bpmnCreationDto.getFile()));
-        bpmnVersion.setDeployedFileName(bpmnCreationDto.getFilename().concat(".").concat(ResourceTypeEnum.BPMN.getExtension()));
+        bpmnVersion.setDeployedFileName(bpmnCreationDto.getFilename().concat(".").concat(WorkflowResourceTypeEnum.BPMN.getExtension()));
         bpmnVersion.setEnabled(true);
         return bpmnVersion;
     }
@@ -47,7 +47,7 @@ public abstract class BpmnVersionMapper {
     bpmnVersion.setFunctionType(bpmnUpgradeDto.getFunctionType());
     bpmnVersion.setStatus(StatusEnum.CREATED);
     bpmnVersion.setSha256(BpmnUtils.calculateSha256(bpmnUpgradeDto.getFile()));
-    bpmnVersion.setDeployedFileName(bpmnUpgradeDto.getFilename().concat(".").concat(ResourceTypeEnum.BPMN.getExtension()));
+    bpmnVersion.setDeployedFileName(bpmnUpgradeDto.getFilename().concat(".").concat(WorkflowResourceTypeEnum.BPMN.getExtension()));
     bpmnVersion.setEnabled(true);
     bpmnVersion.setModelVersion(version);
     bpmnVersion.setDefinitionKey(definitionKey);

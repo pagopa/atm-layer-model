@@ -1,11 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
-import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
-import jakarta.persistence.CascadeType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,7 +13,7 @@ public class ResourceEntityDTO {
     private UUID resourceId;
     private String sha256;
     @Column(name="resourceType")
-    ResourceTypeEnum resourceTypeEnum;
+    WorkflowResourceTypeEnum workflowResourceTypeEnum;
     @CreationTimestamp
     @Column(name = "created_at")
     private Timestamp createdAt;

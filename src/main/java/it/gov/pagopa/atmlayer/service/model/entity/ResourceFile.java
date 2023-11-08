@@ -2,7 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,7 +46,7 @@ public class ResourceFile extends PanacheEntityBase implements Serializable {
     @Column(name = "resource_type")
     @Enumerated(EnumType.STRING)
     @NotNull
-    private ResourceTypeEnum resourceType;
+    private WorkflowResourceTypeEnum resourceType;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumns({
