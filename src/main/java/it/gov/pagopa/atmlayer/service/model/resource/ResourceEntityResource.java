@@ -43,9 +43,10 @@ public class ResourceEntityResource {
     public Uni<ResourceEntity> createResource(@RequestBody(required = true) @Valid ResourceCreationDto resourceCreationDto) throws NoSuchAlgorithmException, IOException {
         ResourceEntity resourceEntity=resourceEntityMapper.toEntityCreation(resourceCreationDto);
         return resourceEntityService.createResource(resourceEntity,resourceCreationDto.getFile(),resourceCreationDto.getFilename())
+                .onItem().transformToUni(resource -> Uni.createFrom().item(resource));
                 //quando il metodo toDto è implementato nel mapper, sostituire con:
                 //.onItem().transformToUni(resource -> Uni.createFrom().item(resourceEntityMapper.toDTO(resource)));
-                .onItem().transformToUni(resource -> Uni.createFrom().item(resource));
+
     }
 
 }
