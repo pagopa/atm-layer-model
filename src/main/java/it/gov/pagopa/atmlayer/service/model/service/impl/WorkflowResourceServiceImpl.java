@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,6 +34,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_FILE_DOES_NOT_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.extractIdValue;
 
@@ -135,7 +135,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     if (!x) {
                         String errorMessage = "The referenced Workflow Resource file can not be deployed";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
-                                AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED);
+                                AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED);
                     }
                     return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.WAITING_DEPLOY);
                 }))
@@ -221,7 +221,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         return findByDefinitionKey(definitionKey)
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException("A Workflow Resource with the same definitionKey already exists", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
+                        throw new AtmLayerException("A Workflow Resource with the same definitionKey already exists", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
                     }
                     return saveAndUpload(workflowResource, file, filename)
                             .onItem().transformToUni(workflow -> {
