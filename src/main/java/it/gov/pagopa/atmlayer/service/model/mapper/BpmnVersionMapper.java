@@ -12,6 +12,8 @@ import org.mapstruct.Mapping;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "cdi")
 public abstract class BpmnVersionMapper {
@@ -31,6 +33,10 @@ public abstract class BpmnVersionMapper {
     }
 
     public abstract BpmnDTO toDTO(BpmnVersion bpmnVersion);
+
+    public List<BpmnDTO> toDTOList(List<BpmnVersion> list){
+        return list.stream().map(this::toDTO).collect(Collectors.toList());
+    }
 
     @Mapping(ignore = true, target = "enabled")
     @Mapping(target = "resourceFile.bpmn",ignore = true)

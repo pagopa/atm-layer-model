@@ -64,6 +64,11 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     final ResourceTypeEnum resourceType = ResourceTypeEnum.BPMN;
 
     @Override
+    public Uni<List<BpmnVersion>> getAll() {
+        return this.bpmnVersionRepository.findAll().list();
+    }
+
+    @Override
     public Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet) {
         return this.bpmnVersionRepository.findByIds(bpmnVersionPKSet);
     }
@@ -152,7 +157,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 );
     }
 
-    private Uni<Boolean> checkBpmnFileExistence(BpmnVersionPK bpmnVersionPK) {
+    public Uni<Boolean> checkBpmnFileExistence(BpmnVersionPK bpmnVersionPK) {
         return this.findByPk(bpmnVersionPK)
                 .onItem()
                 .transform(Unchecked.function(optionalBpmn -> {
