@@ -89,7 +89,6 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         return this.objectStoreService.download(storageKey);
     }
 
-    //TODO: fix {$RESOURCE_TYPE}
     private String calculatePath(UUID uuid, ResourceTypeEnum resourceType) {
         Map<String, String> valuesMap = new HashMap<>();
         valuesMap.put("uuid", uuid.toString());

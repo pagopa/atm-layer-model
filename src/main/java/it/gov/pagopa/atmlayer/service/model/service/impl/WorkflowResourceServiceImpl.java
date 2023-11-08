@@ -135,15 +135,15 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (!x) {
-                        String errorMessage = "The referenced BPMN file can not be deployed";
+                        String errorMessage = "The referenced Workflow Resource file can not be deployed";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED);
                     }
                     return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.WAITING_DEPLOY);
                 }))
                 .onItem()
-                .transformToUni(bpmnWaiting -> {
-                    ResourceFile resourceFile = bpmnWaiting.getResourceFile();
+                .transformToUni(workflowWaiting -> {
+                    ResourceFile resourceFile = workflowWaiting.getResourceFile();
                     if (Objects.isNull(resourceFile) || StringUtils.isBlank(resourceFile.getStorageKey())) {
                         String errorMessage = String.format("No file associated to Workflow Resource or no storage key found: %s", uuid);
                         log.error(errorMessage);
