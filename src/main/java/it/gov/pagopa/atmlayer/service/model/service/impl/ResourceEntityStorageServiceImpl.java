@@ -63,10 +63,10 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
         return this.resourceFileService.findByStorageKey(storageKey)
                 .onItem()
                 .transformToUni(resource -> {
-                    if(resource.isPresent()){
-                        String errorMessage = String.format("Cannot upload %s: resource with same file name and path already exists", storageKey);
-                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
-                    }
+
+                   if(resource.isPresent()){
+                       throwErrorMessage(String.format("Cannot upload %s: resource with same file name and path already exists", storageKey), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED );
+                  }
                     log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
                     Context context = Vertx.currentContext();
                     return objectStoreService.uploadFile(file, finalPath, resourceType, completeName)
@@ -75,6 +75,10 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
                             .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(resourceEntity,
                                     objectStorePutResponse, filename));
                 });
+    }
+
+    private void throwErrorMessage(String errorMessage, Response.Status status, AppErrorCodeEnum appError){
+        throw new AtmLayerException(errorMessage, status, appError);
     }
 
     @Override
