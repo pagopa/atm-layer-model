@@ -18,7 +18,7 @@ public interface ResourceEntityService {
 
     Uni<Optional<ResourceEntity>> findByUUID(UUID uuid);
 
-    Uni<ResourceEntity> saveAndUpload(ResourceEntity resourceEntity, File file, String filename);
+    Uni<ResourceEntity> saveAndUpload(ResourceEntity resourceEntity, File file, String filename, String path);
 
-    Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file, String filename);
+    Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file, String filename,String path);
 }
