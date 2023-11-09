@@ -7,8 +7,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
+import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
@@ -17,6 +19,7 @@ import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService
 import it.gov.pagopa.atmlayer.service.model.strategy.ObjectStoreStrategy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -47,20 +50,31 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     }
 
     @Override
-    public Uni<ResourceFile> uploadFile(ResourceEntity resourceEntity, File file, String filename, String specificPath) {
+    public Uni<ResourceFile> uploadFile(ResourceEntity resourceEntity, File file, String filename, String relativePath) {
         ResourceTypeEnum resourceType = resourceEntity.getResourceTypeEnum();
         String path = calculatePath(resourceType);
-        if (!specificPath.isBlank()) {
-            path = path.concat("/").concat(specificPath);
+        if (!relativePath.isBlank()) {
+            path = path.concat("/").concat(relativePath);
         }
         String completeName = filename.concat(".").concat(resourceType.getExtension());
-        log.info("Requesting to write file {} in Object Store at path {}", file.getName(), path);
-        Context context = Vertx.currentContext();
-        return objectStoreService.uploadFile(file, path, resourceType, completeName)
-                .emitOn(command -> context.runOnContext(x -> command.run()))
+
+        String storageKey=path.concat("/").concat(completeName);
+        String finalPath = path;
+        return this.resourceFileService.findByStorageKey(storageKey)
                 .onItem()
-                .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(resourceEntity,
-                        objectStorePutResponse, filename));
+                .transformToUni(resource -> {
+                    if(resource.isPresent()){
+                        String errorMessage = String.format("Cannot upload %s: resource with same file name and path already exists", storageKey);
+                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
+                    }
+                    log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
+                    Context context = Vertx.currentContext();
+                    return objectStoreService.uploadFile(file, finalPath, resourceType, completeName)
+                            .emitOn(command -> context.runOnContext(x -> command.run()))
+                            .onItem()
+                            .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(resourceEntity,
+                                    objectStorePutResponse, filename));
+                });
     }
 
     @Override
