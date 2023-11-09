@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -251,6 +252,11 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     }
                     return Uni.createFrom().item(x.get());
                 })).onItem().transformToUni(y -> this.workflowResourceRepository.deleteById(uuid));
+    }
+
+    @Override
+    public Uni<List<WorkflowResource>> getAll() {
+        return this.workflowResourceRepository.findAll().list();
     }
 
 //    @Override

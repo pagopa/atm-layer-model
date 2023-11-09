@@ -45,7 +45,6 @@ public class ResourceFile extends PanacheEntityBase implements Serializable {
 
     @Column(name = "resource_type")
     @Enumerated(EnumType.STRING)
-    @NotNull
     private WorkflowResourceTypeEnum resourceType;
 
     @OneToOne(fetch = FetchType.LAZY)

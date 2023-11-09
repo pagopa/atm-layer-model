@@ -2,8 +2,10 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
+import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.WorkflowResourceMapper;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
@@ -12,19 +14,23 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.UUID;
+
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_FILE_DOES_NOT_EXIST;
 
 @ApplicationScoped
 @Path("/workflow-resource")
@@ -37,6 +43,33 @@ public class WorkflowResourceResource {
 
     @Inject
     WorkflowResourceMapper workflowResourceMapper;
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<List<WorkflowResourceDTO>> getAllBpmn(){
+        return this.workflowResourceService.getAll()
+                .onItem()
+                .transform(Unchecked.function(list -> {
+                    if (list.isEmpty()) {
+                        log.info("No Workflow Resource files saved in database");
+                    }
+                    return workflowResourceMapper.toDTOList(list);
+                }));
+    }
+
+    @GET
+    @Path("/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<WorkflowResourceDTO> getById(@PathParam("uuid") UUID id) {
+        return this.workflowResourceService.findById(id)
+                .onItem()
+                .transform(Unchecked.function(x -> {
+                    if (x.isEmpty()) {
+                        throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                    }
+                    return workflowResourceMapper.toDTO(x.get());
+                }));
+    }
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)

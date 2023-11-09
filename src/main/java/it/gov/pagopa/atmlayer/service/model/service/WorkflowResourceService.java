@@ -4,6 +4,7 @@ import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +25,8 @@ public interface WorkflowResourceService {
     Uni<WorkflowResource> createWorkflowResource(WorkflowResource workflowResource, File file, String filename);
 
     Uni<Boolean> delete(UUID uuid);
+
+    Uni<List<WorkflowResource>> getAll();
 
 //    Uni<WorkflowResource> update(UUID id, WorkflowResource workflowResource);
 }
