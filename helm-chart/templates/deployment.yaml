@@ -56,6 +56,8 @@ spec:
               value: "{{ .Values.objectStore.bucket_name }}"
             - name: MODEL_OBJECT_STORE_BPMN_TEMPLATE_PATH
               value: "{{ .Values.objectStore.bpmn_template_path }}"
+            - name: MODEL_PROCESS_BASE_PATH
+              value: "{{ .Values.modelProcessBasePath }}"
 
           volumeMounts:
           - name: secrets-store-inline
