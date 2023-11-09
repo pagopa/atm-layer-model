@@ -26,6 +26,7 @@
         <surefire-plugin.version>3.0.0</surefire-plugin.version>
         <mockito.core.version>5.4.0</mockito.core.version>
         <google.guava.version>32.1.3-jre</google.guava.version>
+        <easy.random.version>5.0.0</easy.random.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -180,6 +181,12 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${google.guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jeasy</groupId>
+            <artifactId>easy-random-core</artifactId>
+            <version>${easy.random.version}</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
