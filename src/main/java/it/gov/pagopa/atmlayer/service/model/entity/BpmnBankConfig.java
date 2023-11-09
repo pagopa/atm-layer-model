@@ -1,13 +1,13 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +30,8 @@ public class BpmnBankConfig extends PanacheEntityBase implements Serializable {
     private BpmnBankConfigPK bpmnBankConfigPK;
 
     @Column(name = "function_type")
-    @Enumerated(EnumType.STRING)
-    private FunctionTypeEnum functionType;
+    @Getter(AccessLevel.NONE)
+    private String functionType;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -46,4 +46,11 @@ public class BpmnBankConfig extends PanacheEntityBase implements Serializable {
 
     @Column(name = "last_updated_by")
     private String lastUpdatedBy;
+
+    public String getFunctionType() {
+        if (functionType != null) {
+            return functionType.toUpperCase();
+        }
+        return null;
+    }
 }

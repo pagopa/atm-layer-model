@@ -13,7 +13,6 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
@@ -122,7 +121,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     @WithTransaction
-    public Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionType, List<BpmnBankConfig> bpmnBankConfigs) {
+    public Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, String functionType, List<BpmnBankConfig> bpmnBankConfigs) {
         Uni<Long> deleteExistingUni = this.bpmnBankConfigService.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
         return deleteExistingUni
                 .onItem()
@@ -275,7 +274,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 }));
     }
 
-    public Uni<BpmnVersion> getLatestVersion(UUID uuid, FunctionTypeEnum functionType) {
+    public Uni<BpmnVersion> getLatestVersion(UUID uuid, String functionType) {
         return this.bpmnVersionRepository.findByIdAndFunction(uuid, functionType)
                 .onItem()
                 .transform(list -> list.get(0))

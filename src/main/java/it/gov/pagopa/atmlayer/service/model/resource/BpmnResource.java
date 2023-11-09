@@ -14,7 +14,6 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
@@ -103,15 +102,15 @@ public class BpmnResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Collection<BpmnBankConfigDTO>> associateBPMN(@PathParam("acquirerId") String acquirerId,
-                                                            @PathParam("functionType") FunctionTypeEnum functionTypeEnum,
+                                                            @PathParam("functionType") String functionType,
                                                             @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto)
             throws NoSuchAlgorithmException, IOException {
         List<BpmnBankConfig> configs = getAcquirerConfigs(bpmnAssociationDto, acquirerId,
-                functionTypeEnum);
+                functionType);
         Set<BpmnVersionPK> bpmnIds = BpmnUtils.extractBpmnUUIDFromAssociations(configs);
-        return bpmnEntityValidator.validateExistenceStatusAndFunctionType(bpmnIds, functionTypeEnum)
+        return bpmnEntityValidator.validateExistenceStatusAndFunctionType(bpmnIds, functionType)
                 .onItem().transformToUni(
-                        x -> this.bpmnVersionService.putAssociations(acquirerId, functionTypeEnum, configs))
+                        x -> this.bpmnVersionService.putAssociations(acquirerId, functionType, configs))
                 .onItem()
                 .transformToUni(list -> Uni.createFrom().item(this.bpmnConfigMapper.toDTOList(list)));
     }
@@ -176,24 +175,24 @@ public class BpmnResource {
     @GET
     @Path("/function/{functionType}/bank/{acquirerId}/branch/{branchId}/terminal/{terminalId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<BpmnDTO> findBPMNByTriad(@PathParam("functionType") FunctionTypeEnum functionTypeEnum,
+    public Uni<BpmnDTO> findBPMNByTriad(@PathParam("functionType") String functionType,
                                         @PathParam("acquirerId") String acquirerId,
                                         @PathParam("branchId") String branchId,
                                         @PathParam("terminalId") String terminalId) {
-        return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionTypeEnum)
+        return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionType)
                 .onItem()
                 .transformToUni(x1 -> {
                     if (x1.isPresent()) {
                         return bpmnVersionService.findByPk(new BpmnVersionPK(x1.get().getBpmnBankConfigPK().getBpmnId(), x1.get().getBpmnBankConfigPK().getBpmnModelVersion()))
                                 .onItem().transformToUni(bpmn1 -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn1.get())));
                     }
-                    return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, BankConfigUtilityValues.NULL_VALUE.getValue(), functionTypeEnum)
+                    return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, BankConfigUtilityValues.NULL_VALUE.getValue(), functionType)
                             .onItem().transformToUni(x2 -> {
                                 if (x2.isPresent()) {
                                     return bpmnVersionService.findByPk(new BpmnVersionPK(x2.get().getBpmnBankConfigPK().getBpmnId(), x2.get().getBpmnBankConfigPK().getBpmnModelVersion()))
                                             .onItem().transformToUni(bpmn2 -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn2.get())));
                                 }
-                                return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, BankConfigUtilityValues.NULL_VALUE.getValue(), BankConfigUtilityValues.NULL_VALUE.getValue(), functionTypeEnum)
+                                return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, BankConfigUtilityValues.NULL_VALUE.getValue(), BankConfigUtilityValues.NULL_VALUE.getValue(), functionType)
                                         .onItem().transformToUni(Unchecked.function(x3 -> {
                                             if (x3.isPresent()) {
                                                 return bpmnVersionService.findByPk(new BpmnVersionPK(x3.get().getBpmnBankConfigPK().getBpmnId(), x3.get().getBpmnBankConfigPK().getBpmnModelVersion()))

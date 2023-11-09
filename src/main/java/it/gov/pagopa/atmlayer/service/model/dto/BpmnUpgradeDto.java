@@ -1,6 +1,5 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.FormParam;
@@ -31,5 +30,5 @@ public class BpmnUpgradeDto {
 
   @FormParam("functionType")
   @NotNull(message = "function type is required")
-  private FunctionTypeEnum functionType;
+  private String functionType;
 }

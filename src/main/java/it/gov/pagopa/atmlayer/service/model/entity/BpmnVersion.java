@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,6 +12,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,8 +49,8 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
     private String definitionKey;
 
     @Column(name = "function_type")
-    @Enumerated(EnumType.STRING)
-    private FunctionTypeEnum functionType;
+    @Getter(AccessLevel.NONE)
+    private String functionType;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -96,6 +96,13 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
         if (getBpmnId() == null) {
             setBpmnId(UUID.randomUUID());
         }
+    }
+
+    public String getFunctionType() {
+        if (functionType != null) {
+            return functionType.toUpperCase();
+        }
+        return null;
     }
 
 }
