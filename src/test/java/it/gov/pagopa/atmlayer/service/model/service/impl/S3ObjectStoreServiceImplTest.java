@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import software.amazon.awssdk.awscore.presigner.PresignedRequest;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -55,22 +56,12 @@ public class S3ObjectStoreServiceImplTest {
 //                .build();
 //
 //
-//        when(presigner.presignGetObject(getObjectPresignRequest)).thenReturn(PresignedGetObjectRequest.builder().url(expectedURL).build());
+//        when(presigner.presignGetObject(getObjectPresignRequest)).thenReturn(PresignedRequest.url(expectedURL).build());
 //
 //        Uni<URL> result= s3ObjectStoreService.generatePresignedUrl(objectKey);
 //
 //        result.subscribe().withSubscriber(UniAssertSubscriber.create()).assertCompleted().assertItem(expectedURL);
 //    }
 
-//
-//    @Test
-//    void testFindByPKSetEmptySet() {
-//        Set<BpmnVersionPK> bpmnVersionPKSet = new HashSet<>();
-//        List<BpmnVersion> expectedBpmnVersions = new ArrayList<>();
-//        when(bpmnVersionRepoMock.findByIds(bpmnVersionPKSet)).thenReturn(Uni.createFrom().item(expectedBpmnVersions));
-//        bpmnVersionServiceImpl.findByPKSet(bpmnVersionPKSet)
-//                .subscribe().withSubscriber(UniAssertSubscriber.create())
-//                .assertCompleted().assertItem(expectedBpmnVersions);
-//        verify(bpmnVersionRepoMock, times(1)).findByIds(bpmnVersionPKSet);
-//    }
+
 }
