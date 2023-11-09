@@ -4,6 +4,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
 import it.gov.pagopa.atmlayer.service.model.utils.FileStorageS3Utils;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -37,10 +38,13 @@ public class S3ObjectStoreServiceImplTest {
     @InjectMocks
     S3ObjectStoreServiceImpl s3ObjectStoreService;
 
+    EasyRandom easyRandom;
 
     @BeforeEach
     public void setup() {
+
         MockitoAnnotations.initMocks(this);
+        easyRandom = new EasyRandom();
     }
 
 
