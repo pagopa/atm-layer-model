@@ -5,7 +5,7 @@ import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import it.gov.pagopa.atmlayer.service.model.service.S3ObjectStoreService;
@@ -90,7 +90,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
     }
 
 
-    public Uni<ObjectStorePutResponse> uploadFile(File file, String path, ResourceTypeEnum fileType, String filename) {
+    public Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) {
         if (StringUtils.isBlank(filename)) {
             String errorMessage = String.format("S3 File Upload - invalid filename %s", filename);
             log.error(errorMessage);

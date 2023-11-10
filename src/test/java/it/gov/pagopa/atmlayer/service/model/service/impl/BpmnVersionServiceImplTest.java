@@ -13,7 +13,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
@@ -394,7 +394,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setStatus(StatusEnum.CREATED);
         ResourceFile resourceFile=new ResourceFile();
         resourceFile.setId(UUID.randomUUID());
-        resourceFile.setResourceType(ResourceTypeEnum.BPMN);
+        resourceFile.setResourceType(S3ResourceTypeEnum.BPMN);
         resourceFile.setStorageKey("storage key");
         bpmnVersion.setResourceFile(resourceFile);
         BpmnVersion bpmnVersionUpdated=new BpmnVersion();
@@ -422,7 +422,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setStatus(StatusEnum.DEPLOYED);
         ResourceFile resourceFile=new ResourceFile();
         resourceFile.setId(UUID.randomUUID());
-        resourceFile.setResourceType(ResourceTypeEnum.BPMN);
+        resourceFile.setResourceType(S3ResourceTypeEnum.BPMN);
         resourceFile.setStorageKey("storage key");
         bpmnVersion.setResourceFile(resourceFile);
         URL url=new URL("http://localhost:8081/test");
@@ -478,7 +478,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setStatus(StatusEnum.CREATED);
         ResourceFile resourceFile=new ResourceFile();
         resourceFile.setId(UUID.randomUUID());
-        resourceFile.setResourceType(ResourceTypeEnum.BPMN);
+        resourceFile.setResourceType(S3ResourceTypeEnum.BPMN);
         resourceFile.setStorageKey("storage key");
         bpmnVersion.setResourceFile(resourceFile);
         BpmnVersion bpmnVersionUpdated=new BpmnVersion();
@@ -512,7 +512,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setStatus(StatusEnum.CREATED);
         ResourceFile resourceFile=new ResourceFile();
         resourceFile.setId(UUID.randomUUID());
-        resourceFile.setResourceType(ResourceTypeEnum.BPMN);
+        resourceFile.setResourceType(S3ResourceTypeEnum.BPMN);
         resourceFile.setStorageKey("storage key");
         bpmnVersion.setResourceFile(resourceFile);
         URL url=new URL("http://localhost:8081/test");

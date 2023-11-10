@@ -2,20 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.enumeration;
 
 import lombok.Getter;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.CONSTRAINT_VIOLATION;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.GENERIC;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INTERNAL;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INVALID_ARGUMENT;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INVALID_DEPLOY;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INVALID_FUNCTION_TYPE;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DELETABLE;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYABLE_STATUS;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYED_STATUS;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_EXISTING_REFERENCED_ENTITY;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.ID_NOT_FOUND;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_UPGRADABLE;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_FILE;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_REFERENCED_ENTITY;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.*;
 
 /**
  * Enumeration for application error codes and messages

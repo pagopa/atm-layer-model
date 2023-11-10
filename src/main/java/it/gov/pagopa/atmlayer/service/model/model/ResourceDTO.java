@@ -1,6 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
 public class ResourceDTO {
     private UUID resourceId;
     private String sha256;
-    ResourceTypeEnum resourceTypeEnum;
+    S3ResourceTypeEnum s3ResourceTypeEnum;
     private Timestamp createdAt;
     private Timestamp lastUpdatedAt;
     private String createdBy;

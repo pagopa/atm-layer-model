@@ -7,7 +7,7 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceEntityRepository;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityService;
@@ -39,7 +39,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
   @RestClient
   ProcessClient processClient;
 
-  final ResourceTypeEnum resourceType = ResourceTypeEnum.HTML;
+  final S3ResourceTypeEnum resourceType = S3ResourceTypeEnum.HTML;
 
   @Override
   @WithTransaction

@@ -14,7 +14,7 @@ public abstract class ResourceEntityMapper {
     public ResourceEntity toEntityCreation(ResourceCreationDto resourceCreationDto) throws NoSuchAlgorithmException, IOException {
         ResourceEntity resourceEntity = new ResourceEntity();
         resourceEntity.setSha256(BpmnUtils.calculateSha256(resourceCreationDto.getFile()));
-        resourceEntity.setResourceTypeEnum(resourceCreationDto.getResourceType());
+        resourceEntity.setS3ResourceTypeEnum(resourceCreationDto.getResourceType());
         resourceEntity.setFileName(resourceCreationDto.getFilename());
         return resourceEntity;
     }

@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
@@ -22,7 +23,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @Slf4j
 public class FileUtils {
 
-    public static String extractIdValue(File file, ResourceTypeEnum resourceTypeEnum) {
+    public static String extractIdValue(File file, DeployableResourceType resourceTypeEnum) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
         Document document = null;

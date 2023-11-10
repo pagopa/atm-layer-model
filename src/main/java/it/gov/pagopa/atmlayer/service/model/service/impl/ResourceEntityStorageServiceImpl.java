@@ -9,7 +9,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
@@ -51,7 +51,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
 
     @Override
     public Uni<ResourceFile> uploadFile(ResourceEntity resourceEntity, File file, String filename, String relativePath) {
-        ResourceTypeEnum resourceType = resourceEntity.getResourceTypeEnum();
+        S3ResourceTypeEnum resourceType = resourceEntity.getS3ResourceTypeEnum();
         String path = calculatePath(resourceType);
         if (!relativePath.isBlank()) {
             path = path.concat("/").concat(relativePath);
@@ -96,16 +96,16 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
                                                          ObjectStorePutResponse putObjectResponse, String filename) {
         ResourceFile entity = ResourceFile.builder()
                 .fileName(filename)
-                .resourceType(resourceEntity.getResourceTypeEnum())
+                .resourceType(resourceEntity.getS3ResourceTypeEnum())
                 .resourceEntity(resourceEntity)
                 .storageKey(putObjectResponse.getStorage_key())
                 .build();
         return resourceFileService.save(entity);
     }
 
-    private String calculatePath(ResourceTypeEnum resourceTypeEnum) {
+    private String calculatePath(S3ResourceTypeEnum s3ResourceTypeEnum) {
         Map<String, String> valuesMap = new HashMap<>();
-        valuesMap.put("RESOURCE_TYPE", resourceTypeEnum.toString());
+        valuesMap.put("RESOURCE_TYPE", s3ResourceTypeEnum.toString());
         StringSubstitutor stringSubstitutor = new StringSubstitutor(valuesMap);
         Optional<String> resourceEntityPathTemplateProps = Optional.ofNullable(
                 objectStoreProperties.html().pathTemplate());
