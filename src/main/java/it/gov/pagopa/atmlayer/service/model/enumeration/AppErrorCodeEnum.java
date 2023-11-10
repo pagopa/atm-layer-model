@@ -13,7 +13,6 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYED_STATUS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_EXISTING_REFERENCED_ENTITY;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.ID_NOT_FOUND;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_UPDATABLE;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_UPGRADABLE;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_FILE;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_REFERENCED_ENTITY;
@@ -49,8 +48,8 @@ public enum AppErrorCodeEnum {
     WORKFLOW_FILE_DOES_NOT_EXIST("ATMLM_4000023", "The referenced Workflow Resource file does not exist", NOT_EXISTING_REFERENCED_ENTITY),
     WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS("ATMLM_4000024", "The referenced Workflow Resource file can not be deleted in the actual state", NOT_DELETABLE),
     WORKFLOW_RESOURCE_CANNOT_BE_UPDATED_FOR_STATUS("ATMLM_4000025", "The referenced Workflow Resource file can not be updated in the actual state", NOT_UPDATABLE),
-    WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED("ATMLM_4000026", "The referenced Workflow Resource file can not be deployed", NOT_DEPLOYABLE_STATUS);
-
+    WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED("ATMLM_4000026", "The referenced Workflow Resource file can not be deployed", NOT_DEPLOYABLE_STATUS),
+    RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED("ATMLM_4000025", "A resource with same file name and path already exists", NOT_UPLOADABLE);
 
 
     private final String errorCode;

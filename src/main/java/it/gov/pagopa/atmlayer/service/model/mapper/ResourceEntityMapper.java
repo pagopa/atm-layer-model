@@ -2,7 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
-import it.gov.pagopa.atmlayer.service.model.model.ResourceEntityDTO;
+import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
 import org.mapstruct.Mapper;
 
@@ -20,5 +20,5 @@ public abstract class ResourceEntityMapper {
     }
 
     //TODO: IMPLEMENT toDto(ResourceEntity resourceEntity) METHOD
-    public abstract ResourceEntityDTO toDTO(ResourceEntity resourceEntity);
+    public abstract ResourceDTO toDTO(ResourceEntity resourceEntity);
 }

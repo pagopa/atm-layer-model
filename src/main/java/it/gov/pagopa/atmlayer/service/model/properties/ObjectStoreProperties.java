@@ -16,6 +16,8 @@ public interface ObjectStoreProperties {
 
     WorkflowResource workflowResource();
 
+    Html html();
+
     interface Bucket {
         String name();
 
@@ -37,5 +39,8 @@ public interface ObjectStoreProperties {
         String pathTemplate();
     }
 
+    interface Html {
+      String pathTemplate();
+    }
 
 }

@@ -4,83 +4,111 @@ import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
+import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
+import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceEntityRepository;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityService;
+import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
 import java.util.Optional;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
 
 @ApplicationScoped
 @Slf4j
 public class ResourceEntityServiceImpl implements ResourceEntityService {
 
-    @Inject
-    ResourceEntityRepository resourceEntityRepository;
+  @Inject
+  ResourceEntityStorageService resourceEntityStorageService;
+  @Inject
+  ResourceEntityRepository resourceEntityRepository;
 
-    @Override
-    @WithTransaction
-    public Uni<ResourceEntity> save(ResourceEntity resourceEntity) {
-                    log.info("Persisting resource {} to database", resourceEntity.getFileName());
-                    return resourceEntityRepository.persist(resourceEntity);
-    }
+  @Inject
+  @RestClient
+  ProcessClient processClient;
 
-    @Override
-    public Uni<Boolean> delete(BpmnVersionPK bpmnVersionPK) {
-        return null;
-    }
+  final ResourceTypeEnum resourceType = ResourceTypeEnum.HTML;
 
-    @Override
-    @WithSession
-    public Uni<Optional<ResourceEntity>> findBySHA256(String sha256) {
-        return this.resourceEntityRepository.findBySHA256(sha256)
-                .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
-    }
+  @Override
+  @WithTransaction
+  public Uni<ResourceEntity> save(ResourceEntity resourceEntity) {
+    log.info("Persisting resource {} to database", resourceEntity.getFileName());
+    return resourceEntityRepository.persist(resourceEntity);
+  }
 
-    @Override
-    @WithSession
-    public Uni<Optional<ResourceEntity>> findByUUID(UUID uuid) {
-        return resourceEntityRepository.findById(uuid)
-                .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
-    }
+  @Override
+  public Uni<Boolean> delete(BpmnVersionPK bpmnVersionPK) {
+    return null;
+  }
 
-    @Override
-    @WithTransaction
-    public Uni<ResourceEntity> saveAndUpload(ResourceEntity resourceEntity, File file, String filename) {
-        return this.save(resourceEntity);
-        //TODO: implementare upload su FileStorageService
-    }
+  @Override
+  @WithSession
+  public Uni<Optional<ResourceEntity>> findBySHA256(String sha256) {
+    return this.resourceEntityRepository.findBySHA256(sha256)
+        .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
+  }
 
-    @Override
-    public Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file, String filename) {
-        return findBySHA256(resourceEntity.getSha256())
-                .onItem().transformToUni(Unchecked.function(x -> {
-                    if (x.isPresent()) {
-                        throw new AtmLayerException("A resource with the same content already exists", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
-                    }
-                    return saveAndUpload(resourceEntity, file, filename)
-                            .onItem().transformToUni(bpmn -> {
-                                return this.findByUUID(resourceEntity.getResourceId())
-                                        .onItem().transformToUni(optionalResource -> {
-                                            if (optionalResource.isEmpty()) {
-                                                return Uni.createFrom().failure(new AtmLayerException("Sync problem on resource creation", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
-                                            }
-                                            return Uni.createFrom().item(optionalResource.get());
-                                        });
-                            });
-                }));
-    }
+  @Override
+  @WithSession
+  public Uni<Optional<ResourceEntity>> findByUUID(UUID uuid) {
+    return resourceEntityRepository.findById(uuid)
+        .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
+  }
+
+  @Override
+  @WithTransaction
+  public Uni<ResourceEntity> saveAndUpload(ResourceEntity resourceEntity, File file,
+      String filename, String path) {
+    return this.save(resourceEntity)
+         .onItem().transformToUni(record -> {
+      return this.resourceEntityStorageService.uploadFile(resourceEntity, file, filename, path)
+          .onFailure().recoverWithUni(failure -> {
+            log.error(failure.getMessage());
+            return Uni.createFrom().failure(new AtmLayerException(
+                "Failed to save Resource Entity in Object Store. Resource creation aborted",
+                Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
+          })
+          .onItem().transformToUni(putObjectResponse -> {
+            log.info("Completed Resource Entity Creation");
+            return Uni.createFrom().item(record);
+          });
+    });
+  }
+
+  @Override
+  public Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file,
+      String filename, String path) {
+    return findBySHA256(resourceEntity.getSha256())
+        .onItem().transformToUni(Unchecked.function(x -> {
+          if (x.isPresent()) {
+            throw new AtmLayerException("A resource with the same content already exists",
+                Response.Status.BAD_REQUEST,
+                RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
+          }
+          return saveAndUpload(resourceEntity, file, filename, path)
+              .onItem().transformToUni(bpmn -> {
+                return this.findByUUID(resourceEntity.getResourceId())
+                    .onItem().transformToUni(optionalResource -> {
+                      if (optionalResource.isEmpty()) {
+                        return Uni.createFrom().failure(
+                            new AtmLayerException("Sync problem on resource creation",
+                                Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
+                      }
+                      return Uni.createFrom().item(optionalResource.get());
+                    });
+              });
+        }));
+  }
 }
