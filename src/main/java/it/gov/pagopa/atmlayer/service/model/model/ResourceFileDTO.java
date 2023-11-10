@@ -1,6 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
-import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class ResourceFileDTO {
     private UUID id;
-    private WorkflowResourceTypeEnum resourceType;
+    private ResourceTypeEnum resourceType;
     private String storageKey;
     private String fileName;
     private String extension;

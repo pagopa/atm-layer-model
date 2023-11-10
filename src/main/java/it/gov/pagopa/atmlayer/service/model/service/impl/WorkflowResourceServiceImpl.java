@@ -11,7 +11,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.WorkflowResourceRepository;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
@@ -52,7 +52,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @RestClient
     ProcessClient processClient;
 
-    WorkflowResourceTypeEnum resourceType;
+    ResourceTypeEnum resourceType;
 
     @Override
     @WithTransaction

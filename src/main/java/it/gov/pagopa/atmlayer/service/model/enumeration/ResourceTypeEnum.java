@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum WorkflowResourceTypeEnum {
+public enum ResourceTypeEnum {
     BPMN("bpmn","application/bpmn", "bpmn:process", "id"),
     DMN("dmn", "application/dmn", "decision", "id");
 

@@ -2,7 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
-import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceFileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ public class ResourceFileServiceImplTest {
     public void testSaveResourceFile() {
         ResourceFile resourceFile = new ResourceFile();
         resourceFile.setFileName("test.txt");
-        resourceFile.setResourceType(WorkflowResourceTypeEnum.BPMN);
+        resourceFile.setResourceType(ResourceTypeEnum.BPMN);
 
         when(resourceFileRepository.persist(resourceFile)).thenReturn(Uni.createFrom().item(resourceFile));
 

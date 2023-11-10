@@ -1,6 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
-import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import java.util.UUID;
 public class ResourceEntityDTO {
     private UUID resourceId;
     private String sha256;
-    WorkflowResourceTypeEnum workflowResourceTypeEnum;
+    ResourceTypeEnum resourceTypeEnum;
     private Timestamp createdAt;
     private Timestamp lastUpdatedAt;
     private String createdBy;

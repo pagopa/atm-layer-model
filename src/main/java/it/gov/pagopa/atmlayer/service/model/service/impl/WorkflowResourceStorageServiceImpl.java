@@ -8,7 +8,7 @@ import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
@@ -54,7 +54,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
     @Override
     public Uni<ResourceFile> uploadFile(WorkflowResource workflowResource, File file, String filename) {
         UUID uuid = workflowResource.getWorkflowResourceId();
-        WorkflowResourceTypeEnum resourceType = workflowResource.getResourceType();
+        ResourceTypeEnum resourceType = workflowResource.getResourceType();
         String path = calculatePath(uuid, resourceType);
         String completeName = filename.concat(".").concat(resourceType.getExtension());
         log.info("Requesting to write file {} in Object Store at path  {}", file.getName(), path);
@@ -87,7 +87,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         return this.objectStoreService.download(storageKey);
     }
 
-    private String calculatePath(UUID uuid, WorkflowResourceTypeEnum resourceType) {
+    private String calculatePath(UUID uuid, ResourceTypeEnum resourceType) {
         Map<String, String> valuesMap = new HashMap<>();
         valuesMap.put("uuid", uuid.toString());
         valuesMap.put("RESOURCE_TYPE", resourceType.toString());
