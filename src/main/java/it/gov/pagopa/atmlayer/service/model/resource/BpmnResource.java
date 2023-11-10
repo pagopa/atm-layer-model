@@ -79,6 +79,19 @@ public class BpmnResource {
     BpmnConfigMapper bpmnConfigMapper;
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<List<BpmnDTO>> getAllBpmn(){
+        return this.bpmnVersionService.getAll()
+                .onItem()
+                .transform(Unchecked.function(list -> {
+                    if (list.isEmpty()) {
+                        log.info("No BPMN files saved in database");
+                    }
+                    return bpmnVersionMapper.toDTOList(list);
+                }));
+    }
+
+    @GET
     @Path("/{bpmnId}/version/{version}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

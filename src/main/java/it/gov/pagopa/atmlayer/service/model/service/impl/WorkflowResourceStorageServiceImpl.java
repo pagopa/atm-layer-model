@@ -7,14 +7,15 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
+import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnIdDto;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
-import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceFileService;
+import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceStorageService;
 import it.gov.pagopa.atmlayer.service.model.strategy.ObjectStoreStrategy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -28,66 +29,76 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @ApplicationScoped
 @Slf4j
-public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
-    private final String BPMN_TEMPLATE_PATH_DEFAULT = "BPMN/files/UUID/${uuid}/VERSION/${version}";
+public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStorageService {
+
+    private final String WORKFLOW_TEMPLATE_PATH_DEFAULT = "WORKFLOW_RESOURCE/files/${RESOURCE_TYPE}/${uuid}";
+
     @Inject
     ObjectStoreStrategy objectStoreStrategy;
+
     private ObjectStoreService objectStoreService;
+
     @Inject
     ObjectStoreProperties objectStoreProperties;
+
     @Inject
     ResourceFileService resourceFileService;
 
-    public BpmnFileStorageServiceImpl(ObjectStoreStrategy objectStoreStrategy, ObjectStoreProperties objectStoreProperties) {
+    public WorkflowResourceStorageServiceImpl(ObjectStoreStrategy objectStoreStrategy, ObjectStoreProperties objectStoreProperties) {
         this.objectStoreStrategy = objectStoreStrategy;
         this.objectStoreService = objectStoreStrategy.getType(ObjectStoreStrategyEnum.fromValue(objectStoreProperties.type()));
     }
 
+    @Override
+    public Uni<ResourceFile> uploadFile(WorkflowResource workflowResource, File file, String filename) {
+        UUID uuid = workflowResource.getWorkflowResourceId();
+        ResourceTypeEnum resourceType = workflowResource.getResourceType();
+        String path = calculatePath(uuid, resourceType);
+        String completeName = filename.concat(".").concat(ResourceTypeEnum.DMN.getExtension());
+        log.info("Requesting to write file {} in Object Store at path  {}", file.getName(), path);
+        Context context = Vertx.currentContext();
+        return objectStoreService.uploadFile(file, path, ResourceTypeEnum.DMN, completeName)
+                .emitOn(command -> context.runOnContext(x -> command.run()))
+                .onItem()
+                .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(workflowResource, objectStorePutResponse, filename));
+
+    }
+
     @WithTransaction
-    public Uni<ResourceFile> writeResourceInfoToDatabase(BpmnVersion bpmn, ObjectStorePutResponse putObjectResponse, String filename) {
+    public Uni<ResourceFile> writeResourceInfoToDatabase(WorkflowResource workflowResource, ObjectStorePutResponse putObjectResponse, String filename) {
         ResourceFile entity = ResourceFile.builder()
                 .fileName(filename)
-                .resourceType(ResourceTypeEnum.BPMN)
-                .bpmn(bpmn)
+                .resourceType(ResourceTypeEnum.DMN)
+                .workflowResource(workflowResource)
                 .storageKey(putObjectResponse.getStorage_key())
                 .build();
         return resourceFileService.save(entity);
     }
 
     @Override
-    public Uni<ResourceFile> uploadFile(BpmnVersion bpmnVersion, File file, String filename) {
-        BpmnIdDto bpmnVersionPK = new BpmnIdDto(bpmnVersion.getBpmnId(), bpmnVersion.getModelVersion());
-        String path = calculatePath(bpmnVersionPK);
-        String completeName = filename.concat(".").concat(ResourceTypeEnum.BPMN.getExtension());
-        log.info("Requesting to write file {} in Object Store at path  {}", file.getName(), path);
-        Context context = Vertx.currentContext();
-        return objectStoreService.uploadFile(file, path, ResourceTypeEnum.BPMN, completeName)
-                .emitOn(command -> context.runOnContext(x -> command.run()))
-                .onItem()
-                .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(bpmnVersion, objectStorePutResponse, filename));
+    public Uni<URL> generatePresignedUrl(String storageKey) {
+        return this.objectStoreService.generatePresignedUrl(storageKey);
     }
 
     @Override
-    public Uni<URL> generatePresignedUrl(String objectKey) {
-        return this.objectStoreService.generatePresignedUrl(objectKey);
-    }
-
     public RestMulti<Buffer> download(String storageKey) {
         return this.objectStoreService.download(storageKey);
     }
 
-    private String calculatePath(BpmnIdDto bpmnVersionPK) {
+    //TODO: fix {$RESOURCE_TYPE}
+    private String calculatePath(UUID uuid, ResourceTypeEnum resourceType) {
         Map<String, String> valuesMap = new HashMap<>();
-        valuesMap.put("uuid", bpmnVersionPK.getBpmnId().toString());
-        valuesMap.put("version", bpmnVersionPK.getModelVersion().toString());
+        valuesMap.put("uuid", uuid.toString());
+        valuesMap.put("RESOURCE_TYPE", resourceType.toString());
         StringSubstitutor stringSubstitutor = new StringSubstitutor(valuesMap);
-        Optional<String> bpmnPathTemplateProps = Optional.ofNullable(objectStoreProperties.bpmn().pathTemplate());
-        String pathTemplate = BPMN_TEMPLATE_PATH_DEFAULT;
-        if (bpmnPathTemplateProps.isPresent() && StringUtils.isNotBlank(bpmnPathTemplateProps.get())) {
-            pathTemplate = bpmnPathTemplateProps.get();
+        Optional<String> workflowResourcePathTemplateProps = Optional.ofNullable(objectStoreProperties.dmn().pathTemplate());
+        String pathTemplate = WORKFLOW_TEMPLATE_PATH_DEFAULT;
+        if (workflowResourcePathTemplateProps.isPresent() && StringUtils.isNotBlank(workflowResourcePathTemplateProps.get())) {
+            pathTemplate = workflowResourcePathTemplateProps.get();
             pathTemplate = pathTemplate.replace("[", "${").replace("]", "}");
         }
         return stringSubstitutor.replace(pathTemplate);
