@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
+import it.gov.pagopa.atmlayer.service.model.model.ResourceEntityDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
 import org.mapstruct.Mapper;
 
