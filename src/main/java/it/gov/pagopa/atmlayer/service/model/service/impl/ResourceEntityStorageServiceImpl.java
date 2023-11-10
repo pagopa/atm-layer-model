@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -31,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static it.gov.pagopa.atmlayer.service.model.utils.EnumConverter.convertEnum;
+
 @ApplicationScoped
 @Slf4j
 public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageService {
@@ -51,7 +54,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
 
     @Override
     public Uni<ResourceFile> uploadFile(ResourceEntity resourceEntity, File file, String filename, String relativePath) {
-        S3ResourceTypeEnum resourceType = resourceEntity.getS3ResourceTypeEnum();
+        S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
         String path = calculatePath(resourceType);
         if (!relativePath.isBlank()) {
             path = path.concat("/").concat(relativePath);
@@ -62,10 +65,10 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
         String finalPath = path;
         return this.resourceFileService.findByStorageKey(storageKey)
                 .onItem()
-                .transformToUni(resource -> {
+                .transformToUni(Unchecked.function(resource -> {
 
                    if(resource.isPresent()){
-                       throwErrorMessage(String.format("Cannot upload %s: resource with same file name and path already exists", storageKey), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED );
+                       throw new AtmLayerException(String.format("Cannot upload %s: resource with same file name and path already exists", storageKey), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED );
                   }
                     log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
                     Context context = Vertx.currentContext();
@@ -74,11 +77,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
                             .onItem()
                             .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(resourceEntity,
                                     objectStorePutResponse, filename));
-                });
-    }
-
-    private void throwErrorMessage(String errorMessage, Response.Status status, AppErrorCodeEnum appError){
-        throw new AtmLayerException(errorMessage, status, appError);
+                }));
     }
 
     @Override
@@ -96,7 +95,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
                                                          ObjectStorePutResponse putObjectResponse, String filename) {
         ResourceFile entity = ResourceFile.builder()
                 .fileName(filename)
-                .resourceType(resourceEntity.getS3ResourceTypeEnum())
+                .resourceType(convertEnum(resourceEntity.getNoDeployableResourceType()))
                 .resourceEntity(resourceEntity)
                 .storageKey(putObjectResponse.getStorage_key())
                 .build();

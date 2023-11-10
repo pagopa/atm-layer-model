@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
+import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +25,7 @@ public class ResourceCreationDto {
   private String filename;
   @FormParam("resourceType")
   @NotNull(message = "resource type is required")
-  private S3ResourceTypeEnum resourceType;
+  private NoDeployableResourceType resourceType;
   @FormParam("path")
   @Nullable
   @Pattern(regexp = "^(?!/).*(?<!/)$", message = "String must not start or end with '/'")

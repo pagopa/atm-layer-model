@@ -1,9 +1,12 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +34,8 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
     @Column(name = "sha256", unique = true)
     private String sha256;
     @Column(name="resourceType")
-    S3ResourceTypeEnum s3ResourceTypeEnum;
+    @Enumerated(EnumType.STRING)
+    NoDeployableResourceType noDeployableResourceType;
     @Column(name="file_name")
     String fileName;
     @CreationTimestamp
