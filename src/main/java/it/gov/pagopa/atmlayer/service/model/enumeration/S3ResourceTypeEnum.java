@@ -7,13 +7,12 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum S3ResourceTypeEnum {
-    BPMN("bpmn","application/bpmn", "bpmn:process", "id"),
-    DMN("dmn", "application/dmn", "decision", "id"),
-    FORM("json", "application/json", null, null),
-    HTML("html", "application/html", null, null);
+    BPMN("bpmn","application/bpmn"),
+    DMN("dmn", "application/dmn"),
+    FORM("json", "application/json"),
+    HTML("html", "application/html"),
+    OTHER("other", "other");
 
     String extension;
     String mimetype;
-    String tagName;
-    String attribute;
 }

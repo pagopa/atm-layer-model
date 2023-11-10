@@ -72,19 +72,17 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
   public Uni<ResourceEntity> saveAndUpload(ResourceEntity resourceEntity, File file,
       String filename, String path) {
     return this.save(resourceEntity)
-         .onItem().transformToUni(record -> {
-      return this.resourceEntityStorageService.uploadFile(resourceEntity, file, filename, path)
-          .onFailure().recoverWithUni(failure -> {
-            log.error(failure.getMessage());
-            return Uni.createFrom().failure(new AtmLayerException(
-                "Failed to save Resource Entity in Object Store. Resource creation aborted",
-                Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
-          })
-          .onItem().transformToUni(putObjectResponse -> {
-            log.info("Completed Resource Entity Creation");
-            return Uni.createFrom().item(record);
-          });
-    });
+         .onItem().transformToUni(record -> this.resourceEntityStorageService.uploadFile(resourceEntity, file, filename, path)
+             .onFailure().recoverWithUni(failure -> {
+               log.error(failure.getMessage());
+               return Uni.createFrom().failure(new AtmLayerException(
+                   "Failed to save Resource Entity in Object Store. Resource creation aborted",
+                   Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
+             })
+             .onItem().transformToUni(putObjectResponse -> {
+               log.info("Completed Resource Entity Creation");
+               return Uni.createFrom().item(record);
+             }));
   }
 
   @Override
@@ -98,17 +96,15 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                 RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
           }
           return saveAndUpload(resourceEntity, file, filename, path)
-              .onItem().transformToUni(bpmn -> {
-                return this.findByUUID(resourceEntity.getResourceId())
-                    .onItem().transformToUni(optionalResource -> {
-                      if (optionalResource.isEmpty()) {
-                        return Uni.createFrom().failure(
-                            new AtmLayerException("Sync problem on resource creation",
-                                Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
-                      }
-                      return Uni.createFrom().item(optionalResource.get());
-                    });
-              });
+              .onItem().transformToUni(bpmn -> this.findByUUID(resourceEntity.getResourceId())
+                  .onItem().transformToUni(optionalResource -> {
+                    if (optionalResource.isEmpty()) {
+                      return Uni.createFrom().failure(
+                          new AtmLayerException("Sync problem on resource creation",
+                              Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
+                    }
+                    return Uni.createFrom().item(optionalResource.get());
+                  }));
         }));
   }
 }

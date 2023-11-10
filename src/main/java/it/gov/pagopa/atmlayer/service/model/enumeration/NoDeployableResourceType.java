@@ -6,10 +6,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum NoDeployableResourceType {
-    HTML("html", "application/html", null, null);
 
-    String extension;
-    String mimetype;
-    String tagName;
-    String attribute;
+    HTML("html", "application/html"),
+    OTHER(null, null);
+
+    final String extension;
+    final String mimetype;
 }

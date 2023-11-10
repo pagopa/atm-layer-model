@@ -53,15 +53,14 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     }
 
     @Override
-    public Uni<ResourceFile> uploadFile(ResourceEntity resourceEntity, File file, String filename, String relativePath) {
+    public Uni<ResourceFile> uploadFile(ResourceEntity resourceEntity, File file, String filenameWithExtension, String relativePath) {
         S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
         String path = calculatePath(resourceType);
         if (!relativePath.isBlank()) {
             path = path.concat("/").concat(relativePath);
         }
-        String completeName = filename.concat(".").concat(resourceType.getExtension());
 
-        String storageKey=path.concat("/").concat(completeName);
+        String storageKey=path.concat("/").concat(filenameWithExtension);
         String finalPath = path;
         return this.resourceFileService.findByStorageKey(storageKey)
                 .onItem()
@@ -72,11 +71,11 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
                   }
                     log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
                     Context context = Vertx.currentContext();
-                    return objectStoreService.uploadFile(file, finalPath, resourceType, completeName)
+                    return objectStoreService.uploadFile(file, finalPath, resourceType, filenameWithExtension)
                             .emitOn(command -> context.runOnContext(x -> command.run()))
                             .onItem()
                             .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(resourceEntity,
-                                    objectStorePutResponse, filename));
+                                    objectStorePutResponse, filenameWithExtension.split("\\.")[0]));
                 }));
     }
 

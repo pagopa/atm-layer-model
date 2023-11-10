@@ -21,14 +21,13 @@ public class ResourceCreationDto {
   private File file;
   @FormParam("filename")
   @NotNull(message = "filename  is required")
-  @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "it must be of form ${regexp} and must not contain file extension")
+  @Pattern(regexp = "^[a-zA-Z0-9_-]+\\.[a-zA-Z]+$", message = "it must be of form ${regexp}")
   private String filename;
   @FormParam("resourceType")
   @NotNull(message = "resource type is required")
   private NoDeployableResourceType resourceType;
   @FormParam("path")
-  @Nullable
-  @Pattern(regexp = "^(?!/)[a-zA-Z0-9/]+(?<!/)$", message = "String must not start or end with '/' and must not contain white spaces and special characters")
+  @Pattern(regexp = "(^$)|(^(?!/)[a-zA-Z0-9/]+(?<!/)$)", message = "String must not start or end with '/' and must not contain white spaces and special characters")
   @DefaultValue("")
   private String path;
 }
