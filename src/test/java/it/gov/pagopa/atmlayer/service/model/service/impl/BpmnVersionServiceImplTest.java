@@ -13,20 +13,18 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
-import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.matchers.InstanceOf;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 
 import java.io.File;
@@ -396,7 +394,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setStatus(StatusEnum.CREATED);
         ResourceFile resourceFile=new ResourceFile();
         resourceFile.setId(UUID.randomUUID());
-        resourceFile.setResourceType(ResourceTypeEnum.BPMN);
+        resourceFile.setResourceType(WorkflowResourceTypeEnum.BPMN);
         resourceFile.setStorageKey("storage key");
         bpmnVersion.setResourceFile(resourceFile);
         BpmnVersion bpmnVersionUpdated=new BpmnVersion();
@@ -424,7 +422,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setStatus(StatusEnum.DEPLOYED);
         ResourceFile resourceFile=new ResourceFile();
         resourceFile.setId(UUID.randomUUID());
-        resourceFile.setResourceType(ResourceTypeEnum.BPMN);
+        resourceFile.setResourceType(WorkflowResourceTypeEnum.BPMN);
         resourceFile.setStorageKey("storage key");
         bpmnVersion.setResourceFile(resourceFile);
         URL url=new URL("http://localhost:8081/test");
@@ -480,7 +478,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setStatus(StatusEnum.CREATED);
         ResourceFile resourceFile=new ResourceFile();
         resourceFile.setId(UUID.randomUUID());
-        resourceFile.setResourceType(ResourceTypeEnum.BPMN);
+        resourceFile.setResourceType(WorkflowResourceTypeEnum.BPMN);
         resourceFile.setStorageKey("storage key");
         bpmnVersion.setResourceFile(resourceFile);
         BpmnVersion bpmnVersionUpdated=new BpmnVersion();
@@ -514,7 +512,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setStatus(StatusEnum.CREATED);
         ResourceFile resourceFile=new ResourceFile();
         resourceFile.setId(UUID.randomUUID());
-        resourceFile.setResourceType(ResourceTypeEnum.BPMN);
+        resourceFile.setResourceType(WorkflowResourceTypeEnum.BPMN);
         resourceFile.setStorageKey("storage key");
         bpmnVersion.setResourceFile(resourceFile);
         URL url=new URL("http://localhost:8081/test");

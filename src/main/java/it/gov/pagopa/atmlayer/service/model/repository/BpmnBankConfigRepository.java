@@ -29,7 +29,7 @@ public class BpmnBankConfigRepository implements PanacheRepositoryBase<BpmnBankC
         return list("select b from BpmnBankConfig b where b.bpmnBankConfigPK.acquirerId = :acquirerId and b.functionType= :functionType", params);
     }
 
-    public Uni<List<BpmnBankConfig>> findByTriadAndFunctionType(String acquirerId, String branchId, String terminalId, FunctionTypeEnum functionType) {
+    public Uni<List<BpmnBankConfig>> findByConfigAndFunctionType(String acquirerId, String branchId, String terminalId, FunctionTypeEnum functionType) {
         Map<String, Object> params = new HashMap<>();
         params.put("acquirerId", acquirerId);
         params.put("branchId", branchId);

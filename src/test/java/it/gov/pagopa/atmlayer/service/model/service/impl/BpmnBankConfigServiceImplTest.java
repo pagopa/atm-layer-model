@@ -101,7 +101,7 @@ public class BpmnBankConfigServiceImplTest {
 
         List<BpmnBankConfig> mockResult = Collections.singletonList(bpmnBankConfig);
 
-        when(bankConfigRepository.findByTriadAndFunctionType(acquirerId, branchId, terminalId, functionType))
+        when(bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType))
                 .thenReturn(Uni.createFrom().item(mockResult));
 
         Uni<Optional<BpmnBankConfig>> result = bankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionType);
@@ -125,7 +125,7 @@ public class BpmnBankConfigServiceImplTest {
         String terminalId = "terminal1";
         FunctionTypeEnum functionType = FunctionTypeEnum.MENU;
 
-        when(bankConfigRepository.findByTriadAndFunctionType(acquirerId, branchId, terminalId, functionType))
+        when(bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType))
                 .thenReturn(Uni.createFrom().item(Collections.emptyList()));
 
         Uni<Optional<BpmnBankConfig>> result = bankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionType);
@@ -147,7 +147,7 @@ public class BpmnBankConfigServiceImplTest {
         BpmnBankConfig config2 = new BpmnBankConfig();
         List<BpmnBankConfig> mockResult = List.of(config1, config2);
 
-        when(bankConfigRepository.findByTriadAndFunctionType(acquirerId, branchId, terminalId, functionType))
+        when(bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType))
                 .thenReturn(Uni.createFrom().item(mockResult));
 
         // Modifica il test per catturare l'eccezione AtmLayerException

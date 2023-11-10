@@ -19,12 +19,12 @@ public enum StatusEnum {
     @JsonValue
     private String value;
 
-    public static Set<StatusEnum> getDeletableStatuses() {
+    public static Set<StatusEnum> getUpdatableAndDeletableStatuses() {
         return new HashSet<>(Arrays.asList(CREATED, DEPLOY_ERROR));
     }
 
-    public static boolean isDeletable(StatusEnum status) {
-        return getDeletableStatuses().contains(status);
+    public static boolean isEditable(StatusEnum status) {
+        return getUpdatableAndDeletableStatuses().contains(status);
     }
 
 }

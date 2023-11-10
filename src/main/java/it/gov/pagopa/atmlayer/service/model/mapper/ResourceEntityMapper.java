@@ -2,7 +2,6 @@ package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
-import it.gov.pagopa.atmlayer.service.model.model.ResourceEntityDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
 import org.mapstruct.Mapper;
 
@@ -14,7 +13,7 @@ public abstract class ResourceEntityMapper {
     public ResourceEntity toEntityCreation(ResourceCreationDto resourceCreationDto) throws NoSuchAlgorithmException, IOException {
         ResourceEntity resourceEntity = new ResourceEntity();
         resourceEntity.setSha256(BpmnUtils.calculateSha256(resourceCreationDto.getFile()));
-        resourceEntity.setResourceTypeEnum(resourceCreationDto.getResourceType());
+        resourceEntity.setWorkflowResourceTypeEnum(resourceCreationDto.getResourceType());
         resourceEntity.setFileName(resourceCreationDto.getFilename());
         return resourceEntity;
     }

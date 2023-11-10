@@ -14,7 +14,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
@@ -61,7 +61,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @Inject
     BpmnVersionMapper bpmnVersionMapper;
 
-    final ResourceTypeEnum resourceType = ResourceTypeEnum.BPMN;
+    final WorkflowResourceTypeEnum resourceType = WorkflowResourceTypeEnum.BPMN;
 
     @Override
     public Uni<List<BpmnVersion>> getAll() {
@@ -100,9 +100,9 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     if (x.isEmpty()) {
                         throw new AtmLayerException(String.format("BPMN with id %s does not exists", bpmnVersionPK), Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
                     }
-                    if (!StatusEnum.isDeletable(x.get().getStatus())) {
+                    if (!StatusEnum.isEditable(x.get().getStatus())) {
                         throw new AtmLayerException(String.format("BPMN with id %s is in status %s and cannot be " +
-                                "deleted. Only BPMN files in status %s can be deleted", bpmnVersionPK.toString(), x.get().getStatus(), StatusEnum.getDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
+                                "deleted. Only BPMN files in status %s can be deleted", bpmnVersionPK.toString(), x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
                     }
                     return Uni.createFrom().item(x.get());
                 })).onItem().transformToUni(y -> this.bpmnVersionRepository.deleteById(bpmnVersionPK));

@@ -1,11 +1,9 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
-import io.quarkus.test.InjectMock;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceFileRepository;
-import it.gov.pagopa.atmlayer.service.model.service.ResourceFileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,7 +30,7 @@ public class ResourceFileServiceImplTest {
     public void testSaveResourceFile() {
         ResourceFile resourceFile = new ResourceFile();
         resourceFile.setFileName("test.txt");
-        resourceFile.setResourceType(ResourceTypeEnum.BPMN);
+        resourceFile.setResourceType(WorkflowResourceTypeEnum.BPMN);
 
         when(resourceFileRepository.persist(resourceFile)).thenReturn(Uni.createFrom().item(resourceFile));
 

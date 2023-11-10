@@ -7,13 +7,11 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedProcessInfoDto;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.WorkflowResourceRepository;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
@@ -26,17 +24,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_FILE_DOES_NOT_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.extractIdValue;
 
@@ -54,7 +52,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @RestClient
     ProcessClient processClient;
 
-    final ResourceTypeEnum resourceType = ResourceTypeEnum.DMN;
+    WorkflowResourceTypeEnum resourceType;
 
     @Override
     @WithTransaction
@@ -135,15 +133,15 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (!x) {
-                        String errorMessage = "The referenced BPMN file can not be deployed";
+                        String errorMessage = "The referenced Workflow Resource file can not be deployed";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
-                                AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED);
+                                AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED);
                     }
                     return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.WAITING_DEPLOY);
                 }))
                 .onItem()
-                .transformToUni(bpmnWaiting -> {
-                    ResourceFile resourceFile = bpmnWaiting.getResourceFile();
+                .transformToUni(workflowWaiting -> {
+                    ResourceFile resourceFile = workflowWaiting.getResourceFile();
                     if (Objects.isNull(resourceFile) || StringUtils.isBlank(resourceFile.getStorageKey())) {
                         String errorMessage = String.format("No file associated to Workflow Resource or no storage key found: %s", uuid);
                         log.error(errorMessage);
@@ -207,23 +205,23 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     return this.workflowResourceStorageService.uploadFile(workflowResource, file, filename)
                             .onFailure().recoverWithUni(failure -> {
                                 log.error(failure.getMessage());
-                                return Uni.createFrom().failure(new AtmLayerException("Failed to save Workflow Resource in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
+                                return Uni.createFrom().failure(new AtmLayerException("Failed to save Workflow Resource in Object Store. Workflow Resource creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                             })
                             .onItem().transformToUni(putObjectResponse -> {
                                 log.info("Completed Workflow Resource Creation");
-                                return  Uni.createFrom().item(record);
+                                return Uni.createFrom().item(record);
                             });
                 });
     }
 
     @Override
     public Uni<WorkflowResource> createWorkflowResource(WorkflowResource workflowResource, File file, String filename) {
-        String definitionKey = extractIdValue(file, resourceType);
+        String definitionKey = extractIdValue(file, workflowResource.getResourceType());
         workflowResource.setDefinitionKey(definitionKey);
         return findByDefinitionKey(definitionKey)
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException("A Workflow Resource with the same definitionKey already exists", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
+                        throw new AtmLayerException("A Workflow Resource with the same definitionKey already exists", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
                     }
                     return saveAndUpload(workflowResource, file, filename)
                             .onItem().transformToUni(workflow -> {
@@ -248,11 +246,34 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     if (x.isEmpty()) {
                         throw new AtmLayerException(String.format("Workflow Resource with id %s does not exists", uuid), Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
-                    if (!StatusEnum.isDeletable(x.get().getStatus())) {
+                    if (!StatusEnum.isEditable(x.get().getStatus())) {
                         throw new AtmLayerException(String.format("Workflow Resource with id %s is in status %s and cannot be " +
-                                "deleted. Only Workflow Resource files in status %s can be deleted", uuid.toString(), x.get().getStatus(), StatusEnum.getDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS);
+                                "deleted. Only Workflow Resource files in status %s can be deleted", uuid.toString(), x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS);
                     }
                     return Uni.createFrom().item(x.get());
                 })).onItem().transformToUni(y -> this.workflowResourceRepository.deleteById(uuid));
     }
+
+    @Override
+    public Uni<List<WorkflowResource>> getAll() {
+        return this.workflowResourceRepository.findAll().list();
+    }
+
+//    @Override
+//    public Uni<WorkflowResource> update(UUID id, WorkflowResource workflowResource) {
+//        log.info("Updating Workflow Resource with id {}", id.toString());
+//        return this.findById(id)
+//                .onItem()
+//                .transformToUni(Unchecked.function((x -> {
+//                    if (x.isEmpty()) {
+//                        throw new AtmLayerException(String.format("Workflow Resource with id %s does not exists", id), Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+//                    }
+//                    if (!StatusEnum.isEditable(x.get().getStatus())) {
+//                        throw new AtmLayerException(String.format("Workflow Resource with id %s is in status %s and cannot be " +
+//                                "deleted. Only Workflow Resource files in status %s can be deleted", id.toString(), x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_UPDATED_FOR_STATUS);
+//                    }
+//                    workflowResource.setWorkflowResourceId(id);
+//                    return this.workflowResourceRepository.persist(workflowResource);
+//                })));
+//    }
 }

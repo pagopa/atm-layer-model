@@ -1,9 +1,10 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
 import org.mapstruct.Mapper;
@@ -11,6 +12,8 @@ import org.mapstruct.Mapping;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "cdi")
 public abstract class WorkflowResourceMapper {
@@ -21,7 +24,6 @@ public abstract class WorkflowResourceMapper {
 
     public WorkflowResource toEntityCreation(WorkflowResourceCreationDto workflowCreationDto) throws NoSuchAlgorithmException, IOException {
         WorkflowResource workflowResource = new WorkflowResource();
-        workflowResource.setFunctionType(workflowCreationDto.getFunctionType());
         workflowResource.setStatus(StatusEnum.CREATED);
         workflowResource.setSha256(BpmnUtils.calculateSha256(workflowCreationDto.getFile()));
         workflowResource.setDeployedFileName(workflowCreationDto.getFilename().concat(".").concat(workflowCreationDto.getResourceType().toString()));
@@ -30,6 +32,10 @@ public abstract class WorkflowResourceMapper {
     }
 
     public abstract WorkflowResourceDTO toDTO(WorkflowResource workflowResource);
+
+    public List<WorkflowResourceDTO> toDTOList(List<WorkflowResource> list){
+        return list.stream().map(this::toDTO).collect(Collectors.toList());
+    }
 
 //    @Mapping(ignore = true, target = "enabled")
 //    @Mapping(target = "resourceFile.dmn",ignore = true)

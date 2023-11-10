@@ -14,8 +14,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,7 +41,7 @@ public class BpmnBankConfigService {
     }
 
     public Uni<Optional<BpmnBankConfig>> findByConfigurationsAndFunction(String acquirerId, String branchId, String terminalId, FunctionTypeEnum functionTypeEnum) {
-        return this.bankConfigRepository.findByTriadAndFunctionType(acquirerId, branchId, terminalId, functionTypeEnum)
+        return this.bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionTypeEnum)
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (!x.isEmpty() && x.size() > 1) {
                         throw new AtmLayerException("Multiple BPMN found for a single configuration.", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.ATMLM_500);

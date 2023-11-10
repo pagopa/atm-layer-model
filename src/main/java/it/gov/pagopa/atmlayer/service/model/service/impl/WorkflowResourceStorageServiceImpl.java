@@ -5,12 +5,10 @@ import io.smallrye.mutiny.Uni;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
-import it.gov.pagopa.atmlayer.service.model.model.BpmnIdDto;
+import it.gov.pagopa.atmlayer.service.model.enumeration.WorkflowResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
@@ -56,12 +54,12 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
     @Override
     public Uni<ResourceFile> uploadFile(WorkflowResource workflowResource, File file, String filename) {
         UUID uuid = workflowResource.getWorkflowResourceId();
-        ResourceTypeEnum resourceType = workflowResource.getResourceType();
+        WorkflowResourceTypeEnum resourceType = workflowResource.getResourceType();
         String path = calculatePath(uuid, resourceType);
-        String completeName = filename.concat(".").concat(ResourceTypeEnum.DMN.getExtension());
+        String completeName = filename.concat(".").concat(resourceType.getExtension());
         log.info("Requesting to write file {} in Object Store at path  {}", file.getName(), path);
         Context context = Vertx.currentContext();
-        return objectStoreService.uploadFile(file, path, ResourceTypeEnum.DMN, completeName)
+        return objectStoreService.uploadFile(file, path, resourceType, completeName)
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem()
                 .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(workflowResource, objectStorePutResponse, filename));
@@ -72,7 +70,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
     public Uni<ResourceFile> writeResourceInfoToDatabase(WorkflowResource workflowResource, ObjectStorePutResponse putObjectResponse, String filename) {
         ResourceFile entity = ResourceFile.builder()
                 .fileName(filename)
-                .resourceType(ResourceTypeEnum.DMN)
+                .resourceType(workflowResource.getResourceType())
                 .workflowResource(workflowResource)
                 .storageKey(putObjectResponse.getStorage_key())
                 .build();
@@ -89,13 +87,12 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         return this.objectStoreService.download(storageKey);
     }
 
-    //TODO: fix {$RESOURCE_TYPE}
-    private String calculatePath(UUID uuid, ResourceTypeEnum resourceType) {
+    private String calculatePath(UUID uuid, WorkflowResourceTypeEnum resourceType) {
         Map<String, String> valuesMap = new HashMap<>();
         valuesMap.put("uuid", uuid.toString());
         valuesMap.put("RESOURCE_TYPE", resourceType.toString());
         StringSubstitutor stringSubstitutor = new StringSubstitutor(valuesMap);
-        Optional<String> workflowResourcePathTemplateProps = Optional.ofNullable(objectStoreProperties.dmn().pathTemplate());
+        Optional<String> workflowResourcePathTemplateProps = Optional.ofNullable(objectStoreProperties.workflowResource().pathTemplate());
         String pathTemplate = WORKFLOW_TEMPLATE_PATH_DEFAULT;
         if (workflowResourcePathTemplateProps.isPresent() && StringUtils.isNotBlank(workflowResourcePathTemplateProps.get())) {
             pathTemplate = workflowResourcePathTemplateProps.get();
