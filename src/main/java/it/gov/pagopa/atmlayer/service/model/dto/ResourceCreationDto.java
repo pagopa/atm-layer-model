@@ -28,7 +28,7 @@ public class ResourceCreationDto {
   private NoDeployableResourceType resourceType;
   @FormParam("path")
   @Nullable
-  @Pattern(regexp = "^(?!/).*(?<!/)$", message = "String must not start or end with '/'")
+  @Pattern(regexp = "^(?!/)[a-zA-Z0-9/]+(?<!/)$", message = "String must not start or end with '/' and must not contain white spaces and special characters")
   @DefaultValue("")
   private String path;
 }

@@ -1,7 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
-import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
@@ -24,6 +25,18 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 public class FileUtils {
 
     public static String extractIdValue(File file, DeployableResourceType resourceTypeEnum) {
+        switch (resourceTypeEnum) {
+            case BPMN, DMN -> {
+                return extractIdValueFromXML(file, resourceTypeEnum);
+            }
+            case FORM -> {
+                return extractIdValueFromJson(file, resourceTypeEnum);
+            }
+            default -> throw new AtmLayerException("File not supported", Response.Status.NOT_ACCEPTABLE, MALFORMED_FILE);
+        }
+    }
+
+    public static String extractIdValueFromXML(File file, DeployableResourceType resourceTypeEnum) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
         Document document = null;
@@ -36,9 +49,19 @@ public class FileUtils {
         }
         Element definitionsElement = (Element) document.getElementsByTagName(resourceTypeEnum.getTagName()).item(0);
         String definitionKey = definitionsElement.getAttribute(resourceTypeEnum.getAttribute());
-            if (definitionKey.isBlank()) {
-                throw new AtmLayerException("Failed to find definition key in the BPMN file", Response.Status.NOT_ACCEPTABLE, BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY);
-            }
+        if (definitionKey.isBlank()) {
+            throw new AtmLayerException("Failed to find definition key file", Response.Status.NOT_ACCEPTABLE, BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY);
+        }
         return definitionKey;
+    }
+
+    public static String extractIdValueFromJson(File file, DeployableResourceType resourceTypeEnum) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(file);
+            return jsonNode.get(resourceTypeEnum.getTagName()).asText();
+        } catch (Exception e) {
+            throw new AtmLayerException("Malformed File", Response.Status.BAD_REQUEST, MALFORMED_FILE);
+        }
     }
 }
