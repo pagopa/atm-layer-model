@@ -57,10 +57,10 @@ public class BpmnBankConfigServiceImplTest {
 
         List<BpmnBankConfig> mockResult = Collections.singletonList(new BpmnBankConfig());
 
-        when(bankConfigRepository.findByAcquirerIdAndFunctionType(acquirerId, functionType))
+        when(bankConfigRepository.findByAcquirerIdAndFunctionType(acquirerId, functionType.name()))
                 .thenReturn(Uni.createFrom().item(mockResult));
 
-        Uni<List<BpmnBankConfig>> result = bankConfigService.findByAcquirerIdAndFunctionType(acquirerId, functionType);
+        Uni<List<BpmnBankConfig>> result = bankConfigService.findByAcquirerIdAndFunctionType(acquirerId, functionType.name());
 
         assertNotNull(result);
 
@@ -73,10 +73,10 @@ public class BpmnBankConfigServiceImplTest {
         String acquirerId = "acquirer1";
         FunctionTypeEnum functionType = FunctionTypeEnum.MENU;
 
-        when(bankConfigRepository.deleteByAcquirerIdAndFunctionType(acquirerId, functionType))
+        when(bankConfigRepository.deleteByAcquirerIdAndFunctionType(acquirerId, functionType.name()))
                 .thenReturn(Uni.createFrom().item(1L));
 
-        Uni<Long> result = bankConfigService.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
+        Uni<Long> result = bankConfigService.deleteByAcquirerIdAndFunctionType(acquirerId, functionType.name());
 
         assertNotNull(result);
 
@@ -97,14 +97,14 @@ public class BpmnBankConfigServiceImplTest {
         bpmnBankConfigPK.setBranchId(branchId);
         bpmnBankConfigPK.setTerminalId(terminalId);
         bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);
-        bpmnBankConfig.setFunctionType(functionType);
+        bpmnBankConfig.setFunctionType(functionType.name());
 
         List<BpmnBankConfig> mockResult = Collections.singletonList(bpmnBankConfig);
 
-        when(bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType))
+        when(bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType.name()))
                 .thenReturn(Uni.createFrom().item(mockResult));
 
-        Uni<Optional<BpmnBankConfig>> result = bankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionType);
+        Uni<Optional<BpmnBankConfig>> result = bankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionType.name());
 
         assertNotNull(result);
 
@@ -115,7 +115,7 @@ public class BpmnBankConfigServiceImplTest {
         assertEquals(acquirerId, retrievedConfig.getBpmnBankConfigPK().getAcquirerId());
         assertEquals(branchId, retrievedConfig.getBpmnBankConfigPK().getBranchId());
         assertEquals(terminalId, retrievedConfig.getBpmnBankConfigPK().getTerminalId());
-        assertEquals(functionType, retrievedConfig.getFunctionType());
+        assertEquals(functionType.name(), retrievedConfig.getFunctionType());
     }
 
     @Test
@@ -125,10 +125,10 @@ public class BpmnBankConfigServiceImplTest {
         String terminalId = "terminal1";
         FunctionTypeEnum functionType = FunctionTypeEnum.MENU;
 
-        when(bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType))
+        when(bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType.name()))
                 .thenReturn(Uni.createFrom().item(Collections.emptyList()));
 
-        Uni<Optional<BpmnBankConfig>> result = bankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionType);
+        Uni<Optional<BpmnBankConfig>> result = bankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionType.name());
 
         assertNotNull(result);
 
@@ -147,12 +147,12 @@ public class BpmnBankConfigServiceImplTest {
         BpmnBankConfig config2 = new BpmnBankConfig();
         List<BpmnBankConfig> mockResult = List.of(config1, config2);
 
-        when(bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType))
+        when(bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType.name()))
                 .thenReturn(Uni.createFrom().item(mockResult));
 
         // Modifica il test per catturare l'eccezione AtmLayerException
         assertThrows(AtmLayerException.class, () -> {
-            bankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionType)
+            bankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionType.name())
                     .await().indefinitely();
         }, "Multiple BPMN found for a single configuration.");
     }

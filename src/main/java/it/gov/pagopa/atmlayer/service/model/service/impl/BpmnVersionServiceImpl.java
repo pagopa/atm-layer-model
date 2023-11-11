@@ -14,8 +14,6 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
@@ -131,7 +129,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     @WithTransaction
-    public Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionType, List<BpmnBankConfig> bpmnBankConfigs) {
+    public Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, String functionType, List<BpmnBankConfig> bpmnBankConfigs) {
         Uni<Long> deleteExistingUni = this.bpmnBankConfigService.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
         return deleteExistingUni
                 .onItem()
@@ -241,7 +239,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                         .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Fail to generate presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
                             });
                 })
-                .onItem().transformToUni(presignedUrl -> processClient.deploy(presignedUrl.toString(),DeployableResourceType.BPMN.name())
+                .onItem().transformToUni(presignedUrl -> processClient.deploy(presignedUrl.toString(), DeployableResourceType.BPMN.name())
                         .onFailure().recoverWithUni(failure -> {
                             log.error(failure.getMessage());
                             return this.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOY_ERROR)
@@ -282,7 +280,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 }));
     }
 
-    public Uni<BpmnVersion> getLatestVersion(UUID uuid, FunctionTypeEnum functionType) {
+    public Uni<BpmnVersion> getLatestVersion(UUID uuid, String functionType) {
         return this.bpmnVersionRepository.findByIdAndFunction(uuid, functionType)
                 .onItem()
                 .transform(list -> list.get(0))

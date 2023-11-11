@@ -27,8 +27,8 @@ public class BpmnBankConfigTest {
     assertEquals(bpmnBankConfigPK, bpmnBankConfig.getBpmnBankConfigPK());
 
     FunctionTypeEnum functionType = FunctionTypeEnum.MENU;
-    bpmnBankConfig.setFunctionType(functionType);
-    assertEquals(functionType, bpmnBankConfig.getFunctionType());
+    bpmnBankConfig.setFunctionType(functionType.name());
+    assertEquals(functionType.name(), bpmnBankConfig.getFunctionType());
 
     Timestamp createdAt = new Timestamp(System.currentTimeMillis());
     bpmnBankConfig.setCreatedAt(createdAt);

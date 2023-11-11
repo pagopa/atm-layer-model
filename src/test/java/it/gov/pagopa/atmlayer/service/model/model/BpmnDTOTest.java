@@ -22,7 +22,7 @@ public class BpmnDTOTest {
     bpmnDTO.setModelVersion(1L);
     bpmnDTO.setDeployedFileName("example.bpmn");
     bpmnDTO.setDefinitionKey("process_key");
-    bpmnDTO.setFunctionType(FunctionTypeEnum.MENU);
+    bpmnDTO.setFunctionType(FunctionTypeEnum.MENU.name());
     bpmnDTO.setStatus(StatusEnum.CREATED);
     bpmnDTO.setSha256("hash123");
     bpmnDTO.setDefinitionVersionCamunda(2);
@@ -41,7 +41,7 @@ public class BpmnDTOTest {
     assertEquals(bpmnDTO.getModelVersion(), 1L);
     assertEquals(bpmnDTO.getDeployedFileName(), "example.bpmn");
     assertEquals(bpmnDTO.getDefinitionKey(), "process_key");
-    assertEquals(bpmnDTO.getFunctionType(), FunctionTypeEnum.MENU);
+    assertEquals(bpmnDTO.getFunctionType(), FunctionTypeEnum.MENU.name());
     assertEquals(bpmnDTO.getStatus(), StatusEnum.CREATED);
     assertEquals(bpmnDTO.getSha256(), "hash123");
     assertEquals(bpmnDTO.getDefinitionVersionCamunda(), 2);
@@ -67,7 +67,7 @@ public class BpmnDTOTest {
     UUID bpmnId = UUID.randomUUID();
     Long modelVersion = 2L;
     BpmnDTO bpmnDTO = new BpmnDTO(bpmnId, modelVersion, "file.bpmn", "key123",
-        FunctionTypeEnum.SPONTANEOUS_PAYMENT, StatusEnum.DEPLOYED, "hash456", 3,
+        FunctionTypeEnum.SPONTANEOUS_PAYMENT.name(), StatusEnum.DEPLOYED, "hash456", 3,
         "camunda456", "BPMN Description", new ResourceFileDTO(),
         "Resource Content", UUID.randomUUID(), new Timestamp(System.currentTimeMillis()),
         new Timestamp(System.currentTimeMillis()), "User3", "User4");
@@ -83,7 +83,7 @@ public class BpmnDTOTest {
         .modelVersion(3L)
         .deployedFileName("file3.bpmn")
         .definitionKey("key789")
-        .functionType(FunctionTypeEnum.SPONTANEOUS_PAYMENT)
+        .functionType(FunctionTypeEnum.SPONTANEOUS_PAYMENT.name())
         .status(StatusEnum.CREATED)
         .sha256("hash789")
         .definitionVersionCamunda(4)
@@ -108,7 +108,7 @@ public class BpmnDTOTest {
         .modelVersion(4L)
         .deployedFileName("file4.bpmn")
         .definitionKey("key999")
-        .functionType(FunctionTypeEnum.MENU)
+        .functionType(FunctionTypeEnum.MENU.name())
         .status(StatusEnum.CREATED)
         .sha256("hash999")
         .definitionVersionCamunda(5)
@@ -138,13 +138,13 @@ public class BpmnDTOTest {
   @Test
   public void testEqualsAndHashCode() {
     BpmnDTO bpmnDTO1 = new BpmnDTO(UUID.randomUUID(), 1L, "file1.bpmn", "key1",
-        FunctionTypeEnum.MENU, StatusEnum.CREATED, "hash1", 2,
+        FunctionTypeEnum.MENU.name(), StatusEnum.CREATED, "hash1", 2,
         "camunda1", "BPMN Description 1", new ResourceFileDTO(),
         "Resource Content 1", UUID.randomUUID(), new Timestamp(System.currentTimeMillis()),
         new Timestamp(System.currentTimeMillis()), "User1", "User2");
 
     BpmnDTO bpmnDTO2 = new BpmnDTO(UUID.randomUUID(), 1L, "file1.bpmn", "key1",
-        FunctionTypeEnum.MENU, StatusEnum.CREATED, "hash1", 2,
+        FunctionTypeEnum.MENU.name(), StatusEnum.CREATED, "hash1", 2,
         "camunda1", "BPMN Description 1", new ResourceFileDTO(),
         "Resource Content 1", UUID.randomUUID(), new Timestamp(System.currentTimeMillis()),
         new Timestamp(System.currentTimeMillis()), "User1", "User2");
@@ -155,7 +155,7 @@ public class BpmnDTOTest {
     assertNotEquals(bpmnDTO1, null);
 
     BpmnDTO bpmnDTO3 = new BpmnDTO(UUID.randomUUID(), 3L, "file3.bpmn", "key3",
-        FunctionTypeEnum.SPONTANEOUS_PAYMENT, StatusEnum.DEPLOYED, "hash3", 4,
+        FunctionTypeEnum.SPONTANEOUS_PAYMENT.name(), StatusEnum.DEPLOYED, "hash3", 4,
         "camunda3", "BPMN Description 3", new ResourceFileDTO(),
         "Resource Content 3", UUID.randomUUID(), new Timestamp(System.currentTimeMillis()),
         new Timestamp(System.currentTimeMillis()), "User3", "User4");

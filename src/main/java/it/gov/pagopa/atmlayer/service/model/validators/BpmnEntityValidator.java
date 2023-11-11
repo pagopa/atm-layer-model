@@ -6,7 +6,6 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
@@ -28,7 +27,7 @@ public class BpmnEntityValidator {
         this.bpmnVersionService = bpmnVersionService;
     }
 
-    public Uni<Void> validateExistenceStatusAndFunctionType(Set<BpmnVersionPK> ids, FunctionTypeEnum functionTypeEnum) {
+    public Uni<Void> validateExistenceStatusAndFunctionType(Set<BpmnVersionPK> ids, String functionType) {
         return this.bpmnVersionService.findByPKSet(ids)
                 .onItem()
                 .invoke(Unchecked.consumer(list -> {
@@ -38,9 +37,9 @@ public class BpmnEntityValidator {
                         String errorMessage = String.format("One or some of the referenced BPMN files are not deployed: %s", notDeployedBpmnFiles.stream().map(x -> new BpmnVersionPK(x.getBpmnId(), x.getModelVersion())).collect(Collectors.toSet()));
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_NOT_DEPLOYED);
                     }
-                    Set<BpmnVersion> notValidFunctionTypeBpmnFiles = list.stream().filter(bpmnVersion -> !bpmnVersion.getFunctionType().equals(functionTypeEnum)).collect(Collectors.toSet());
+                    Set<BpmnVersion> notValidFunctionTypeBpmnFiles = list.stream().filter(bpmnVersion -> !bpmnVersion.getFunctionType().equals(functionType)).collect(Collectors.toSet());
                     if (!CollectionUtils.isNullOrEmpty(notValidFunctionTypeBpmnFiles)) {
-                        String errorMessage = String.format("One or some of the referenced BPMN do not have functionType %s: %s", functionTypeEnum.name(), notValidFunctionTypeBpmnFiles.stream().map(x -> new BpmnVersionPK(x.getBpmnId(), x.getModelVersion())).collect(Collectors.toSet()));
+                        String errorMessage = String.format("One or some of the referenced BPMN do not have functionType %s: %s", functionType, notValidFunctionTypeBpmnFiles.stream().map(x -> new BpmnVersionPK(x.getBpmnId(), x.getModelVersion())).collect(Collectors.toSet()));
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FUNCTION_TYPE_DIFFERENT_FROM_REQUESTED);
                     }
                     Set<BpmnVersionPK> missingBpmn = Sets.difference(ids, extractedKeys);
