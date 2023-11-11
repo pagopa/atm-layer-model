@@ -10,8 +10,9 @@ import it.gov.pagopa.atmlayer.service.model.dto.DeployedProcessInfoDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.WorkflowResourceRepository;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
@@ -92,7 +93,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
 
-    private Uni<Boolean> checkWorkflowResourceFileExistence(UUID uuid) {
+    public Uni<Boolean> checkWorkflowResourceFileExistence(UUID uuid) {
         return this.findById(uuid)
                 .onItem()
                 .transform(Unchecked.function(optionalWorkflowResource -> {
@@ -128,17 +129,15 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
     @Override
-    public Uni<WorkflowResource> deploy(UUID uuid) {
-        return this.checkWorkflowResourceFileExistence(uuid)
-                .onItem()
-                .transformToUni(Unchecked.function(x -> {
-                    if (!x) {
-                        String errorMessage = "The referenced Workflow Resource file can not be deployed";
-                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
-                                AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED);
-                    }
-                    return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.WAITING_DEPLOY);
-                }))
+    public Uni<WorkflowResource> deploy(Optional<WorkflowResource> optionalWorkflowResource) {
+        if (optionalWorkflowResource.isEmpty()) {
+            String errorMessage = "The referenced Workflow Resource file can not be deployed";
+            throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
+                    AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED);
+        }
+        UUID uuid = optionalWorkflowResource.get().getWorkflowResourceId();
+        DeployableResourceType resourceType = optionalWorkflowResource.get().getResourceType();
+        return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.WAITING_DEPLOY)
                 .onItem()
                 .transformToUni(workflowWaiting -> {
                     ResourceFile resourceFile = workflowWaiting.getResourceFile();
@@ -155,16 +154,14 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                                         .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in Workflow Resource deploy. Fail to generate presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
                             });
                 })
-                .onItem().transformToUni(presignedUrl -> {
-                    return processClient.deploy(presignedUrl.toString())
-                            .onFailure().recoverWithUni(failure -> {
-                                log.error(failure.getMessage());
-                                return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.DEPLOY_ERROR)
-                                        .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in Workflow Resource deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
-                            })
-                            .onItem()
-                            .transformToUni(response -> this.setDeployInfo(uuid, response));
-                });
+                .onItem().transformToUni(presignedUrl -> processClient.deploy(presignedUrl.toString(), resourceType.name())
+                        .onFailure().recoverWithUni(failure -> {
+                            log.error(failure.getMessage());
+                            return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.DEPLOY_ERROR)
+                                    .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in Workflow Resource deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                        })
+                        .onItem()
+                        .transformToUni(response -> this.setDeployInfo(uuid, response)));
     }
 
     @WithTransaction

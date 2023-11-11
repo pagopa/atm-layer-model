@@ -106,7 +106,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
         valuesMap.put("RESOURCE_TYPE", s3ResourceTypeEnum.toString());
         StringSubstitutor stringSubstitutor = new StringSubstitutor(valuesMap);
         Optional<String> resourceEntityPathTemplateProps = Optional.ofNullable(
-                objectStoreProperties.html().pathTemplate());
+                objectStoreProperties.resource().pathTemplate());
         String pathTemplate = null;
         if (resourceEntityPathTemplateProps.isPresent() && StringUtils.isNotBlank(
                 resourceEntityPathTemplateProps.get())) {

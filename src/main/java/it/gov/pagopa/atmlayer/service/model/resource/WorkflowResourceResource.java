@@ -46,7 +46,7 @@ public class WorkflowResourceResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<WorkflowResourceDTO>> getAllBpmn(){
+    public Uni<List<WorkflowResourceDTO>> getAll() {
         return this.workflowResourceService.getAll()
                 .onItem()
                 .transform(Unchecked.function(list -> {
@@ -75,7 +75,7 @@ public class WorkflowResourceResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @NonBlocking
-    public Uni<WorkflowResourceDTO> createWorkflowResource(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
+    public Uni<WorkflowResourceDTO> create(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
         WorkflowResource workflowResource = workflowResourceMapper.toEntityCreation(workflowResourceCreationDto);
         return this.workflowResourceService.createWorkflowResource(workflowResource, workflowResourceCreationDto.getFile(), workflowResourceCreationDto.getFilename())
                 .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(bpmn)));
@@ -83,17 +83,20 @@ public class WorkflowResourceResource {
 
     @POST
     @Path("/deploy/{uuid}")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResourceDTO> deployBPMN(@PathParam("uuid") UUID uuid) {
-        return this.workflowResourceService.deploy(uuid)
-                .onItem().transformToUni(workflow -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(workflow)));
+    public Uni<WorkflowResourceDTO> deploy(@PathParam("uuid") UUID uuid) {
+        return this.workflowResourceService.findById(uuid)
+                .onItem()
+                .transformToUni(resource -> this.workflowResourceService.deploy(resource))
+                .onItem().transformToUni(resourceDeployed -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(resourceDeployed)));
     }
 
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{uuid}")
-    public Uni<Void> deleteBpmn(@PathParam("uuid") UUID uuid) {
+    public Uni<Void> delete(@PathParam("uuid") UUID uuid) {
 
         return this.workflowResourceService.delete(uuid)
                 .onItem().ignore().andSwitchTo(Uni.createFrom().voidItem());

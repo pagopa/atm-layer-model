@@ -241,16 +241,14 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                         .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Fail to generate presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
                             });
                 })
-                .onItem().transformToUni(presignedUrl -> {
-                    return processClient.deploy(presignedUrl.toString())
-                            .onFailure().recoverWithUni(failure -> {
-                                log.error(failure.getMessage());
-                                return this.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOY_ERROR)
-                                        .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
-                            })
-                            .onItem()
-                            .transformToUni(response -> this.setDeployInfo(bpmnVersionPK, response));
-                });
+                .onItem().transformToUni(presignedUrl -> processClient.deploy(presignedUrl.toString(),DeployableResourceType.BPMN.name())
+                        .onFailure().recoverWithUni(failure -> {
+                            log.error(failure.getMessage());
+                            return this.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOY_ERROR)
+                                    .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                        })
+                        .onItem()
+                        .transformToUni(response -> this.setDeployInfo(bpmnVersionPK, response)));
     }
 
     @WithTransaction

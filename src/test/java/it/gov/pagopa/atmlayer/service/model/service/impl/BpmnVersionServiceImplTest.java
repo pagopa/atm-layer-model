@@ -12,6 +12,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
@@ -408,7 +409,7 @@ class BpmnVersionServiceImplTest {
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().item(url));
-        when(processClientMock.deploy(any(String.class))).thenReturn(Uni.createFrom().item(response));
+        when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().item(response));
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(bpmnVersionUpdated));
         bpmnVersionServiceImpl.deploy(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
@@ -433,14 +434,14 @@ class BpmnVersionServiceImplTest {
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().item(url));
-        when(processClientMock.deploy(any(String.class))).thenReturn(Uni.createFrom().item(response));
+        when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().item(response));
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(new BpmnVersion()));
         bpmnVersionServiceImpl.deploy(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class,"The referenced BPMN file can not be deployed");
         verify(bpmnVersionRepoMock,times(1)).findById(bpmnVersionPK);
         verify(bpmnFileStorageServiceMock,never()).generatePresignedUrl(any(String.class));
-        verify(processClientMock,never()).deploy(any(String.class));
+        verify(processClientMock,never()).deploy(any(String.class),eq(DeployableResourceType.BPMN.name()));
         verify(bpmnVersionRepoMock,never()).persist(any(BpmnVersion.class));
     }
 
@@ -459,7 +460,7 @@ class BpmnVersionServiceImplTest {
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().item(url));
-        when(processClientMock.deploy(any(String.class))).thenReturn(Uni.createFrom().item(response));
+        when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().item(response));
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         bpmnVersionServiceImpl.deploy(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
@@ -467,7 +468,7 @@ class BpmnVersionServiceImplTest {
         verify(bpmnVersionRepoMock,times(2)).findById(bpmnVersionPK);
         verify(bpmnVersionRepoMock,times(1)).persist(bpmnVersion);
         verify(bpmnFileStorageServiceMock,never()).generatePresignedUrl(any(String.class));
-        verify(processClientMock,never()).deploy(any(String.class));
+        verify(processClientMock,never()).deploy(any(String.class),eq(DeployableResourceType.BPMN.name()));
         verify(bpmnVersionRepoMock,times(1)).persist(any(BpmnVersion.class));
     }
 
@@ -492,7 +493,7 @@ class BpmnVersionServiceImplTest {
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
-        when(processClientMock.deploy(any(String.class))).thenReturn(Uni.createFrom().item(response));
+        when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().item(response));
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(bpmnVersionUpdated));
         bpmnVersionServiceImpl.deploy(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
@@ -500,7 +501,7 @@ class BpmnVersionServiceImplTest {
         verify(bpmnVersionRepoMock,times(3)).findById(bpmnVersionPK);
         verify(bpmnVersionRepoMock,times(2)).persist(bpmnVersion);
         verify(bpmnFileStorageServiceMock,times(1)).generatePresignedUrl(any(String.class));
-        verify(processClientMock,never()).deploy(any(String.class));
+        verify(processClientMock,never()).deploy(any(String.class),eq(DeployableResourceType.BPMN.name()));
         verify(bpmnVersionRepoMock,times(2)).persist(any(BpmnVersion.class));
         assertEquals(StatusEnum.DEPLOY_ERROR,bpmnVersion.getStatus());
     }
@@ -523,14 +524,14 @@ class BpmnVersionServiceImplTest {
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().item(url));
-        when(processClientMock.deploy(any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
+        when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         bpmnVersionServiceImpl.deploy(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class,"Error in BPMN deploy. Communication with Process Service failed");
         verify(bpmnVersionRepoMock,times(3)).findById(bpmnVersionPK);
         verify(bpmnFileStorageServiceMock,times(1)).generatePresignedUrl(any(String.class));
-        verify(processClientMock,times(1)).deploy(any(String.class));
+        verify(processClientMock,times(1)).deploy(any(String.class),eq(DeployableResourceType.BPMN.name()));
         verify(bpmnVersionRepoMock,times(2)).persist(any(BpmnVersion.class));
         assertEquals(StatusEnum.DEPLOY_ERROR,bpmnVersion.getStatus());
     }
