@@ -96,21 +96,21 @@ public class BpmnUtilsTest {
         String acquirerId = "acquirer1";
         FunctionTypeEnum functionTypeEnum = FunctionTypeEnum.MENU;
         BpmnAssociationDto emptyBpmnAssociationDto = new BpmnAssociationDto();
-        assertEquals(1, BpmnUtils.getAcquirerConfigs(emptyBpmnAssociationDto, acquirerId, functionTypeEnum).size());
+        assertEquals(1, BpmnUtils.getAcquirerConfigs(emptyBpmnAssociationDto, acquirerId, functionTypeEnum.name()).size());
         emptyBpmnAssociationDto.setDefaultTemplateId(uuid);
         emptyBpmnAssociationDto.setDefaultTemplateVersion(1L);
-        assertEquals(1, BpmnUtils.getAcquirerConfigs(emptyBpmnAssociationDto, acquirerId, functionTypeEnum).size());
+        assertEquals(1, BpmnUtils.getAcquirerConfigs(emptyBpmnAssociationDto, acquirerId, functionTypeEnum.name()).size());
         BranchConfigs branchConfig = new BranchConfigs();
         branchConfig.setBranchDefaultTemplateId(uuid);
         branchConfig.setBranchDefaultTemplateVersion(1L);
         emptyBpmnAssociationDto.setBranchesConfigs(List.of(branchConfig));
-        assertEquals(2, BpmnUtils.getAcquirerConfigs(emptyBpmnAssociationDto, acquirerId, functionTypeEnum).size());
+        assertEquals(2, BpmnUtils.getAcquirerConfigs(emptyBpmnAssociationDto, acquirerId, functionTypeEnum.name()).size());
         TerminalConfigs terminalConfig = new TerminalConfigs();
         terminalConfig.setTemplateId(uuid);
         terminalConfig.setTemplateVersion(1L);
         terminalConfig.setTerminalIds(List.of("terminal1", "terminal2"));
         branchConfig.setTerminals(List.of(terminalConfig));
-        assertEquals(4, BpmnUtils.getAcquirerConfigs(emptyBpmnAssociationDto, acquirerId, functionTypeEnum).size());
+        assertEquals(4, BpmnUtils.getAcquirerConfigs(emptyBpmnAssociationDto, acquirerId, functionTypeEnum.name()).size());
     }
 
 

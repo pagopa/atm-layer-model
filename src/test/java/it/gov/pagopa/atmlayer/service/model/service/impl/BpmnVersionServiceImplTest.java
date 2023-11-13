@@ -12,6 +12,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
@@ -225,15 +226,15 @@ class BpmnVersionServiceImplTest {
         String acquirerId = "testAcquirerId";
         FunctionTypeEnum functionType = FunctionTypeEnum.MENU;
         List<BpmnBankConfig> bpmnBankConfigs = new ArrayList<>();
-        when(bpmnBankConfigServiceMock.deleteByAcquirerIdAndFunctionType(acquirerId, functionType)).thenReturn(Uni.createFrom().item(1L));
+        when(bpmnBankConfigServiceMock.deleteByAcquirerIdAndFunctionType(acquirerId, functionType.name())).thenReturn(Uni.createFrom().item(1L));
         when(bpmnBankConfigServiceMock.saveList(bpmnBankConfigs)).thenReturn(Uni.createFrom().voidItem());
-        when(bpmnBankConfigServiceMock.findByAcquirerIdAndFunctionType(acquirerId, functionType)).thenReturn(Uni.createFrom().item(bpmnBankConfigs));
-        bpmnVersionServiceImpl.putAssociations(acquirerId, functionType, bpmnBankConfigs)
+        when(bpmnBankConfigServiceMock.findByAcquirerIdAndFunctionType(acquirerId, functionType.name())).thenReturn(Uni.createFrom().item(bpmnBankConfigs));
+        bpmnVersionServiceImpl.putAssociations(acquirerId, functionType.name(), bpmnBankConfigs)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted().assertItem(bpmnBankConfigs);
-        verify(bpmnBankConfigServiceMock, times(1)).deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
+        verify(bpmnBankConfigServiceMock, times(1)).deleteByAcquirerIdAndFunctionType(acquirerId, functionType.name());
         verify(bpmnBankConfigServiceMock, times(1)).saveList(bpmnBankConfigs);
-        verify(bpmnBankConfigServiceMock, times(1)).findByAcquirerIdAndFunctionType(acquirerId, functionType);
+        verify(bpmnBankConfigServiceMock, times(1)).findByAcquirerIdAndFunctionType(acquirerId, functionType.name());
     }
 
     @Test
@@ -408,7 +409,7 @@ class BpmnVersionServiceImplTest {
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().item(url));
-        when(processClientMock.deploy(any(String.class))).thenReturn(Uni.createFrom().item(response));
+        when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().item(response));
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(bpmnVersionUpdated));
         bpmnVersionServiceImpl.deploy(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
@@ -433,14 +434,14 @@ class BpmnVersionServiceImplTest {
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().item(url));
-        when(processClientMock.deploy(any(String.class))).thenReturn(Uni.createFrom().item(response));
+        when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().item(response));
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(new BpmnVersion()));
         bpmnVersionServiceImpl.deploy(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class,"The referenced BPMN file can not be deployed");
         verify(bpmnVersionRepoMock,times(1)).findById(bpmnVersionPK);
         verify(bpmnFileStorageServiceMock,never()).generatePresignedUrl(any(String.class));
-        verify(processClientMock,never()).deploy(any(String.class));
+        verify(processClientMock,never()).deploy(any(String.class),eq(DeployableResourceType.BPMN.name()));
         verify(bpmnVersionRepoMock,never()).persist(any(BpmnVersion.class));
     }
 
@@ -459,7 +460,7 @@ class BpmnVersionServiceImplTest {
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().item(url));
-        when(processClientMock.deploy(any(String.class))).thenReturn(Uni.createFrom().item(response));
+        when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().item(response));
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         bpmnVersionServiceImpl.deploy(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
@@ -467,7 +468,7 @@ class BpmnVersionServiceImplTest {
         verify(bpmnVersionRepoMock,times(2)).findById(bpmnVersionPK);
         verify(bpmnVersionRepoMock,times(1)).persist(bpmnVersion);
         verify(bpmnFileStorageServiceMock,never()).generatePresignedUrl(any(String.class));
-        verify(processClientMock,never()).deploy(any(String.class));
+        verify(processClientMock,never()).deploy(any(String.class),eq(DeployableResourceType.BPMN.name()));
         verify(bpmnVersionRepoMock,times(1)).persist(any(BpmnVersion.class));
     }
 
@@ -492,7 +493,7 @@ class BpmnVersionServiceImplTest {
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
-        when(processClientMock.deploy(any(String.class))).thenReturn(Uni.createFrom().item(response));
+        when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().item(response));
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(bpmnVersionUpdated));
         bpmnVersionServiceImpl.deploy(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
@@ -500,7 +501,7 @@ class BpmnVersionServiceImplTest {
         verify(bpmnVersionRepoMock,times(3)).findById(bpmnVersionPK);
         verify(bpmnVersionRepoMock,times(2)).persist(bpmnVersion);
         verify(bpmnFileStorageServiceMock,times(1)).generatePresignedUrl(any(String.class));
-        verify(processClientMock,never()).deploy(any(String.class));
+        verify(processClientMock,never()).deploy(any(String.class),eq(DeployableResourceType.BPMN.name()));
         verify(bpmnVersionRepoMock,times(2)).persist(any(BpmnVersion.class));
         assertEquals(StatusEnum.DEPLOY_ERROR,bpmnVersion.getStatus());
     }
@@ -523,14 +524,14 @@ class BpmnVersionServiceImplTest {
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().item(url));
-        when(processClientMock.deploy(any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
+        when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         bpmnVersionServiceImpl.deploy(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class,"Error in BPMN deploy. Communication with Process Service failed");
         verify(bpmnVersionRepoMock,times(3)).findById(bpmnVersionPK);
         verify(bpmnFileStorageServiceMock,times(1)).generatePresignedUrl(any(String.class));
-        verify(processClientMock,times(1)).deploy(any(String.class));
+        verify(processClientMock,times(1)).deploy(any(String.class),eq(DeployableResourceType.BPMN.name()));
         verify(bpmnVersionRepoMock,times(2)).persist(any(BpmnVersion.class));
         assertEquals(StatusEnum.DEPLOY_ERROR,bpmnVersion.getStatus());
     }
@@ -569,21 +570,21 @@ class BpmnVersionServiceImplTest {
         List<BpmnVersion> bpmnList=new ArrayList<BpmnVersion>();
         bpmnList.add(bpmnVersion1);
         bpmnList.add(bpmnVersion2);
-        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class),any(FunctionTypeEnum.class))).thenReturn(Uni.createFrom().item(bpmnList));
-        bpmnVersionServiceImpl.getLatestVersion(uuid,FunctionTypeEnum.MENU)
+        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class),any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
+        bpmnVersionServiceImpl.getLatestVersion(uuid,FunctionTypeEnum.MENU.name())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted().assertItem(bpmnVersion1);
-        verify(bpmnVersionRepoMock,times(1)).findByIdAndFunction(uuid,FunctionTypeEnum.MENU);
+        verify(bpmnVersionRepoMock,times(1)).findByIdAndFunction(uuid,FunctionTypeEnum.MENU.name());
     }
 
     @Test
     void testGetLatestVersionFailure(){
         UUID uuid=UUID.randomUUID();
-        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class),any(FunctionTypeEnum.class))).thenReturn(Uni.createFrom().nullItem());
-        bpmnVersionServiceImpl.getLatestVersion(uuid,FunctionTypeEnum.MENU)
+        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class),any(String.class))).thenReturn(Uni.createFrom().nullItem());
+        bpmnVersionServiceImpl.getLatestVersion(uuid,FunctionTypeEnum.MENU.name())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class,"NO BPMN with given ID and functionType exists");
-        verify(bpmnVersionRepoMock,times(1)).findByIdAndFunction(uuid,FunctionTypeEnum.MENU);
+        verify(bpmnVersionRepoMock,times(1)).findByIdAndFunction(uuid,FunctionTypeEnum.MENU.name());
     }
 
     @Test
@@ -592,12 +593,12 @@ class BpmnVersionServiceImplTest {
         bpmnUpgradeDto.setUuid(UUID.randomUUID());
         bpmnUpgradeDto.setFilename("filename");
         bpmnUpgradeDto.setFile(new File("src/test/resources/Test.bpmn"));
-        bpmnUpgradeDto.setFunctionType(FunctionTypeEnum.MENU);
+        bpmnUpgradeDto.setFunctionType(FunctionTypeEnum.MENU.name());
         BpmnVersion bpmnVersion=new BpmnVersion();
         BpmnVersion bpmnVersion2=new BpmnVersion();
         bpmnVersion.setBpmnId(UUID.randomUUID());
         bpmnVersion.setModelVersion(1L);
-        bpmnVersion.setFunctionType(FunctionTypeEnum.MENU);
+        bpmnVersion.setFunctionType(FunctionTypeEnum.MENU.name());
         bpmnVersion.setDefinitionKey("demo11_06");
         bpmnVersion.setSha256("sha256");
         List<BpmnVersion> bpmnList=new ArrayList<BpmnVersion>();
@@ -606,7 +607,7 @@ class BpmnVersionServiceImplTest {
         ResourceFile resourceFile=new ResourceFile();
         BpmnDTO bpmnDTO=new BpmnDTO();
         bpmnDTO.setDeployedFileName("deployed file");
-        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class),any(FunctionTypeEnum.class))).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class),any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
         when(bpmnVersionMapperMock.toEntityUpgrade(any(BpmnUpgradeDto.class),any(Long.class),any(String.class))).thenReturn(bpmnVersion2);
         when(bpmnVersionRepoMock.findBySHA256(any(String.class))).thenReturn(Uni.createFrom().nullItem());
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(bpmnVersion2));
@@ -624,17 +625,17 @@ class BpmnVersionServiceImplTest {
         bpmnUpgradeDto.setUuid(UUID.randomUUID());
         bpmnUpgradeDto.setFilename("filename");
         bpmnUpgradeDto.setFile(new File("src/test/resources/Test.bpmn"));
-        bpmnUpgradeDto.setFunctionType(FunctionTypeEnum.MENU);
+        bpmnUpgradeDto.setFunctionType(FunctionTypeEnum.MENU.name());
         BpmnVersion bpmnVersion=new BpmnVersion();
         bpmnVersion.setDefinitionKey("different key");
         bpmnVersion.setSha256("sha256");
         List<BpmnVersion> bpmnList=new ArrayList<BpmnVersion>();
         bpmnList.add(bpmnVersion);
-        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class),any(FunctionTypeEnum.class))).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class),any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
         bpmnVersionServiceImpl.upgrade(bpmnUpgradeDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class,"Definition keys differ, BPMN upgrade refused");
-        verify(bpmnVersionRepoMock,times(1)).findByIdAndFunction(bpmnUpgradeDto.getUuid(),FunctionTypeEnum.MENU);
+        verify(bpmnVersionRepoMock,times(1)).findByIdAndFunction(bpmnUpgradeDto.getUuid(),FunctionTypeEnum.MENU.name());
         verify(bpmnVersionMapperMock,never()).toEntityUpgrade(any(BpmnUpgradeDto.class),any(Long.class),any(String.class));
         verify(bpmnVersionMapperMock,never()).toDTO(any(BpmnVersion.class));
     }
@@ -645,18 +646,18 @@ class BpmnVersionServiceImplTest {
         bpmnUpgradeDto.setUuid(UUID.randomUUID());
         bpmnUpgradeDto.setFilename("filename");
         bpmnUpgradeDto.setFile(new File("src/test/resources/Test.bpmn"));
-        bpmnUpgradeDto.setFunctionType(FunctionTypeEnum.MENU);
+        bpmnUpgradeDto.setFunctionType(FunctionTypeEnum.MENU.name());
         BpmnVersion bpmnVersion=new BpmnVersion();
         bpmnVersion.setDefinitionKey("demo11_06");
         bpmnVersion.setSha256("sha256");
         List<BpmnVersion> bpmnList=new ArrayList<BpmnVersion>();
         bpmnList.add(bpmnVersion);
-        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class),any(FunctionTypeEnum.class))).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class),any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
         when(bpmnVersionMapperMock.toEntityUpgrade(any(BpmnUpgradeDto.class),any(Long.class),any(String.class))).thenThrow(new RuntimeException());
         bpmnVersionServiceImpl.upgrade(bpmnUpgradeDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class,"Generic error calculating SHA256");
-        verify(bpmnVersionRepoMock,times(1)).findByIdAndFunction(bpmnUpgradeDto.getUuid(),FunctionTypeEnum.MENU);
+        verify(bpmnVersionRepoMock,times(1)).findByIdAndFunction(bpmnUpgradeDto.getUuid(),FunctionTypeEnum.MENU.name());
         verify(bpmnVersionMapperMock,times(1)).toEntityUpgrade(any(BpmnUpgradeDto.class),any(Long.class),any(String.class));
         verify(bpmnVersionMapperMock,never()).toDTO(any(BpmnVersion.class));
     }

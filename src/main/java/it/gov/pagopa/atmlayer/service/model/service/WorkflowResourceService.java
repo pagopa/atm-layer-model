@@ -18,7 +18,7 @@ public interface WorkflowResourceService {
 
     Uni<Optional<WorkflowResource>> findByDefinitionKey(String definitionKey);
 
-    Uni<WorkflowResource> deploy(UUID uuid);
+    Uni<WorkflowResource> deploy(Optional<WorkflowResource> optionalWorkflowResource);
 
     Uni<WorkflowResource> saveAndUpload(WorkflowResource workflowResource, File file, String filename);
 

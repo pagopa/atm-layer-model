@@ -5,7 +5,6 @@ import io.quarkus.panache.common.Parameters;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
@@ -26,7 +25,7 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
         return find("where concat(bpmnId,'_',modelVersion) in ?1", bpmnIdVersion).list();
     }
 
-    public Uni<List<BpmnVersion>> findByIdAndFunction(UUID uuid, FunctionTypeEnum functionType) {
+    public Uni<List<BpmnVersion>> findByIdAndFunction(UUID uuid, String functionType) {
         return find(
                 "select b from BpmnVersion b where b.bpmnId = :bpmnId and b.functionType = :functionType order by b.modelVersion DESC",
                 Parameters.with("bpmnId", uuid).and("functionType", functionType)).list();

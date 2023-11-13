@@ -1,6 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +25,7 @@ public class WorkflowResourceDTO {
     private UUID workflowResourceId;
     private String deployedFileName;
     private String definitionKey;
-    private FunctionTypeEnum functionType;
+    private String functionType;
     private StatusEnum status;
     private String sha256;
     private Integer definitionVersionCamunda;
@@ -33,6 +33,7 @@ public class WorkflowResourceDTO {
     private String description;
     private ResourceFileDTO resourceFile;
     private String resource;
+    private DeployableResourceType resourceType;
     private UUID deploymentId;
     @Schema(description = "Creation Timestamp", format = "timestamp", pattern = "DD/MM/YYYY", example = "2023-11-03T14:18:36.635+00:00")
     private Timestamp createdAt;

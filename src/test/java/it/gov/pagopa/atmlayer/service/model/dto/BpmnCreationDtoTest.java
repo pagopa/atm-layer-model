@@ -20,10 +20,10 @@ public class BpmnCreationDtoTest {
     actualBpmnCreationDto.setFile(
         Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toFile());
     actualBpmnCreationDto.setFilename("foo.txt");
-    actualBpmnCreationDto.setFunctionType(FunctionTypeEnum.MENU);
+    actualBpmnCreationDto.setFunctionType(FunctionTypeEnum.MENU.name());
     String actualToStringResult = actualBpmnCreationDto.toString();
     assertEquals("foo.txt", actualBpmnCreationDto.getFilename());
-    assertEquals(FunctionTypeEnum.MENU, actualBpmnCreationDto.getFunctionType());
+    assertEquals(FunctionTypeEnum.MENU.name(), actualBpmnCreationDto.getFunctionType());
     assertEquals(
         String.join("", "BpmnCreationDto(file=",
             Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toString(),
@@ -36,7 +36,7 @@ public class BpmnCreationDtoTest {
     BpmnCreationDto bpmnCreationDto = new BpmnCreationDto();
     bpmnCreationDto.setFile(Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toFile());
     bpmnCreationDto.setFilename("foo.txt");
-    bpmnCreationDto.setFunctionType(FunctionTypeEnum.MENU);
+    bpmnCreationDto.setFunctionType(FunctionTypeEnum.MENU.name());
     assertNotEquals(bpmnCreationDto, null);
   }
 }

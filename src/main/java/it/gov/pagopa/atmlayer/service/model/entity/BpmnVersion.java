@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -49,8 +48,7 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
     private String definitionKey;
 
     @Column(name = "function_type")
-    @Enumerated(EnumType.STRING)
-    private FunctionTypeEnum functionType;
+    private String functionType;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
