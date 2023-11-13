@@ -42,6 +42,10 @@ jobs:
           java-version: '17'
           distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup NodeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21
 
       - name: Build, tag, and push docker image to Amazon ECR
         env:
