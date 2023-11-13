@@ -21,7 +21,6 @@ import static java.lang.String.valueOf;
 
 @ApplicationScoped
 public class ResourceFileServiceImpl implements ResourceFileService {
-
     @Inject
     ResourceFileRepository resourceFileRepository;
     @Inject
@@ -45,8 +44,8 @@ public class ResourceFileServiceImpl implements ResourceFileService {
     public Uni<String> getStorageKey(ResourceEntity resourceEntity) {
         return resourceFileRepository.findByResourceId(resourceEntity.getResourceId())
                 .onItem().transformToUni(resourceFile -> Uni.createFrom().item(Optional.ofNullable(resourceFile)))
-                .onItem().transformToUni(optionalResourceFile ->{
-                    if(optionalResourceFile.isEmpty()){
+                .onItem().transformToUni(optionalResourceFile -> {
+                    if (optionalResourceFile.isEmpty()) {
                         throw new AtmLayerException("The referenced resource does not exist: cannot retrieve storage key", Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST);
                     }
                     return Uni.createFrom().item(optionalResourceFile.get().getStorageKey());
@@ -55,24 +54,21 @@ public class ResourceFileServiceImpl implements ResourceFileService {
 
     @Override
     @WithSession
-    public Uni<String> getCompletePath(ResourceEntity resourceEntity){
+    public Uni<String> getCompletePath(ResourceEntity resourceEntity) {
         return getStorageKey(resourceEntity)
-                .onItem().transform(completePath -> completePath.substring(0,completePath.lastIndexOf("/")));
-
+                .onItem().transform(completePath -> completePath.substring(0, completePath.lastIndexOf("/")));
     }
 
     @Override
     @WithSession
-    public Uni<String> getRelativePath(ResourceEntity resourceEntity){
-        String resourceType=valueOf(resourceEntity.getNoDeployableResourceType());
-        String basePath=objectStoreProperties.resource().pathTemplate();
-        String basePathWithoutType=basePath.substring(0,basePath.lastIndexOf("/"));
+    public Uni<String> getRelativePath(ResourceEntity resourceEntity) {
+        String resourceType = valueOf(resourceEntity.getNoDeployableResourceType());
+        String basePath = objectStoreProperties.resource().pathTemplate();
+        String basePathWithoutType = basePath.substring(0, basePath.lastIndexOf("/"));
         return getCompletePath(resourceEntity)
-                .onItem().transform(completeBasePath -> StringUtils.stripEnd(completeBasePath.replace(basePathWithoutType,""),"/"))
-                .onItem().transform(relativePathWithType -> relativePathWithType.substring(relativePathWithType.indexOf("/")+1)
-                        .replace(resourceType,""))
-                .onItem().transform(relativePathWithSlash -> relativePathWithSlash.substring(relativePathWithSlash.indexOf("/")+1));
+                .onItem().transform(completeBasePath -> StringUtils.stripEnd(completeBasePath.replace(basePathWithoutType, ""), "/"))
+                .onItem().transform(relativePathWithType -> relativePathWithType.substring(relativePathWithType.indexOf("/") + 1)
+                        .replace(resourceType, ""))
+                .onItem().transform(relativePathWithSlash -> relativePathWithSlash.substring(relativePathWithSlash.indexOf("/") + 1));
     }
-
-
 }

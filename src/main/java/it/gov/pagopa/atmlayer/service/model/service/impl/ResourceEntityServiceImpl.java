@@ -26,12 +26,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.INEXISTENT_RESOURCE_CANNOT_BE_UPDATED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_WITH_DIFFERENT_STORAGE_KEY_CANNOT_BE_UPDATED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
-import static it.gov.pagopa.atmlayer.service.model.utils.EnumConverter.convertEnum;
 
 @ApplicationScoped
 @Slf4j
@@ -87,7 +84,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
 
     @Override
     public Uni<ResourceFile> upload(ResourceEntity resourceEntity, File file,
-                                    String filename, String path){
+                                    String filename, String path) {
         return this.resourceEntityStorageService.uploadFile(resourceEntity, file, filename, path)
                 .onFailure().recoverWithUni(failure -> {
                     log.error(failure.getMessage());
@@ -128,51 +125,18 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                 }));
     }
 
-//        @Override
-//        public Uni<ResourceFile> updateResource (UUID uuid, ResourceEntity newResource,File file,
-//                                                   String filename, String path){
-//        String inputStorageKey= resourceEntityStorageService.calculateStorageKey(newResource.getNoDeployableResourceType(),
-//                path,filename);
-//            return this.findByUUID(uuid)
-//                    .onItem().transformToUni(optionalResource -> {
-//                        if (optionalResource.isEmpty()) {
-//                            String errorMessage = String.format("Resource with Id %s does not exist: cannot update", uuid);
-//                            throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, INEXISTENT_RESOURCE_CANNOT_BE_UPDATED);
-//                        }
-//                        return Uni.createFrom().item(optionalResource.get());
-//                    })
-//                    .onItem().transformToUni(resourceToUpdate -> {
-//                        Uni<Boolean> sameStorageKey=resourceFileService.getStorageKey(resourceToUpdate)
-//                                .onItem().transformToUni(persistedStorageKey -> {
-//                                    if (!persistedStorageKey.equals(inputStorageKey)) {
-//                                        String errorMessage = String.format("Update error: resource with Id %s is saved under different storage key: %s", uuid, persistedStorageKey);
-//                                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, RESOURCE_WITH_DIFFERENT_STORAGE_KEY_CANNOT_BE_UPDATED);
-//                                    }
-//                                    return Uni.createFrom().item(true);
-//                                });
-//                        return Uni.createFrom().item(resourceToUpdate);
-//                    })
-//                    .onItem().transformToUni(resourceToUpdate -> {
-//                        newResource.setResourceId(resourceToUpdate.getResourceId());
-//                        return Uni.createFrom().item(newResource);
-//                    })
-//                    .onItem().transformToUni(resource -> upload(resource,file, filename, path));
-//        }
-
     @Override
-        public Uni<ResourceFile> updateResource(UUID uuid, File file){
-            return this.findByUUID(uuid)
-                    .onItem().transformToUni(optionalResource -> {
-                        if (optionalResource.isEmpty()) {
-                            String errorMessage = String.format("Resource with Id %s does not exist: cannot update", uuid);
-                            throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, INEXISTENT_RESOURCE_CANNOT_BE_UPDATED);
-                        }
-                        return Uni.createFrom().item(optionalResource.get());
-                    })
-                    .onItem().transformToUni(resource ->
+    public Uni<ResourceFile> updateResource(UUID uuid, File file) {
+        return this.findByUUID(uuid)
+                .onItem().transformToUni(optionalResource -> {
+                    if (optionalResource.isEmpty()) {
+                        String errorMessage = String.format("Resource with Id %s does not exist: cannot update", uuid);
+                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, INEXISTENT_RESOURCE_CANNOT_BE_UPDATED);
+                    }
+                    return Uni.createFrom().item(optionalResource.get());
+                })
+                .onItem().transformToUni(resource ->
                         resourceFileService.getRelativePath(resource)
-                                        .onItem().transformToUni(path -> upload(resource, file, resource.getFileName(), path)));
-        }
-
-
+                                .onItem().transformToUni(path -> upload(resource, file, resource.getFileName(), path)));
     }
+}
