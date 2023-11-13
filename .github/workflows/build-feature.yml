@@ -47,6 +47,15 @@ jobs:
         run: |
           mvn package -Pnative -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod 
 
+      - name: Push postman test result
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git pull
+          git add .
+          git commit --allow-empty -m "postman result"
+          git push
+
       - name: Build, tag, and push docker image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
