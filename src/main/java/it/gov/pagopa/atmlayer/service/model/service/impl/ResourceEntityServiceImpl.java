@@ -7,6 +7,7 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
@@ -77,17 +78,23 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     public Uni<ResourceEntity> saveAndUpload(ResourceEntity resourceEntity, File file,
                                              String filename, String path) {
         return this.save(resourceEntity)
-                .onItem().transformToUni(record -> this.resourceEntityStorageService.uploadFile(resourceEntity, file, filename, path)
-                        .onFailure().recoverWithUni(failure -> {
-                            log.error(failure.getMessage());
-                            return Uni.createFrom().failure(new AtmLayerException(
-                                    "Failed to save Resource Entity in Object Store. Resource creation aborted",
-                                    Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
-                        })
+                .onItem().transformToUni(record -> upload(resourceEntity, file, filename, path)
                         .onItem().transformToUni(putObjectResponse -> {
                             log.info("Completed Resource Entity Creation");
                             return Uni.createFrom().item(record);
                         }));
+    }
+
+    @Override
+    public Uni<ResourceFile> upload(ResourceEntity resourceEntity, File file,
+                                    String filename, String path){
+        return this.resourceEntityStorageService.uploadFile(resourceEntity, file, filename, path)
+                .onFailure().recoverWithUni(failure -> {
+                    log.error(failure.getMessage());
+                    return Uni.createFrom().failure(new AtmLayerException(
+                            "Failed to save Resource Entity in Object Store. Resource creation aborted",
+                            Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
+                });
     }
 
     @Override
@@ -121,39 +128,51 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                 }));
     }
 
-        @Override
-        public Uni<ResourceEntity> updateResource (UUID uuid, ResourceEntity newResource,File file,
-                                                   String filename, String path){
-        String inputStorageKey= resourceEntityStorageService.calculateStorageKey(newResource.getNoDeployableResourceType(),
-                path,filename);
+//        @Override
+//        public Uni<ResourceFile> updateResource (UUID uuid, ResourceEntity newResource,File file,
+//                                                   String filename, String path){
+//        String inputStorageKey= resourceEntityStorageService.calculateStorageKey(newResource.getNoDeployableResourceType(),
+//                path,filename);
+//            return this.findByUUID(uuid)
+//                    .onItem().transformToUni(optionalResource -> {
+//                        if (optionalResource.isEmpty()) {
+//                            String errorMessage = String.format("Resource with Id %s does not exist: cannot update", uuid);
+//                            throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, INEXISTENT_RESOURCE_CANNOT_BE_UPDATED);
+//                        }
+//                        return Uni.createFrom().item(optionalResource.get());
+//                    })
+//                    .onItem().transformToUni(resourceToUpdate -> {
+//                        Uni<Boolean> sameStorageKey=resourceFileService.getStorageKey(resourceToUpdate)
+//                                .onItem().transformToUni(persistedStorageKey -> {
+//                                    if (!persistedStorageKey.equals(inputStorageKey)) {
+//                                        String errorMessage = String.format("Update error: resource with Id %s is saved under different storage key: %s", uuid, persistedStorageKey);
+//                                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, RESOURCE_WITH_DIFFERENT_STORAGE_KEY_CANNOT_BE_UPDATED);
+//                                    }
+//                                    return Uni.createFrom().item(true);
+//                                });
+//                        return Uni.createFrom().item(resourceToUpdate);
+//                    })
+//                    .onItem().transformToUni(resourceToUpdate -> {
+//                        newResource.setResourceId(resourceToUpdate.getResourceId());
+//                        return Uni.createFrom().item(newResource);
+//                    })
+//                    .onItem().transformToUni(resource -> upload(resource,file, filename, path));
+//        }
+
+    @Override
+        public Uni<ResourceFile> updateResource(UUID uuid, File file){
             return this.findByUUID(uuid)
                     .onItem().transformToUni(optionalResource -> {
                         if (optionalResource.isEmpty()) {
-                            String errorMessage = String.format("Update error: resource with Id %s does not exist", uuid);
+                            String errorMessage = String.format("Resource with Id %s does not exist: cannot update", uuid);
                             throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, INEXISTENT_RESOURCE_CANNOT_BE_UPDATED);
                         }
                         return Uni.createFrom().item(optionalResource.get());
                     })
-                    .onItem().transformToUni(resourceToUpdate -> {
-                        if (!(resourceToUpdate.getStorageKey()).equals(inputStorageKey)) {
-                            String errorMessage = String.format("Update error: resource with Id %s is saved under different storage key: %s", uuid, resourceToUpdate.getStorageKey());
-                            throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, RESOURCE_WITH_DIFFERENT_STORAGE_KEY_CANNOT_BE_UPDATED);
-                        }
-                        return Uni.createFrom().item(resourceToUpdate);
-                    })
-                    .onItem().transformToUni(resourceToUpdate -> {
-                        newResource.setResourceId(resourceToUpdate.getResourceId());
-                        return Uni.createFrom().item(newResource);
-                    })
-                    .onItem().transformToUni(resource -> saveAndUpload(resource,file, filename, path))
-                    .onItem().transformToUni(updatedResource -> this.findByUUID(updatedResource.getResourceId())
-                            .onItem().transformToUni(optionalResource -> {
-                                if (optionalResource.isEmpty()) {
-                                    return Uni.createFrom().failure(
-                                            new AtmLayerException("Sync problem on resource creation",
-                                                    Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
-                                }
-                                return Uni.createFrom().item(optionalResource.get());
-                            }));
+                    .onItem().transformToUni(resource ->
+                        resourceFileService.getRelativePath(resource)
+                                        .onItem().transformToUni(path -> upload(resource, file, resource.getFileName(), path)));
         }
+
+
     }

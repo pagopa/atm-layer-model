@@ -56,7 +56,6 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     @Override
     public Uni<ResourceFile> uploadFile(ResourceEntity resourceEntity, File file, String filenameWithExtension, String relativePath) {
         S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
-        String storageKey=calculateStorageKey(resourceEntity.getNoDeployableResourceType(),relativePath,resourceEntity.getFileName());
         String finalPath = calculateCompletePath(resourceEntity.getNoDeployableResourceType(),relativePath);
                     log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
                     Context context = Vertx.currentContext();

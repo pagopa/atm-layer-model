@@ -4,6 +4,7 @@ import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 
 import java.io.File;
 import java.util.Optional;
@@ -20,7 +21,11 @@ public interface ResourceEntityService {
 
     Uni<ResourceEntity> saveAndUpload(ResourceEntity resourceEntity, File file, String filename, String path);
 
+    Uni<ResourceFile> upload(ResourceEntity resourceEntity, File file, String filename, String path);
+
     Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file, String filename,String path);
 
-    Uni<ResourceEntity> updateResource (UUID uuid, ResourceEntity newResource,File file, String filename, String path);
+    //Uni<ResourceFile> updateResource (UUID uuid, ResourceEntity newResource,File file, String filename, String path);
+
+    Uni<ResourceFile> updateResource(UUID uuid, File file);
 }

@@ -16,4 +16,10 @@ public class ResourceFileRepository implements PanacheRepositoryBase<ResourceFil
                 "select resource from ResourceFile resource where resource.storageKey = :key",
                 Parameters.with("key", key)).firstResult();
     }
+
+    public Uni<ResourceFile> findByResourceId(UUID resourceId){
+        return find(
+                "select resource from ResourceFile resource where resource.resourceEntity.resourceId = :id",
+                Parameters.with("id", resourceId)).firstResult();
+    }
 }

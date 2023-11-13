@@ -39,7 +39,8 @@ public enum AppErrorCodeEnum {
     WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED("ATMLM_4000026", "The referenced Workflow Resource file can not be deployed", NOT_DEPLOYABLE_STATUS),
     RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED("ATMLM_4000027", "A resource with same file name and path already exists", NOT_UPLOADABLE),
     INEXISTENT_RESOURCE_CANNOT_BE_UPDATED("ATMLM_4000028","The referenced resource does not exist: cannot be updated",NOT_UPDATABLE),
-    RESOURCE_WITH_DIFFERENT_STORAGE_KEY_CANNOT_BE_UPDATED("ATMLM_4000029","The referenced resource has a different storage key: cannot be updated",NOT_UPDATABLE);
+    RESOURCE_WITH_DIFFERENT_STORAGE_KEY_CANNOT_BE_UPDATED("ATMLM_4000029","The referenced resource has a different storage key: cannot be updated",NOT_UPDATABLE),
+    RESOURCE_DOES_NOT_EXIST("ATMLM_4000024", "The referenced Resource does not exist", NOT_EXISTING_REFERENCED_ENTITY);
 
 
 
