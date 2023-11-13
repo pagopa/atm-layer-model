@@ -55,7 +55,6 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @RestClient
     ProcessClient processClient;
 
-    S3ResourceTypeEnum resourceType;
 
     @Override
     @WithTransaction
@@ -262,7 +261,6 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         DeployableResourceType deployableResourceType = workflowResource.getResourceType();
         String definitionKey = extractIdValue(file, deployableResourceType);
         S3ResourceTypeEnum s3ResourceTypeEnum = convertEnum(deployableResourceType);
-        String extensionWorkflow = s3ResourceTypeEnum.getExtension();
 
         String storageKey = workflowResource.getResourceFile().getStorageKey();
         log.info("storage key {}", storageKey);
