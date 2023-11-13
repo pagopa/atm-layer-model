@@ -25,14 +25,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import static io.smallrye.mutiny.helpers.spies.Spy.onFailure;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
@@ -271,8 +269,8 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         if (!workflowResource.getDefinitionKey().equals(definitionKey)) {
             throw new AtmLayerException(String.format("Workflow Resource with type %s does not match the Workflow Resource you are trying to update", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
         }
-        return Uni.createFrom().item(workflowResourceStorageService.uploadFile(workflowResource, file))
-        .onFailure().recoverWithUni(failure -> {
+        return Uni.createFrom().item(workflowResourceStorageService.updateFile(workflowResource, file))
+                .onFailure().recoverWithUni(failure -> {
                     log.error(failure.getMessage());
                     return Uni.createFrom().failure(new AtmLayerException("Failed to save Workflow Resource in Object Store. Workflow Resource update aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                 })

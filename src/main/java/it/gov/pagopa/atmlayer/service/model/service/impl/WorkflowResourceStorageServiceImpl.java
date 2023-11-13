@@ -59,17 +59,8 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         UUID uuid = workflowResource.getWorkflowResourceId();
         S3ResourceTypeEnum resourceType = convertEnum(workflowResource.getResourceType());
         String path = calculatePath(uuid, resourceType);
-        String completeName = filename.concat(".").concat(resourceType.getExtension());
-        Context context = Vertx.currentContext();
-        return doUploadFile(file, path, completeName, resourceType)
-                .emitOn(command -> context.runOnContext(x -> command.run()))
-                .onItem()
-                .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(workflowResource, objectStorePutResponse, filename));
-    }
+        return doUploadFile(workflowResource, file, path, filename, resourceType.getExtension(), resourceType);
 
-    private Uni<ObjectStorePutResponse> doUploadFile(File file, String path, String completeName, S3ResourceTypeEnum resourceType) {
-        log.info("Requesting to write file {} in Object Store at path  {}", completeName, path);
-        return objectStoreService.uploadFile(file, path, resourceType, completeName);
     }
 
     @Override
@@ -77,11 +68,21 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         String storageKey = workflowResource.getResourceFile().getStorageKey();
         S3ResourceTypeEnum resourceType = convertEnum(workflowResource.getResourceType());
         String path = FilenameUtils.getFullPath(storageKey);
-        String fileName = FilenameUtils.getName(storageKey);
-        return doUploadFile( file, path, fileName, resourceType);
+        String fileName = FilenameUtils.getBaseName(storageKey);
+        String extension = FilenameUtils.getExtension(storageKey);
+        return doUploadFile(workflowResource, file, path, fileName, extension, resourceType);
     }
 
+    private Uni<ResourceFile> doUploadFile(WorkflowResource workflowResource, File file, String path, String filename, String extension, S3ResourceTypeEnum resourceType) {
+        Context context = Vertx.currentContext();
+        log.info("Requesting to write file {} in Object Store at path  {}", filename.concat(".").concat(extension), path);
+        return objectStoreService.uploadFile(file, path, resourceType, filename.concat(".").concat(extension))
+                .emitOn(command -> context.runOnContext(x -> command.run()))
+                .onItem()
+                .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(workflowResource, objectStorePutResponse, filename));
 
+    }
+    
     @WithTransaction
     public Uni<ResourceFile> writeResourceInfoToDatabase(WorkflowResource workflowResource, ObjectStorePutResponse putObjectResponse, String filename) {
         ResourceFile entity = ResourceFile.builder()
