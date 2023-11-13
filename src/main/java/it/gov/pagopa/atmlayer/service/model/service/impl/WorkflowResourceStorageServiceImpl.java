@@ -70,7 +70,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         String path = FilenameUtils.getFullPath(storageKey);
         String fileName = FilenameUtils.getBaseName(storageKey);
         String extension = FilenameUtils.getExtension(storageKey);
-        return doUploadFile(workflowResource, file, path, fileName, extension, resourceType);
+        return doUploadFile(workflowResource, file, path.substring(0,path.length()-1), fileName, extension, resourceType);
     }
 
     private Uni<ResourceFile> doUploadFile(WorkflowResource workflowResource, File file, String path, String filename, String extension, S3ResourceTypeEnum resourceType) {

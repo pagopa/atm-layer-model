@@ -260,8 +260,6 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         log.info("Updating Workflow Resource with id {}", id.toString());
         DeployableResourceType deployableResourceType = workflowResource.getResourceType();
         String definitionKey = extractIdValue(file, deployableResourceType);
-        S3ResourceTypeEnum s3ResourceTypeEnum = convertEnum(deployableResourceType);
-
         String storageKey = workflowResource.getResourceFile().getStorageKey();
         log.info("storage key {}", storageKey);
         if (!workflowResource.getDefinitionKey().equals(definitionKey)) {
