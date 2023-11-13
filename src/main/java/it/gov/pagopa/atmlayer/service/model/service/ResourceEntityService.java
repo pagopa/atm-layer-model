@@ -21,4 +21,6 @@ public interface ResourceEntityService {
     Uni<ResourceEntity> saveAndUpload(ResourceEntity resourceEntity, File file, String filename, String path);
 
     Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file, String filename,String path);
+
+    Uni<ResourceEntity> updateResource (UUID uuid, ResourceEntity newResource,File file, String filename, String path);
 }

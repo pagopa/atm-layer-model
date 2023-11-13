@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
@@ -23,6 +24,7 @@ public class ResourceFileServiceImpl implements ResourceFileService {
     }
 
     @Override
+    @WithSession
     public Uni<Optional<ResourceFile>> findByStorageKey(String storageKey) {
         return resourceFileRepository.findByStorageKey(storageKey)
                 .onItem().transformToUni(resource -> Uni.createFrom().item(Optional.ofNullable(resource)));

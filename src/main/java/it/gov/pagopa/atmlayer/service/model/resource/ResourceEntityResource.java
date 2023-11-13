@@ -12,7 +12,9 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 @ApplicationScoped
 @Path("/resources")
@@ -46,4 +49,20 @@ public class ResourceEntityResource {
         .onItem()
         .transformToUni(resource -> Uni.createFrom().item(resourceEntityMapper.toDTO(resource)));
   }
+
+  @PUT
+  @Path("/{uuid}")
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @Produces(MediaType.APPLICATION_JSON)
+  @NonBlocking
+  public Uni<ResourceDTO> updateResource(@RequestBody(required = true) @Valid ResourceCreationDto resourceCreationDto,
+                                         @PathParam("uuid")UUID uuid) throws NoSuchAlgorithmException, IOException {
+    ResourceEntity resourceEntity = resourceEntityMapper.toEntityCreation(resourceCreationDto);
+    return resourceEntityService.updateResource(uuid,resourceEntity,resourceCreationDto.getFile(),
+                    resourceCreationDto.getFilename(),resourceCreationDto.getPath())
+            .onItem()
+            .transformToUni(resource -> Uni.createFrom().item(resourceEntityMapper.toDTO(resource)));
+  }
+
+
 }
