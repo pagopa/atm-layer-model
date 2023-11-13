@@ -21,15 +21,17 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public class IntegrationTests {
 
-    private static final GenericContainer<?> NEWMAN = new GenericContainer<>(new ImageFromDockerfile()
-            .withDockerfile(Paths.get("src/test/resources/integration-test/Dockerfile-postman")))
-            .withFileSystemBind("src/test/resources/integration-test/output", "/output", BindMode.READ_WRITE)
-            .withAccessToHost(true)
-            .withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofSeconds(120)));
+
+    public static GenericContainer<?> NEWMAN;
 
     @BeforeAll
     static void exposeTestPort() {
         Testcontainers.exposeHostPorts(8086);
+        NEWMAN = new GenericContainer<>(new ImageFromDockerfile()
+                .withDockerfile(Paths.get("src/test/resources/integration-test/Dockerfile-postman")))
+                .withFileSystemBind("src/test/resources/integration-test/output", "/output", BindMode.READ_WRITE)
+                .withAccessToHost(true)
+                .withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofSeconds(120)));
     }
 
     @Test
