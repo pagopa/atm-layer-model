@@ -14,6 +14,10 @@ public interface ObjectStoreProperties {
 
     Bpmn bpmn();
 
+    WorkflowResource workflowResource();
+
+    Resource resource();
+
     interface Bucket {
         String name();
 
@@ -31,5 +35,12 @@ public interface ObjectStoreProperties {
         String pathTemplate();
     }
 
+    interface WorkflowResource {
+        String pathTemplate();
+    }
+
+    interface Resource {
+        String pathTemplate();
+    }
 
 }

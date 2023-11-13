@@ -1,6 +1,5 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +26,7 @@ public class BpmnDTO {
     private Long modelVersion;
     private String deployedFileName;
     private String definitionKey;
-    private FunctionTypeEnum functionType;
+    private String functionType;
     private StatusEnum status;
     private String sha256;
     private Integer definitionVersionCamunda;

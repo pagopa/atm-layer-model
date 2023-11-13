@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
@@ -9,7 +8,7 @@ import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnIdDto;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
@@ -33,17 +32,12 @@ import java.util.Optional;
 @ApplicationScoped
 @Slf4j
 public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
-
     private final String BPMN_TEMPLATE_PATH_DEFAULT = "BPMN/files/UUID/${uuid}/VERSION/${version}";
-
     @Inject
     ObjectStoreStrategy objectStoreStrategy;
-
     private ObjectStoreService objectStoreService;
-
     @Inject
     ObjectStoreProperties objectStoreProperties;
-
     @Inject
     ResourceFileService resourceFileService;
 
@@ -56,7 +50,7 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
     public Uni<ResourceFile> writeResourceInfoToDatabase(BpmnVersion bpmn, ObjectStorePutResponse putObjectResponse, String filename) {
         ResourceFile entity = ResourceFile.builder()
                 .fileName(filename)
-                .resourceType(ResourceTypeEnum.BPMN)
+                .resourceType(S3ResourceTypeEnum.BPMN)
                 .bpmn(bpmn)
                 .storageKey(putObjectResponse.getStorage_key())
                 .build();
@@ -67,14 +61,13 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
     public Uni<ResourceFile> uploadFile(BpmnVersion bpmnVersion, File file, String filename) {
         BpmnIdDto bpmnVersionPK = new BpmnIdDto(bpmnVersion.getBpmnId(), bpmnVersion.getModelVersion());
         String path = calculatePath(bpmnVersionPK);
-        String completeName = filename.concat(".").concat(ResourceTypeEnum.BPMN.getExtension());
+        String completeName = filename.concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension());
         log.info("Requesting to write file {} in Object Store at path  {}", file.getName(), path);
         Context context = Vertx.currentContext();
-        return objectStoreService.uploadFile(file, path, ResourceTypeEnum.BPMN, completeName)
+        return objectStoreService.uploadFile(file, path, S3ResourceTypeEnum.BPMN, completeName)
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem()
                 .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(bpmnVersion, objectStorePutResponse, filename));
-
     }
 
     @Override

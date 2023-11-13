@@ -6,9 +6,12 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum ResourceTypeEnum {
+public enum S3ResourceTypeEnum {
     BPMN("bpmn","application/bpmn"),
-    HTML("html","application/html");
+    DMN("dmn", "application/dmn"),
+    FORM("json", "application/json"),
+    HTML("html", "application/html"),
+    OTHER("other", "other");
 
     String extension;
     String mimetype;

@@ -3,7 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.mapper;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
@@ -12,6 +12,8 @@ import org.mapstruct.Mapping;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "cdi")
 public abstract class BpmnVersionMapper {
@@ -25,12 +27,16 @@ public abstract class BpmnVersionMapper {
         bpmnVersion.setFunctionType(bpmnCreationDto.getFunctionType());
         bpmnVersion.setStatus(StatusEnum.CREATED);
         bpmnVersion.setSha256(BpmnUtils.calculateSha256(bpmnCreationDto.getFile()));
-        bpmnVersion.setDeployedFileName(bpmnCreationDto.getFilename().concat(".").concat(ResourceTypeEnum.BPMN.getExtension()));
+        bpmnVersion.setDeployedFileName(bpmnCreationDto.getFilename().concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension()));
         bpmnVersion.setEnabled(true);
         return bpmnVersion;
     }
 
     public abstract BpmnDTO toDTO(BpmnVersion bpmnVersion);
+
+    public List<BpmnDTO> toDTOList(List<BpmnVersion> list){
+        return list.stream().map(this::toDTO).collect(Collectors.toList());
+    }
 
     @Mapping(ignore = true, target = "enabled")
     @Mapping(target = "resourceFile.bpmn",ignore = true)
@@ -41,7 +47,7 @@ public abstract class BpmnVersionMapper {
     bpmnVersion.setFunctionType(bpmnUpgradeDto.getFunctionType());
     bpmnVersion.setStatus(StatusEnum.CREATED);
     bpmnVersion.setSha256(BpmnUtils.calculateSha256(bpmnUpgradeDto.getFile()));
-    bpmnVersion.setDeployedFileName(bpmnUpgradeDto.getFilename().concat(".").concat(ResourceTypeEnum.BPMN.getExtension()));
+    bpmnVersion.setDeployedFileName(bpmnUpgradeDto.getFilename().concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension()));
     bpmnVersion.setEnabled(true);
     bpmnVersion.setModelVersion(version);
     bpmnVersion.setDefinitionKey(definitionKey);

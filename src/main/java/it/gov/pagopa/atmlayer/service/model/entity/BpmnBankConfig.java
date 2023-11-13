@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -30,8 +29,7 @@ public class BpmnBankConfig extends PanacheEntityBase implements Serializable {
     private BpmnBankConfigPK bpmnBankConfigPK;
 
     @Column(name = "function_type")
-    @Enumerated(EnumType.STRING)
-    private FunctionTypeEnum functionType;
+    private String functionType;
 
     @CreationTimestamp
     @Column(name = "created_at")

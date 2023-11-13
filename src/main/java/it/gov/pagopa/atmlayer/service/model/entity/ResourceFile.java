@@ -2,7 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import it.gov.pagopa.atmlayer.service.model.enumeration.ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -45,8 +45,7 @@ public class ResourceFile extends PanacheEntityBase implements Serializable {
 
     @Column(name = "resource_type")
     @Enumerated(EnumType.STRING)
-    @NotNull
-    private ResourceTypeEnum resourceType;
+    private S3ResourceTypeEnum resourceType;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumns({
@@ -55,6 +54,20 @@ public class ResourceFile extends PanacheEntityBase implements Serializable {
     })
     @JsonIgnore
     private BpmnVersion bpmn;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "workflow_resource_id", referencedColumnName = "workflow_resource_id")
+    })
+    @JsonIgnore
+    private WorkflowResource workflowResource;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "resource_id", referencedColumnName = "resource_id")
+    })
+    @JsonIgnore
+    private ResourceEntity resourceEntity;
 
     @NotNull
     @Column(name = "storage_key")

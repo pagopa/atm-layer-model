@@ -13,7 +13,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
@@ -60,6 +60,13 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @Inject
     BpmnVersionMapper bpmnVersionMapper;
 
+    final DeployableResourceType resourceType = DeployableResourceType.BPMN;
+
+    @Override
+    public Uni<List<BpmnVersion>> getAll() {
+        return this.bpmnVersionRepository.findAll().list();
+    }
+
     @Override
     public Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet) {
         return this.bpmnVersionRepository.findByIds(bpmnVersionPKSet);
@@ -92,9 +99,9 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     if (x.isEmpty()) {
                         throw new AtmLayerException(String.format("BPMN with id %s does not exists", bpmnVersionPK), Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
                     }
-                    if (!StatusEnum.isDeletable(x.get().getStatus())) {
+                    if (!StatusEnum.isEditable(x.get().getStatus())) {
                         throw new AtmLayerException(String.format("BPMN with id %s is in status %s and cannot be " +
-                                "deleted. Only BPMN files in status %s can be deleted", bpmnVersionPK.toString(), x.get().getStatus(), StatusEnum.getDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
+                                "deleted. Only BPMN files in status %s can be deleted", bpmnVersionPK.toString(), x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
                     }
                     return Uni.createFrom().item(x.get());
                 })).onItem().transformToUni(y -> this.bpmnVersionRepository.deleteById(bpmnVersionPK));
@@ -122,7 +129,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     @WithTransaction
-    public Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, FunctionTypeEnum functionType, List<BpmnBankConfig> bpmnBankConfigs) {
+    public Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, String functionType, List<BpmnBankConfig> bpmnBankConfigs) {
         Uni<Long> deleteExistingUni = this.bpmnBankConfigService.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
         return deleteExistingUni
                 .onItem()
@@ -149,7 +156,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 );
     }
 
-    private Uni<Boolean> checkBpmnFileExistence(BpmnVersionPK bpmnVersionPK) {
+    public Uni<Boolean> checkBpmnFileExistence(BpmnVersionPK bpmnVersionPK) {
         return this.findByPk(bpmnVersionPK)
                 .onItem()
                 .transform(Unchecked.function(optionalBpmn -> {
@@ -185,7 +192,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     public Uni<BpmnVersion> createBPMN(BpmnVersion bpmnVersion, File file, String filename) {
-        String definitionKey = extractIdValue(file);
+        String definitionKey = extractIdValue(file, resourceType);
         bpmnVersion.setDefinitionKey(definitionKey);
         return findByDefinitionKey(definitionKey)
                 .onItem().transformToUni(Unchecked.function(x -> {
@@ -232,16 +239,14 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                         .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Fail to generate presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
                             });
                 })
-                .onItem().transformToUni(presignedUrl -> {
-                    return processClient.deploy(presignedUrl.toString())
-                            .onFailure().recoverWithUni(failure -> {
-                                log.error(failure.getMessage());
-                                return this.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOY_ERROR)
-                                        .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
-                            })
-                            .onItem()
-                            .transformToUni(response -> this.setDeployInfo(bpmnVersionPK, response));
-                });
+                .onItem().transformToUni(presignedUrl -> processClient.deploy(presignedUrl.toString(), DeployableResourceType.BPMN.name())
+                        .onFailure().recoverWithUni(failure -> {
+                            log.error(failure.getMessage());
+                            return this.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOY_ERROR)
+                                    .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                        })
+                        .onItem()
+                        .transformToUni(response -> this.setDeployInfo(bpmnVersionPK, response)));
     }
 
     @WithTransaction
@@ -275,7 +280,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 }));
     }
 
-    public Uni<BpmnVersion> getLatestVersion(UUID uuid, FunctionTypeEnum functionType) {
+    public Uni<BpmnVersion> getLatestVersion(UUID uuid, String functionType) {
         return this.bpmnVersionRepository.findByIdAndFunction(uuid, functionType)
                 .onItem()
                 .transform(list -> list.get(0))
@@ -289,11 +294,11 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     public Uni<BpmnDTO> upgrade(BpmnUpgradeDto bpmnUpgradeDto) {
-        String definitionKey = extractIdValue(bpmnUpgradeDto.getFile());
+        String definitionKey = extractIdValue(bpmnUpgradeDto.getFile(), resourceType);
         return this.getLatestVersion(bpmnUpgradeDto.getUuid(), bpmnUpgradeDto.getFunctionType())
                 .onItem()
                 .transform(Unchecked.function(latestBPMN -> {
-                    if (!extractIdValue(bpmnUpgradeDto.getFile()).equals(latestBPMN.getDefinitionKey())) {
+                    if (!extractIdValue(bpmnUpgradeDto.getFile(), resourceType).equals(latestBPMN.getDefinitionKey())) {
                         String errorMessage = "Definition keys differ, BPMN upgrade refused";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_UPGRADED);

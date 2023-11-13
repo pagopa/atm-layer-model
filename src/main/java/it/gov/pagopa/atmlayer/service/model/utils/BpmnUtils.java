@@ -8,7 +8,6 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.File;
@@ -71,7 +70,7 @@ public class BpmnUtils {
         ).collect(Collectors.toSet());
     }
 
-    public static List<BpmnBankConfig> getAcquirerConfigs(BpmnAssociationDto bpmnAssociationDto, String acquirerId, FunctionTypeEnum functionTypeEnum) {
+    public static List<BpmnBankConfig> getAcquirerConfigs(BpmnAssociationDto bpmnAssociationDto, String acquirerId, String functionTypeEnum) {
         List<BpmnBankConfig> bpmnBankConfigs = new ArrayList<>();
         BpmnBankConfig bpmnBankConfigAcquirerDefault = new BpmnBankConfig();
         bpmnBankConfigAcquirerDefault.setBpmnBankConfigPK(new BpmnBankConfigPK(bpmnAssociationDto.getDefaultTemplateId(),
@@ -109,7 +108,7 @@ public class BpmnUtils {
         return bpmnBankConfigs;
     }
 
-    private static Optional<BpmnBankConfigPK> getBpmnBankConfigPK(BpmnAssociationDto bpmnAssociationDto, String acquirerId, BranchConfigs branchConfig) {
+    public static Optional<BpmnBankConfigPK> getBpmnBankConfigPK(BpmnAssociationDto bpmnAssociationDto, String acquirerId, BranchConfigs branchConfig) {
         if (Objects.isNull(branchConfig.getBranchDefaultTemplateId()) || Objects.isNull(branchConfig.getBranchDefaultTemplateVersion())) {
             return Optional.empty();
         }

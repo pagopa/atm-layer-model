@@ -2,19 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.enumeration;
 
 import lombok.Getter;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.CONSTRAINT_VIOLATION;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.GENERIC;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INTERNAL;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INVALID_DEPLOY;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.INVALID_FUNCTION_TYPE;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DELETABLE;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYABLE_STATUS;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_DEPLOYED_STATUS;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_EXISTING_REFERENCED_ENTITY;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.ID_NOT_FOUND;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_UPGRADABLE;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_FILE;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.NOT_VALID_REFERENCED_ENTITY;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.*;
 
 /**
  * Enumeration for application error codes and messages
@@ -39,7 +27,19 @@ public enum AppErrorCodeEnum {
     MALFORMED_FILE("ATMLM_4000014","Cannot Read Input File",NOT_VALID_FILE),
     SHA256_ERROR("ATMLM_4000015","Cannot calculate SHA256 of Input file",NOT_VALID_FILE),
     DEPLOY_ERROR("ATMLM_4000016","Empty Process Infos in deploy payload",INVALID_DEPLOY),
-    NO_CONFIGURATION_FOR_ACQUIRER("ATMLM_4000017","No configuration found for the provided acquirer Id", ID_NOT_FOUND);
+    NO_CONFIGURATION_FOR_ACQUIRER("ATMLM_4000017","No configuration found for the provided acquirer Id", ID_NOT_FOUND),
+    METHOD_NOT_ALLOWED("ATMLM_4000018","Cannot invoke method", INVALID_ARGUMENT),
+    RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS("ATMLM_4000019","A resource with the same content already exists", CONSTRAINT_VIOLATION),
+    FILE_NOT_SUPPORTED("ATMLM_4000020", "A resource with same file name and path already exists", NOT_UPLOADABLE),
+    WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST("ATMLM_4000021","A Workflow Resource file with the same content already exists", CONSTRAINT_VIOLATION),
+    WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS("ATMLM_4000022","A Workflow Resource file with the same Camunda definition key already exists", CONSTRAINT_VIOLATION),
+    WORKFLOW_FILE_DOES_NOT_EXIST("ATMLM_4000023", "The referenced Workflow Resource file does not exist", NOT_EXISTING_REFERENCED_ENTITY),
+    WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS("ATMLM_4000024", "The referenced Workflow Resource file can not be deleted in the actual state", NOT_DELETABLE),
+    WORKFLOW_RESOURCE_CANNOT_BE_UPDATED_FOR_STATUS("ATMLM_4000025", "The referenced Workflow Resource file can not be updated in the actual state", NOT_UPDATABLE),
+    WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED("ATMLM_4000026", "The referenced Workflow Resource file can not be deployed", NOT_DEPLOYABLE_STATUS),
+    RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED("ATMLM_4000027", "A resource with same file name and path already exists", NOT_UPLOADABLE),
+    RESOURCE_FILE_DOES_NOT_EXIST("ATMLM_4000028", "The referenced Resource file does not exist", NOT_EXISTING_REFERENCED_ENTITY);
+
 
 
     private final String errorCode;
