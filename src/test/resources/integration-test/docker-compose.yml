@@ -9,6 +9,9 @@ services:
       POSTGRES_DB: test
     ports:
       - "5434:5432"
+    networks:
+      - my-network
+
   minio:
     image: minio/minio
     ports:
@@ -18,6 +21,9 @@ services:
       MINIO_ACCESS_KEY: key
       MINIO_SECRET_KEY: password
     command: server /data --console-address ":9001"
+    networks:
+      - my-network
+
   createbuckets:
     image: minio/mc
     depends_on:
@@ -29,9 +35,17 @@ services:
       /usr/bin/mc policy set public myminio/bucket-test;
       exit 0;
       "
+    networks:
+      - my-network
+
   mockoon:
     ports:
       - "3000:3000"
     build:
       context: ../
       dockerfile: ./integration-test/Dockerfile-mockoon
+    networks:
+      - my-network
+
+networks:
+  my-network:
