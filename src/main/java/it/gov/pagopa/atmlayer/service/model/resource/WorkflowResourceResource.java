@@ -16,6 +16,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -100,5 +102,23 @@ public class WorkflowResourceResource {
 
         return this.workflowResourceService.delete(uuid)
                 .onItem().ignore().andSwitchTo(Uni.createFrom().voidItem());
+    }
+
+    @PUT
+    @Path("/update/{uuid}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<WorkflowResourceDTO> update(@RequestBody(required = true)File file,
+                                           @PathParam("uuid") UUID uuid) {
+        return this.workflowResourceService.findById(uuid)
+                .onItem()
+                .transformToUni(Unchecked.function(workflowResource -> {
+                    if (workflowResource.isEmpty()){
+                        throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                    }
+                    return this.workflowResourceService.update(uuid, file, workflowResource.get());
+                }))
+                .onItem()
+                .transformToUni(workflowUpdated -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(workflowUpdated)));
     }
 }
