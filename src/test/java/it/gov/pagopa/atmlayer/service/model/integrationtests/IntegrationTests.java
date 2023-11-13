@@ -17,7 +17,7 @@ import java.time.Duration;
 import static org.junit.Assert.assertTrue;
 
 @QuarkusTest
-@QuarkusTestResource(value = EnviromentTestServicesResource.DockerCompose.class, restrictToAnnotatedClass = true)
+@QuarkusTestResource(value = EnvironmentTestServicesResource.DockerCompose.class, restrictToAnnotatedClass = true)
 @Slf4j
 public class IntegrationTests {
 

@@ -42,6 +42,7 @@ jobs:
           REPOSITORY: ${{ vars.DOCKER_IMAGE_NAME}}
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          mvn package -Pnative -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod 
           docker build -f src/main/java/it/gov/pagopa/atmlayer/service/model/docker/Dockerfile.native -t $REGISTRY/$REPOSITORY:$IMAGE_TAG . \
           --build-arg QUARKUS_PROFILE=prod \
           --build-arg APP_NAME=atm-layer-model
