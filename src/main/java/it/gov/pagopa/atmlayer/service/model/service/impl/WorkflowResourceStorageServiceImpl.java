@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Context;
@@ -64,13 +65,19 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
     }
 
     @Override
+    @WithSession
     public Uni<ResourceFile> updateFile(WorkflowResource workflowResource, File file) {
         String storageKey = workflowResource.getResourceFile().getStorageKey();
         S3ResourceTypeEnum resourceType = convertEnum(workflowResource.getResourceType());
         String path = FilenameUtils.getFullPath(storageKey);
         String fileName = FilenameUtils.getBaseName(storageKey);
         String extension = FilenameUtils.getExtension(storageKey);
-        return doUploadFile(workflowResource, file, path.substring(0,path.length()-1), fileName, extension, resourceType);
+        Context context = Vertx.currentContext();
+        log.info("Requesting to write file {} in Object Store at path  {}", fileName.concat(".").concat(extension), path);
+        return objectStoreService.uploadFile(file, path.substring(0,path.length()-1), resourceType, fileName.concat(".").concat(extension))
+                .emitOn(command -> context.runOnContext(x -> command.run()))
+                .onItem().transformToUni(x -> this.resourceFileService.findByStorageKey(storageKey))
+                .onItem().transformToUni(y -> Uni.createFrom().item(y.get()));
     }
 
     private Uni<ResourceFile> doUploadFile(WorkflowResource workflowResource, File file, String path, String filename, String extension, S3ResourceTypeEnum resourceType) {
@@ -82,7 +89,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
                 .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(workflowResource, objectStorePutResponse, filename));
 
     }
-    
+
     @WithTransaction
     public Uni<ResourceFile> writeResourceInfoToDatabase(WorkflowResource workflowResource, ObjectStorePutResponse putObjectResponse, String filename) {
         ResourceFile entity = ResourceFile.builder()

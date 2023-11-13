@@ -11,7 +11,6 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
-import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.WorkflowResourceRepository;
@@ -38,7 +37,6 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_UPDATED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
-import static it.gov.pagopa.atmlayer.service.model.utils.EnumConverter.convertEnum;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.extractIdValue;
 
 @ApplicationScoped
@@ -256,7 +254,8 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
     @Override
-    public Uni<WorkflowResource> update(UUID id, File file, WorkflowResource workflowResource) {
+    @WithTransaction
+    public Uni<ResourceFile> update(UUID id, File file, WorkflowResource workflowResource) {
         log.info("Updating Workflow Resource with id {}", id.toString());
         DeployableResourceType deployableResourceType = workflowResource.getResourceType();
         String definitionKey = extractIdValue(file, deployableResourceType);
@@ -265,14 +264,6 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         if (!workflowResource.getDefinitionKey().equals(definitionKey)) {
             throw new AtmLayerException(String.format("Workflow Resource with type %s does not match the Workflow Resource you are trying to update", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
         }
-        return Uni.createFrom().item(workflowResourceStorageService.updateFile(workflowResource, file))
-                .onFailure().recoverWithUni(failure -> {
-                    log.error(failure.getMessage());
-                    return Uni.createFrom().failure(new AtmLayerException("Failed to save Workflow Resource in Object Store. Workflow Resource update aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
-                })
-                .onItem().transformToUni(putObjectResponse -> {
-                    log.info("Completed Workflow Resource Update");
-                    return Uni.createFrom().item(workflowResource);
-                });
+         return workflowResourceStorageService.updateFile(workflowResource, file);
     }
 }

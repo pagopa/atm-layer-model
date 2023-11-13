@@ -26,7 +26,6 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.jboss.resteasy.reactive.PartType;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,17 +109,18 @@ public class WorkflowResourceResource {
     @Path("/update/{uuid}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResourceDTO> update(@RequestBody(required = true)@FormParam("file") File file,
-                                           @PathParam("uuid") UUID uuid) {
+    public Uni<WorkflowResource> update(@RequestBody(required = true) @FormParam("file") File file,
+                                        @PathParam("uuid") UUID uuid) {
         return this.workflowResourceService.findById(uuid)
                 .onItem()
                 .transformToUni(Unchecked.function(workflowResource -> {
-                    if (workflowResource.isEmpty()){
+                    if (workflowResource.isEmpty()) {
                         throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
                     return this.workflowResourceService.update(uuid, file, workflowResource.get());
                 }))
                 .onItem()
-                .transformToUni(workflowUpdated -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(workflowUpdated)));
+                .transformToUni(workflowUpdated -> this.workflowResourceService.findById(uuid))
+                .onItem().transformToUni(x -> Uni.createFrom().item(x.get()));
     }
 }

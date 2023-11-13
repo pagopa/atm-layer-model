@@ -1,9 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
-import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
-import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 
 import java.io.File;
 import java.util.List;
@@ -30,5 +29,5 @@ public interface WorkflowResourceService {
 
     Uni<List<WorkflowResource>> getAll();
 
-    Uni<WorkflowResource> update(UUID id, File file, WorkflowResource workflowResource);
+    Uni<ResourceFile> update(UUID id, File file, WorkflowResource workflowResource);
 }
