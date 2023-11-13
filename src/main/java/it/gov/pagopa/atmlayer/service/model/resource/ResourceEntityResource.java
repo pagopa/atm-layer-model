@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceEntityMapper;
@@ -11,6 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -21,6 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 @ApplicationScoped
 @Path("/resources")
@@ -33,6 +36,19 @@ public class ResourceEntityResource {
   @Inject
   ResourceEntityService resourceEntityService;
 
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public Uni<List<ResourceDTO>> getAllHtml() {
+    return this.resourceEntityService.getAll()
+        .onItem()
+        .transform(Unchecked.function(list -> {
+          if (list.isEmpty()) {
+            log.info("No Resource files saved in database");
+          }
+          return resourceEntityMapper.toDTOList(list);
+        }));
+  }
+
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.APPLICATION_JSON)
@@ -42,7 +58,7 @@ public class ResourceEntityResource {
       throws NoSuchAlgorithmException, IOException {
     ResourceEntity resourceEntity = resourceEntityMapper.toEntityCreation(resourceCreationDto);
     return resourceEntityService.createResource(resourceEntity, resourceCreationDto.getFile(),
-            resourceCreationDto.getFilename(),resourceCreationDto.getPath())
+            resourceCreationDto.getFilename(), resourceCreationDto.getPath())
         .onItem()
         .transformToUni(resource -> Uni.createFrom().item(resourceEntityMapper.toDTO(resource)));
   }

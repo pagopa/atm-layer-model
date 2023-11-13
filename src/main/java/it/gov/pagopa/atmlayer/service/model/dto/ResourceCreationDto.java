@@ -1,16 +1,13 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
-import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.FormParam;
+import java.io.File;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.File;
 
 @Data
 @NoArgsConstructor

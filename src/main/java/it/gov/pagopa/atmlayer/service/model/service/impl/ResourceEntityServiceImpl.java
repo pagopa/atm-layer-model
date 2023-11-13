@@ -1,5 +1,9 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
+
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
@@ -15,16 +19,12 @@ import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
 @Slf4j
@@ -40,6 +40,12 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
   ProcessClient processClient;
 
   final S3ResourceTypeEnum resourceType = S3ResourceTypeEnum.HTML;
+
+  @Override
+  @WithSession
+  public Uni<List<ResourceEntity>> getAll() {
+    return this.resourceEntityRepository.findAll().list();
+  }
 
   @Override
   @WithTransaction
@@ -72,17 +78,19 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
   public Uni<ResourceEntity> saveAndUpload(ResourceEntity resourceEntity, File file,
       String filename, String path) {
     return this.save(resourceEntity)
-         .onItem().transformToUni(record -> this.resourceEntityStorageService.uploadFile(resourceEntity, file, filename, path)
-             .onFailure().recoverWithUni(failure -> {
-               log.error(failure.getMessage());
-               return Uni.createFrom().failure(new AtmLayerException(
-                   "Failed to save Resource Entity in Object Store. Resource creation aborted",
-                   Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
-             })
-             .onItem().transformToUni(putObjectResponse -> {
-               log.info("Completed Resource Entity Creation");
-               return Uni.createFrom().item(record);
-             }));
+        .onItem().transformToUni(
+            record -> this.resourceEntityStorageService.uploadFile(resourceEntity, file, filename,
+                    path)
+                .onFailure().recoverWithUni(failure -> {
+                  log.error(failure.getMessage());
+                  return Uni.createFrom().failure(new AtmLayerException(
+                      "Failed to save Resource Entity in Object Store. Resource creation aborted",
+                      Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
+                })
+                .onItem().transformToUni(putObjectResponse -> {
+                  log.info("Completed Resource Entity Creation");
+                  return Uni.createFrom().item(record);
+                }));
   }
 
   @Override
