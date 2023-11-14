@@ -69,6 +69,12 @@ jobs:
           ignore-test-failures: true
           timezone: 'europe/rome'
 
+      - name: Fail if there were errors in the postman tests
+        if: steps.process-postman.outputs.test-outcome == 'Failed'
+        run: |
+          echo "There were postman failures."
+          exit 1
+
       - name: Build, tag, and push docker image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
