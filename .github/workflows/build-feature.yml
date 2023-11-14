@@ -67,7 +67,7 @@ jobs:
       - name: Upload result.html
         uses: actions/upload-artifact@v3
         with:
-          name: my-artifact
+          name: html-report
           path: src/test/resources/integration-test/output/result.html
 
       - name: Build, tag, and push docker image to Amazon ECR
