@@ -10,8 +10,6 @@ defaults:
     shell: bash
 
 permissions: write-all
-  # id-token: write   # This is required for requesting the JWT
-  # contents: write    # This is required for actions/checkout
 
 jobs:
   build:
@@ -46,15 +44,6 @@ jobs:
       - name: Test and Integration tests
         run: |
           mvn package -Pnative -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod 
-
-      - name: Push postman test result
-        run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-          git pull
-          git add .
-          git commit --allow-empty -m "postman result"
-          git push
 
       - name: Create Status check based on postman results
         id: process-postman
