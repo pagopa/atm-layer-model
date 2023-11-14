@@ -64,6 +64,12 @@ jobs:
           echo "There were postman failures."
           exit 1
 
+      - name: Upload result.html
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: src/test/resources/integration-test/output/result.html
+
       - name: Build, tag, and push docker image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
