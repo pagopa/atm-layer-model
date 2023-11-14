@@ -73,3 +73,4 @@ jobs:
           docker build -f src/main/java/it/gov/pagopa/atmlayer/service/model/docker/Dockerfile.native -t $REGISTRY/$REPOSITORY:$IMAGE_TAG . \
           --build-arg QUARKUS_PROFILE=prod \
           --build-arg APP_NAME=atm-layer-model
+ 
