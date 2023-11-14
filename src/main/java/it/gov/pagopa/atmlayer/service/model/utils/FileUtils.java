@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Files;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,7 +17,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.MALFORMED_FILE;
 
@@ -63,5 +70,40 @@ public class FileUtils {
         } catch (Exception e) {
             throw new AtmLayerException("Malformed File", Response.Status.BAD_REQUEST, MALFORMED_FILE);
         }
+    }
+
+    public static byte[] fileToByteArray(File file) throws IOException {
+        return Files.toByteArray(file);
+    }
+
+    public static String calculateSha256(File file) throws NoSuchAlgorithmException, IOException {
+        byte[] array = toSha256ByteArray(file);
+        return toHexString(array);
+    }
+
+    public static byte[] encodeToBase64(byte[] array) {
+        return Base64.getEncoder().encode(array);
+    }
+
+    public static byte[] toSha256ByteArray(File file) throws NoSuchAlgorithmException, IOException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        return digest.digest(Files.toByteArray(file));
+    }
+
+    public static byte[] base64ToByteArray(String base64) {
+        return Base64.getDecoder().decode(base64);
+    }
+
+    public static String toHexString(byte[] hash) {
+        BigInteger number = new BigInteger(1, hash);
+        StringBuilder hexString = new StringBuilder(number.toString(16));
+        while (hexString.length() < 64) {
+            hexString.insert(0, '0');
+        }
+        return hexString.toString();
+    }
+
+    public static String byteArrayToString(byte[] byteArray) {
+        return new String(byteArray, StandardCharsets.UTF_8);
     }
 }

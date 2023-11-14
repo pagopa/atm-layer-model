@@ -2,7 +2,6 @@ package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
-import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
