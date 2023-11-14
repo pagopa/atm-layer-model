@@ -1,6 +1,5 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
-import com.google.common.io.Files;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BranchConfigs;
 import it.gov.pagopa.atmlayer.service.model.dto.TerminalConfigs;
@@ -10,14 +9,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,41 +18,6 @@ import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BpmnUtils {
-
-    public static byte[] fileToByteArray(File file) throws IOException {
-        return Files.toByteArray(file);
-    }
-
-    public static String calculateSha256(File file) throws NoSuchAlgorithmException, IOException {
-        byte[] array = BpmnUtils.toSha256ByteArray(file);
-        return BpmnUtils.toHexString(array);
-    }
-
-    public static byte[] encodeToBase64(byte[] array) {
-        return Base64.getEncoder().encode(array);
-    }
-
-    public static byte[] toSha256ByteArray(File file) throws NoSuchAlgorithmException, IOException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        return digest.digest(Files.toByteArray(file));
-    }
-
-    public static byte[] base64ToByteArray(String base64) {
-        return Base64.getDecoder().decode(base64);
-    }
-
-    public static String toHexString(byte[] hash) {
-        BigInteger number = new BigInteger(1, hash);
-        StringBuilder hexString = new StringBuilder(number.toString(16));
-        while (hexString.length() < 64) {
-            hexString.insert(0, '0');
-        }
-        return hexString.toString();
-    }
-
-    public static String byteArrayToString(byte[] byteArray) {
-        return new String(byteArray, StandardCharsets.UTF_8);
-    }
 
     public static Set<BpmnVersionPK> extractBpmnUUIDFromAssociations(List<BpmnBankConfig> associations) {
         return associations.stream().map(association -> BpmnVersionPK.builder()

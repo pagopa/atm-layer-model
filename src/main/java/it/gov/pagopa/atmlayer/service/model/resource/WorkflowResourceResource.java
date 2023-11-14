@@ -4,6 +4,7 @@ import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.WorkflowResourceMapper;
@@ -109,18 +110,10 @@ public class WorkflowResourceResource {
     @Path("/update/{uuid}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResource> update(@RequestBody(required = true) @FormParam("file") File file,
-                                        @PathParam("uuid") UUID uuid) {
-        return this.workflowResourceService.findById(uuid)
-                .onItem()
-                .transformToUni(Unchecked.function(workflowResource -> {
-                    if (workflowResource.isEmpty()) {
-                        throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
-                    }
-                    return this.workflowResourceService.update(uuid, file, workflowResource.get());
-                }))
-                .onItem()
-                .transformToUni(workflowUpdated -> this.workflowResourceService.findById(uuid))
-                .onItem().transformToUni(x -> Uni.createFrom().item(x.get()));
+    public Uni<ResourceFile> update(@RequestBody(required = true) @FormParam("file") File file,
+                                    @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
+
+        return this.workflowResourceService.update(uuid, file);
+
     }
 }

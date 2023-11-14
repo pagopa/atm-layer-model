@@ -5,6 +5,8 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,5 +31,5 @@ public interface WorkflowResourceService {
 
     Uni<List<WorkflowResource>> getAll();
 
-    Uni<ResourceFile> update(UUID id, File file, WorkflowResource workflowResource);
+    Uni<ResourceFile> update(UUID id, File file) throws NoSuchAlgorithmException, IOException;
 }

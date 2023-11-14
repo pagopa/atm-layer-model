@@ -13,6 +13,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.repository.ResourceFileRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.WorkflowResourceRepository;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceStorageService;
@@ -24,6 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +42,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_UPDATED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.calculateSha256;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.extractIdValue;
 
 @ApplicationScoped
@@ -45,6 +51,9 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
 
     @Inject
     WorkflowResourceRepository workflowResourceRepository;
+
+    @Inject
+    ResourceFileRepository resourceFileRepository;
 
     @Inject
     WorkflowResourceStorageService workflowResourceStorageService;
@@ -255,15 +264,32 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
 
     @Override
     @WithTransaction
-    public Uni<ResourceFile> update(UUID id, File file, WorkflowResource workflowResource) {
-        log.info("Updating Workflow Resource with id {}", id.toString());
-        DeployableResourceType deployableResourceType = workflowResource.getResourceType();
-        String definitionKey = extractIdValue(file, deployableResourceType);
-        String storageKey = workflowResource.getResourceFile().getStorageKey();
-        log.info("storage key {}", storageKey);
-        if (!workflowResource.getDefinitionKey().equals(definitionKey)) {
-            throw new AtmLayerException(String.format("Workflow Resource with type %s does not match the Workflow Resource you are trying to update", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
-        }
-         return workflowResourceStorageService.updateFile(workflowResource, file);
+    public Uni<ResourceFile> update(UUID id, File file) throws NoSuchAlgorithmException, IOException {
+        return this.findById(id)
+                .onItem()
+                .transformToUni(Unchecked.function(workflow -> {
+                    if (workflow.isEmpty()) {
+                        throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                    }
+                    WorkflowResource workflowFound = workflow.get();
+                    log.info("Updating Workflow Resource with id {}", id.toString());
+                    DeployableResourceType deployableResourceType = workflowFound.getResourceType();
+                    String definitionKey = extractIdValue(file, deployableResourceType);
+                    String storageKey = workflowFound.getResourceFile().getStorageKey();
+                    log.info("storage key {}", storageKey);
+                    if (!workflowFound.getDefinitionKey().equals(definitionKey)) {
+                        throw new AtmLayerException(String.format("Workflow Resource with type %s does not match the Workflow Resource you are trying to update", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
+                    }
+                    String shaUpdateFile = calculateSha256(file);
+                    workflowFound.setSha256(shaUpdateFile);
+                    Date date = new Date();
+                    workflowFound.setLastUpdatedAt(new Timestamp(date.getTime()));
+                    workflowFound.getResourceFile().setLastUpdatedAt(new Timestamp(date.getTime()));
+                    return workflowResourceRepository.persist(workflowFound)
+                            .onItem()
+                            .transformToUni(x -> workflowResourceStorageService.updateFile(workflowFound, file));
+                }));
+
+
     }
 }
