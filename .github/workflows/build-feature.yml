@@ -47,14 +47,18 @@ jobs:
         run: |
           mvn package -Pnative -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod 
 
-      - name: Push postman test result
-        run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-          git pull
-          git add .
-          git commit --allow-empty -m "postman result"
-          git push
+      - name: Create Status check based on postman results
+        id: process-postman
+        uses: im-open/process-postman-test-results@v2.1.5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          results-file: src/test/resources/integration-test/output/result.json
+          report-name: 'Postman ${{ github.run_number }}'
+          create-status-check: true
+          create-pr-comment: true
+          update-comment-if-one-exists: true
+          ignore-test-failures: true
+          timezone: 'europe/rome'
 
       - name: Build, tag, and push docker image to Amazon ECR
         env:
