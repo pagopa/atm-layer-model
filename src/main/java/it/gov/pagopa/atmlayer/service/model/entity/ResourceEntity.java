@@ -9,7 +9,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +29,6 @@ import java.util.UUID;
 @Table(name = "resource_entity")
 public class ResourceEntity extends PanacheEntityBase implements Serializable {
     @Column(name = "resource_id", nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     private UUID resourceId;
     @Column(name = "sha256", unique = true)
@@ -47,4 +48,14 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
     private String createdBy;
     @Column(name = "last_updated_by")
     private String lastUpdatedBy;
+    @Transient
+    String storageKey;
+
+    @PrePersist
+    public void generateUUID() {
+        if (getResourceId() == null) {
+            setResourceId(UUID.randomUUID());
+        }
+    }
+
 }
