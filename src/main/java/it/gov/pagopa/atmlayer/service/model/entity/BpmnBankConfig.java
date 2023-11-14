@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class BpmnBankConfig extends PanacheEntityBase implements Serializable {
     private BpmnBankConfigPK bpmnBankConfigPK;
 
     @Column(name = "function_type")
+    @Getter(AccessLevel.NONE)
     private String functionType;
 
     @CreationTimestamp
@@ -44,4 +46,11 @@ public class BpmnBankConfig extends PanacheEntityBase implements Serializable {
 
     @Column(name = "last_updated_by")
     private String lastUpdatedBy;
+
+    public String getFunctionType() {
+        if (functionType != null) {
+            return functionType.toUpperCase();
+        }
+        return null;
+    }
 }

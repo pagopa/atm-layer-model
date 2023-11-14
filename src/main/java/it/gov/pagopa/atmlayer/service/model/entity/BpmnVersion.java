@@ -12,6 +12,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -48,6 +49,7 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
     private String definitionKey;
 
     @Column(name = "function_type")
+    @Getter(AccessLevel.NONE)
     private String functionType;
 
     @Column(name = "status")
@@ -94,6 +96,13 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
         if (getBpmnId() == null) {
             setBpmnId(UUID.randomUUID());
         }
+    }
+
+    public String getFunctionType() {
+        if (functionType != null) {
+            return functionType.toUpperCase();
+        }
+        return null;
     }
 
 }
