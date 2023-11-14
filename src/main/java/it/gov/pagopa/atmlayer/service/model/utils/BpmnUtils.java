@@ -27,20 +27,20 @@ public class BpmnUtils {
         ).collect(Collectors.toSet());
     }
 
-    public static List<BpmnBankConfig> getAcquirerConfigs(BpmnAssociationDto bpmnAssociationDto, String acquirerId, String functionTypeEnum) {
+    public static List<BpmnBankConfig> getAcquirerConfigs(BpmnAssociationDto bpmnAssociationDto, String acquirerId, String functionType) {
         List<BpmnBankConfig> bpmnBankConfigs = new ArrayList<>();
         BpmnBankConfig bpmnBankConfigAcquirerDefault = new BpmnBankConfig();
         bpmnBankConfigAcquirerDefault.setBpmnBankConfigPK(new BpmnBankConfigPK(bpmnAssociationDto.getDefaultTemplateId(),
                 bpmnAssociationDto.getDefaultTemplateVersion(),
                 acquirerId, BankConfigUtilityValues.NULL_VALUE.getValue(), BankConfigUtilityValues.NULL_VALUE.getValue()));
-        bpmnBankConfigAcquirerDefault.setFunctionType(functionTypeEnum);
+        bpmnBankConfigAcquirerDefault.setFunctionType(functionType);
         bpmnBankConfigs.add(bpmnBankConfigAcquirerDefault);
         if (bpmnAssociationDto.getBranchesConfigs() != null && !bpmnAssociationDto.getBranchesConfigs().isEmpty()) {
             for (BranchConfigs branchConfig : bpmnAssociationDto.getBranchesConfigs()) {
                 BpmnBankConfig bpmnBankConfigBranchDefault = new BpmnBankConfig();
                 Optional<BpmnBankConfigPK> optionalBpmnBankConfigPKBranch = getBpmnBankConfigPK(bpmnAssociationDto, acquirerId, branchConfig);
                 if (optionalBpmnBankConfigPKBranch.isPresent()) {
-                    bpmnBankConfigBranchDefault.setFunctionType(functionTypeEnum);
+                    bpmnBankConfigBranchDefault.setFunctionType(functionType);
                     bpmnBankConfigBranchDefault.setBpmnBankConfigPK(optionalBpmnBankConfigPKBranch.get());
                     bpmnBankConfigs.add(bpmnBankConfigBranchDefault);
                 }
@@ -54,7 +54,7 @@ public class BpmnUtils {
                             bpmnBankConfigPKTerminal.setAcquirerId(acquirerId);
                             bpmnBankConfigPKTerminal.setBranchId(branchConfig.getBranchId());
                             bpmnBankConfigPKTerminal.setTerminalId(terminalId);
-                            bpmnBankConfigTerminal.setFunctionType(functionTypeEnum);
+                            bpmnBankConfigTerminal.setFunctionType(functionType);
                             bpmnBankConfigTerminal.setBpmnBankConfigPK(bpmnBankConfigPKTerminal);
                             bpmnBankConfigs.add(bpmnBankConfigTerminal);
                         }

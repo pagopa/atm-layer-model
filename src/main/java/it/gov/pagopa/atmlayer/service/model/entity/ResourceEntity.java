@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -36,6 +38,8 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
     @Column(name="resourceType")
     @Enumerated(EnumType.STRING)
     NoDeployableResourceType noDeployableResourceType;
+    @OneToOne(mappedBy = "resourceEntity", cascade = CascadeType.ALL)
+    ResourceFile resourceFile;
     @Column(name="file_name")
     String fileName;
     @CreationTimestamp

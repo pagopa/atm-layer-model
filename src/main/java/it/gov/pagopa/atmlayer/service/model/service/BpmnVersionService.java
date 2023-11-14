@@ -32,7 +32,7 @@ public interface BpmnVersionService {
 
     Uni<Optional<BpmnVersion>> findByPk(BpmnVersionPK bpmnVersionPK);
 
-    Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, String functionTypeEnum, List<BpmnBankConfig> bpmnBankConfigs);
+    Uni<List<BpmnBankConfig>> putAssociations(String acquirerId, String functionType, List<BpmnBankConfig> bpmnBankConfigs);
 
     Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK);
 

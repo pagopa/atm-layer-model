@@ -2,26 +2,22 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
-import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
-import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
-import it.gov.pagopa.atmlayer.service.model.service.ResourceFileService;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
+import it.gov.pagopa.atmlayer.service.model.service.ResourceFileService;
 import it.gov.pagopa.atmlayer.service.model.strategy.ObjectStoreStrategy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -54,17 +50,28 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     }
 
     @Override
-    public Uni<ResourceFile> uploadFile(ResourceEntity resourceEntity, File file, String filenameWithExtension, String relativePath) {
-        S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
-        String finalPath = calculateCompletePath(resourceEntity.getNoDeployableResourceType(),relativePath);
-                    log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
+    public Uni<ResourceFile> uploadFile(File file, ResourceEntity resourceEntity, String filenameWithExtension, String finalPath, boolean creation) {
                     Context context = Vertx.currentContext();
+                    S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
                     return objectStoreService.uploadFile(file, finalPath, resourceType, filenameWithExtension)
                             .emitOn(command -> context.runOnContext(x -> command.run()))
                             .onItem()
-                            .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(resourceEntity,
-                                    objectStorePutResponse, filenameWithExtension.split("\\.")[0]));
+                            .transformToUni(objectStorePutResponse -> {
+                                if(creation){
+                                    return this.writeResourceInfoToDatabase(resourceEntity,
+                                            objectStorePutResponse, filenameWithExtension.split("\\.")[0]);
+                                }
+                                return Uni.createFrom().item(resourceEntity.getResourceFile());
+                            });
 
+    }
+
+    @Override
+    public Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath) {
+        S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
+        String finalPath = calculateCompletePath(resourceEntity.getNoDeployableResourceType(),relativePath);
+        log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
+        return uploadFile(file, resourceEntity, fileNameWithExtension, finalPath, true);
     }
 
     @Override

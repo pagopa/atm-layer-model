@@ -35,12 +35,12 @@ public class BpmnBankConfigService {
     }
 
     @WithTransaction
-    public Uni<Long> deleteByAcquirerIdAndFunctionType(String acquirerId, String functionTypeEnum) {
-        return this.bankConfigRepository.deleteByAcquirerIdAndFunctionType(acquirerId, functionTypeEnum);
+    public Uni<Long> deleteByAcquirerIdAndFunctionType(String acquirerId, String functionType) {
+        return this.bankConfigRepository.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
     }
 
-    public Uni<Optional<BpmnBankConfig>> findByConfigurationsAndFunction(String acquirerId, String branchId, String terminalId, String functionTypeEnum) {
-        return this.bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionTypeEnum)
+    public Uni<Optional<BpmnBankConfig>> findByConfigurationsAndFunction(String acquirerId, String branchId, String terminalId, String functionType) {
+        return this.bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType)
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (!x.isEmpty() && x.size() > 1) {
                         throw new AtmLayerException("Multiple BPMN found for a single configuration.", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.ATMLM_500);

@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
@@ -44,12 +45,12 @@ public class ResourceFileServiceImpl implements ResourceFileService {
     public Uni<String> getStorageKey(ResourceEntity resourceEntity) {
         return resourceFileRepository.findByResourceId(resourceEntity.getResourceId())
                 .onItem().transformToUni(resourceFile -> Uni.createFrom().item(Optional.ofNullable(resourceFile)))
-                .onItem().transformToUni(optionalResourceFile -> {
+                .onItem().transformToUni(Unchecked.function(optionalResourceFile -> {
                     if (optionalResourceFile.isEmpty()) {
                         throw new AtmLayerException("The referenced resource does not exist: cannot retrieve storage key", Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST);
                     }
                     return Uni.createFrom().item(optionalResourceFile.get().getStorageKey());
-                });
+                }));
     }
 
     @Override

@@ -9,28 +9,32 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceEntityRepository;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityService;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceFileService;
-import it.gov.pagopa.atmlayer.service.model.service.ResourceFileService;
+import it.gov.pagopa.atmlayer.service.model.utils.CommonUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.INEXISTENT_RESOURCE_CANNOT_BE_UPDATED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
+import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.calculateSha256;
 
 @ApplicationScoped
 @Slf4j
@@ -93,7 +97,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     @Override
     public Uni<ResourceFile> upload(ResourceEntity resourceEntity, File file,
                                     String filename, String path) {
-        return this.resourceEntityStorageService.uploadFile(resourceEntity, file, filename, path)
+        return this.resourceEntityStorageService.saveFile(resourceEntity, file, filename, path)
                 .onFailure().recoverWithUni(failure -> {
                     log.error(failure.getMessage());
                     return Uni.createFrom().failure(new AtmLayerException(
@@ -134,17 +138,33 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     }
 
     @Override
+    @WithTransaction
     public Uni<ResourceFile> updateResource(UUID uuid, File file) {
         return this.findByUUID(uuid)
-                .onItem().transformToUni(optionalResource -> {
+                .onItem()
+                .transformToUni(Unchecked.function(optionalResource -> {
                     if (optionalResource.isEmpty()) {
                         String errorMessage = String.format("Resource with Id %s does not exist: cannot update", uuid);
-                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, INEXISTENT_RESOURCE_CANNOT_BE_UPDATED);
+                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST);
                     }
-                    return Uni.createFrom().item(optionalResource.get());
-                })
-                .onItem().transformToUni(resource ->
-                        resourceFileService.getRelativePath(resource)
-                                .onItem().transformToUni(path -> upload(resource, file, resource.getFileName(), path)));
+                    ResourceEntity resourceEntity = optionalResource.get();
+                    String newFileSha256 = calculateSha256(file);
+                    if (Objects.equals(resourceEntity.getSha256(), newFileSha256)) {
+                        throw new AtmLayerException("Resource is already present", Response.Status.BAD_REQUEST, RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
+                    }
+                    resourceEntity.setSha256(newFileSha256);
+                    Date date = new Date();
+                    resourceEntity.setLastUpdatedAt(new Timestamp(date.getTime()));
+                    resourceEntity.getResourceFile().setLastUpdatedAt(new Timestamp(date.getTime()));
+                    return resourceEntityRepository.persist(resourceEntity)
+                            .onItem()
+                            .transformToUni(x -> {
+                                String storageKey = resourceEntity.getResourceFile().getStorageKey();
+                                String fileName = FilenameUtils.getBaseName(storageKey);
+                                String extension = FilenameUtils.getExtension(storageKey);
+                                String path = FilenameUtils.getFullPath(storageKey);
+                                return resourceEntityStorageService.uploadFile(file, resourceEntity, CommonUtils.getFilenameWithExtension(fileName,extension), CommonUtils.getPathWithoutFilename(path), false);
+                            });
+                }));
     }
 }

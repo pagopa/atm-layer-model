@@ -7,7 +7,6 @@ import jakarta.ws.rs.core.MediaType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jboss.resteasy.reactive.PartType;
-
 import java.io.File;
 import java.util.UUID;
 
@@ -29,7 +28,7 @@ public class BpmnUpgradeDto {
     @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "deve essere della forma ${regexp} e non contenere l'estensione del file")
     private String filename;
 
-    @FormParam("functionType")
-    @NotNull(message = "function type is required")
-    private String functionType;
+  @FormParam("functionType")
+  @NotNull(message = "function type is required")
+  private String functionType;
 }
