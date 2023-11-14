@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Context;
@@ -18,6 +19,7 @@ import it.gov.pagopa.atmlayer.service.model.strategy.ObjectStoreStrategy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.jboss.resteasy.reactive.RestMulti;
@@ -58,10 +60,30 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         UUID uuid = workflowResource.getWorkflowResourceId();
         S3ResourceTypeEnum resourceType = convertEnum(workflowResource.getResourceType());
         String path = calculatePath(uuid, resourceType);
-        String completeName = filename.concat(".").concat(resourceType.getExtension());
-        log.info("Requesting to write file {} in Object Store at path  {}", file.getName(), path);
+        return doUploadFile(workflowResource, file, path, filename, resourceType.getExtension(), resourceType);
+
+    }
+
+    @Override
+    @WithSession
+    public Uni<ResourceFile> updateFile(WorkflowResource workflowResource, File file) {
+        String storageKey = workflowResource.getResourceFile().getStorageKey();
+        S3ResourceTypeEnum resourceType = convertEnum(workflowResource.getResourceType());
+        String path = FilenameUtils.getFullPath(storageKey);
+        String fileName = FilenameUtils.getBaseName(storageKey);
+        String extension = FilenameUtils.getExtension(storageKey);
         Context context = Vertx.currentContext();
-        return objectStoreService.uploadFile(file, path, resourceType, completeName)
+        log.info("Requesting to write file {} in Object Store at path  {}", fileName.concat(".").concat(extension), path);
+        return objectStoreService.uploadFile(file, path.substring(0,path.length()-1), resourceType, fileName.concat(".").concat(extension))
+                .emitOn(command -> context.runOnContext(x -> command.run()))
+                .onItem().transformToUni(x -> this.resourceFileService.findByStorageKey(storageKey))
+                .onItem().transformToUni(y -> Uni.createFrom().item(y.get()));
+    }
+
+    private Uni<ResourceFile> doUploadFile(WorkflowResource workflowResource, File file, String path, String filename, String extension, S3ResourceTypeEnum resourceType) {
+        Context context = Vertx.currentContext();
+        log.info("Requesting to write file {} in Object Store at path  {}", filename.concat(".").concat(extension), path);
+        return objectStoreService.uploadFile(file, path, resourceType, filename.concat(".").concat(extension))
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem()
                 .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(workflowResource, objectStorePutResponse, filename));

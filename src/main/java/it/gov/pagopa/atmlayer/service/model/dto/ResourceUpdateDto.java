@@ -12,7 +12,7 @@ import java.io.File;
 
 @Data
 @NoArgsConstructor
-public class ResourceCreationDto {
+public class ResourceUpdateDto {
 
   @FormParam("file")
   @NotNull(message = "resource file is required")
@@ -24,8 +24,4 @@ public class ResourceCreationDto {
   @FormParam("resourceType")
   @NotNull(message = "resource type is required")
   private NoDeployableResourceType resourceType;
-  @FormParam("path")
-  @Pattern(regexp = "(^$)|(^(?!/)[a-zA-Z0-9/]+(?<!/)$)", message = "String must not start or end with '/' and must not contain white spaces and special characters")
-  @DefaultValue("")
-  private String path;
 }

@@ -1,6 +1,5 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import org.junit.jupiter.api.Test;
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -21,7 +20,7 @@ public class BpmnBankConfigDTOTest {
   public void testAllArgsConstructor() {
     BpmnBankConfigDTO dto = new BpmnBankConfigDTO(
         UUID.randomUUID(), 1L, "acquirer", "branch", "terminal",
-        FunctionTypeEnum.MENU.name(), new Timestamp(System.currentTimeMillis()),
+        "MENU", new Timestamp(System.currentTimeMillis()),
         new Timestamp(System.currentTimeMillis()), "creator", "updator");
     assertNotNull(dto);
   }
@@ -45,8 +44,8 @@ public class BpmnBankConfigDTOTest {
     dto.setTerminalId("terminal");
     assertEquals(dto.getTerminalId(), "terminal");
 
-    dto.setFunctionType(FunctionTypeEnum.MENU.name());
-    assertEquals(dto.getFunctionType(), FunctionTypeEnum.MENU.name());
+    dto.setFunctionType("MENU");
+    assertEquals(dto.getFunctionType(), "MENU");
 
     Timestamp createdAt = new Timestamp(System.currentTimeMillis());
     dto.setCreatedAt(createdAt);
@@ -67,11 +66,11 @@ public class BpmnBankConfigDTOTest {
   public void testEqualsAndHashCode() {
     BpmnBankConfigDTO dto1 = new BpmnBankConfigDTO(
         UUID.randomUUID(), 1L, "acquirer", "branch", "terminal",
-        FunctionTypeEnum.MENU.name(), new Timestamp(System.currentTimeMillis()),
+            "MENU", new Timestamp(System.currentTimeMillis()),
         new Timestamp(System.currentTimeMillis()), "creator", "updator");
     BpmnBankConfigDTO dto2 = new BpmnBankConfigDTO(
         UUID.randomUUID(), 1L, "acquirer", "branch", "terminal",
-        FunctionTypeEnum.MENU.name(), new Timestamp(System.currentTimeMillis()),
+            "MENU", new Timestamp(System.currentTimeMillis()),
         new Timestamp(System.currentTimeMillis()), "creator", "updator");
 
     assertNotEquals(dto1, dto2);
@@ -82,7 +81,7 @@ public class BpmnBankConfigDTOTest {
   public void testToString() {
     BpmnBankConfigDTO dto = new BpmnBankConfigDTO(
         UUID.randomUUID(), 1L, "acquirer", "branch", "terminal",
-        FunctionTypeEnum.MENU.name(), new Timestamp(System.currentTimeMillis()),
+            "MENU", new Timestamp(System.currentTimeMillis()),
         new Timestamp(System.currentTimeMillis()), "creator", "updator");
 
     String expectedToString = "BpmnBankConfigDTO(bpmnId=" + dto.getBpmnId() +

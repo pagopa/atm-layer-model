@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.test.junit.QuarkusTest;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,9 +25,9 @@ public class BpmnBankConfigTest {
     bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);
     assertEquals(bpmnBankConfigPK, bpmnBankConfig.getBpmnBankConfigPK());
 
-    FunctionTypeEnum functionType = FunctionTypeEnum.MENU;
-    bpmnBankConfig.setFunctionType(functionType.name());
-    assertEquals(functionType.name(), bpmnBankConfig.getFunctionType());
+    String functionType = "MENU";
+    bpmnBankConfig.setFunctionType(functionType);
+    assertEquals(functionType, bpmnBankConfig.getFunctionType());
 
     Timestamp createdAt = new Timestamp(System.currentTimeMillis());
     bpmnBankConfig.setCreatedAt(createdAt);

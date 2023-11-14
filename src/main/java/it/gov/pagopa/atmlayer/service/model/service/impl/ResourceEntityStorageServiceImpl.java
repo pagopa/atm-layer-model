@@ -9,6 +9,7 @@ import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
@@ -55,20 +56,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     @Override
     public Uni<ResourceFile> uploadFile(ResourceEntity resourceEntity, File file, String filenameWithExtension, String relativePath) {
         S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
-        String path = calculatePath(resourceType);
-        if (!relativePath.isBlank()) {
-            path = path.concat("/").concat(relativePath);
-        }
-
-        String storageKey=path.concat("/").concat(filenameWithExtension);
-        String finalPath = path;
-        return this.resourceFileService.findByStorageKey(storageKey)
-                .onItem()
-                .transformToUni(Unchecked.function(resource -> {
-
-                   if(resource.isPresent()){
-                       throw new AtmLayerException(String.format("Cannot upload %s: resource with same file name and path already exists", storageKey), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED );
-                  }
+        String finalPath = calculateCompletePath(resourceEntity.getNoDeployableResourceType(),relativePath);
                     log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
                     Context context = Vertx.currentContext();
                     return objectStoreService.uploadFile(file, finalPath, resourceType, filenameWithExtension)
@@ -76,7 +64,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
                             .onItem()
                             .transformToUni(objectStorePutResponse -> this.writeResourceInfoToDatabase(resourceEntity,
                                     objectStorePutResponse, filenameWithExtension.split("\\.")[0]));
-                }));
+
     }
 
     @Override
@@ -101,7 +89,8 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
         return resourceFileService.save(entity);
     }
 
-    private String calculatePath(S3ResourceTypeEnum s3ResourceTypeEnum) {
+    @Override
+    public String calculateBasePath(S3ResourceTypeEnum s3ResourceTypeEnum) {
         Map<String, String> valuesMap = new HashMap<>();
         valuesMap.put("RESOURCE_TYPE", s3ResourceTypeEnum.toString());
         StringSubstitutor stringSubstitutor = new StringSubstitutor(valuesMap);
@@ -114,5 +103,20 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
             pathTemplate = pathTemplate.replace("[", "${").replace("]", "}");
         }
         return stringSubstitutor.replace(pathTemplate);
+    }
+
+    @Override
+    public String calculateCompletePath(NoDeployableResourceType resourceType, String relativePath){
+        S3ResourceTypeEnum s3resourceType = convertEnum(resourceType);
+        String path = calculateBasePath(s3resourceType);
+        if (!relativePath.isBlank()) {
+            path = path.concat("/").concat(relativePath);
+        }
+        return path;
+    }
+
+    @Override
+    public String calculateStorageKey(NoDeployableResourceType resourceType, String relativePath,String fileName){
+        return calculateCompletePath(resourceType,relativePath).concat("/").concat(fileName);
     }
 }

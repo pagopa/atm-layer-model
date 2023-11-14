@@ -1,10 +1,11 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
-import java.sql.Timestamp;
-import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor

@@ -13,6 +13,8 @@ public interface WorkflowResourceStorageService {
 
     Uni<ResourceFile> uploadFile(WorkflowResource workflowResource, File file, String filename);
 
+    Uni<ResourceFile> updateFile(WorkflowResource workflowResource, File file);
+
     Uni<URL> generatePresignedUrl(String storageKey);
 
     RestMulti<Buffer> download(String storageKey);

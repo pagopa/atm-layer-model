@@ -4,6 +4,7 @@ import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.WorkflowResourceMapper;
@@ -14,8 +15,10 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -25,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -100,5 +104,16 @@ public class WorkflowResourceResource {
 
         return this.workflowResourceService.delete(uuid)
                 .onItem().ignore().andSwitchTo(Uni.createFrom().voidItem());
+    }
+
+    @PUT
+    @Path("/update/{uuid}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<ResourceFile> update(@RequestBody(required = true) @FormParam("file") File file,
+                                    @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
+
+        return this.workflowResourceService.update(uuid, file);
+
     }
 }

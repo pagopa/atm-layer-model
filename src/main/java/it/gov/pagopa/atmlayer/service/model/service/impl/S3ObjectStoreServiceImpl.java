@@ -110,11 +110,15 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
         }
         PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, fileType.getMimetype(), path);
         return Uni.createFrom().future(() -> s3.putObject(putObjectRequest, AsyncRequestBody.fromFile(file)))
-                .onItem().transformToUni(res -> Uni.createFrom().item(ObjectStorePutResponse.builder().storage_key(putObjectRequest.key()).build()))
                 .onFailure().transform(error -> {
                     String errorMessage = "Error in uploading file to S3";
                     log.error(errorMessage, error);
                     return new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
+                })
+                .onItem().transformToUni(res -> {
+                    log.info("success uploading from s3");
+                    return Uni.createFrom().item(ObjectStorePutResponse.builder().storage_key(putObjectRequest.key()).build());
                 });
+
     }
 }
