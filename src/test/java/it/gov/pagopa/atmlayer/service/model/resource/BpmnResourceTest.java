@@ -10,7 +10,6 @@ import it.gov.pagopa.atmlayer.service.model.dto.TerminalConfigs;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
-import it.gov.pagopa.atmlayer.service.model.enumeration.FunctionTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapperImpl;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
@@ -140,13 +139,13 @@ class BpmnResourceTest {
         BpmnBankConfigDTO bpmnBankConfigDTO = new BpmnBankConfigDTO();
         dtoList.add(bpmnBankConfigDTO);
         String acquirerId = "testAcq";
-        FunctionTypeEnum functionTypeEnum = FunctionTypeEnum.MENU;
+        String functionType = "MENU";
         when(bpmnEntityValidator.validateExistenceStatusAndFunctionType(any(), any())).thenReturn(Uni.createFrom().nullItem());
         when(bpmnVersionService.putAssociations(any(), any(), any())).thenReturn(Uni.createFrom().item(bankConfigList));
         when(bpmnConfigMapper.toDTOList(bankConfigList)).thenReturn(dtoList);
         given()
                 .pathParam("acquirerId", acquirerId)
-                .pathParam("functionType", functionTypeEnum)
+                .pathParam("functionType", functionType)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(bpmnAssociationDto)
                 .when().put("api/v1/model/bpmn/bank/{acquirerId}/associations/function/{functionType}")
@@ -165,7 +164,7 @@ class BpmnResourceTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .multiPart("file", new File("src/test/resources/TestMalformed.bpmn"))
                 .formParam("filename", "testFileName")
-                .formParam("functionType", FunctionTypeEnum.MENU)
+                .formParam("functionType", "MENU")
                 .when().post("/api/v1/model/bpmn")
                 .then()
                 .statusCode(200)
