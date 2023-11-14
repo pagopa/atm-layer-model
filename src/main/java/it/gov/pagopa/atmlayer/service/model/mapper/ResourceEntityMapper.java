@@ -4,6 +4,7 @@ import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
+import it.gov.pagopa.atmlayer.service.model.utils.FileUtils;
 import org.mapstruct.Mapper;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 public abstract class ResourceEntityMapper {
     public ResourceEntity toEntityCreation(ResourceCreationDto resourceCreationDto) throws NoSuchAlgorithmException, IOException {
         ResourceEntity resourceEntity = new ResourceEntity();
-        resourceEntity.setSha256(BpmnUtils.calculateSha256(resourceCreationDto.getFile()));
+        resourceEntity.setSha256(FileUtils.calculateSha256(resourceCreationDto.getFile()));
         resourceEntity.setNoDeployableResourceType(resourceCreationDto.getResourceType());
         resourceEntity.setFileName(resourceCreationDto.getFilename());
         return resourceEntity;
