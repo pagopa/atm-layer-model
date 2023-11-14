@@ -42,6 +42,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_UPDATED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.calculateSha256;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.extractIdValue;
 
@@ -281,6 +282,9 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         throw new AtmLayerException(String.format("Workflow Resource with type %s does not match the Workflow Resource you are trying to update", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
                     }
                     String shaUpdateFile = calculateSha256(file);
+                    if (workflowFound.getSha256().equals(shaUpdateFile)) {
+                        throw new AtmLayerException("Workflow Resource already present", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
+                    }
                     workflowFound.setSha256(shaUpdateFile);
                     Date date = new Date();
                     workflowFound.setLastUpdatedAt(new Timestamp(date.getTime()));

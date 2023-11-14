@@ -2,6 +2,9 @@ package it.gov.pagopa.atmlayer.service.model.utils;
 
 import org.apache.commons.io.FilenameUtils;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class CommonUtils {
 
     public static String getPathWithoutFilename(String path) {
@@ -16,5 +19,12 @@ public class CommonUtils {
         String fileName = FilenameUtils.getBaseName(storageKey);
         String extension = FilenameUtils.getExtension(storageKey);
         return getFilenameWithExtension(fileName,extension);
+    }
+
+    public static String getRelativePath(String basePath, String absolutePath) {
+        Path base = Paths.get(basePath);
+        Path absolute = Paths.get(absolutePath);
+        Path relativePath = base.relativize(absolute);
+        return relativePath.toString();
     }
 }

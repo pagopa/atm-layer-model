@@ -38,11 +38,11 @@ public enum AppErrorCodeEnum {
     WORKFLOW_RESOURCE_CANNOT_BE_UPDATED_FOR_STATUS("ATMLM_4000025", "The referenced Workflow Resource file can not be updated in the actual state", NOT_UPDATABLE),
     WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED("ATMLM_4000026", "The referenced Workflow Resource file can not be deployed", NOT_DEPLOYABLE_STATUS),
     RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED("ATMLM_4000027", "A resource with same file name and path already exists", NOT_UPLOADABLE),
-    INEXISTENT_RESOURCE_CANNOT_BE_UPDATED("ATMLM_4000028","The referenced resource does not exist: cannot be updated",NOT_UPDATABLE),
-    RESOURCE_WITH_DIFFERENT_STORAGE_KEY_CANNOT_BE_UPDATED("ATMLM_4000029","The referenced resource has a different storage key: cannot be updated",NOT_UPDATABLE),
-    RESOURCE_DOES_NOT_EXIST("ATMLM_4000030", "The referenced Resource does not exist", NOT_EXISTING_REFERENCED_ENTITY),
-    WORKFLOW_RESOURCE_CANNOT_BE_UPDATED("ATMLM_4000031", "The referenced Workflow Resource file can not be updated", NOT_UPDATABLE),
-    RESOURCE_FILE_DOES_NOT_EXIST("ATMLM_4000032", "The referenced Resource file does not exist", NOT_EXISTING_REFERENCED_ENTITY);
+    RESOURCE_WITH_DIFFERENT_STORAGE_KEY_CANNOT_BE_UPDATED("ATMLM_4000028","The referenced resource has a different storage key: cannot be updated",NOT_UPDATABLE),
+    RESOURCE_DOES_NOT_EXIST("ATMLM_4000029", "The referenced Resource does not exist", NOT_EXISTING_REFERENCED_ENTITY),
+    WORKFLOW_RESOURCE_CANNOT_BE_UPDATED("ATMLM_4000030", "The referenced Workflow Resource file can not be updated", NOT_UPDATABLE),
+    RESOURCE_FILE_DOES_NOT_EXIST("ATMLM_4000031", "The referenced Resource file does not exist", NOT_EXISTING_REFERENCED_ENTITY),
+    WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS("ATMLM_4000032","A workflow resource with the same content already exists", CONSTRAINT_VIOLATION);
 
     private final String errorCode;
     private final String errorMessage;

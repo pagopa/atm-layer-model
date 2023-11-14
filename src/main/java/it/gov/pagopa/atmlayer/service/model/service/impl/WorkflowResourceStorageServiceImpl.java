@@ -3,13 +3,16 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
+import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
@@ -19,6 +22,7 @@ import it.gov.pagopa.atmlayer.service.model.strategy.ObjectStoreStrategy;
 import it.gov.pagopa.atmlayer.service.model.utils.CommonUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -76,7 +80,12 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         return objectStoreService.uploadFile(file, CommonUtils.getPathWithoutFilename(path), resourceType, CommonUtils.getFilenameWithExtensionFromStorageKey(storageKey))
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem().transformToUni(x -> this.resourceFileService.findByStorageKey(storageKey))
-                .onItem().transformToUni(y -> Uni.createFrom().item(y.get()));
+                .onItem().transformToUni(Unchecked.function(y -> {
+                    if (y.isEmpty()) {
+                        throw new AtmLayerException("The storage key is not referenced", Response.Status.NOT_FOUND, AppErrorCodeEnum.RESOURCE_FILE_DOES_NOT_EXIST);
+                    }
+                    return Uni.createFrom().item(y.get());
+                }));
     }
 
     private Uni<ResourceFile> doUploadFile(WorkflowResource workflowResource, File file, String path, String filename, String extension, S3ResourceTypeEnum resourceType) {

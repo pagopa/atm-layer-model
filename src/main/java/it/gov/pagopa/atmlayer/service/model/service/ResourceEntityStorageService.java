@@ -12,7 +12,7 @@ import java.net.URL;
 
 public interface ResourceEntityStorageService {
 
-  Uni<ResourceFile> uploadFile(ResourceEntity resourceEntity, File file, String filename, String path);
+  Uni<ResourceFile> uploadFile(File file, ResourceEntity resourceEntity, String filename, String path, boolean creation);
 
   Uni<URL> generatePresignedUrl(String storageKey);
 
@@ -23,5 +23,7 @@ public interface ResourceEntityStorageService {
   String calculateCompletePath(NoDeployableResourceType resourceType, String relativePath);
 
   String calculateStorageKey(NoDeployableResourceType resourceType, String relativePath, String fileName);
+
+  Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath);
 
 }

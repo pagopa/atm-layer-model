@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "cdi")
 public interface ResourceFileMapper {
 
-    ResourceFileDTO toDTO(ResourceFile bpmnVersion);
+    ResourceFileDTO toDTO(ResourceFile resourceFile);
     @Mapping(ignore = true, target = "bpmn")
-    ResourceFile toEntity(ResourceFileDTO bpmnDTO);
+    ResourceFile toEntity(ResourceFileDTO resourceFileDTO);
 }
