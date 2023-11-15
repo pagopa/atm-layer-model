@@ -21,6 +21,6 @@ public class DeployedDMNDecisionDefinitionDto {
     private String tenantId;
     private String decisionRequirementsDefinitionId;
     private String decisionRequirementsDefinitionKey;
-    private int historyTimeToLeave;
+    private int historyTimeToLive;
     private String versionTag;
 }

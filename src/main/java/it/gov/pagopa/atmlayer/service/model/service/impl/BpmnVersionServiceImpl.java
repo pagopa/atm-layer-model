@@ -177,17 +177,15 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @WithTransaction
     public Uni<BpmnVersion> saveAndUpload(BpmnVersion bpmnVersion, File file, String filename) {
         return this.save(bpmnVersion)
-                .onItem().transformToUni(record -> {
-                    return this.bpmnFileStorageService.uploadFile(bpmnVersion, file, filename)
-                            .onFailure().recoverWithUni(failure -> {
-                                log.error(failure.getMessage());
-                                return Uni.createFrom().failure(new AtmLayerException("Failed to save BPMN in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
-                            })
-                            .onItem().transformToUni(putObjectResponse -> {
-                                log.info("Completed BPMN Creation");
-                                return Uni.createFrom().item(record);
-                            });
-                });
+                .onItem().transformToUni(record -> this.bpmnFileStorageService.uploadFile(bpmnVersion, file, filename)
+                        .onFailure().recoverWithUni(failure -> {
+                            log.error(failure.getMessage());
+                            return Uni.createFrom().failure(new AtmLayerException("Failed to save BPMN in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
+                        })
+                        .onItem().transformToUni(putObjectResponse -> {
+                            log.info("Completed BPMN Creation");
+                            return Uni.createFrom().item(record);
+                        }));
     }
 
     @Override
@@ -271,7 +269,6 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     bpmnVersion.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
                     bpmnVersion.setDeploymentId(deployedProcessInfo.getDeploymentId());
                     bpmnVersion.setCamundaDefinitionId(deployedProcessInfo.getId());
-                    //bpmnVersion.setDefinitionKey(deployedProcessInfo.getKey());
                     bpmnVersion.setDeployedFileName(deployedProcessInfo.getName());
                     bpmnVersion.setDescription(deployedProcessInfo.getDescription());
                     bpmnVersion.setResource(deployedProcessInfo.getResource());
