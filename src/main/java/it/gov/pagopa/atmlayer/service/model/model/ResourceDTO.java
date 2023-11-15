@@ -17,4 +17,5 @@ public class ResourceDTO {
     private Timestamp lastUpdatedAt;
     private String createdBy;
     private String lastUpdatedBy;
+    private String cdnStorageKey;
 }

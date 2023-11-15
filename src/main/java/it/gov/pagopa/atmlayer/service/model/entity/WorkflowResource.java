@@ -82,4 +82,5 @@ public class WorkflowResource extends PanacheEntityBase implements Serializable 
 
     @Column(name = "last_updated_by")
     private String lastUpdatedBy;
+
 }

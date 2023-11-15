@@ -7,16 +7,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -35,12 +36,12 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
     private UUID resourceId;
     @Column(name = "sha256", unique = true)
     private String sha256;
-    @Column(name="resourceType")
+    @Column(name = "resourceType")
     @Enumerated(EnumType.STRING)
     NoDeployableResourceType noDeployableResourceType;
     @OneToOne(mappedBy = "resourceEntity", cascade = CascadeType.ALL)
     ResourceFile resourceFile;
-    @Column(name="file_name")
+    @Column(name = "file_name")
     String fileName;
     @CreationTimestamp
     @Column(name = "created_at")
@@ -54,12 +55,20 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
     private String lastUpdatedBy;
     @Transient
     String storageKey;
+    @Transient
+    @Getter(AccessLevel.NONE)
+    private String cdnStorageKey;
 
     @PrePersist
     public void generateUUID() {
         if (getResourceId() == null) {
             setResourceId(UUID.randomUUID());
         }
+    }
+
+    public String getCdnStorageKey() {
+        return ConfigProvider.getConfig().getValue("cdn.base-url", String.class)
+                .concat("/").concat(StringUtils.substringAfter(this.resourceFile.getStorageKey(),ConfigProvider.getConfig().getValue("cdn.offset-path", String.class)));
     }
 
 }
