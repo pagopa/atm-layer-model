@@ -6,7 +6,8 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
-import it.gov.pagopa.atmlayer.service.model.dto.DeployedProcessInfoDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployedDMNDecisionDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
@@ -114,13 +115,13 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                             }
                             WorkflowResource workflowResource = optionalWorkflowResource.get();
                             return workflowResource.getStatus().equals(StatusEnum.CREATED) || workflowResource.getStatus()
-                                    .equals(StatusEnum.DEPLOY_ERROR);
+                                    .equals(StatusEnum.DEPLOY_ERROR) || workflowResource.getStatus().equals(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
                         })
                 );
     }
 
     @WithTransaction
-    public Uni<WorkflowResource> setWorkflowResourceVersionStatus(UUID uuid, StatusEnum status) {
+    public Uni<WorkflowResource> setWorkflowResourceStatus(UUID uuid, StatusEnum status) {
         return this.findById(uuid)
                 .onItem()
                 .transformToUni(Unchecked.function(optionalWorkflowResource -> {
@@ -138,39 +139,52 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
     @Override
-    public Uni<WorkflowResource> deploy(Optional<WorkflowResource> optionalWorkflowResource) {
-        if (optionalWorkflowResource.isEmpty()) {
-            String errorMessage = "The referenced Workflow Resource file can not be deployed";
-            throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
-                    AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED);
-        }
-        UUID uuid = optionalWorkflowResource.get().getWorkflowResourceId();
-        DeployableResourceType resourceType = optionalWorkflowResource.get().getResourceType();
-        return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.WAITING_DEPLOY)
+    public Uni<WorkflowResource> deploy(UUID id, Optional<WorkflowResource> workflowResource) {
+        return this.checkWorkflowResourceFileExistence(id)
                 .onItem()
-                .transformToUni(workflowWaiting -> {
-                    ResourceFile resourceFile = workflowWaiting.getResourceFile();
-                    if (Objects.isNull(resourceFile) || StringUtils.isBlank(resourceFile.getStorageKey())) {
-                        String errorMessage = String.format("No file associated to Workflow Resource or no storage key found: %s", uuid);
-                        log.error(errorMessage);
-                        return Uni.createFrom().failure
-                                (new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS));
+                .transformToUni(Unchecked.function(x -> {
+                    if (!x) {
+                        String errorMessage = "The referenced Workflow Resource file can not be deployed";
+                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
+                                AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED);
                     }
-                    return this.workflowResourceStorageService.generatePresignedUrl(resourceFile.getStorageKey())
-                            .onFailure().recoverWithUni(failure -> {
-                                log.error(failure.getMessage());
-                                return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.DEPLOY_ERROR)
-                                        .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in Workflow Resource deploy. Fail to generate presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
-                            });
-                })
-                .onItem().transformToUni(presignedUrl -> processClient.deploy(presignedUrl.toString(), resourceType.name())
-                        .onFailure().recoverWithUni(failure -> {
-                            log.error(failure.getMessage());
-                            return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.DEPLOY_ERROR)
-                                    .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in Workflow Resource deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
-                        })
-                        .onItem()
-                        .transformToUni(response -> this.setDeployInfo(uuid, response)));
+                    if (workflowResource.isEmpty()) {
+                        throw new AtmLayerException("Workflow Resource not found", Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                    }
+                    WorkflowResource resource = workflowResource.get();
+                    DeployableResourceType resourceType = resource.getResourceType();
+                    return this.setWorkflowResourceStatus(id, StatusEnum.WAITING_DEPLOY)
+                            .onItem()
+                            .transformToUni(workflowWaiting -> {
+                                ResourceFile resourceFile = workflowWaiting.getResourceFile();
+                                if (Objects.isNull(resourceFile) || StringUtils.isBlank(resourceFile.getStorageKey())) {
+                                    String errorMessage = String.format("No file associated to Workflow Resource or no storage key found: %s", id);
+                                    log.error(errorMessage);
+                                    return Uni.createFrom().failure
+                                            (new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS));
+                                }
+                                return this.workflowResourceStorageService.generatePresignedUrl(resourceFile.getStorageKey())
+                                        .onFailure()
+                                        .recoverWithUni(failure -> {
+                                            log.error(failure.getMessage());
+                                            return this.setWorkflowResourceStatus(id, StatusEnum.DEPLOY_ERROR)
+                                                    .onItem()
+                                                    .transformToUni(y -> Uni.createFrom().failure(new AtmLayerException("Error in Workflow Resource deploy. Fail to generate presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                                        });
+                            })
+                            .onItem()
+                            .transformToUni(presignedUrl -> processClient.deploy(presignedUrl.toString(), resourceType.name())
+                                    .onFailure()
+                                    .recoverWithUni(failure -> {
+                                        log.error(failure.getMessage());
+                                        return this.setWorkflowResourceStatus(id, StatusEnum.DEPLOY_ERROR)
+                                                .onItem()
+                                                .transformToUni(y -> Uni.createFrom()
+                                                        .failure(new AtmLayerException("Error in Workflow Resource deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                                    }))
+                            .onItem()
+                            .transformToUni(response -> this.setDeployInfo(id, response));
+                }));
     }
 
     @WithTransaction
@@ -185,20 +199,42 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                                 WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
                     WorkflowResource workflowResource = optionalWorkflowResource.get();
-                    Map<String, DeployedProcessInfoDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
-                    Optional<DeployedProcessInfoDto> optionalDeployedProcessInfo = deployedProcessDefinitions.values()
-                            .stream().findFirst();
-                    if (optionalDeployedProcessInfo.isEmpty()) {
-                        throw new AtmLayerException("Empty process infos from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
+
+                    if(response.getDeployedProcessDefinitions() !=null){
+                        Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
+                        Optional<DeployedBPMNProcessDefinitionDto> optionalDeployedProcessDefinition = deployedProcessDefinitions.values()
+                                .stream().findFirst();
+                        if (optionalDeployedProcessDefinition.isEmpty()) {
+                            throw new AtmLayerException("Empty Process Definitions from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
+                        }
+                        DeployedBPMNProcessDefinitionDto deployedProcessInfo = optionalDeployedProcessDefinition.get();
+                        workflowResource.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
+                        workflowResource.setDeploymentId(deployedProcessInfo.getDeploymentId());
+                        workflowResource.setCamundaDefinitionId(deployedProcessInfo.getId());
+                        workflowResource.setDeployedFileName(deployedProcessInfo.getName());
+                        workflowResource.setDescription(deployedProcessInfo.getDescription());
+                        workflowResource.setResource(deployedProcessInfo.getResource());
+                        workflowResource.setStatus(StatusEnum.DEPLOYED);
                     }
-                    DeployedProcessInfoDto deployedProcessInfo = optionalDeployedProcessInfo.get();
-                    workflowResource.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
-                    workflowResource.setDeploymentId(deployedProcessInfo.getDeploymentId());
-                    workflowResource.setCamundaDefinitionId(deployedProcessInfo.getId());
-                    workflowResource.setDeployedFileName(deployedProcessInfo.getName());
-                    workflowResource.setDescription(deployedProcessInfo.getDescription());
-                    workflowResource.setResource(deployedProcessInfo.getResource());
-                    workflowResource.setStatus(StatusEnum.DEPLOYED);
+                    if(response.getDeployedDecisionDefinitions()!=null){
+                        Map<String, DeployedDMNDecisionDefinitionDto> deployedDecisionDefinitions=response.getDeployedDecisionDefinitions();
+                        Optional<DeployedDMNDecisionDefinitionDto> optionalDeployedDecisionDefinition = deployedDecisionDefinitions.values()
+                                .stream().findFirst();
+                        if(optionalDeployedDecisionDefinition.isEmpty()){
+                            throw new AtmLayerException("Empty Decision Definitions from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
+                        }
+                        DeployedDMNDecisionDefinitionDto deployedDecisionDefinition=optionalDeployedDecisionDefinition.get();
+                        workflowResource.setDefinitionVersionCamunda(deployedDecisionDefinition.getVersion());
+                        workflowResource.setDeploymentId(deployedDecisionDefinition.getDeploymentId());
+                        workflowResource.setCamundaDefinitionId(deployedDecisionDefinition.getId());
+                        workflowResource.setDeployedFileName(deployedDecisionDefinition.getName());
+                        workflowResource.setResource(deployedDecisionDefinition.getResource());
+                        workflowResource.setStatus(StatusEnum.DEPLOYED);
+                    } else{
+                        workflowResource.setCamundaDefinitionId(response.getId());
+                        workflowResource.setDeployedFileName(response.getName());
+                        workflowResource.setStatus(StatusEnum.DEPLOYED);
+                    }
                     return this.workflowResourceRepository.persist(workflowResource);
                 }));
     }
@@ -219,7 +255,8 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
     @Override
-    public Uni<WorkflowResource> createWorkflowResource(WorkflowResource workflowResource, File file, String filename) {
+    public Uni<WorkflowResource> createWorkflowResource(WorkflowResource workflowResource, File file, String
+            filename) {
         String definitionKey = extractIdValue(file, workflowResource.getResourceType());
         workflowResource.setDefinitionKey(definitionKey);
         return findByDefinitionKey(definitionKey)
@@ -228,15 +265,13 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         throw new AtmLayerException("A Workflow Resource with the same definitionKey already exists", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
                     }
                     return saveAndUpload(workflowResource, file, filename)
-                            .onItem().transformToUni(workflow -> {
-                                return this.findById(workflow.getWorkflowResourceId())
-                                        .onItem().transformToUni(optionalWorkflow -> {
-                                            if (optionalWorkflow.isEmpty()) {
-                                                return Uni.createFrom().failure(new AtmLayerException("Sync problem on Workflow Resource creation", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
-                                            }
-                                            return Uni.createFrom().item(optionalWorkflow.get());
-                                        });
-                            });
+                            .onItem().transformToUni(workflow -> this.findById(workflow.getWorkflowResourceId())
+                                    .onItem().transformToUni(optionalWorkflow -> {
+                                        if (optionalWorkflow.isEmpty()) {
+                                            return Uni.createFrom().failure(new AtmLayerException("Sync problem on Workflow Resource creation", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
+                                        }
+                                        return Uni.createFrom().item(optionalWorkflow.get());
+                                    }));
                 }));
     }
 
@@ -286,6 +321,9 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         throw new AtmLayerException("Workflow Resource already present", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
                     }
                     workflowFound.setSha256(shaUpdateFile);
+                    if (workflowFound.getStatus().equals(StatusEnum.DEPLOYED)) {
+                        workflowFound.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
+                    }
                     Date date = new Date();
                     workflowFound.setLastUpdatedAt(new Timestamp(date.getTime()));
                     workflowFound.getResourceFile().setLastUpdatedAt(new Timestamp(date.getTime()));
