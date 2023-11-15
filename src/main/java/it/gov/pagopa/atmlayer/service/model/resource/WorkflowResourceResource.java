@@ -97,7 +97,7 @@ public class WorkflowResourceResource {
     public Uni<WorkflowResourceDTO> deploy(@PathParam("uuid") UUID uuid) {
         return this.workflowResourceService.findById(uuid)
                 .onItem()
-                .transformToUni(resource -> this.workflowResourceService.deploy(resource))
+                .transformToUni(resource -> this.workflowResourceService.deploy(uuid, resource))
                 .onItem().transformToUni(resourceDeployed -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(resourceDeployed)));
     }
 
