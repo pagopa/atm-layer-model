@@ -6,7 +6,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
-import it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.FileUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -35,24 +35,26 @@ public abstract class BpmnVersionMapper {
 
     public abstract BpmnDTO toDTO(BpmnVersion bpmnVersion);
 
-    public List<BpmnDTO> toDTOList(List<BpmnVersion> list){
+    public abstract BpmnProcessDTO toProcessDTO(BpmnDTO bpmnProcessDTO);
+
+    public List<BpmnDTO> toDTOList(List<BpmnVersion> list) {
         return list.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Mapping(ignore = true, target = "enabled")
-    @Mapping(target = "resourceFile.bpmn",ignore = true)
+    @Mapping(target = "resourceFile.bpmn", ignore = true)
     public abstract BpmnVersion toEntity(BpmnDTO bpmnDTO);
 
-  public BpmnVersion toEntityUpgrade(BpmnUpgradeDto bpmnUpgradeDto, Long version, String definitionKey) throws NoSuchAlgorithmException, IOException {
-    BpmnVersion bpmnVersion = new BpmnVersion();
-    bpmnVersion.setFunctionType(bpmnUpgradeDto.getFunctionType());
-    bpmnVersion.setStatus(StatusEnum.CREATED);
-    bpmnVersion.setSha256(FileUtils.calculateSha256(bpmnUpgradeDto.getFile()));
-    bpmnVersion.setDeployedFileName(bpmnUpgradeDto.getFilename().concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension()));
-    bpmnVersion.setEnabled(true);
-    bpmnVersion.setModelVersion(version);
-    bpmnVersion.setDefinitionKey(definitionKey);
-    bpmnVersion.setBpmnId(bpmnUpgradeDto.getUuid());
-    return bpmnVersion;
-  }
+    public BpmnVersion toEntityUpgrade(BpmnUpgradeDto bpmnUpgradeDto, Long version, String definitionKey) throws NoSuchAlgorithmException, IOException {
+        BpmnVersion bpmnVersion = new BpmnVersion();
+        bpmnVersion.setFunctionType(bpmnUpgradeDto.getFunctionType());
+        bpmnVersion.setStatus(StatusEnum.CREATED);
+        bpmnVersion.setSha256(FileUtils.calculateSha256(bpmnUpgradeDto.getFile()));
+        bpmnVersion.setDeployedFileName(bpmnUpgradeDto.getFilename().concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension()));
+        bpmnVersion.setEnabled(true);
+        bpmnVersion.setModelVersion(version);
+        bpmnVersion.setDefinitionKey(definitionKey);
+        bpmnVersion.setBpmnId(bpmnUpgradeDto.getUuid());
+        return bpmnVersion;
+    }
 }

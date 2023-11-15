@@ -19,6 +19,7 @@ import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
@@ -215,6 +216,17 @@ public class BpmnResource {
                                         }));
                             });
                 });
+    }
+
+    @GET
+    @Path("/process/function/{functionType}/bank/{acquirerId}/branch/{branchId}/terminal/{terminalId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<BpmnProcessDTO> findBPMNByTriadForProcessService(@PathParam("functionType") String functionType,
+                                                                @PathParam("acquirerId") String acquirerId,
+                                                                @PathParam("branchId") String branchId,
+                                                                @PathParam("terminalId") String terminalId) {
+        return this.findBPMNByTriad(functionType, acquirerId, branchId, terminalId)
+                .onItem().transformToUni(bpmn -> Uni.createFrom().item(bpmnVersionMapper.toProcessDTO(bpmn)));
     }
 
     @POST
