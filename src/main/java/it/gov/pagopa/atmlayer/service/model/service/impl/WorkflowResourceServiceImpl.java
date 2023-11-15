@@ -5,8 +5,9 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
-import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
-import it.gov.pagopa.atmlayer.service.model.dto.DeployedProcessInfoDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployBPMNResponseDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployedDMNDecisionDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
@@ -163,7 +164,8 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                                         .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in Workflow Resource deploy. Fail to generate presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
                             });
                 })
-                .onItem().transformToUni(presignedUrl -> processClient.deploy(presignedUrl.toString(), resourceType.name())
+                .onItem()
+                .transformToUni(presignedUrl -> processClient.deploy(presignedUrl.toString(), resourceType.name())
                         .onFailure().recoverWithUni(failure -> {
                             log.error(failure.getMessage());
                             return this.setWorkflowResourceVersionStatus(uuid, StatusEnum.DEPLOY_ERROR)
@@ -174,7 +176,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
     @WithTransaction
-    public Uni<WorkflowResource> setDeployInfo(UUID uuid, DeployResponseDto response) {
+    public Uni<WorkflowResource> setDeployInfo(UUID uuid, DeployBPMNResponseDto response) {
         return this.findById(uuid)
                 .onItem()
                 .transformToUni(Unchecked.function(optionalWorkflowResource -> {
@@ -185,20 +187,42 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                                 WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
                     WorkflowResource workflowResource = optionalWorkflowResource.get();
-                    Map<String, DeployedProcessInfoDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
-                    Optional<DeployedProcessInfoDto> optionalDeployedProcessInfo = deployedProcessDefinitions.values()
-                            .stream().findFirst();
-                    if (optionalDeployedProcessInfo.isEmpty()) {
-                        throw new AtmLayerException("Empty process infos from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
+
+                    if(response.getDeployedProcessDefinitions() !=null){
+                        Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
+                        Optional<DeployedBPMNProcessDefinitionDto> optionalDeployedProcessDefinition = deployedProcessDefinitions.values()
+                                .stream().findFirst();
+                        if (optionalDeployedProcessDefinition.isEmpty()) {
+                            throw new AtmLayerException("Empty Process Definitions from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
+                        }
+                        DeployedBPMNProcessDefinitionDto deployedProcessInfo = optionalDeployedProcessDefinition.get();
+                        workflowResource.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
+                        workflowResource.setDeploymentId(deployedProcessInfo.getDeploymentId());
+                        workflowResource.setCamundaDefinitionId(deployedProcessInfo.getId());
+                        workflowResource.setDeployedFileName(deployedProcessInfo.getName());
+                        workflowResource.setDescription(deployedProcessInfo.getDescription());
+                        workflowResource.setResource(deployedProcessInfo.getResource());
+                        workflowResource.setStatus(StatusEnum.DEPLOYED);
                     }
-                    DeployedProcessInfoDto deployedProcessInfo = optionalDeployedProcessInfo.get();
-                    workflowResource.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
-                    workflowResource.setDeploymentId(deployedProcessInfo.getDeploymentId());
-                    workflowResource.setCamundaDefinitionId(deployedProcessInfo.getId());
-                    workflowResource.setDeployedFileName(deployedProcessInfo.getName());
-                    workflowResource.setDescription(deployedProcessInfo.getDescription());
-                    workflowResource.setResource(deployedProcessInfo.getResource());
-                    workflowResource.setStatus(StatusEnum.DEPLOYED);
+                    if(response.getDeployedDecisionDefinitions()!=null){
+                        Map<String, DeployedDMNDecisionDefinitionDto> deployedDecisionDefinitions=response.getDeployedDecisionDefinitions();
+                        Optional<DeployedDMNDecisionDefinitionDto> optionalDeployedDecisionDefinition = deployedDecisionDefinitions.values()
+                                .stream().findFirst();
+                        if(optionalDeployedDecisionDefinition.isEmpty()){
+                            throw new AtmLayerException("Empty Decision Definitions from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
+                        }
+                        DeployedDMNDecisionDefinitionDto deployedDecisionDefinition=optionalDeployedDecisionDefinition.get();
+                        workflowResource.setDefinitionVersionCamunda(deployedDecisionDefinition.getVersion());
+                        workflowResource.setDeploymentId(deployedDecisionDefinition.getDeploymentId());
+                        workflowResource.setCamundaDefinitionId(deployedDecisionDefinition.getId());
+                        workflowResource.setDeployedFileName(deployedDecisionDefinition.getName());
+                        workflowResource.setResource(deployedDecisionDefinition.getResource());
+                        workflowResource.setStatus(StatusEnum.DEPLOYED);
+                    } else{
+                        workflowResource.setCamundaDefinitionId(response.getId());
+                        workflowResource.setDeployedFileName(response.getName());
+                        workflowResource.setStatus(StatusEnum.DEPLOYED);
+                    }
                     return this.workflowResourceRepository.persist(workflowResource);
                 }));
     }

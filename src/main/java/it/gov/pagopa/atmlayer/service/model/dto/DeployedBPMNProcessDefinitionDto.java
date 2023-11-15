@@ -11,7 +11,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeployedProcessInfoDto {
+public class DeployedBPMNProcessDefinitionDto {
     private String id;
     private String key;
     private String category;

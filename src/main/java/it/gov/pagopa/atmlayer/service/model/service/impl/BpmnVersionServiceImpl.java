@@ -6,8 +6,8 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
-import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
-import it.gov.pagopa.atmlayer.service.model.dto.DeployedProcessInfoDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployBPMNResponseDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
@@ -250,7 +250,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     }
 
     @WithTransaction
-    public Uni<BpmnVersion> setDeployInfo(BpmnVersionPK key, DeployResponseDto response) {
+    public Uni<BpmnVersion> setDeployInfo(BpmnVersionPK key, DeployBPMNResponseDto response) {
         return this.findByPk(key)
                 .onItem()
                 .transformToUni(Unchecked.function(optionalBpmn -> {
@@ -261,13 +261,13 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                 BPMN_FILE_DOES_NOT_EXIST);
                     }
                     BpmnVersion bpmnVersion = optionalBpmn.get();
-                    Map<String, DeployedProcessInfoDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
-                    Optional<DeployedProcessInfoDto> optionalDeployedProcessInfo = deployedProcessDefinitions.values()
+                    Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
+                    Optional<DeployedBPMNProcessDefinitionDto> optionalDeployedProcessInfo = deployedProcessDefinitions.values()
                             .stream().findFirst();
                     if (optionalDeployedProcessInfo.isEmpty()) {
                         throw new AtmLayerException("Empty process infos from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
                     }
-                    DeployedProcessInfoDto deployedProcessInfo = optionalDeployedProcessInfo.get();
+                    DeployedBPMNProcessDefinitionDto deployedProcessInfo = optionalDeployedProcessInfo.get();
                     bpmnVersion.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
                     bpmnVersion.setDeploymentId(deployedProcessInfo.getDeploymentId());
                     bpmnVersion.setCamundaDefinitionId(deployedProcessInfo.getId());
