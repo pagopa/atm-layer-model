@@ -5,7 +5,7 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
-import it.gov.pagopa.atmlayer.service.model.dto.DeployBPMNResponseDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
@@ -402,7 +402,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersionUpdated.setResourceFile(resourceFile);
         URL url=new URL("http://localhost:8081/test");
         DeployedBPMNProcessDefinitionDto processInfo=new DeployedBPMNProcessDefinitionDto();
-        DeployBPMNResponseDto response=new DeployBPMNResponseDto();
+        DeployResponseDto response=new DeployResponseDto();
         Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions=new HashMap<>();
         deployedProcessDefinitions.put("key",processInfo);
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
@@ -427,7 +427,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setResourceFile(resourceFile);
         URL url=new URL("http://localhost:8081/test");
         DeployedBPMNProcessDefinitionDto processInfo=new DeployedBPMNProcessDefinitionDto();
-        DeployBPMNResponseDto response=new DeployBPMNResponseDto();
+        DeployResponseDto response=new DeployResponseDto();
         Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions=new HashMap<>();
         deployedProcessDefinitions.put("key",processInfo);
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
@@ -453,7 +453,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setModelVersion(1L);
         URL url=new URL("http://localhost:8081/test");
         DeployedBPMNProcessDefinitionDto processInfo=new DeployedBPMNProcessDefinitionDto();
-        DeployBPMNResponseDto response=new DeployBPMNResponseDto();
+        DeployResponseDto response=new DeployResponseDto();
         Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions=new HashMap<>();
         deployedProcessDefinitions.put("key",processInfo);
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
@@ -486,7 +486,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersionUpdated.setResourceFile(resourceFile);
         URL url=new URL("http://localhost:8081/test");
         DeployedBPMNProcessDefinitionDto processInfo=new DeployedBPMNProcessDefinitionDto();
-        DeployBPMNResponseDto response=new DeployBPMNResponseDto();
+        DeployResponseDto response=new DeployResponseDto();
         Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions=new HashMap<>();
         deployedProcessDefinitions.put("key",processInfo);
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
@@ -517,7 +517,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setResourceFile(resourceFile);
         URL url=new URL("http://localhost:8081/test");
         DeployedBPMNProcessDefinitionDto processInfo=new DeployedBPMNProcessDefinitionDto();
-        DeployBPMNResponseDto response=new DeployBPMNResponseDto();
+        DeployResponseDto response=new DeployResponseDto();
         Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions=new HashMap<>();
         deployedProcessDefinitions.put("key",processInfo);
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
@@ -538,9 +538,9 @@ class BpmnVersionServiceImplTest {
     @Test
     void testSetDeployInfoFileNotFound(){
         BpmnVersionPK bpmnVersionPK=new BpmnVersionPK(UUID.randomUUID(),1L);
-        DeployBPMNResponseDto deployBPMNResponseDto =new DeployBPMNResponseDto();
+        DeployResponseDto deployResponseDto =new DeployResponseDto();
         when(bpmnVersionRepoMock.findById(bpmnVersionPK)).thenReturn(Uni.createFrom().nullItem());
-        bpmnVersionServiceImpl.setDeployInfo(bpmnVersionPK, deployBPMNResponseDto)
+        bpmnVersionServiceImpl.setDeployInfo(bpmnVersionPK, deployResponseDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class,"One or some of the referenced BPMN files do not exists: BpmnVersionPK(bpmnId="+bpmnVersionPK.getBpmnId()+", modelVersion="+bpmnVersionPK.getModelVersion()+")");
         verify(bpmnVersionRepoMock,times(1)).findById(bpmnVersionPK);
@@ -551,7 +551,7 @@ class BpmnVersionServiceImplTest {
         BpmnVersion bpmnVersion=new BpmnVersion();
         BpmnVersionPK bpmnVersionPK=new BpmnVersionPK(UUID.randomUUID(),1L);
         DeployedBPMNProcessDefinitionDto processInfo=new DeployedBPMNProcessDefinitionDto();
-        DeployBPMNResponseDto response=new DeployBPMNResponseDto();
+        DeployResponseDto response=new DeployResponseDto();
         Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions=new HashMap<>();
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
         when(bpmnVersionRepoMock.findById(bpmnVersionPK)).thenReturn(Uni.createFrom().item(bpmnVersion));

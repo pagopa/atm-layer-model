@@ -6,7 +6,7 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
-import it.gov.pagopa.atmlayer.service.model.dto.DeployBPMNResponseDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
@@ -248,7 +248,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     }
 
     @WithTransaction
-    public Uni<BpmnVersion> setDeployInfo(BpmnVersionPK key, DeployBPMNResponseDto response) {
+    public Uni<BpmnVersion> setDeployInfo(BpmnVersionPK key, DeployResponseDto response) {
         return this.findByPk(key)
                 .onItem()
                 .transformToUni(Unchecked.function(optionalBpmn -> {

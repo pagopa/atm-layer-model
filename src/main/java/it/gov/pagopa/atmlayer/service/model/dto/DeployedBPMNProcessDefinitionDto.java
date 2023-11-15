@@ -24,6 +24,6 @@ public class DeployedBPMNProcessDefinitionDto {
     private Boolean suspended;
     private String tenantId;
     private String versionTag;
-    private int historyTimeToLeave;
+    private int historyTimeToLive;
     private Boolean startableInTasklist;
 }

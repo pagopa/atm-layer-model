@@ -18,7 +18,7 @@ public class DeployedBPMNProcessDefinitionDtoTest {
     actualDeployedBPMNProcessDefinitionDto.setDeploymentId(randomUUIDResult);
     actualDeployedBPMNProcessDefinitionDto.setDescription("The characteristics of someone or something");
     actualDeployedBPMNProcessDefinitionDto.setDiagram("Diagram");
-    actualDeployedBPMNProcessDefinitionDto.setHistoryTimeToLeave(1);
+    actualDeployedBPMNProcessDefinitionDto.setHistoryTimeToLive(1);
     actualDeployedBPMNProcessDefinitionDto.setId("42");
     actualDeployedBPMNProcessDefinitionDto.setKey("Key");
     actualDeployedBPMNProcessDefinitionDto.setName("Name");
@@ -33,7 +33,7 @@ public class DeployedBPMNProcessDefinitionDtoTest {
     assertEquals("The characteristics of someone or something",
         actualDeployedBPMNProcessDefinitionDto.getDescription());
     assertEquals("Diagram", actualDeployedBPMNProcessDefinitionDto.getDiagram());
-    assertEquals(1, actualDeployedBPMNProcessDefinitionDto.getHistoryTimeToLeave());
+    assertEquals(1, actualDeployedBPMNProcessDefinitionDto.getHistoryTimeToLive());
     assertEquals("42", actualDeployedBPMNProcessDefinitionDto.getId());
     assertEquals("Key", actualDeployedBPMNProcessDefinitionDto.getKey());
     assertEquals("Name", actualDeployedBPMNProcessDefinitionDto.getName());

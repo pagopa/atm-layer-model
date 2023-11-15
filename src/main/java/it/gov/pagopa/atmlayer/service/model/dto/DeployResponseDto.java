@@ -6,21 +6,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeployFORMResponseDto {
+public class DeployResponseDto {
     private List<LinkDto> links;
-    private UUID id;
+    private String id;
     private String name;
     private String source;
     private String deploymentTime;
     private String tenantId;
-    private String deployedProcessDefinitions;
+    private Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions;
     private String deployedCaseDefinitions;
-    private String deployedDecisionDefinitions;
+    private Map<String, DeployedDMNDecisionDefinitionDto> deployedDecisionDefinitions;
     private String deployedDecisionRequirementsDefinitions;
 }

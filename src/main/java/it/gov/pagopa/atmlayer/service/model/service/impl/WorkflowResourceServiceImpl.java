@@ -5,7 +5,7 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
-import it.gov.pagopa.atmlayer.service.model.dto.DeployBPMNResponseDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedDMNDecisionDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
@@ -188,7 +188,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
     @WithTransaction
-    public Uni<WorkflowResource> setDeployInfo(UUID uuid, DeployBPMNResponseDto response) {
+    public Uni<WorkflowResource> setDeployInfo(UUID uuid, DeployResponseDto response) {
         return this.findById(uuid)
                 .onItem()
                 .transformToUni(Unchecked.function(optionalWorkflowResource -> {
