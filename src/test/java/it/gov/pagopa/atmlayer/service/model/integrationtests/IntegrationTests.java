@@ -2,6 +2,9 @@ package it.gov.pagopa.atmlayer.service.model.integrationtests;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.groups.UniAwait;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -10,9 +13,14 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
 
@@ -23,6 +31,14 @@ public class IntegrationTests {
 
 
     public static GenericContainer<?> NEWMAN;
+
+    @Inject
+    BucketCreationUtils bucketCreationUtils;
+
+    public IntegrationTests() {
+
+    }
+
 
     @BeforeAll
     static void exposeTestPort() {
@@ -36,6 +52,8 @@ public class IntegrationTests {
 
     @Test
     void executePostmanCollectionWithNewmann() {
+
+       bucketCreationUtils.createBucketIfNotExisting();
         NEWMAN.start();
         log.info(NEWMAN.getLogs());
         assertTrue(NEWMAN.getCurrentContainerInfo().getState().getExitCodeLong() == 0);
