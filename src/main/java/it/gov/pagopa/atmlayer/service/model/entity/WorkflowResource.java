@@ -12,12 +12,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -85,14 +82,5 @@ public class WorkflowResource extends PanacheEntityBase implements Serializable 
 
     @Column(name = "last_updated_by")
     private String lastUpdatedBy;
-
-    @Transient
-    @Getter(AccessLevel.NONE)
-    private String cdnStorageKey;
-
-    public String getCdnStorageKey() {
-        return ConfigProvider.getConfig().getValue("cdn.base-url", String.class)
-                .concat("/").concat(this.resourceFile.getStorageKey());
-    }
 
 }

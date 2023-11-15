@@ -2,7 +2,6 @@ package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
-import jakarta.inject.Inject;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,13 +12,10 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.eclipse.microprofile.config.ConfigProvider;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -76,9 +72,6 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
     private String createdBy;
     @Column(name = "last_updated_by")
     private String lastUpdatedBy;
-    @Transient
-    @Getter(AccessLevel.NONE)
-    private String cdnStorageKey;
 
     @PrePersist
     public void generateUUID() {
@@ -92,10 +85,5 @@ public class BpmnVersion extends PanacheEntityBase implements Serializable {
             return functionType.toUpperCase();
         }
         return null;
-    }
-
-    public String getCdnStorageKey() {
-        return ConfigProvider.getConfig().getValue("cdn.base-url", String.class)
-                .concat("/").concat(this.resourceFile.getStorageKey());
     }
 }
