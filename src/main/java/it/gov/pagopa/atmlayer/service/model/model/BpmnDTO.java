@@ -41,5 +41,6 @@ public class BpmnDTO {
     private Timestamp lastUpdatedAt;
     private String createdBy;
     private String lastUpdatedBy;
+    private String cdnStorageKey;
 
 }
