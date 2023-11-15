@@ -16,8 +16,6 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-modelProcessBasePath: http://pagopa-dev-atm-layer-wf-process.pagopa.svc.cluster.local:8080
-
 database:
   type: postgresql
   url: postgresql://pagopa-dev-atm-layer-rds.cluster-cyezwzpjc2tj.eu-south-1.rds.amazonaws.com:5431/pagopadb?search_path=atm_layer_model_schema
@@ -81,6 +79,14 @@ ingress:
     alb.ingress.kubernetes.io/group.name: "alb-controller"
     alb.ingress.kubernetes.io/load-balancer-name: "pagopa-dev-atm-layer-alb-int"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTP": 8080}]'
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-path: /api/v1/model/health/v1/model
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '20'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '8'
+    alb.ingress.kubernetes.io/success-codes: '200'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
   hosts:
     - host:
       paths:
