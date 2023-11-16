@@ -89,6 +89,14 @@ ingress:
     alb.ingress.kubernetes.io/group.name: "alb-controller"
     alb.ingress.kubernetes.io/load-balancer-name: "pagopa-uat-atm-layer-alb-int"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTP": 8080}]'
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-path: /health/v1/model
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '20'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '8'
+    alb.ingress.kubernetes.io/success-codes: '200'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
   hosts:
     - host:
       paths:
