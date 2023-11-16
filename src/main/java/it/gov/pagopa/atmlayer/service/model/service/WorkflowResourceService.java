@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 
 import java.io.File;
@@ -31,5 +30,5 @@ public interface WorkflowResourceService {
 
     Uni<List<WorkflowResource>> getAll();
 
-    Uni<ResourceFile> update(UUID id, File file) throws NoSuchAlgorithmException, IOException;
+    Uni<WorkflowResource> update(UUID id, File file) throws NoSuchAlgorithmException, IOException;
 }

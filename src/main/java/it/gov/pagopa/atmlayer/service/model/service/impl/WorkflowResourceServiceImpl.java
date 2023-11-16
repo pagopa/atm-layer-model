@@ -200,7 +200,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     }
                     WorkflowResource workflowResource = optionalWorkflowResource.get();
 
-                    if(response.getDeployedProcessDefinitions() !=null){
+                    if (response.getDeployedProcessDefinitions() != null) {
                         Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
                         Optional<DeployedBPMNProcessDefinitionDto> optionalDeployedProcessDefinition = deployedProcessDefinitions.values()
                                 .stream().findFirst();
@@ -216,21 +216,21 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         workflowResource.setResource(deployedProcessInfo.getResource());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
                     }
-                    if(response.getDeployedDecisionDefinitions()!=null){
-                        Map<String, DeployedDMNDecisionDefinitionDto> deployedDecisionDefinitions=response.getDeployedDecisionDefinitions();
+                    if (response.getDeployedDecisionDefinitions() != null) {
+                        Map<String, DeployedDMNDecisionDefinitionDto> deployedDecisionDefinitions = response.getDeployedDecisionDefinitions();
                         Optional<DeployedDMNDecisionDefinitionDto> optionalDeployedDecisionDefinition = deployedDecisionDefinitions.values()
                                 .stream().findFirst();
-                        if(optionalDeployedDecisionDefinition.isEmpty()){
+                        if (optionalDeployedDecisionDefinition.isEmpty()) {
                             throw new AtmLayerException("Empty Decision Definitions from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
                         }
-                        DeployedDMNDecisionDefinitionDto deployedDecisionDefinition=optionalDeployedDecisionDefinition.get();
+                        DeployedDMNDecisionDefinitionDto deployedDecisionDefinition = optionalDeployedDecisionDefinition.get();
                         workflowResource.setDefinitionVersionCamunda(deployedDecisionDefinition.getVersion());
                         workflowResource.setDeploymentId(deployedDecisionDefinition.getDeploymentId());
                         workflowResource.setCamundaDefinitionId(deployedDecisionDefinition.getId());
                         workflowResource.setDeployedFileName(deployedDecisionDefinition.getName());
                         workflowResource.setResource(deployedDecisionDefinition.getResource());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
-                    } else{
+                    } else {
                         workflowResource.setCamundaDefinitionId(response.getId());
                         workflowResource.setDeployedFileName(response.getName());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
@@ -300,7 +300,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
 
     @Override
     @WithTransaction
-    public Uni<ResourceFile> update(UUID id, File file) throws NoSuchAlgorithmException, IOException {
+    public Uni<WorkflowResource> update(UUID id, File file) throws NoSuchAlgorithmException, IOException {
         return this.findById(id)
                 .onItem()
                 .transformToUni(Unchecked.function(workflow -> {
@@ -329,7 +329,9 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     workflowFound.getResourceFile().setLastUpdatedAt(new Timestamp(date.getTime()));
                     return workflowResourceRepository.persist(workflowFound)
                             .onItem()
-                            .transformToUni(x -> workflowResourceStorageService.updateFile(workflowFound, file));
+                            .transformToUni(x -> workflowResourceStorageService.updateFile(workflowFound, file))
+                            .onItem().transformToUni(updatedFile -> this.findById(id)
+                                    .onItem().transformToUni(optionalWorkflowResource -> Uni.createFrom().item(optionalWorkflowResource.get())));
                 }));
 
 

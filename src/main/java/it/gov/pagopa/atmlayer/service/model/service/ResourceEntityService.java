@@ -27,7 +27,7 @@ public interface ResourceEntityService {
 
     Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file, String filename, String path);
 
-    Uni<ResourceFile> updateResource(UUID uuid, File file);
+    Uni<ResourceEntity> updateResource(UUID uuid, File file);
 
 
     Uni<List<ResourceEntity>> getAll();

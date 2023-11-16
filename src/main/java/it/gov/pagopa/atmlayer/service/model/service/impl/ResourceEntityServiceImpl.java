@@ -139,7 +139,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
 
     @Override
     @WithTransaction
-    public Uni<ResourceFile> updateResource(UUID uuid, File file) {
+    public Uni<ResourceEntity> updateResource(UUID uuid, File file) {
         return this.findByUUID(uuid)
                 .onItem()
                 .transformToUni(Unchecked.function(optionalResource -> {
@@ -163,7 +163,10 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                 String fileName = FilenameUtils.getBaseName(storageKey);
                                 String extension = FilenameUtils.getExtension(storageKey);
                                 String path = FilenameUtils.getFullPath(storageKey);
-                                return resourceEntityStorageService.uploadFile(file, resourceEntity, CommonUtils.getFilenameWithExtension(fileName,extension), CommonUtils.getPathWithoutFilename(path), false);
+                                return resourceEntityStorageService.uploadFile(file, resourceEntity, CommonUtils.getFilenameWithExtension(fileName, extension), CommonUtils.getPathWithoutFilename(path), false)
+                                        .onItem()
+                                        .transformToUni(fileUpdated -> this.findByUUID(uuid)
+                                                .onItem().transformToUni(optionalResourceUpdated -> Uni.createFrom().item(optionalResource.get())));
                             });
                 }));
     }

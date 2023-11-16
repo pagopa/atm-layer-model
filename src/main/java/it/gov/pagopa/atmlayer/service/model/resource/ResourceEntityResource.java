@@ -9,7 +9,6 @@ import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceEntityMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceFileMapper;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
-import it.gov.pagopa.atmlayer.service.model.model.ResourceFileDTO;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -35,6 +34,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_FILE_DOES_NOT_EXIST;
+
 @ApplicationScoped
 @Path("/resources")
 @Tag(name = "RESOURCES", description = "RESOURCES operations")
@@ -65,36 +65,37 @@ public class ResourceEntityResource {
     @Path("/{uuid}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<ResourceFileDTO> updateResource(@RequestBody(required = true) @FormParam("file") File file,
-                                               @PathParam("uuid") UUID uuid) {
+    public Uni<ResourceDTO> updateResource(@RequestBody(required = true) @FormParam("file") File file,
+                                           @PathParam("uuid") UUID uuid) {
         return resourceEntityService.updateResource(uuid, file)
                 .onItem()
-                .transformToUni(updateResourceFile -> Uni.createFrom().item(resourceFileMapper.toDTO(updateResourceFile)));
+                .transformToUni(updatedResource -> Uni.createFrom().item(resourceEntityMapper.toDTO(updatedResource)));
     }
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  public Uni<List<ResourceDTO>> getAll() {
-    return this.resourceEntityService.getAll()
-        .onItem()
-        .transform(Unchecked.function(list -> {
-          if (list.isEmpty()) {
-            log.info("No Resource files saved in database");
-          }
-          return resourceEntityMapper.toDTOList(list);
-        }));
-  }
 
-  @GET
-  @Path("/{uuid}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Uni<ResourceDTO> getById(@PathParam("uuid") UUID uuid){
-    return this.resourceEntityService.findByUUID(uuid)
-        .onItem()
-        .transform(Unchecked.function(x -> {
-          if (x.isEmpty()) {
-            throw new AtmLayerException(Response.Status.NOT_FOUND, RESOURCE_FILE_DOES_NOT_EXIST);
-          }
-          return resourceEntityMapper.toDTO(x.get());
-        }));
-  }
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<List<ResourceDTO>> getAll() {
+        return this.resourceEntityService.getAll()
+                .onItem()
+                .transform(Unchecked.function(list -> {
+                    if (list.isEmpty()) {
+                        log.info("No Resource files saved in database");
+                    }
+                    return resourceEntityMapper.toDTOList(list);
+                }));
+    }
+
+    @GET
+    @Path("/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<ResourceDTO> getById(@PathParam("uuid") UUID uuid) {
+        return this.resourceEntityService.findByUUID(uuid)
+                .onItem()
+                .transform(Unchecked.function(x -> {
+                    if (x.isEmpty()) {
+                        throw new AtmLayerException(Response.Status.NOT_FOUND, RESOURCE_FILE_DOES_NOT_EXIST);
+                    }
+                    return resourceEntityMapper.toDTO(x.get());
+                }));
+    }
 }
