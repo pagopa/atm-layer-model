@@ -57,7 +57,7 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
     String storageKey;
     @Transient
     @Getter(AccessLevel.NONE)
-    private String cdnStorageKey;
+    private String cdnUrl;
 
     @PrePersist
     public void generateUUID() {
@@ -66,9 +66,9 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
         }
     }
 
-    public String getCdnStorageKey() {
+    public String getCdnUrl() {
         return ConfigProvider.getConfig().getValue("cdn.base-url", String.class)
-                .concat("/").concat(StringUtils.substringAfter(this.resourceFile.getStorageKey(),ConfigProvider.getConfig().getValue("cdn.offset-path", String.class)));
+                .concat("/").concat(StringUtils.substringAfter(this.resourceFile.getStorageKey(), ConfigProvider.getConfig().getValue("cdn.offset-path", String.class)));
     }
 
 }
