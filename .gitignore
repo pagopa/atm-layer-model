@@ -31,6 +31,7 @@ replay_pid*
 .vscode
 
 # Project files
+/atm-layer-schema/src/main/resources/application-local.properties
 /target/
 **/node_modules
 **/.env
