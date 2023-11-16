@@ -32,6 +32,14 @@ objectStore:
   type: AWS_S3
   bucket_name: pagopa-prod-atm-layer-s3-model
   bpmn_template_path: /BPMN/files/UUID/[uuid]/VERSION/[version]
+  workflow_resource_path: /WORKFLOW_RESOURCE/[RESOURCE_TYPE]/files/UUID/[uuid]
+  resource_template_path: /RESOURCE/files/[RESOURCE_TYPE]
+
+cdn:
+  offset_path: RESOURCE/
+  credentialsSecretName: "pagopa-prod-atm-layer-model-cdn-base-path"
+  credentialsSecretKeys:
+    cdn_base_path: CDN_BASE_PATH
 
 secretProviderClass:
   name: atm-layer-model-secrets

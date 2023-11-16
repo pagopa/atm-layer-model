@@ -56,8 +56,19 @@ spec:
               value: "{{ .Values.objectStore.bucket_name }}"
             - name: MODEL_OBJECT_STORE_BPMN_TEMPLATE_PATH
               value: "{{ .Values.objectStore.bpmn_template_path }}"
+            - name: MODEL_OBJECT_STORE_WORKFLOW_RESOURCE_TEMPLATE_PATH
+              value: "{{ .Values.objectStore.workflow_resource_path }}"
+            - name: MODEL_OBJECT_STORE_RESOURCE_TEMPLATE_PATH
+              value: "{{ .Values.objectStore.resource_template_path }}"
             - name: MODEL_PROCESS_BASE_PATH
               value: "{{ .Values.modelProcessBasePath }}"
+            - name: CDN_OFFSET_PATH
+              value: "{{ .Values.cdn.offset_path }}"
+            - name: CDN_BASE_PATH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cdn.credentialsSecretName }}
+                  key: {{ .Values.cdn.credentialsSecretKeys.cdn_base_path }}
 
           volumeMounts:
           - name: secrets-store-inline
