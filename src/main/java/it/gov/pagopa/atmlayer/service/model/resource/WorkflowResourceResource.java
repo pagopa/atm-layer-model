@@ -4,12 +4,10 @@ import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
-import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceFileMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.WorkflowResourceMapper;
-import it.gov.pagopa.atmlayer.service.model.model.ResourceFileDTO;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -115,12 +113,12 @@ public class WorkflowResourceResource {
     @Path("/update/{uuid}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<ResourceFileDTO> update(@RequestBody(required = true) @FormParam("file") File file,
-                                       @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
+    public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") File file,
+                                           @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
 
         return workflowResourceService.update(uuid, file)
                 .onItem()
-                .transformToUni(updateResourceFile -> Uni.createFrom().item(resourceFileMapper.toDTO(updateResourceFile)));
+                .transformToUni(updatedWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(updatedWorkflowResource)));
 
     }
 }
