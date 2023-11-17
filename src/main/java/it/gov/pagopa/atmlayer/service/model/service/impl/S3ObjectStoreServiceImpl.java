@@ -14,6 +14,7 @@ import it.gov.pagopa.atmlayer.service.model.utils.FileStorageS3Utils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import mutiny.zero.flow.adapters.AdaptersToFlow;
 import org.apache.commons.io.FileUtils;
@@ -93,6 +94,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
     }
 
 
+    @SneakyThrows
     public Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) {
         if (StringUtils.isBlank(filename)) {
             String errorMessage = String.format("S3 File Upload - invalid filename %s", filename);
@@ -111,12 +113,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
             log.error(errorMessage);
             throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
         }
-        byte[] bytes = new byte[0];
-        try {
-            FileUtils.readFileToByteArray(file);
-        } catch (Exception e) {
-            throw new AtmLayerException("Invalid File. Cannot read content", Response.Status.BAD_REQUEST, AppErrorType.NOT_VALID_FILE.name());
-        }
+        byte[] bytes = FileUtils.readFileToByteArray(file);
         PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, getMimetype(fileType, filename), path);
         return Uni.createFrom().future(() -> s3.putObject(putObjectRequest, AsyncRequestBody.fromBytes(bytes)))
                 .onFailure().transform(error -> {
