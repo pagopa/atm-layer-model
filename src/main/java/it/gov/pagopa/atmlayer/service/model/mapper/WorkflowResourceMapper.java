@@ -34,8 +34,4 @@ public abstract class WorkflowResourceMapper {
     public List<WorkflowResourceDTO> toDTOList(List<WorkflowResource> list) {
         return list.stream().map(this::toDTO).collect(Collectors.toList());
     }
-
-//    @Mapping(ignore = true, target = "enabled")
-//    @Mapping(target = "resourceFile.dmn",ignore = true)
-//    public abstract WorkflowResource toEntity(WorkflowResourceDTO workflowResourceDTO);
 }
