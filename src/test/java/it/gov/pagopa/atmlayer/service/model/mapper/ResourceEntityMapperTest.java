@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
@@ -20,19 +21,25 @@ import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 public class ResourceEntityMapperTest {
 
   private ResourceEntityMapper mapper;
+  private ResourceEntityStorageService storageService;
+
+  @BeforeEach
+  public void setUp() {
+    storageService = mock(ResourceEntityStorageService.class);
+    mapper = new ResourceEntityMapperImpl();
+    mapper.resourceEntityStorageService = storageService;
+  }
 
   @Test
   public void testToEntityCreation() throws NoSuchAlgorithmException, IOException {
 
-    ResourceEntityStorageService storageService = mock(ResourceEntityStorageService.class);
-    mapper = new ResourceEntityMapperImpl();
-    mapper.resourceEntityStorageService = storageService;
     ResourceCreationDto creationDto = mock(ResourceCreationDto.class);
     File tempFile = createTemporaryFileWithContent("file content");
 
@@ -69,9 +76,12 @@ public class ResourceEntityMapperTest {
 
     mapper = Mappers.getMapper(ResourceEntityMapper.class);
 
+    ResourceFile resourceFile = new ResourceFile();
+    resourceFile.setStorageKey("StorageKey");
+
     List<ResourceEntity> resourceEntityList = Arrays.asList(
-        createResourceEntity("file1", "HTML"),
-        createResourceEntity("file2", "OTHER")
+        createResourceEntity("file1", "HTML",resourceFile),
+        createResourceEntity("file2", "OTHER",resourceFile)
     );
 
     List<ResourceDTO> dtoList = mapper.toDTOList(resourceEntityList);
@@ -80,9 +90,10 @@ public class ResourceEntityMapperTest {
     assertEquals(resourceEntityList.size(), dtoList.size());
   }
 
-  private ResourceEntity createResourceEntity(String filename, String noDeployableResourceType) {
+  private ResourceEntity createResourceEntity(String filename, String noDeployableResourceType, ResourceFile resourceFile) {
     ResourceEntity resourceEntity = new ResourceEntity();
     resourceEntity.setFileName(filename);
+    resourceEntity.setResourceFile(resourceFile);
     resourceEntity.setNoDeployableResourceType(
         NoDeployableResourceType.valueOf(noDeployableResourceType));
     return resourceEntity;
