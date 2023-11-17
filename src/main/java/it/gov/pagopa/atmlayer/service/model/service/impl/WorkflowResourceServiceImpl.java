@@ -313,14 +313,14 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     String definitionKey = extractIdValue(file, deployableResourceType);
                     String storageKey = workflowFound.getResourceFile().getStorageKey();
                     log.info("storage key {}", storageKey);
-                    if (!workflowFound.getDefinitionKey().equals(definitionKey)) {
-                        throw new AtmLayerException(String.format("Workflow Resource with type %s does not match the Workflow Resource you are trying to update", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
-                    }
                     String shaUpdateFile = calculateSha256(file);
                     if (workflowFound.getSha256().equals(shaUpdateFile)) {
                         throw new AtmLayerException("Workflow Resource already present", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
                     }
                     workflowFound.setSha256(shaUpdateFile);
+                    if (!workflowFound.getDefinitionKey().equals(definitionKey)) {
+                        throw new AtmLayerException(String.format("The definition key in your Workflow Resource: %s does not match the Workflow Resource you are trying to update", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
+                    }
                     if (workflowFound.getStatus().equals(StatusEnum.DEPLOYED)) {
                         workflowFound.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
                     }

@@ -125,9 +125,9 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
     }
 
     private String getMimetype(S3ResourceTypeEnum fileType, String filename) {
-
         try {
             return fileType.getMimetype() == null ? URLConnection.guessContentTypeFromName(filename) : fileType.getMimetype();
+
         } catch (Exception e) {
             throw new AtmLayerException("Error identifying file content-Type", Response.Status.BAD_REQUEST, AppErrorCodeEnum.FILE_NOT_SUPPORTED);
         }
