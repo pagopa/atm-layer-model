@@ -30,6 +30,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.List;
@@ -109,7 +110,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
             log.error(errorMessage);
             throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
         }
-        PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, getMimetype(fileType, file), path);
+        PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, getMimetype(fileType, filename), path);
         return Uni.createFrom().future(() -> s3.putObject(putObjectRequest, AsyncRequestBody.fromFile(file)))
                 .onFailure().transform(error -> {
                     String errorMessage = "Error in uploading file to S3";
@@ -123,9 +124,10 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
 
     }
 
-    private static String getMimetype(S3ResourceTypeEnum fileType, File file) {
+    private String getMimetype(S3ResourceTypeEnum fileType, String filename) {
         try {
-            return fileType.getMimetype() == null ? file.toURL().openConnection().getContentType() : fileType.getMimetype();
+            return fileType.getMimetype() == null ? URLConnection.guessContentTypeFromName(filename) : fileType.getMimetype();
+
         } catch (Exception e) {
             throw new AtmLayerException("Error identifying file content-Type", Response.Status.BAD_REQUEST, AppErrorCodeEnum.FILE_NOT_SUPPORTED);
         }
