@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import java.nio.file.FileSystems;
 
 public class CommonUtilsTest {
 
@@ -26,6 +27,7 @@ public class CommonUtilsTest {
 
   @Test
   public void testGetRelativePath() {
-    assertEquals("..\\Absolute Path", CommonUtils.getRelativePath("Base Path", "Absolute Path"));
+    assertEquals(".." + FileSystems.getDefault().getSeparator() +
+        "Absolute Path", CommonUtils.getRelativePath("Base Path", "Absolute Path"));
   }
 }
