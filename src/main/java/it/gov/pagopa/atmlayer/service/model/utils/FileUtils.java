@@ -50,7 +50,7 @@ public class FileUtils {
         try {
             builder = factory.newDocumentBuilder();
             document = builder.parse(file);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new AtmLayerException("Malformed File", Response.Status.BAD_REQUEST, MALFORMED_FILE);
         }

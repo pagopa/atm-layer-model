@@ -36,7 +36,7 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
     private UUID resourceId;
     @Column(name = "sha256", unique = true)
     private String sha256;
-    @Column(name = "resourceType")
+    @Column(name = "resource_type")
     @Enumerated(EnumType.STRING)
     NoDeployableResourceType noDeployableResourceType;
     @OneToOne(mappedBy = "resourceEntity", cascade = CascadeType.ALL)
