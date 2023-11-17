@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
@@ -28,10 +29,8 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +91,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
     }
 
 
-    public Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) throws IOException {
+    public Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) {
         if (StringUtils.isBlank(filename)) {
             String errorMessage = String.format("S3 File Upload - invalid filename %s", filename);
             log.error(errorMessage);
@@ -124,7 +123,12 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
 
     }
 
-    private static String getMimetype(S3ResourceTypeEnum fileType, File file) throws IOException {
-        return fileType.getMimetype() == null ? Files.probeContentType(file.toPath()) : fileType.getMimetype();
+    private static String getMimetype(S3ResourceTypeEnum fileType, File file) {
+        try {
+            return fileType.getMimetype() == null ? file.toURL().openConnection().getContentType() : fileType.getMimetype();
+        } catch (Exception e) {
+            throw new AtmLayerException("Error identifying file content-Type", Response.Status.BAD_REQUEST, AppErrorCodeEnum.FILE_NOT_SUPPORTED);
+        }
+
     }
 }
