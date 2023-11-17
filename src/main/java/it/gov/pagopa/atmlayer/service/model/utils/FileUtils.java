@@ -55,6 +55,9 @@ public class FileUtils {
             throw new AtmLayerException("Malformed File", Response.Status.BAD_REQUEST, MALFORMED_FILE);
         }
         Element definitionsElement = (Element) document.getElementsByTagName(resourceTypeEnum.getTagName()).item(0);
+        if (definitionsElement == null) {
+            throw new AtmLayerException("Wrong file type", Response.Status.BAD_REQUEST, BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY);
+        }
         String definitionKey = definitionsElement.getAttribute(resourceTypeEnum.getAttribute());
         if (definitionKey.isBlank()) {
             throw new AtmLayerException("Failed to find definition key file", Response.Status.NOT_ACCEPTABLE, BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY);
