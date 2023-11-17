@@ -16,6 +16,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import mutiny.zero.flow.adapters.AdaptersToFlow;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.reactive.RestMulti;
 import org.reactivestreams.Publisher;
@@ -110,8 +111,14 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
             log.error(errorMessage);
             throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
         }
+        byte[] bytes = new byte[0];
+        try {
+            FileUtils.readFileToByteArray(file);
+        } catch (Exception e) {
+            throw new AtmLayerException("Invalid File. Cannot read content", Response.Status.BAD_REQUEST, AppErrorType.NOT_VALID_FILE.name());
+        }
         PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, getMimetype(fileType, filename), path);
-        return Uni.createFrom().future(() -> s3.putObject(putObjectRequest, AsyncRequestBody.fromFile(file)))
+        return Uni.createFrom().future(() -> s3.putObject(putObjectRequest, AsyncRequestBody.fromBytes(bytes)))
                 .onFailure().transform(error -> {
                     String errorMessage = "Error in uploading file to S3";
                     log.error(errorMessage, error);
