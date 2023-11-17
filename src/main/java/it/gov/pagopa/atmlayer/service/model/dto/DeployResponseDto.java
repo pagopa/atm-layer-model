@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,13 +14,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class DeployResponseDto {
     private List<LinkDto> links;
-    private UUID id;
+    private String id;
     private String name;
     private String source;
     private String deploymentTime;
     private String tenantId;
-    private Map<String, DeployedProcessInfoDto> deployedProcessDefinitions;
+    private Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions;
     private String deployedCaseDefinitions;
-    private String deployedDecisionDefinitions;
+    private Map<String, DeployedDMNDecisionDefinitionDto> deployedDecisionDefinitions;
     private String deployedDecisionRequirementsDefinitions;
 }

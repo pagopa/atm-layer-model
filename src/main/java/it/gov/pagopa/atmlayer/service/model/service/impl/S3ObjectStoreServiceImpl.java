@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
@@ -108,7 +109,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
             log.error(errorMessage);
             throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
         }
-        PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, fileType.getMimetype(), path);
+        PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, getMimetype(fileType, file), path);
         return Uni.createFrom().future(() -> s3.putObject(putObjectRequest, AsyncRequestBody.fromFile(file)))
                 .onFailure().transform(error -> {
                     String errorMessage = "Error in uploading file to S3";
@@ -119,6 +120,15 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
                     log.info("success uploading from s3");
                     return Uni.createFrom().item(ObjectStorePutResponse.builder().storage_key(putObjectRequest.key()).build());
                 });
+
+    }
+
+    private static String getMimetype(S3ResourceTypeEnum fileType, File file) {
+        try {
+            return fileType.getMimetype() == null ? file.toURL().openConnection().getContentType() : fileType.getMimetype();
+        } catch (Exception e) {
+            throw new AtmLayerException("Error identifying file content-Type", Response.Status.BAD_REQUEST, AppErrorCodeEnum.FILE_NOT_SUPPORTED);
+        }
 
     }
 }

@@ -32,6 +32,14 @@ objectStore:
   type: AWS_S3
   bucket_name: pagopa-dev-atm-layer-s3-model
   bpmn_template_path: /BPMN/files/UUID/[uuid]/VERSION/[version]
+  workflow_resource_path: /WORKFLOW_RESOURCE/[RESOURCE_TYPE]/files/UUID/[uuid]
+  resource_template_path: /RESOURCES/files/[RESOURCE_TYPE]
+
+cdn:
+  offset_path: RESOURCES/
+  credentialsSecretName: "pagopa-dev-atm-layer-model-cdn-base-path"
+  credentialsSecretKeys:
+    cdn_base_path: CDN_BASE_PATH
 
 secretProviderClass:
   name: atm-layer-model-secrets
@@ -64,7 +72,7 @@ deployment:
   name: pagopa-dev-atm-layer-model
   annotations:
     reloader.stakater.com/auto: "true"
-    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-model-database
+    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-model-database, pagopa-dev-atm-layer-model-cdn-base-path
 
 service:
   name: pagopa-dev-atm-layer-model
@@ -81,6 +89,14 @@ ingress:
     alb.ingress.kubernetes.io/group.name: "alb-controller"
     alb.ingress.kubernetes.io/load-balancer-name: "pagopa-dev-atm-layer-alb-int"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTP": 8080}]'
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-path: /health/v1/model
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '20'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '8'
+    alb.ingress.kubernetes.io/success-codes: '200'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
   hosts:
     - host:
       paths:

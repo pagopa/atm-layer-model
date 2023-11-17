@@ -11,7 +11,7 @@ public enum S3ResourceTypeEnum {
     DMN("dmn", "application/dmn"),
     FORM("json", "application/json"),
     HTML("html", "application/html"),
-    OTHER("other", "other");
+    OTHER("other", null);
 
     String extension;
     String mimetype;

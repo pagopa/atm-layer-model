@@ -6,16 +6,22 @@ import jakarta.inject.Inject;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @ApplicationScoped
 public class FileStorageS3Utils {
     @Inject
     ObjectStoreProperties objectStoreProperties;
 
     public PutObjectRequest buildPutRequest(String filename, String mimetype, String path) {
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("Content-Type", mimetype);
         return PutObjectRequest.builder()
                 .bucket(objectStoreProperties.bucket().name())
                 .key(path.concat("/").concat(filename))
-                .contentType(mimetype)
+                //.contentType(mimetype)
+                //.metadata(metadata)
                 .build();
     }
 

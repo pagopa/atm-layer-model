@@ -7,7 +7,7 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
-import it.gov.pagopa.atmlayer.service.model.dto.DeployedProcessInfoDto;
+import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
@@ -177,17 +177,15 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @WithTransaction
     public Uni<BpmnVersion> saveAndUpload(BpmnVersion bpmnVersion, File file, String filename) {
         return this.save(bpmnVersion)
-                .onItem().transformToUni(record -> {
-                    return this.bpmnFileStorageService.uploadFile(bpmnVersion, file, filename)
-                            .onFailure().recoverWithUni(failure -> {
-                                log.error(failure.getMessage());
-                                return Uni.createFrom().failure(new AtmLayerException("Failed to save BPMN in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
-                            })
-                            .onItem().transformToUni(putObjectResponse -> {
-                                log.info("Completed BPMN Creation");
-                                return Uni.createFrom().item(record);
-                            });
-                });
+                .onItem().transformToUni(record -> this.bpmnFileStorageService.uploadFile(bpmnVersion, file, filename)
+                        .onFailure().recoverWithUni(failure -> {
+                            log.error(failure.getMessage());
+                            return Uni.createFrom().failure(new AtmLayerException("Failed to save BPMN in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
+                        })
+                        .onItem().transformToUni(putObjectResponse -> {
+                            log.info("Completed BPMN Creation");
+                            return Uni.createFrom().item(record);
+                        }));
     }
 
     @Override
@@ -261,17 +259,16 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                 BPMN_FILE_DOES_NOT_EXIST);
                     }
                     BpmnVersion bpmnVersion = optionalBpmn.get();
-                    Map<String, DeployedProcessInfoDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
-                    Optional<DeployedProcessInfoDto> optionalDeployedProcessInfo = deployedProcessDefinitions.values()
+                    Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
+                    Optional<DeployedBPMNProcessDefinitionDto> optionalDeployedProcessInfo = deployedProcessDefinitions.values()
                             .stream().findFirst();
                     if (optionalDeployedProcessInfo.isEmpty()) {
                         throw new AtmLayerException("Empty process infos from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
                     }
-                    DeployedProcessInfoDto deployedProcessInfo = optionalDeployedProcessInfo.get();
+                    DeployedBPMNProcessDefinitionDto deployedProcessInfo = optionalDeployedProcessInfo.get();
                     bpmnVersion.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
                     bpmnVersion.setDeploymentId(deployedProcessInfo.getDeploymentId());
                     bpmnVersion.setCamundaDefinitionId(deployedProcessInfo.getId());
-                    //bpmnVersion.setDefinitionKey(deployedProcessInfo.getKey());
                     bpmnVersion.setDeployedFileName(deployedProcessInfo.getName());
                     bpmnVersion.setDescription(deployedProcessInfo.getDescription());
                     bpmnVersion.setResource(deployedProcessInfo.getResource());
