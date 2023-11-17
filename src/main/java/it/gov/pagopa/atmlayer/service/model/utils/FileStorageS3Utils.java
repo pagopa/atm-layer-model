@@ -20,8 +20,8 @@ public class FileStorageS3Utils {
         return PutObjectRequest.builder()
                 .bucket(objectStoreProperties.bucket().name())
                 .key(path.concat("/").concat(filename))
-                .contentType(mimetype)
-                .metadata(metadata)
+                //.contentType(mimetype)
+                //.metadata(metadata)
                 .build();
     }
 
