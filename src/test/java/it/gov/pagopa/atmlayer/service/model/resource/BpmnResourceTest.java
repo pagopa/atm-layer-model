@@ -32,6 +32,7 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -65,7 +66,7 @@ class BpmnResourceTest {
                 .extract()
                 .body()
                 .as(ArrayList.class);
-        Assertions.assertEquals(1, result.size());
+        assertEquals(1, result.size());
         verify(bpmnVersionService, times(1)).getAll();
         verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
     }
@@ -169,20 +170,71 @@ class BpmnResourceTest {
                 .then()
                 .statusCode(200)
                 .extract().as(BpmnDTO.class);
-        Assertions.assertEquals(bpmnDTO, result);
+        assertEquals(bpmnDTO, result);
     }
 
     @Test
     void deleteBpmn() {
+        UUID bpmnId=UUID.randomUUID();
+        Long version=1L;
+        BpmnVersionPK key=new BpmnVersionPK(bpmnId,version);
+        when(bpmnVersionService.delete(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(true));
+        given()
+                .pathParam("bpmnId",bpmnId)
+                .pathParam("version",version)
+                .when().delete("/api/v1/model/bpmn/{bpmnId}/version/{version}")
+                .then()
+                .statusCode(204);
+        verify(bpmnVersionService,times(1)).delete(key);
     }
 
     @Test
     void deployBPMN() {
+        UUID bpmnId=UUID.randomUUID();
+        Long version=1L;
+        BpmnVersionPK expectedKey=new BpmnVersionPK(bpmnId,version);
+        BpmnVersion expectedBpmn=(new BpmnVersion());
+        BpmnDTO expectedDto=new BpmnDTO();
+        expectedDto.setBpmnId(bpmnId);
+        expectedDto.setModelVersion(version);
+        when(bpmnVersionService.deploy(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(expectedBpmn));
+        when(bpmnVersionMapper.toDTO(any(BpmnVersion.class))).thenReturn(expectedDto);
+        BpmnDTO result = given()
+                .pathParam("uuid",bpmnId)
+                .pathParam("version",version)
+                .when().post("/api/v1/model/bpmn/deploy/{uuid}/version/{version}")
+                .then()
+                .statusCode(200)
+                .extract().as(BpmnDTO.class);
+        verify(bpmnVersionService,times(1)).deploy(expectedKey);
+        verify(bpmnVersionMapper,times(1)).toDTO(expectedBpmn);
+        assertEquals(bpmnId,result.getBpmnId());
+        assertEquals(version,result.getModelVersion());
     }
 
-    @Test
-    void downloadBpmn() {
-    }
+//    @Test
+//    void downloadBpmn() {
+//        UUID bpmnId=UUID.randomUUID();
+//        Long version=1L;
+//        BpmnVersionPK expectedKey=new BpmnVersionPK(bpmnId,version);
+//        BpmnVersion expectedBpmn=(new BpmnVersion());
+//        BpmnDTO expectedDto=new BpmnDTO();
+//        expectedDto.setBpmnId(bpmnId);
+//        expectedDto.setModelVersion(version);
+//        when(bpmnVersionService.deploy(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(expectedBpmn));
+//        when(bpmnVersionMapper.toDTO(any(BpmnVersion.class))).thenReturn(expectedDto);
+//        BpmnDTO result = given()
+//                .pathParam("uuid",bpmnId)
+//                .pathParam("version",version)
+//                .when().post("/api/v1/model/bpmn/deploy/{uuid}/version/{version}")
+//                .then()
+//                .statusCode(200)
+//                .extract().as(BpmnDTO.class);
+//        verify(bpmnVersionService,times(1)).deploy(expectedKey);
+//        verify(bpmnVersionMapper,times(1)).toDTO(expectedBpmn);
+//        assertEquals(bpmnId,result.getBpmnId());
+//        assertEquals(version,result.getModelVersion());
+//    }
 
     @Test
     void findBPMNByTriad() {
