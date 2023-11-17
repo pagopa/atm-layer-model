@@ -8,6 +8,7 @@ import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
 import org.jboss.resteasy.reactive.RestMulti;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 public interface ObjectStoreService {
@@ -15,7 +16,7 @@ public interface ObjectStoreService {
 
     ObjectStoreStrategyEnum getType();
 
-    Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename);
+    Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) throws IOException;
 
     Uni<URL> generatePresignedUrl(String objectKey);
 

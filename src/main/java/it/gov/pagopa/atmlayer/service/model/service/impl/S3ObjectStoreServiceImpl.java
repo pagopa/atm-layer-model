@@ -28,8 +28,10 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +92,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
     }
 
 
-    public Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) {
+    public Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) throws IOException {
         if (StringUtils.isBlank(filename)) {
             String errorMessage = String.format("S3 File Upload - invalid filename %s", filename);
             log.error(errorMessage);
@@ -108,7 +110,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
             log.error(errorMessage);
             throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
         }
-        PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, fileType.getMimetype(), path);
+        PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, getMimetype(fileType, file), path);
         return Uni.createFrom().future(() -> s3.putObject(putObjectRequest, AsyncRequestBody.fromFile(file)))
                 .onFailure().transform(error -> {
                     String errorMessage = "Error in uploading file to S3";
@@ -120,5 +122,9 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
                     return Uni.createFrom().item(ObjectStorePutResponse.builder().storage_key(putObjectRequest.key()).build());
                 });
 
+    }
+
+    private static String getMimetype(S3ResourceTypeEnum fileType, File file) throws IOException {
+        return fileType.getMimetype() == null ? Files.probeContentType(file.toPath()) : fileType.getMimetype();
     }
 }
