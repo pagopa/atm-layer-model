@@ -11,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BranchConfigs {
-    //TODO: Validatore custom
+
     private String branchId;
 
     private UUID branchDefaultTemplateId;
