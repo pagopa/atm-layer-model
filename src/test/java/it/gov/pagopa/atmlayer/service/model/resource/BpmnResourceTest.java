@@ -226,6 +226,7 @@ class BpmnResourceTest {
         assertEquals(bpmnId, result.getBpmnId());
         assertEquals(version, result.getModelVersion());
     }
+
 //    @Test
 //    void downloadBpmnOK() {
 //        UUID bpmnId=UUID.randomUUID();
