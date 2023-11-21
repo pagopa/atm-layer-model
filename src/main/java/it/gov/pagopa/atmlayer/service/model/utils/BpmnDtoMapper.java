@@ -20,7 +20,7 @@ public class BpmnDtoMapper {
 //    }
 
     public static String calculateSha256(File file) throws NoSuchAlgorithmException, IOException {
-        byte[] array = FileUtils.toSha256ByteArray(file);
-        return FileUtils.toHexString(array);
+        byte[] array = FileUtilities.toSha256ByteArray(file);
+        return FileUtilities.toHexString(array);
     }
 }

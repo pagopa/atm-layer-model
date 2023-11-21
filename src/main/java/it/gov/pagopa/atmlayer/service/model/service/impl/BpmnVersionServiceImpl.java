@@ -43,7 +43,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.SHA256_ERROR;
-import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.extractIdValue;
+import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.extractIdValue;
 
 @ApplicationScoped
 @Slf4j

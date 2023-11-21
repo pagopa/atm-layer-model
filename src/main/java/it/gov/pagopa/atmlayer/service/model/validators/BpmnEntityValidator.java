@@ -1,6 +1,5 @@
 package it.gov.pagopa.atmlayer.service.model.validators;
 
-import com.google.common.collect.Sets;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
@@ -42,7 +41,7 @@ public class BpmnEntityValidator {
                         String errorMessage = String.format("One or some of the referenced BPMN do not have functionType %s: %s", functionType, notValidFunctionTypeBpmnFiles.stream().map(x -> new BpmnVersionPK(x.getBpmnId(), x.getModelVersion())).collect(Collectors.toSet()));
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FUNCTION_TYPE_DIFFERENT_FROM_REQUESTED);
                     }
-                    Set<BpmnVersionPK> missingBpmn = Sets.difference(ids, extractedKeys);
+                    Set<BpmnVersionPK> missingBpmn = ids.stream().filter(e -> !extractedKeys.contains(e)).collect(Collectors.toSet());
                     if (!CollectionUtils.isNullOrEmpty(missingBpmn)) {
                         String errorMessage = String.format("One or some of the referenced BPMN files do not exists: %s", missingBpmn);
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);

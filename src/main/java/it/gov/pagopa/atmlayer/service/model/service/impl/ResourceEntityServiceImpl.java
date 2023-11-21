@@ -34,7 +34,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
-import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.calculateSha256;
+import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculateSha256;
 
 @ApplicationScoped
 @Slf4j
