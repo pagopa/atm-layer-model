@@ -1,17 +1,15 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
-import java.sql.Timestamp;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-class ResourceEntityTest {
+public class ResourceEntityTest {
 
   @Test
   public void testResourceIdSetterGetter() {
@@ -42,8 +40,6 @@ class ResourceEntityTest {
     ResourceEntity resourceEntity = new ResourceEntity();
     resourceEntity.generateUUID();
     assertNull(resourceEntity.getCreatedAt());
-    ;
-    assertFalse(resourceEntity.getCreatedAt() instanceof Timestamp);
   }
 
   @Test
@@ -51,7 +47,6 @@ class ResourceEntityTest {
     ResourceEntity resourceEntity = new ResourceEntity();
     resourceEntity.generateUUID();
     assertNull(resourceEntity.getLastUpdatedAt());
-    assertFalse(resourceEntity.getLastUpdatedAt() instanceof Timestamp);
   }
 
   @Test
