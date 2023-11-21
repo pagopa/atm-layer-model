@@ -1,79 +1,224 @@
 {
-  "uuid": "81b580dd-bffd-4b2c-a373-92b8a73782ee",
-  "lastMigration": 29,
-  "name": "Atm layer",
-  "endpointPrefix": "",
-  "latency": 0,
-  "port": 3001,
-  "hostname": "",
-  "folders": [],
-  "routes": [
-    {
-      "uuid": "5d1ce034-b37a-4556-9c83-2e5ebdc613dd",
-      "type": "http",
-      "documentation": "",
-      "method": "post",
-      "endpoint": "api/v1/processes/deploy/BPMN",
-      "responses": [
+    "uuid": "d7ecb28b-9365-49f9-990d-1df4389d962a",
+    "lastMigration": 29,
+    "name": "ATMlayerProcess",
+    "endpointPrefix": "",
+    "latency": 0,
+    "port": 3001,
+    "hostname": "",
+    "folders": [],
+    "routes": [
         {
-          "uuid": "e8185899-7682-4525-a89f-251c4e6a2392",
-          "body": "{\n  \"links\": [\n    {\n      \"method\": \"GET\",\n      \"href\": \"http://pagopa-dev-atm-layer-alb-ext-1183954062.eu-south-1.elb.amazonaws.com/engine-rest/deployment/ffb8aa67-7708-11ee-b684-b266d188abc5\",\n      \"rel\": \"self\"\n    }\n  ],\n  \"id\": \"ffb8aa67-7708-11ee-b684-b266d188abc5\",\n  \"name\": \"\",\n  \"source\": null,\n  \"deploymentTime\": \"2023-10-30T09:45:02.880+0000\",\n  \"tenantId\": \"ttenant\",\n  \"deployedProcessDefinitions\": {\n    \"demo11_06:2:ffbe9dda-7708-11ee-b684-b266d188abc5\": {\n      \"id\": \"demo11_06:2:ffbe9dda-7708-11ee-b684-b266d188abc5\",\n      \"key\": \"1699262752968West Anabel\",\n      \"category\": \"http://bpmn.io/schema/bpmn\",\n      \"description\": \"description\",\n      \"name\": null,\n      \"version\": 2,\n      \"resource\": \"DEMO_11_06.bpmn\",\n      \"deploymentId\": \"ffb8aa67-7708-11ee-b684-b266d188abc5\",\n      \"diagram\": null,\n      \"suspended\": false,\n      \"tenantId\": \"ttenant\",\n      \"versionTag\": null,\n      \"historyTimeToLive\": 180,\n      \"startableInTasklist\": true\n    }\n  },\n  \"deployedCaseDefinitions\": null,\n  \"deployedDecisionDefinitions\": null,\n  \"deployedDecisionRequirementsDefinitions\": null\n}",
-          "latency": 0,
-          "statusCode": 200,
-          "label": "",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": true,
-          "crudKey": "id"
+            "uuid": "babe1be7-51b3-438a-8a99-2c3f5cf10dd3",
+            "type": "http",
+            "documentation": "",
+            "method": "post",
+            "endpoint": "api/v1/processes/deploy/BPMN",
+            "responses": [
+                {
+                    "uuid": "2767c671-6e13-42f9-b890-b7fd7b848a37",
+                    "body": "{\r\n\r\n    \"links\": [\r\n\r\n        {\r\n\r\n            \"method\": \"GET\",\r\n\r\n            \"href\": \"http://pagopa-dev-atm-layer-alb-ext-1183954062.eu-south-1.elb.amazonaws.com/engine-rest/deployment/ffb8aa67-7708-11ee-b684-b266d188abc5\",\r\n\r\n            \"rel\": \"self\"\r\n\r\n        }\r\n\r\n    ],\r\n\r\n    \"id\": \"ffb8aa67-7708-11ee-b684-b266d188abc5\",\r\n\r\n    \"name\": \"\",\r\n\r\n    \"source\": null,\r\n\r\n    \"deploymentTime\": \"2023-10-30T09:45:02.880+0000\",\r\n\r\n    \"tenantId\": \"ttenant\",\r\n\r\n    \"deployedProcessDefinitions\": {\r\n\r\n        \"demo11_06:2:ffbe9dda-7708-11ee-b684-b266d188abc5\": {\r\n\r\n            \"id\": \"demo11_06:2:ffbe9dda-7708-11ee-b684-b266d188abc5\",\r\n\r\n            \"key\": \"demo11_06\",\r\n\r\n            \"category\": \"http://bpmn.io/schema/bpmn\",\r\n\r\n            \"description\": null,\r\n\r\n            \"name\": \"DEPLOYED_NAME\",\r\n\r\n            \"version\": 2,\r\n\r\n            \"resource\": \"DEMO_11_06.bpmn\",\r\n\r\n            \"deploymentId\": \"ffb8aa67-7708-11ee-b684-b266d188abc5\",\r\n\r\n            \"diagram\": null,\r\n\r\n            \"suspended\": false,\r\n\r\n            \"tenantId\": \"ttenant\",\r\n\r\n            \"versionTag\": null,\r\n\r\n            \"historyTimeToLive\": 180,\r\n\r\n            \"startableInTasklist\": true\r\n\r\n        }\r\n\r\n    },\r\n\r\n    \"deployedCaseDefinitions\": null,\r\n\r\n    \"deployedDecisionDefinitions\": null,\r\n\r\n    \"deployedDecisionRequirementsDefinitions\": null\r\n\r\n}",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id"
+                },
+                {
+                    "uuid": "a658adce-b3e4-4635-b781-d497e6752b8c",
+                    "body": "",
+                    "latency": 0,
+                    "statusCode": 400,
+                    "label": "",
+                    "headers": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": false,
+                    "crudKey": "id"
+                }
+            ],
+            "enabled": true,
+            "responseMode": null
+        },
+        {
+            "uuid": "fc77258a-82d3-4f52-87ee-edede962e596",
+            "type": "http",
+            "documentation": "",
+            "method": "post",
+            "endpoint": "api/v1/processes/deploy/DMN",
+            "responses": [
+                {
+                    "uuid": "68d13d8f-59d5-493c-9ca5-ba2af5a659f5",
+                    "body": "{\r\n\r\n    \"links\": [\r\n\r\n        {\r\n\r\n            \"method\": \"GET\",\r\n\r\n            \"href\": \"http://localhost:8080/engine-rest/deployment/6d0bb455-7ee8-11ee-b31a-0242ac110004\",\r\n\r\n            \"rel\": \"self\"\r\n\r\n        }\r\n\r\n    ],\r\n\r\n    \"id\": \"6d0bb455-7ee8-11ee-b31a-0242ac110004\",\r\n\r\n    \"name\": \"diagram_2\",\r\n\r\n    \"source\": \"Camunda Modeler\",\r\n\r\n    \"deploymentTime\": \"2023-11-09T10:12:02.203+0000\",\r\n\r\n    \"tenantId\": null,\r\n\r\n    \"deployedProcessDefinitions\": null,\r\n\r\n    \"deployedCaseDefinitions\": null,\r\n\r\n    \"deployedDecisionDefinitions\": {\r\n\r\n        \"Decision_11a8wyt:1:6d1948e9-7ee8-11ee-b31a-0242ac110004\": {\r\n\r\n            \"id\": \"Decision_11a8wyt:1:6d1948e9-7ee8-11ee-b31a-0242ac110004\",\r\n\r\n            \"key\": \"Decision_11a8wyt\",\r\n\r\n            \"category\": \"http://camunda.org/schema/1.0/dmn\",\r\n\r\n            \"name\": \"Decision 1\",\r\n\r\n            \"version\": 1,\r\n\r\n            \"resource\": \"diagram_2.dmn\",\r\n\r\n            \"deploymentId\": \"6d0bb455-7ee8-11ee-b31a-0242ac110004\",\r\n\r\n            \"tenantId\": null,\r\n\r\n            \"decisionRequirementsDefinitionId\": null,\r\n\r\n            \"decisionRequirementsDefinitionKey\": null,\r\n\r\n            \"historyTimeToLive\": 180,\r\n\r\n            \"versionTag\": null\r\n\r\n        }\r\n\r\n    },\r\n\r\n    \"deployedDecisionRequirementsDefinitions\": null\r\n\r\n}",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id"
+                },
+                {
+                    "uuid": "fc8c8404-75f6-41cc-ba20-69a5e97d5a62",
+                    "body": "",
+                    "latency": 0,
+                    "statusCode": 400,
+                    "label": "",
+                    "headers": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": false,
+                    "crudKey": "id"
+                }
+            ],
+            "enabled": true,
+            "responseMode": null
+        },
+        {
+            "uuid": "42fdb828-2e47-428d-8f23-42b7defe75cc",
+            "type": "http",
+            "documentation": "",
+            "method": "post",
+            "endpoint": "api/v1/processes/deploy/FORM",
+            "responses": [
+                {
+                    "uuid": "99a8734c-9666-48fe-8821-444f7fb28ec9",
+                    "body": "{\r\n    \"links\": [\r\n        {\r\n            \"method\": \"GET\",\r\n            \"href\": \"http://localhost:8080/engine-rest/deployment/88ed28b5-839a-11ee-a647-0242ac110004\",\r\n            \"rel\": \"self\"\r\n        }\r\n    ],\r\n    \"id\": \"88ed28b5-839a-11ee-a647-0242ac110004\",\r\n    \"name\": \"form_1\",\r\n    \"source\": \"Camunda Modeler\",\r\n    \"deploymentTime\": \"2023-11-15T09:37:04.043+0000\",\r\n    \"tenantId\": null,\r\n    \"deployedProcessDefinitions\": null,\r\n    \"deployedCaseDefinitions\": null,\r\n    \"deployedDecisionDefinitions\": null,\r\n    \"deployedDecisionRequirementsDefinitions\": null\r\n}",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id"
+                },
+                {
+                    "uuid": "9fff06e2-e16b-41aa-b75d-994590efe46b",
+                    "body": "",
+                    "latency": 0,
+                    "statusCode": 400,
+                    "label": "",
+                    "headers": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": false,
+                    "crudKey": "id"
+                }
+            ],
+            "enabled": true,
+            "responseMode": null
         }
-      ],
-      "enabled": true,
-      "responseMode": null
-    }
-  ],
-  "rootChildren": [
-    {
-      "type": "route",
-      "uuid": "5d1ce034-b37a-4556-9c83-2e5ebdc613dd"
-    }
-  ],
-  "proxyMode": false,
-  "proxyHost": "",
-  "proxyRemovePrefix": false,
-  "tlsOptions": {
-    "enabled": false,
-    "type": "CERT",
-    "pfxPath": "",
-    "certPath": "",
-    "keyPath": "",
-    "caPath": "",
-    "passphrase": ""
-  },
-  "cors": true,
-  "headers": [
-    {
-      "key": "Content-Type",
-      "value": "application/json"
-    }
-  ],
-  "proxyReqHeaders": [
-    {
-      "key": "",
-      "value": ""
-    }
-  ],
-  "proxyResHeaders": [
-    {
-      "key": "",
-      "value": ""
-    }
-  ],
-  "data": []
+    ],
+    "rootChildren": [
+        {
+            "type": "route",
+            "uuid": "babe1be7-51b3-438a-8a99-2c3f5cf10dd3"
+        },
+        {
+            "type": "route",
+            "uuid": "fc77258a-82d3-4f52-87ee-edede962e596"
+        },
+        {
+            "type": "route",
+            "uuid": "42fdb828-2e47-428d-8f23-42b7defe75cc"
+        }
+    ],
+    "proxyMode": false,
+    "proxyHost": "",
+    "proxyRemovePrefix": false,
+    "tlsOptions": {
+        "enabled": false,
+        "type": "CERT",
+        "pfxPath": "",
+        "certPath": "",
+        "keyPath": "",
+        "caPath": "",
+        "passphrase": ""
+    },
+    "cors": true,
+    "headers": [],
+    "proxyReqHeaders": [
+        {
+            "key": "",
+            "value": ""
+        }
+    ],
+    "proxyResHeaders": [
+        {
+            "key": "",
+            "value": ""
+        }
+    ],
+    "data": []
 }
