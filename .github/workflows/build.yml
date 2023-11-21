@@ -1,17 +1,9 @@
-name: Manual build and deploy
+name: Build everytime push or merge
 
 on:
-  workflow_dispatch:
-    inputs:
-      env:
-        description: 'Which environment to update.'
-        type: choice
-        required: true
-        default: dev
-        options:
-          - dev
-          - uat
-          - prod
+  push:
+    branches:
+      - '**'        # matches every branch
 
 defaults:
   run:
@@ -20,13 +12,11 @@ defaults:
 permissions: write-all
 
 jobs:
-  manual-build:
-    if: github.event_name == 'workflow_dispatch'
+  build:
     strategy:
       matrix:
-        environment: [ "${{ inputs.env }}" ]
-
-    name: "manual-build"
+        environment: [dev]
+    name: "build"
     runs-on: ubuntu-latest
     environment: ${{ matrix.environment }}
 
@@ -53,7 +43,7 @@ jobs:
 
       - name: Test and Integration tests
         run: |
-          mvn test -Dquarkus.package.type=native -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod 
+          mvn package -Pnative -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod 
 
       - name: Create Status check based on postman results
         id: process-postman
@@ -61,7 +51,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           results-file: src/test/resources/integration-test/output/result.json
-          report-name: 'Postman ${{ github.run_number }}'
+          report-name: 'Postman build: ${{ github.run_number }}'
           create-status-check: true
           create-pr-comment: true
           update-comment-if-one-exists: true
@@ -73,39 +63,19 @@ jobs:
         run: |
           echo "There were postman failures."
           exit 1
-        
+
       - name: Upload result.html
         uses: actions/upload-artifact@v3
         with:
           name: html-report
           path: src/test/resources/integration-test/output/result.html
-        
-      - name: Build, tag, and push docker image to Amazon ECR
+
+      - name: Build docker image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ vars.DOCKER_IMAGE_NAME}}
-          IMAGE_TAG: ${{ github.sha }}
+          DOCKER_IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -f src/main/java/it/gov/pagopa/atmlayer/service/model/docker/Dockerfile.native -t $REGISTRY/$REPOSITORY:$IMAGE_TAG . \
+          docker build -f src/main/java/it/gov/pagopa/atmlayer/service/model/docker/Dockerfile.native -t $REGISTRY/$REPOSITORY:$DOCKER_IMAGE_TAG . \
           --build-arg QUARKUS_PROFILE=prod \
           --build-arg APP_NAME=atm-layer-model
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-
-      - name: Update Kubernetes Config
-        run: |
-          aws eks --region ${{ vars.AWS_REGION }} update-kubeconfig --name pagopa-${{ inputs.env }}-atm-layer-eks
-
-      - name: Install Helm
-        run: |
-          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-          chmod 700 get_helm.sh
-          ./get_helm.sh
-
-      - name: Upgrade Helm Chart
-        run: |
-          helm upgrade --install ${{ vars.DOCKER_IMAGE_NAME }} helm-chart/ \
-          --namespace pagopa \
-          -f helm-chart/environments/values-${{ inputs.env }}.yaml \
-          --set image.tag=${{ github.sha }} \
-          --set image.repository=${{ steps.login-ecr.outputs.registry }}/${{ vars.DOCKER_IMAGE_NAME }} \
-          --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=${{ secrets.SERVICEACCOUNT_IAM_ROLE }}
