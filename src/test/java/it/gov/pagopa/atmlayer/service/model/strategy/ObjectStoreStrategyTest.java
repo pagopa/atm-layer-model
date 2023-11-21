@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
-public class ObjectStoreStrategyTest {
+class ObjectStoreStrategyTest {
     @Test
     public void testGetTypeWhenEnumFoundThenReturnService() {
         ObjectStoreService objectStoreService = Mockito.mock(ObjectStoreService.class);
@@ -28,7 +28,7 @@ public class ObjectStoreStrategyTest {
     }
 
     @Test
-    public void testGetTypeWhenEnumNotFoundThenThrowException() {
+    void testGetTypeWhenEnumNotFoundThenThrowException() {
         Map<ObjectStoreStrategyEnum, ObjectStoreService> selectObjectStoreByType = Mockito.mock(HashMap.class);
         ObjectStoreStrategy objectStoreStrategy = new ObjectStoreStrategy(selectObjectStoreByType);
         when(selectObjectStoreByType.getOrDefault(any(ObjectStoreStrategyEnum.class), null))

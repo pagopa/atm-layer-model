@@ -326,6 +326,8 @@
             <properties>
                 <skipITs>false</skipITs>
                 <quarkus.package.type>native</quarkus.package.type>
+                <quarkus.native.file-encoding>UTF-8</quarkus.native.file-encoding>
+                <quarkus.native.add-all-charsets>true</quarkus.native.add-all-charsets>
             </properties>
         </profile>
     </profiles>
