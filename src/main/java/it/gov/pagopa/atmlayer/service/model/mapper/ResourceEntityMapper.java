@@ -4,7 +4,7 @@ import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
-import it.gov.pagopa.atmlayer.service.model.utils.FileUtils;
+import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import jakarta.inject.Inject;
 import org.mapstruct.Mapper;
 
@@ -21,7 +21,7 @@ public abstract class ResourceEntityMapper {
 
     public ResourceEntity toEntityCreation(ResourceCreationDto resourceCreationDto) throws NoSuchAlgorithmException, IOException {
         ResourceEntity resourceEntity = new ResourceEntity();
-        resourceEntity.setSha256(FileUtils.calculateSha256(resourceCreationDto.getFile()));
+        resourceEntity.setSha256(FileUtilities.calculateSha256(resourceCreationDto.getFile()));
         resourceEntity.setNoDeployableResourceType(resourceCreationDto.getResourceType());
         resourceEntity.setFileName(resourceCreationDto.getFilename());
         resourceEntity.setStorageKey(resourceEntityStorageService.calculateStorageKey(

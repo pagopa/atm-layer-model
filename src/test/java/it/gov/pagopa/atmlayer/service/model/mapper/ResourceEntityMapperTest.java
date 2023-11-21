@@ -13,7 +13,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
-import it.gov.pagopa.atmlayer.service.model.utils.FileUtils;
+import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,7 +51,7 @@ public class ResourceEntityMapperTest {
         "/path/to/resource", "testFile"))
         .thenReturn("EXPECTED_STORAGE_KEY");
 
-    String expectedSha256 = FileUtils.calculateSha256(tempFile);
+    String expectedSha256 = FileUtilities.calculateSha256(tempFile);
 
     ResourceEntity resourceEntity = mapper.toEntityCreation(creationDto);
 

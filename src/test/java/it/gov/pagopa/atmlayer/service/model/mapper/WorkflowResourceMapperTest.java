@@ -10,7 +10,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
-import it.gov.pagopa.atmlayer.service.model.utils.FileUtils;
+import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,7 +40,7 @@ public class WorkflowResourceMapperTest {
     when(creationDto.getFilename()).thenReturn("testFile");
     when(creationDto.getResourceType()).thenReturn(DeployableResourceType.DMN);
 
-    String expectedSha256 = FileUtils.calculateSha256(tempFile);
+    String expectedSha256 = FileUtilities.calculateSha256(tempFile);
 
     WorkflowResource workflowResource = mapper.toEntityCreation(creationDto);
 

@@ -2,19 +2,17 @@ package it.gov.pagopa.atmlayer.service.model.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Files;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -23,13 +21,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.MALFORMED_FILE;
 
 @ApplicationScoped
 @Slf4j
-public class FileUtils {
+public class FileUtilities {
 
     public static String extractIdValue(File file, DeployableResourceType resourceTypeEnum) {
         switch (resourceTypeEnum) {
@@ -76,7 +73,7 @@ public class FileUtils {
     }
 
     public static byte[] fileToByteArray(File file) throws IOException {
-        return Files.toByteArray(file);
+        return FileUtils.readFileToByteArray(file);
     }
 
     public static String calculateSha256(File file) throws NoSuchAlgorithmException, IOException {
@@ -90,7 +87,7 @@ public class FileUtils {
 
     public static byte[] toSha256ByteArray(File file) throws NoSuchAlgorithmException, IOException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        return digest.digest(Files.toByteArray(file));
+        return digest.digest(FileUtils.readFileToByteArray(file));
     }
 
     public static byte[] base64ToByteArray(String base64) {

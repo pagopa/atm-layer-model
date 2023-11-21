@@ -44,8 +44,8 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
-import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.calculateSha256;
-import static it.gov.pagopa.atmlayer.service.model.utils.FileUtils.extractIdValue;
+import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculateSha256;
+import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.extractIdValue;
 
 @ApplicationScoped
 @Slf4j

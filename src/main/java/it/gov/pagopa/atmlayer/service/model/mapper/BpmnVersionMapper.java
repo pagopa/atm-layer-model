@@ -7,7 +7,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
-import it.gov.pagopa.atmlayer.service.model.utils.FileUtils;
+import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -27,7 +27,7 @@ public abstract class BpmnVersionMapper {
         BpmnVersion bpmnVersion = new BpmnVersion();
         bpmnVersion.setFunctionType(bpmnCreationDto.getFunctionType());
         bpmnVersion.setStatus(StatusEnum.CREATED);
-        bpmnVersion.setSha256(FileUtils.calculateSha256(bpmnCreationDto.getFile()));
+        bpmnVersion.setSha256(FileUtilities.calculateSha256(bpmnCreationDto.getFile()));
         bpmnVersion.setDeployedFileName(bpmnCreationDto.getFilename().concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension()));
         bpmnVersion.setEnabled(true);
         return bpmnVersion;
@@ -49,7 +49,7 @@ public abstract class BpmnVersionMapper {
         BpmnVersion bpmnVersion = new BpmnVersion();
         bpmnVersion.setFunctionType(bpmnUpgradeDto.getFunctionType());
         bpmnVersion.setStatus(StatusEnum.CREATED);
-        bpmnVersion.setSha256(FileUtils.calculateSha256(bpmnUpgradeDto.getFile()));
+        bpmnVersion.setSha256(FileUtilities.calculateSha256(bpmnUpgradeDto.getFile()));
         bpmnVersion.setDeployedFileName(bpmnUpgradeDto.getFilename().concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension()));
         bpmnVersion.setEnabled(true);
         bpmnVersion.setModelVersion(version);
