@@ -9,7 +9,7 @@
     <name>atm-layer-model</name>
     <properties>
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
-        <jacoco.version>0.8.7</jacoco.version>
+        <jacoco.version>0.8.11</jacoco.version>
         <lombok.version>1.18.26</lombok.version>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
