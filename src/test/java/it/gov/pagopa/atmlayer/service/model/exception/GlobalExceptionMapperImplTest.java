@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.exception;
 
 import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.exception.mapper.GlobalExceptionMapperImpl;
+import it.gov.pagopa.atmlayer.service.model.model.ATMLayerErrorResponse;
 import it.gov.pagopa.atmlayer.service.model.model.ATMLayerValidationErrorResponse;
 import it.gov.pagopa.atmlayer.service.model.utils.ConstraintViolationMappingUtils;
 import jakarta.validation.ConstraintViolation;
@@ -17,7 +18,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
 @QuarkusTest
 public class GlobalExceptionMapperImplTest {
 
@@ -38,11 +40,17 @@ public class GlobalExceptionMapperImplTest {
         HashSet<ConstraintViolation<?>> constraintViolations = new HashSet<>();
         ConstraintViolationException exception = new ConstraintViolationException(message, constraintViolations);
 
-
         RestResponse<ATMLayerValidationErrorResponse> response = globalExceptionMapper.ConstraintViolationExceptionMapper(exception);
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 
+    }
+
+    @Test
+    public void testGenericExceptionMapper() {
+        Exception exception = new RuntimeException("Test exception");
+        RestResponse<ATMLayerErrorResponse> response = globalExceptionMapper.genericExceptionMapper(exception);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
     }
 
     
