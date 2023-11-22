@@ -1,9 +1,17 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
@@ -25,10 +33,6 @@ import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnFileStorageServiceImpl;
 import it.gov.pagopa.atmlayer.service.model.validators.BpmnEntityValidator;
 import jakarta.ws.rs.core.MediaType;
-import org.jboss.resteasy.reactive.RestMulti;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -38,16 +42,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static io.restassured.RestAssured.given;
-import static io.vertx.core.buffer.Buffer.buffer;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 class BpmnResourceTest {
@@ -65,7 +61,7 @@ class BpmnResourceTest {
     BpmnBankConfigService bpmnBankConfigService;
 
     @Test
-    void testGetAllBpmnOK() {
+    void testGetAllBpmn() {
         List<BpmnVersion> bpmnList = new ArrayList<>();
         BpmnVersion bpmnVersion = new BpmnVersion();
         bpmnList.add(bpmnVersion);
@@ -146,7 +142,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void testAssociateBPMNOK() {
+    void testAssociateBPMN() {
         BpmnAssociationDto bpmnAssociationDto = getBpmnAssociationDtoInstance();
         List<BpmnBankConfig> bankConfigList = new ArrayList<>();
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
@@ -170,7 +166,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void createBPMNOK() throws NoSuchAlgorithmException, IOException {
+    void createBPMN() throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = new BpmnVersion();
         BpmnDTO bpmnDTO = new BpmnDTO();
         when(bpmnVersionMapper.toEntityCreation(any(BpmnCreationDto.class))).thenReturn(bpmnVersion);
@@ -208,7 +204,7 @@ class BpmnResourceTest {
         UUID bpmnId = UUID.randomUUID();
         Long version = 1L;
         BpmnVersionPK expectedKey = new BpmnVersionPK(bpmnId, version);
-        BpmnVersion expectedBpmn = (new BpmnVersion());
+        BpmnVersion expectedBpmn = new BpmnVersion();
         BpmnDTO expectedDto = new BpmnDTO();
         expectedDto.setBpmnId(bpmnId);
         expectedDto.setModelVersion(version);
@@ -228,7 +224,7 @@ class BpmnResourceTest {
     }
 
 //    @Test
-//    void downloadBpmnOK() {
+//    void downloadBpmn() {
 //        UUID bpmnId=UUID.randomUUID();
 //        Long version=1L;
 //        BpmnVersionPK expectedKey=new BpmnVersionPK(bpmnId,version);
