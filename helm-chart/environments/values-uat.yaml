@@ -20,7 +20,7 @@ modelProcessBasePath: http://pagopa-uat-atm-layer-wf-process.pagopa.svc.cluster.
 
 database:
   type: postgresql
-  url: jdbc:postgresql://pagopa-uat-atm-layer-rds.cluster-csdbokdg0q4t.eu-south-1.rds.amazonaws.com:5432
+  url: jdbc:postgresql://pagopa-uat-atm-layer-rds.cluster-csdbokdg0q4t.eu-south-1.rds.amazonaws.com:5432/pagopadb?search_path=atm_layer_model_schema
   db_name: pagopadb
   credentialsSecretName: "pagopa-uat-atm-layer-model-database"
   credentialsSecretKeys:
