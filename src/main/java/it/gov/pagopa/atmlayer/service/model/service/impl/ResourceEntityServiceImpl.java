@@ -64,11 +64,6 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     }
 
     @Override
-    public Uni<Boolean> delete(BpmnVersionPK bpmnVersionPK) {
-        return null;
-    }
-
-    @Override
     @WithSession
     public Uni<Optional<ResourceEntity>> findBySHA256(String sha256) {
         return this.resourceEntityRepository.findBySHA256(sha256)
