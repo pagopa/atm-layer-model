@@ -4,6 +4,9 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
+import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapperImpl;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnBankConfigRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +30,8 @@ public class BpmnBankConfigServiceImplTest {
     private BpmnBankConfigService bankConfigService;
     @Mock
     private BpmnBankConfigRepository bankConfigRepository;
+    @Mock
+    private BpmnConfigMapperImpl bpmnConfigMapper;
 
     @BeforeEach
     public void setUp() {
@@ -99,4 +104,26 @@ public class BpmnBankConfigServiceImplTest {
                 .assertCompleted()
                 .assertItem(Optional.empty());
     }
+
+    @Test
+    public void testfindByAcquirerIdOK(){
+        List<BpmnBankConfig> expectedList = new ArrayList<>();
+        expectedList.add(new BpmnBankConfig());
+        when(bankConfigRepository.findByAcquirerId(any(String.class))).thenReturn(Uni.createFrom().item(expectedList));
+        when(bpmnConfigMapper.toDTO(any(BpmnBankConfig.class))).thenReturn(new BpmnBankConfigDTO());
+        bankConfigService.findByAcquirerId("acquirer")
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted();
+    }
+
+    @Test
+    public void testfindByAcquirerIdEmptyList(){
+        List<BpmnBankConfig> expectedList = new ArrayList<>();
+        when(bankConfigRepository.findByAcquirerId(any(String.class))).thenReturn(Uni.createFrom().item(expectedList));
+        bankConfigService.findByAcquirerId("acquirer")
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class,"No BPMN configurations found for this bank");
+    }
+
+
 }
