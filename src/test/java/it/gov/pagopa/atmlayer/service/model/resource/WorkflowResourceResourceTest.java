@@ -42,7 +42,7 @@ public class WorkflowResourceResourceTest {
   ResourceFileMapper resourceFileMapper;
 
   @Test
-  void create() throws NoSuchAlgorithmException, IOException {
+  void testCreate() throws NoSuchAlgorithmException, IOException {
     WorkflowResource workflowResource = new WorkflowResource();
     WorkflowResourceDTO workflowResourceDTO = new WorkflowResourceDTO();
 
@@ -67,7 +67,7 @@ public class WorkflowResourceResourceTest {
   }
 
   @Test
-  void update() throws NoSuchAlgorithmException, IOException {
+  void testUpdate() throws NoSuchAlgorithmException, IOException {
     WorkflowResource workflowResource = new WorkflowResource();
     WorkflowResourceDTO workflowResourceDTO = new WorkflowResourceDTO();
     UUID uuid = UUID.randomUUID();
@@ -90,7 +90,7 @@ public class WorkflowResourceResourceTest {
 
 
   @Test
-  void delete(){
+  void testDelete(){
     UUID uuid = UUID.randomUUID();
 
     when(workflowResourceService.delete(any(UUID.class))).thenReturn(Uni.createFrom().item(true));
@@ -105,7 +105,7 @@ public class WorkflowResourceResourceTest {
   }
 
   @Test
-  void deploy(){
+  void testDeploy(){
     UUID uuid = UUID.randomUUID();
     WorkflowResource workflowResource = new WorkflowResource();
     WorkflowResourceDTO expectedDto = new WorkflowResourceDTO();
@@ -130,7 +130,7 @@ public class WorkflowResourceResourceTest {
   }
 
   @Test
-  void testGetAllWorkflowResources() {
+  void testGetAll() {
     List<WorkflowResource> workflowResources = new ArrayList<>();
     WorkflowResource workflowResource = new WorkflowResource();
     workflowResources.add(workflowResource);
@@ -152,7 +152,7 @@ public class WorkflowResourceResourceTest {
   }
 
   @Test
-  void testGetAllWorkflowResourcesEmptyList() {
+  void testGetAllEmptyList() {
     List<WorkflowResource> workflowResources = new ArrayList<>();
     WorkflowResource workflowResource = new WorkflowResource();
     workflowResources.add(workflowResource);
@@ -172,7 +172,7 @@ public class WorkflowResourceResourceTest {
   }
 
   @Test
-  void testGetWorkflowResourceById() {
+  void testById() {
     UUID uuid = UUID.randomUUID();
     WorkflowResource workflowResource = new WorkflowResource();
     when(workflowResourceService.findById(any(UUID.class))).thenReturn(

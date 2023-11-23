@@ -40,7 +40,7 @@ public class ResourceEntityResourceTest {
   private ResourceEntityService resourceEntityService;
 
   @Test
-  void createResource() throws NoSuchAlgorithmException, IOException {
+  void testCreateResource() throws NoSuchAlgorithmException, IOException {
     ResourceEntity resourceEntity = new ResourceEntity();
     ResourceDTO resourceDTO = new ResourceDTO();
 
@@ -66,7 +66,7 @@ public class ResourceEntityResourceTest {
   }
 
   @Test
-  void updateResource() throws NoSuchAlgorithmException, IOException {
+  void testUpdateResource() throws NoSuchAlgorithmException, IOException {
     ResourceEntity resourceEntity = new ResourceEntity();
     ResourceDTO resourceDTO = new ResourceDTO();
     UUID uuid = UUID.randomUUID();
