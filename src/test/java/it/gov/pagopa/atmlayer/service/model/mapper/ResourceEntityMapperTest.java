@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,6 +11,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
+import it.gov.pagopa.atmlayer.service.model.model.ResourceFileDTO;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
 import it.gov.pagopa.atmlayer.service.model.utils.FileUtils;
 import java.io.File;
@@ -98,4 +98,12 @@ public class ResourceEntityMapperTest {
         NoDeployableResourceType.valueOf(noDeployableResourceType));
     return resourceEntity;
   }
+
+  @Test
+  public void toDTOtest_null(){
+    ResourceEntity resourceFile = null;
+    ResourceDTO resource = mapper.toDTO(resourceFile);
+    assertNull(resource);
+  }
+
 }
