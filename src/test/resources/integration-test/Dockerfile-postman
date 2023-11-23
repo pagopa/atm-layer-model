@@ -1,7 +1,7 @@
 FROM node:21
 
-COPY /postman /postman
-COPY /run-postman.sh /postman
+COPY ./postman /postman
+COPY ./run-postman.sh /postman
 
 # Installa Newman, il runner di Postman
 RUN npm install -g newman
