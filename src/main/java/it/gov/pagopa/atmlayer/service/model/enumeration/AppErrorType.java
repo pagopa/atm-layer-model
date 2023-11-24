@@ -20,5 +20,6 @@ public enum AppErrorType {
     ID_NOT_FOUND,
     INVALID_ARGUMENT,
     NOT_UPDATABLE,
-    NOT_UPLOADABLE
+    NOT_UPLOADABLE,
+    CANNOT_ROLLBACK
 }
