@@ -14,8 +14,6 @@ public interface ResourceEntityService {
 
     Uni<ResourceEntity> save(ResourceEntity resourceEntity);
 
-    Uni<Boolean> delete(BpmnVersionPK bpmnVersionPK);
-
     Uni<Optional<ResourceEntity>> findBySHA256(String sha256);
 
     Uni<Optional<ResourceEntity>> findByUUID(UUID uuid);

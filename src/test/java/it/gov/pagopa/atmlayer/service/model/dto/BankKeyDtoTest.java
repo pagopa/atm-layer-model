@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -10,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@QuarkusTest
 public class BankKeyDtoTest {
 
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();

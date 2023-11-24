@@ -5,8 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.nio.file.Paths;
+
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
+@QuarkusTest
 public class BpmnCreationDtoTest {
 
   @Test

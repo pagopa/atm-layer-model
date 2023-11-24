@@ -1,17 +1,18 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
+import it.gov.pagopa.atmlayer.service.model.model.ResourceFileDTO;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
 import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import java.io.File;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
+@QuarkusTest
 public class ResourceEntityMapperTest {
 
   private ResourceEntityMapper mapper;
@@ -98,4 +100,12 @@ public class ResourceEntityMapperTest {
         NoDeployableResourceType.valueOf(noDeployableResourceType));
     return resourceEntity;
   }
+
+  @Test
+  public void toDTOtest_null(){
+    ResourceEntity resourceFile = null;
+    ResourceDTO resource = mapper.toDTO(resourceFile);
+    assertNull(resource);
+  }
+
 }

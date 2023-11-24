@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+@QuarkusTest
 class FileStorageS3UtilsTest {
 
     @InjectMocks

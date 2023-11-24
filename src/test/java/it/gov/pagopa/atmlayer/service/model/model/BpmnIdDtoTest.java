@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -7,6 +8,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+@QuarkusTest
 public class BpmnIdDtoTest {
 
   @Test

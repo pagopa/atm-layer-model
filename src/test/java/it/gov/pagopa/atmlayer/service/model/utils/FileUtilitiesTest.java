@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,7 +15,7 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
+@QuarkusTest
 public class FileUtilitiesTest {
 
     @BeforeAll

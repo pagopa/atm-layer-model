@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
@@ -9,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
+@QuarkusTest
 public class BpmnDTOTest {
 
 //  @Test

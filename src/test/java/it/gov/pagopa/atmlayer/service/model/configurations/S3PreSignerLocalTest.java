@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.configurations;
 
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+@QuarkusTest
 public class S3PreSignerLocalTest {
 
     @Mock
