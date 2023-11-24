@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @QuarkusTest
 public class FileUtilitiesTest {
-
     @BeforeAll
     static void initAll() {
     }
@@ -38,7 +37,6 @@ public class FileUtilitiesTest {
     @AfterAll
     static void tearDownAll() {
     }
-
 //    @Test
 //    public void extractIdValueOK() {
 //        try {
