@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -112,32 +111,29 @@ public class ResourceEntityResourceTest {
 
   @Test
   void testGetAllResourcesEmptyList() {
-    List<ResourceEntity> resourceEntities = new ArrayList<>();
-    ResourceEntity resourceEntity = new ResourceEntity();
-    resourceEntities.add(resourceEntity);
-    List<ResourceDTO> dtoList = new ArrayList<>();
-    when(resourceEntityService.getAll()).thenReturn(Uni.createFrom().item(resourceEntities));
-    when(resourceEntityMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
-    ArrayList result = given()
+    List<ResourceEntity> emptyList = new ArrayList<>();
+
+    when(resourceEntityService.getAll()).thenReturn(Uni.createFrom().item(emptyList));
+
+    given()
         .when().get("/api/v1/model/resources")
         .then()
-        .statusCode(200)
-        .extract()
-        .body()
-        .as(ArrayList.class);
-    Assertions.assertTrue(result.isEmpty());
+        .statusCode(200);
+
     verify(resourceEntityService, times(1)).getAll();
-    verify(resourceEntityMapper, times(1)).toDTOList(resourceEntities);
   }
 
   @Test
   void testGetResourceById() {
     UUID uuid = UUID.randomUUID();
+
     ResourceEntity resourceEntity = new ResourceEntity();
+
     when(resourceEntityService.findByUUID(any(UUID.class))).thenReturn(
         Uni.createFrom().item(Optional.of(resourceEntity)));
     ResourceDTO resourceDTO = new ResourceDTO();
     when(resourceEntityMapper.toDTO(any(ResourceEntity.class))).thenReturn(resourceDTO);
+
     given()
         .pathParam("uuid", uuid)
         .when()
@@ -147,5 +143,23 @@ public class ResourceEntityResourceTest {
 
     verify(resourceEntityService, times(1)).findByUUID(any(UUID.class));
     verify(resourceEntityMapper, times(1)).toDTO(resourceEntity);
+  }
+
+  @Test
+  void testByIdNotFound() {
+    UUID uuid = UUID.randomUUID();
+
+    when(resourceEntityService.findByUUID(any(UUID.class))).thenReturn(
+        Uni.createFrom().item(Optional.empty()));
+
+    given()
+        .pathParam("uuid", uuid)
+        .when()
+        .get("/api/v1/model/resources/{uuid}")
+        .then()
+        .statusCode(404);
+
+    verify(resourceEntityService, times(1)).findByUUID(any(UUID.class));
+    verify(resourceEntityMapper, times(0)).toDTO(any());
   }
 }

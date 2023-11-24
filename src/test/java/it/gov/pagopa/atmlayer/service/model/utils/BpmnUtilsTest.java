@@ -1,8 +1,12 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -13,6 +17,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 @QuarkusTest
 public class BpmnUtilsTest {
@@ -41,5 +46,25 @@ public class BpmnUtilsTest {
     assertEquals("Branch123", bpmnBankConfigPK.getBranchId());
     assertEquals(BankConfigUtilityValues.NULL_VALUE.getValue(), bpmnBankConfigPK.getTerminalId());
   }
+
+ /* @Test
+  public void testGetBpmnBankConfigPKWhenTemplateIdOrVersionIsNull() {
+    BpmnAssociationDto bpmnAssociationDto = new BpmnAssociationDto();
+    String acquirerId = "ACQ123";
+    BranchConfigs branchConfig = mock(BranchConfigs.class);
+
+    when(branchConfig.getBranchDefaultTemplateId()).thenReturn(null);
+    when(branchConfig.getBranchDefaultTemplateVersion()).thenReturn(null);
+
+    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(bpmnAssociationDto, acquirerId, branchConfig);
+
+    assertFalse(result.isPresent(), "Result should be empty when either templateId or version is null");
+
+    verify(branchConfig, times(1)).getBranchDefaultTemplateId();
+    verify(branchConfig, times(1)).getBranchDefaultTemplateVersion();
+    verifyNoMoreInteractions(branchConfig);
+
+    System.out.println("Method invocations: " + Mockito.mockingDetails(branchConfig).printInvocations());
+  }*/
 }
 
