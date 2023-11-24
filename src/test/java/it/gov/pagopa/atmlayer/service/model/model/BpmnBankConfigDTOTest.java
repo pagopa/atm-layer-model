@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
+@QuarkusTest
 public class BpmnBankConfigDTOTest {
   @Test
   public void testNoArgsConstructor() {

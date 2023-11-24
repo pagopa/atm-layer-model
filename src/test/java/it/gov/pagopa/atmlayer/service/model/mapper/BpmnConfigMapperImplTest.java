@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @QuarkusTest
 public class BpmnConfigMapperImplTest {
 
-    private BpmnConfigMapperImpl bpmnConfigMapperImpl;
+    public BpmnConfigMapperImpl bpmnConfigMapperImpl;
 
     @BeforeEach
     public void setUp() {
@@ -90,6 +90,87 @@ public class BpmnConfigMapperImplTest {
         assertEquals(bankConfigDTO.getCreatedBy(), resource.getCreatedBy());
         assertEquals(bankConfigDTO.getLastUpdatedBy(), resource.getLastUpdatedBy());
 
+    }
+
+    @Test
+    public void bpmnBankConfigBpmnBankConfigPKBpmnIdTest_null_BpmnBankConfigPK(){
+        BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
+        bpmnBankConfig.setBpmnBankConfigPK(null);
+        BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(bpmnBankConfig);
+        assertNull(resource.getBpmnId());
+    }
+
+    @Test
+    public void bpmnBankConfigBpmnBankConfigPKBpmnIdTest_null_BpmnId(){
+        BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
+        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
+        bpmnBankConfigPK.setBpmnId(null);
+        bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);
+        BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(bpmnBankConfig);
+
+        assertNull(resource.getBpmnId());
+    }
+
+    @Test
+    public void bpmnBankConfigBpmnBankConfigPKBpmnIdTest(){
+        BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
+        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
+        bpmnBankConfigPK.setBpmnId(UUID.randomUUID());
+        bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);
+        BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(bpmnBankConfig);
+
+        assertNotNull(resource.getBpmnId());
+        assertEquals(bpmnBankConfigPK.getBpmnId(), resource.getBpmnId());
+
+    }
+
+
+    @Test
+    public void bpmnBankConfigBpmnBankConfigPKBpmnModelVersionTest(){
+        BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
+        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
+        bpmnBankConfigPK.setBpmnModelVersion(1L);
+        bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);
+        BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(bpmnBankConfig);
+
+        assertNotNull(resource.getBpmnModelVersion());
+        assertEquals(bpmnBankConfigPK.getBpmnModelVersion(), resource.getBpmnModelVersion());
+
+    }
+
+    @Test
+    public void bpmnBankConfigBpmnBankConfigPKAcquirerIdTest(){
+        BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
+        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
+        bpmnBankConfigPK.setAcquirerId("id");
+        bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);
+        BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(bpmnBankConfig);
+
+        assertNotNull(resource.getAcquirerId());
+        assertEquals(bpmnBankConfigPK.getAcquirerId(), resource.getAcquirerId());
+
+    }
+
+    @Test
+    public void bpmnBankConfigBpmnBankConfigPKBranchIdTest_null_BranchId(){
+        BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
+        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
+        bpmnBankConfigPK.setBranchId(null);
+        bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);
+        BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(bpmnBankConfig);
+
+        assertNull(resource.getBranchId());
+    }
+
+    @Test
+    public void bpmnBankConfigBpmnBankConfigPKTerminalId_null_TerminalId(){
+        BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
+        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
+        bpmnBankConfigPK.setTerminalId(null);
+        bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);
+        BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(bpmnBankConfig);
+
+        assertNull(resource.getTerminalId());
     }
 
 }

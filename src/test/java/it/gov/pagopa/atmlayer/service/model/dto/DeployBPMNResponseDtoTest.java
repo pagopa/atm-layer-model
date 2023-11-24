@@ -8,8 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
-
+@QuarkusTest
 public class DeployBPMNResponseDtoTest {
 
 //  @Test
