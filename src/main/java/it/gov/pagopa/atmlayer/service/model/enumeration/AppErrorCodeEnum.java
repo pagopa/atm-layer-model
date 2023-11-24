@@ -42,7 +42,9 @@ public enum AppErrorCodeEnum {
     RESOURCE_DOES_NOT_EXIST("ATMLM_4000029", "The referenced Resource does not exist", NOT_EXISTING_REFERENCED_ENTITY),
     WORKFLOW_RESOURCE_CANNOT_BE_UPDATED("ATMLM_4000030", "The referenced Workflow Resource file can not be updated", NOT_UPDATABLE),
     RESOURCE_FILE_DOES_NOT_EXIST("ATMLM_4000031", "The referenced Resource file does not exist", NOT_EXISTING_REFERENCED_ENTITY),
-    WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS("ATMLM_4000032","A workflow resource with the same content already exists", CONSTRAINT_VIOLATION);
+    WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS("ATMLM_4000032","A workflow resource with the same content already exists", CONSTRAINT_VIOLATION),
+    DEPLOYED_FILE_WAS_NOT_RETRIEVED("ATMLM_4000033","Error with Process communication: the referenced file was not retrieved", INTERNAL),
+    WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK("ATMLM_4000034","CamundaDefinitionId of the referenced resource is null: cannot rollback", NOT_EXISTING_REFERENCED_ENTITY);
 
     private final String errorCode;
     private final String errorMessage;

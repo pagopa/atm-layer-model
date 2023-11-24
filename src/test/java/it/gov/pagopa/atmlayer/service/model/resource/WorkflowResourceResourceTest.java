@@ -72,7 +72,7 @@ public class WorkflowResourceResourceTest {
     WorkflowResourceDTO workflowResourceDTO = new WorkflowResourceDTO();
     UUID uuid = UUID.randomUUID();
 
-    when(workflowResourceService.update(any(UUID.class), any(File.class)))
+    when(workflowResourceService.update(any(UUID.class), any(File.class),any(Boolean.class)))
         .thenReturn(Uni.createFrom().item(workflowResource));
     when(workflowResourceMapper.toDTO(any(WorkflowResource.class))).thenReturn(workflowResourceDTO);
 
