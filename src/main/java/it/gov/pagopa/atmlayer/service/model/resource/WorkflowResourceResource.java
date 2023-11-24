@@ -116,8 +116,18 @@ public class WorkflowResourceResource {
     public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") File file,
                                            @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
 
-        return workflowResourceService.update(uuid, file)
+        return workflowResourceService.update(uuid, file,false)
                 .onItem()
                 .transformToUni(updatedWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(updatedWorkflowResource)));
     }
+
+    @PUT
+    @Path("/rollback/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<WorkflowResourceDTO> rollback(@PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
+        return workflowResourceService.rollback(uuid)
+                .onItem()
+                .transformToUni(rolledBackWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(rolledBackWorkflowResource)));
+    }
+
 }

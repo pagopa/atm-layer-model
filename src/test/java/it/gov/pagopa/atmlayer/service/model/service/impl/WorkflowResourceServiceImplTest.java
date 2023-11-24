@@ -289,7 +289,7 @@ class WorkflowResourceServiceImplTest {
     void updateResourceDoesNotExist() throws NoSuchAlgorithmException, IOException {
         File file = new File("src/test/resources/Test.bpmn");
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
-        workflowResourceService.update(UUID.randomUUID(), file)
+        workflowResourceService.update(UUID.randomUUID(), file,false)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "The referenced Workflow Resource file does not exist");
     }

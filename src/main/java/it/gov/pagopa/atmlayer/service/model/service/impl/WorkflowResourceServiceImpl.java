@@ -37,12 +37,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOYED_FILE_WAS_NOT_RETRIEVED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_UPDATED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculateSha256;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.extractIdValue;
@@ -300,7 +302,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
 
     @Override
     @WithTransaction
-    public Uni<WorkflowResource> update(UUID id, File file) throws NoSuchAlgorithmException, IOException {
+    public Uni<WorkflowResource> update(UUID id, File file,boolean isRollback) throws NoSuchAlgorithmException, IOException {
         return this.findById(id)
                 .onItem()
                 .transformToUni(Unchecked.function(workflow -> {
@@ -321,8 +323,11 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     if (!workflowFound.getDefinitionKey().equals(definitionKey)) {
                         throw new AtmLayerException(String.format("The definition key in your Workflow Resource: %s does not match the Workflow Resource you are trying to update", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
                     }
-                    if (workflowFound.getStatus().equals(StatusEnum.DEPLOYED)) {
+                    if (!isRollback && workflowFound.getStatus().equals(StatusEnum.DEPLOYED)) {
                         workflowFound.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
+                    }
+                    if (isRollback && workflowFound.getStatus().equals(StatusEnum.UPDATED_BUT_NOT_DEPLOYED)) {
+                        workflowFound.setStatus(StatusEnum.DEPLOYED);
                     }
                     Date date = new Date();
                     workflowFound.setLastUpdatedAt(new Timestamp(date.getTime()));
@@ -335,5 +340,28 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 }));
 
 
+    }
+
+    @Override
+    public Uni<WorkflowResource> rollback(UUID id) {
+        return this.findById(id)
+                .onItem()
+                .transformToUni(Unchecked.function(workflow -> {
+                    if (workflow.isEmpty()) {
+                        throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                    }
+                    WorkflowResource workflowResourceToRollBack = workflow.get();
+                    String camundaId=workflowResourceToRollBack.getCamundaDefinitionId();
+                    if(camundaId==null){
+                        throw new AtmLayerException("CamundaDefinitionId of the referenced resource is null: cannot rollback", Response.Status.NOT_FOUND,WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK);
+                    }
+                    return processClient.getDeployedResource(camundaId)
+                            .onItem()
+                            .transformToUni(Unchecked.function(file -> update(id,file,true)))
+                            .onFailure()
+                            .recoverWithUni(exception ->
+                                Uni.createFrom().failure(new AtmLayerException("Error retrieving workflow resource from Process", Response.Status.INTERNAL_SERVER_ERROR,DEPLOYED_FILE_WAS_NOT_RETRIEVED))
+                            );
+                }));
     }
 }
