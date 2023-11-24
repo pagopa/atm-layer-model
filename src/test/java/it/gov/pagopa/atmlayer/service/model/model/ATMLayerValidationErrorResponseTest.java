@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@QuarkusTest
 public class ATMLayerValidationErrorResponseTest {
 
   @Test

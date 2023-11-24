@@ -4,9 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+@QuarkusTest
 class FileObjectTest {
 
     @Test

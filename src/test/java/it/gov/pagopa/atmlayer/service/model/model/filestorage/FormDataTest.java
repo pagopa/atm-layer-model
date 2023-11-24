@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.model.filestorage;
 
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -12,6 +13,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@QuarkusTest
 class FormDataTest {
 
     private final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
+@QuarkusTest
 public class ResourceEntityMapperTest {
 
   private ResourceEntityMapper mapper;

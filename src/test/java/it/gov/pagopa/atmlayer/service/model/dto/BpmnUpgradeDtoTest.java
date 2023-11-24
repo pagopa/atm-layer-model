@@ -8,8 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
+@QuarkusTest
 public class BpmnUpgradeDtoTest {
 
 

@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
@@ -7,6 +8,7 @@ import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+@QuarkusTest
 public class EnumConverterTest {
 
   @Test

@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.validators;
 
+import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@QuarkusTest
 class BpmnEntityValidatorTest {
 
     @Mock

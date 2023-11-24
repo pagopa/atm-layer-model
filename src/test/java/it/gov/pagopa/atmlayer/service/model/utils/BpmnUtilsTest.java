@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BranchConfigs;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
+@QuarkusTest
 public class BpmnUtilsTest {
 
   @Test

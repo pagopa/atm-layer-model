@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@QuarkusTest
 public class BpmnBankConfigServiceImplTest {
     @InjectMocks
     private BpmnBankConfigService bankConfigService;

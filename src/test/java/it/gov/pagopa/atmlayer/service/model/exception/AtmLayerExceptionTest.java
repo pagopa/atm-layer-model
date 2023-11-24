@@ -1,4 +1,5 @@
 package it.gov.pagopa.atmlayer.service.model.exception;
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
@@ -6,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@QuarkusTest
 public class AtmLayerExceptionTest {
 
     @Test
