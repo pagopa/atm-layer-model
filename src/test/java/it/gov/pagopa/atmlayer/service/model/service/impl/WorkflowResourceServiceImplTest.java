@@ -204,11 +204,8 @@ class WorkflowResourceServiceImplTest {
     void setDeployInfoEmptyDecisionDefinitions() {
         UUID expectedId = UUID.randomUUID();
         WorkflowResource expectedWorkflowResource = new WorkflowResource();
-        Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions = new HashMap<>();
-        deployedProcessDefinitions.put("key", new DeployedBPMNProcessDefinitionDto());
         Map<String, DeployedDMNDecisionDefinitionDto> deployedDecisionDefinitions = new HashMap<>();
         DeployResponseDto deployResponseDto = new DeployResponseDto();
-        deployResponseDto.setDeployedProcessDefinitions(deployedProcessDefinitions);
         deployResponseDto.setDeployedDecisionDefinitions(deployedDecisionDefinitions);
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
         workflowResourceService.setDeployInfo(expectedId, deployResponseDto)
