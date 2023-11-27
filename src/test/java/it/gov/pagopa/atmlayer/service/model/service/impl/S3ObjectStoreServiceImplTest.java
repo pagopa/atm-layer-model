@@ -22,19 +22,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @QuarkusTest
 public class S3ObjectStoreServiceImplTest {
 
-    @Mock
-    ObjectStoreProperties objectStoreProperties;
+//    @Mock
+//    ObjectStoreProperties objectStoreProperties;
 
     @InjectMocks
     S3ObjectStoreServiceImpl s3ObjectStoreService;
 
-    S3PreSignerLocal s3PreSignerLocal;
+//    S3PreSignerLocal s3PreSignerLocal;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        s3PreSignerLocal = new S3PreSignerLocal();
-        s3PreSignerLocal.objectStoreProperties = objectStoreProperties;
+//        s3PreSignerLocal = new S3PreSignerLocal();
+//        s3PreSignerLocal.objectStoreProperties = objectStoreProperties;
     }
 
 
