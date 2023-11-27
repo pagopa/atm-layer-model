@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public class BpmnBankConfigService {
     @Inject
     protected BpmnBankConfigRepository bankConfigRepository;
-
     @Inject
     BpmnConfigMapper bpmnConfigMapper;
 
@@ -45,7 +44,6 @@ public class BpmnBankConfigService {
                     if (x.size() > 1) {
                         throw new AtmLayerException("Multiple BPMN found for a single configuration.", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.ATMLM_500);
                     }
-
                     return Uni.createFrom().item(x.isEmpty() ? Optional.empty() : Optional.ofNullable(x.get(0)));
                 }));
     }
