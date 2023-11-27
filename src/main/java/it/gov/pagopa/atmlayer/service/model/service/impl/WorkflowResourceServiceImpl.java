@@ -236,14 +236,14 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @WithTransaction
     public Uni<WorkflowResource> saveAndUpload(WorkflowResource workflowResource, File file, String filename) {
         return this.save(workflowResource)
-                .onItem().transformToUni(record -> this.workflowResourceStorageService.uploadFile(workflowResource, file, filename)
+                .onItem().transformToUni(element -> this.workflowResourceStorageService.uploadFile(workflowResource, file, filename)
                         .onFailure().recoverWithUni(failure -> {
                             log.error(failure.getMessage());
                             return Uni.createFrom().failure(new AtmLayerException("Failed to save Workflow Resource in Object Store. Workflow Resource creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                         })
                         .onItem().transformToUni(putObjectResponse -> {
                             log.info("Completed Workflow Resource Creation");
-                            return Uni.createFrom().item(record);
+                            return Uni.createFrom().item(element);
                         }));
     }
 
