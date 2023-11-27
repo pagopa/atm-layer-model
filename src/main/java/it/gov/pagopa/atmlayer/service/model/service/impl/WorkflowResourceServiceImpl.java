@@ -206,13 +206,11 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         DeployedBPMNProcessDefinitionDto deployedProcessInfo = optionalDeployedProcessDefinition.get();
                         workflowResource.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
                         workflowResource.setDeploymentId(deployedProcessInfo.getDeploymentId());
-                        workflowResource.setCamundaDefinitionId(deployedProcessInfo.getId());
                         workflowResource.setDeployedFileName(deployedProcessInfo.getName());
                         workflowResource.setDescription(deployedProcessInfo.getDescription());
                         workflowResource.setResource(deployedProcessInfo.getResource());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
-                    }
-                    if (response.getDeployedDecisionDefinitions() != null) {
+                    } else if (response.getDeployedDecisionDefinitions() != null) {
                         Map<String, DeployedDMNDecisionDefinitionDto> deployedDecisionDefinitions = response.getDeployedDecisionDefinitions();
                         Optional<DeployedDMNDecisionDefinitionDto> optionalDeployedDecisionDefinition = deployedDecisionDefinitions.values()
                                 .stream().findFirst();
@@ -222,15 +220,14 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         DeployedDMNDecisionDefinitionDto deployedDecisionDefinition = optionalDeployedDecisionDefinition.get();
                         workflowResource.setDefinitionVersionCamunda(deployedDecisionDefinition.getVersion());
                         workflowResource.setDeploymentId(deployedDecisionDefinition.getDeploymentId());
-                        workflowResource.setCamundaDefinitionId(deployedDecisionDefinition.getId());
                         workflowResource.setDeployedFileName(deployedDecisionDefinition.getName());
                         workflowResource.setResource(deployedDecisionDefinition.getResource());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
                     } else {
-                        workflowResource.setCamundaDefinitionId(response.getId());
                         workflowResource.setDeployedFileName(response.getName());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
                     }
+                    workflowResource.setCamundaDefinitionId(response.getId());
                     return this.workflowResourceRepository.persist(workflowResource);
                 }));
     }
