@@ -15,31 +15,31 @@ class ObjectStorePutResponseTest {
     void testAllArgsConstructor() {
         ObjectStorePutResponse response = new ObjectStorePutResponse("12345");
         assertNotNull(response);
-        assertEquals("12345", response.getStorage_key());
+        assertEquals("12345", response.getStorageKey());
     }
 
     @Test
     void testNoArgsConstructor() {
         ObjectStorePutResponse response = new ObjectStorePutResponse();
         assertNotNull(response);
-        assertNull(response.getStorage_key());
+        assertNull(response.getStorageKey());
     }
 
     @Test
     void testBuilder() {
         ObjectStorePutResponse response = ObjectStorePutResponse.builder()
-                .storage_key("67890")
+                .storageKey("67890")
                 .build();
 
         assertNotNull(response);
-        assertEquals("67890", response.getStorage_key());
+        assertEquals("67890", response.getStorageKey());
     }
 
     @Test
     void testGetterAndSetter() {
         ObjectStorePutResponse response = new ObjectStorePutResponse();
-        response.setStorage_key("54321");
-        assertEquals("54321", response.getStorage_key());
+        response.setStorageKey("54321");
+        assertEquals("54321", response.getStorageKey());
     }
 
     @Test

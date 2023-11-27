@@ -258,7 +258,7 @@ class BpmnVersionServiceImplTest {
     void testSetBpmnVersionStatusBpmnVersionDoesNotExist() {
         ListObjectsResponse list=mock(ListObjectsResponse.class);
         BpmnVersionPK bpmnVersionPK = new BpmnVersionPK(UUID.randomUUID(), 1L);
-        String expectedErrorMessage = String.format("One or some of the referenced BPMN files do not exists: %s", bpmnVersionPK);
+        String expectedErrorMessage = String.format("One or some of the referenced BPMN key does not exists: %s", bpmnVersionPK);
         when(bpmnVersionRepoMock.findById(bpmnVersionPK)).thenReturn(Uni.createFrom().nullItem());
         bpmnVersionServiceImpl.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOYED)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())

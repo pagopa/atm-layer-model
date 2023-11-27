@@ -32,7 +32,7 @@ import java.util.Optional;
 @ApplicationScoped
 @Slf4j
 public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
-    private final String BPMN_TEMPLATE_PATH_DEFAULT = "BPMN/files/UUID/${uuid}/VERSION/${version}";
+    private final static String BPMN_TEMPLATE_PATH_DEFAULT = "BPMN/files/UUID/${uuid}/VERSION/${version}";
     @Inject
     ObjectStoreStrategy objectStoreStrategy;
     private ObjectStoreService objectStoreService;
@@ -52,7 +52,7 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
                 .fileName(filename)
                 .resourceType(S3ResourceTypeEnum.BPMN)
                 .bpmn(bpmn)
-                .storageKey(putObjectResponse.getStorage_key())
+                .storageKey(putObjectResponse.getStorageKey())
                 .build();
         return resourceFileService.save(entity);
     }

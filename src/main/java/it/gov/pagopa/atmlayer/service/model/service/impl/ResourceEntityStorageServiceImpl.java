@@ -90,7 +90,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
                 .fileName(filename)
                 .resourceType(convertEnum(resourceEntity.getNoDeployableResourceType()))
                 .resourceEntity(resourceEntity)
-                .storageKey(putObjectResponse.getStorage_key())
+                .storageKey(putObjectResponse.getStorageKey())
                 .build();
         return resourceFileService.save(entity);
     }

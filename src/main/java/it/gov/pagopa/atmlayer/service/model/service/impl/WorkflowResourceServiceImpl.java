@@ -105,7 +105,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .transform(Unchecked.function(optionalWorkflowResource -> {
                             if (optionalWorkflowResource.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced Workflow Resource files do not exists: %s", uuid);
+                                        "One or some of the referenced Workflow Resource files with id: %s do not exists", uuid);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         WORKFLOW_FILE_DOES_NOT_EXIST);
                             }

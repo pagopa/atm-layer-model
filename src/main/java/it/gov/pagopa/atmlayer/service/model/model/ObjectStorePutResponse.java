@@ -16,5 +16,5 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class ObjectStorePutResponse {
-    String storage_key;
+    String storageKey;
 }
