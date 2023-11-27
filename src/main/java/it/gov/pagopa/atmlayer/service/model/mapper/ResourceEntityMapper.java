@@ -33,6 +33,6 @@ public abstract class ResourceEntityMapper {
     public abstract ResourceDTO toDTO(ResourceEntity resourceEntity);
 
     public List<ResourceDTO> toDTOList(List<ResourceEntity> list) {
-        return list.stream().map(this::toDTO).collect(Collectors.toList());
+        return list.stream().map(this::toDTO).toList();
     }
 }

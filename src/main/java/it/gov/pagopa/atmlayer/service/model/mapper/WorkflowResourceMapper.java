@@ -32,6 +32,6 @@ public abstract class WorkflowResourceMapper {
     public abstract WorkflowResourceDTO toDTO(WorkflowResource workflowResource);
 
     public List<WorkflowResourceDTO> toDTOList(List<WorkflowResource> list) {
-        return list.stream().map(this::toDTO).collect(Collectors.toList());
+        return list.stream().map(this::toDTO).toList();
     }
 }

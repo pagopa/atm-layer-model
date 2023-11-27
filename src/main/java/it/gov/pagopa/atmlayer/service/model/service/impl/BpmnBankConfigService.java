@@ -58,7 +58,7 @@ public class BpmnBankConfigService {
                         return Uni.createFrom().item(
                                 configs.stream()
                                         .map(bpmnConfigMapper::toDTO)
-                                        .collect(Collectors.toList())
+                                        .toList()
                         );
                     }
                 }));

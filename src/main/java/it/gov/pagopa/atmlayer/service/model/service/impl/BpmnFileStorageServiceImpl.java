@@ -32,7 +32,7 @@ import java.util.Optional;
 @ApplicationScoped
 @Slf4j
 public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
-    private final static String BPMN_TEMPLATE_PATH_DEFAULT = "BPMN/files/UUID/${uuid}/VERSION/${version}";
+    private static final String BPMN_TEMPLATE_PATH_DEFAULT = "BPMN/files/UUID/${uuid}/VERSION/${version}";
     @Inject
     ObjectStoreStrategy objectStoreStrategy;
     private ObjectStoreService objectStoreService;
