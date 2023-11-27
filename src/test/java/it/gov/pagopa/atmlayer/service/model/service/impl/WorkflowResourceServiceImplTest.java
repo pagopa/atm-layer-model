@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -270,17 +271,6 @@ class WorkflowResourceServiceImplTest {
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class);
     }
-//    @Test
-//    void getAll() {
-//        WorkflowResource expectedWorkflowResource=new WorkflowResource();
-//        List<WorkflowResource> expectedList=new ArrayList<>();
-//        expectedList.add(expectedWorkflowResource);
-//        when(workflowResourceRepository.findAll()).thenReturn((PanacheQuery)expectedWorkflowResource);
-//        workflowResourceService.getAll()
-//                .subscribe().withSubscriber(UniAssertSubscriber.create())
-//                .assertCompleted()
-//                .assertItem(expectedList);
-//    }
 
     @Test
     void updateResourceDoesNotExist() throws NoSuchAlgorithmException, IOException {
@@ -290,4 +280,66 @@ class WorkflowResourceServiceImplTest {
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "The referenced Workflow Resource file does not exist");
     }
+
+    @Test
+    void testRollbackOK() throws NoSuchAlgorithmException, IOException {
+        File expectedFile = new File("src/test/resources/Test.bpmn");
+        WorkflowResource expectedWorkflowResource=new WorkflowResource();
+        expectedWorkflowResource.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
+        expectedWorkflowResource.setCamundaDefinitionId("camundaId");
+        expectedWorkflowResource.setResourceType(DeployableResourceType.BPMN);
+        expectedWorkflowResource.setSha256("sha256");
+        ResourceFile resourceFile=new ResourceFile();
+        resourceFile.setStorageKey("storageKey");
+        expectedWorkflowResource.setResourceFile(resourceFile);
+        expectedWorkflowResource.setDefinitionKey("demo11_06");
+        when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
+        when(processClient.getDeployedResource(any(String.class))).thenReturn(Uni.createFrom().item(expectedFile));
+        when(workflowResourceRepository.persist(any(WorkflowResource.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
+        when(workflowResourceStorageService.updateFile(any(WorkflowResource.class),any(File.class))).thenReturn(Uni.createFrom().item(new ResourceFile()));
+        workflowResourceService.rollback(UUID.randomUUID())
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted();
+    }
+
+    @Test
+    void testRollbackResourceDoesNotExist(){
+        when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
+        workflowResourceService.rollback(UUID.randomUUID())
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class,"The referenced workflow resource does not exist");
+    }
+
+    @Test
+    void testRollbackResourceDeployed(){
+        WorkflowResource expectedWorkflowResource=new WorkflowResource();
+        expectedWorkflowResource.setStatus(StatusEnum.DEPLOYED);
+        when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
+        workflowResourceService.rollback(UUID.randomUUID())
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class,"Cannot rollback: the referenced resource is the latest version deployed");
+    }
+
+    @Test
+    void testRollbackNeverDeployed(){
+        WorkflowResource expectedWorkflowResource=new WorkflowResource();
+        expectedWorkflowResource.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
+        when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
+        workflowResourceService.rollback(UUID.randomUUID())
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class,"CamundaDefinitionId of the referenced resource is null: cannot rollback");
+    }
+
+    @Test
+    void testRollbackProcessFailure(){
+        WorkflowResource expectedWorkflowResource=new WorkflowResource();
+        expectedWorkflowResource.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
+        expectedWorkflowResource.setCamundaDefinitionId("camundaId");
+        when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
+        when(processClient.getDeployedResource(any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
+        workflowResourceService.rollback(UUID.randomUUID())
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class,"Error retrieving workflow resource from Process");
+    }
+
 }
