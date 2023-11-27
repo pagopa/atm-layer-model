@@ -16,28 +16,17 @@ import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 @QuarkusTest
 public class FileUtilitiesTest {
 
   @Test
   public void testExtractIdValueFromXMLBlankDefinitionKey() {
-
-    File file = new File("path/to/your/xml/file.xml");
+    File file = new File("src/test/resources/TestMalformed.bpmn");
     DeployableResourceType resourceType = DeployableResourceType.BPMN;
-
-    Document documentMock = mock(Document.class);
-    NodeList mockList = mock(NodeList.class);
     Element element = mock(Element.class);
-
-
-    when(documentMock.getElementsByTagName(anyString())).thenReturn(mockList);
-    when(mockList.item(0)).thenReturn(element);
     when(element.getAttribute(anyString())).thenReturn("");
-
     assertThrows(
         AtmLayerException.class, () -> FileUtilities.extractIdValueFromXML(file, resourceType));
   }
