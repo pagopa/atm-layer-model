@@ -7,6 +7,8 @@ import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -171,6 +173,62 @@ public class BpmnConfigMapperImplTest {
         BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(bpmnBankConfig);
 
         assertNull(resource.getTerminalId());
+    }
+
+
+    @Test
+    public void testBpmnBankConfigBpmnBankConfigPKAcquirerId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKAcquirerId", BpmnBankConfig.class);
+        privateMethod.setAccessible(true);
+
+        String result = (String) privateMethod.invoke(bpmnConfigMapperImpl, (Object) null);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void testBpmnBankConfigBpmnBankConfigPKBpmnId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKBpmnId", BpmnBankConfig.class);
+        privateMethod.setAccessible(true);
+
+        String result = (String) privateMethod.invoke(bpmnConfigMapperImpl, (Object) null);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void testBpmnBankConfigBpmnBankConfigPKBpmnModelVersion() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKBpmnModelVersion", BpmnBankConfig.class);
+        privateMethod.setAccessible(true);
+
+        String result = (String) privateMethod.invoke(bpmnConfigMapperImpl, (Object) null);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void testBpmnBankConfigBpmnBankConfigPKBranchId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKBranchId", BpmnBankConfig.class);
+        privateMethod.setAccessible(true);
+
+        String result = (String) privateMethod.invoke(bpmnConfigMapperImpl, (Object) null);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void testBpmnBankConfigBpmnBankConfigPKTerminalId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKTerminalId", BpmnBankConfig.class);
+        privateMethod.setAccessible(true);
+
+        String result = (String) privateMethod.invoke(bpmnConfigMapperImpl, (Object) null);
+
+        assertNull(result);
     }
 
 }

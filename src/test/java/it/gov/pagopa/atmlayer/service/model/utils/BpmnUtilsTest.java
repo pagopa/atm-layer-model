@@ -1,8 +1,12 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -40,6 +44,42 @@ public class BpmnUtilsTest {
     assertEquals("ACQ123", bpmnBankConfigPK.getAcquirerId());
     assertEquals("Branch123", bpmnBankConfigPK.getBranchId());
     assertEquals(BankConfigUtilityValues.NULL_VALUE.getValue(), bpmnBankConfigPK.getTerminalId());
+  }
+
+  @Test
+  public void testGetBpmnBankConfigPKWhenTemplateIdIsNull() {
+    BpmnAssociationDto bpmnAssociationDto = new BpmnAssociationDto();
+    String acquirerId = "ACQ123";
+    BranchConfigs branchConfig = mock(BranchConfigs.class);
+
+    when(branchConfig.getBranchDefaultTemplateId()).thenReturn(null);
+
+    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(bpmnAssociationDto,
+        acquirerId, branchConfig);
+
+    assertFalse(result.isPresent(),
+        "Result should be empty when either templateId or version is null");
+
+    verify(branchConfig, times(1)).getBranchDefaultTemplateId();
+    verifyNoMoreInteractions(branchConfig);
+  }
+
+  @Test
+  public void testGetBpmnBankConfigPKWhenVersionIsNull() {
+    BpmnAssociationDto bpmnAssociationDto = new BpmnAssociationDto();
+    String acquirerId = "ACQ123";
+    BranchConfigs branchConfig = mock(BranchConfigs.class);
+
+    when(branchConfig.getBranchDefaultTemplateId()).thenReturn(UUID.randomUUID());
+    when(branchConfig.getBranchDefaultTemplateVersion()).thenReturn(null);
+
+    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(bpmnAssociationDto,
+        acquirerId, branchConfig);
+
+    assertFalse(result.isPresent(),
+        "Result should be empty when either templateId or version is null");
+
+    verify(branchConfig, times(1)).getBranchDefaultTemplateVersion();
   }
 }
 
