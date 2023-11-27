@@ -45,7 +45,7 @@ class ObjectStorePutResponseTest {
     @Test
     void testToString() {
         ObjectStorePutResponse response = new ObjectStorePutResponse("99999");
-        String expectedToString = "ObjectStorePutResponse(storage_key=99999)";
+        String expectedToString = "ObjectStorePutResponse(storageKey=99999)";
         assertEquals(expectedToString, response.toString());
     }
 
