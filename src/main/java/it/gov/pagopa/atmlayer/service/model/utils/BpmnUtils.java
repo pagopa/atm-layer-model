@@ -35,6 +35,11 @@ public class BpmnUtils {
                 acquirerId, BankConfigUtilityValues.NULL_VALUE.getValue(), BankConfigUtilityValues.NULL_VALUE.getValue()));
         bpmnBankConfigAcquirerDefault.setFunctionType(functionType);
         bpmnBankConfigs.add(bpmnBankConfigAcquirerDefault);
+        getBranchConfig(bpmnAssociationDto, acquirerId, functionType, bpmnBankConfigs);
+        return bpmnBankConfigs;
+    }
+
+    private static void getBranchConfig(BpmnAssociationDto bpmnAssociationDto, String acquirerId, String functionType, List<BpmnBankConfig> bpmnBankConfigs) {
         if (bpmnAssociationDto.getBranchesConfigs() != null && !bpmnAssociationDto.getBranchesConfigs().isEmpty()) {
             for (BranchConfigs branchConfig : bpmnAssociationDto.getBranchesConfigs()) {
                 BpmnBankConfig bpmnBankConfigBranchDefault = new BpmnBankConfig();
@@ -44,25 +49,28 @@ public class BpmnUtils {
                     bpmnBankConfigBranchDefault.setBpmnBankConfigPK(optionalBpmnBankConfigPKBranch.get());
                     bpmnBankConfigs.add(bpmnBankConfigBranchDefault);
                 }
-                if (branchConfig.getTerminals() != null && !branchConfig.getTerminals().isEmpty()) {
-                    for (TerminalConfigs terminalConfig : branchConfig.getTerminals()) {
-                        for (String terminalId : terminalConfig.getTerminalIds()) {
-                            BpmnBankConfig bpmnBankConfigTerminal = new BpmnBankConfig();
-                            BpmnBankConfigPK bpmnBankConfigPKTerminal = new BpmnBankConfigPK();
-                            bpmnBankConfigPKTerminal.setBpmnId(terminalConfig.getTemplateId());
-                            bpmnBankConfigPKTerminal.setBpmnModelVersion(terminalConfig.getTemplateVersion());
-                            bpmnBankConfigPKTerminal.setAcquirerId(acquirerId);
-                            bpmnBankConfigPKTerminal.setBranchId(branchConfig.getBranchId());
-                            bpmnBankConfigPKTerminal.setTerminalId(terminalId);
-                            bpmnBankConfigTerminal.setFunctionType(functionType);
-                            bpmnBankConfigTerminal.setBpmnBankConfigPK(bpmnBankConfigPKTerminal);
-                            bpmnBankConfigs.add(bpmnBankConfigTerminal);
-                        }
-                    }
+                getTerminalConfig(acquirerId, functionType, branchConfig, bpmnBankConfigs);
+            }
+        }
+    }
+
+    private static void getTerminalConfig(String acquirerId, String functionType, BranchConfigs branchConfig, List<BpmnBankConfig> bpmnBankConfigs) {
+        if (branchConfig.getTerminals() != null && !branchConfig.getTerminals().isEmpty()) {
+            for (TerminalConfigs terminalConfig : branchConfig.getTerminals()) {
+                for (String terminalId : terminalConfig.getTerminalIds()) {
+                    BpmnBankConfig bpmnBankConfigTerminal = new BpmnBankConfig();
+                    BpmnBankConfigPK bpmnBankConfigPKTerminal = new BpmnBankConfigPK();
+                    bpmnBankConfigPKTerminal.setBpmnId(terminalConfig.getTemplateId());
+                    bpmnBankConfigPKTerminal.setBpmnModelVersion(terminalConfig.getTemplateVersion());
+                    bpmnBankConfigPKTerminal.setAcquirerId(acquirerId);
+                    bpmnBankConfigPKTerminal.setBranchId(branchConfig.getBranchId());
+                    bpmnBankConfigPKTerminal.setTerminalId(terminalId);
+                    bpmnBankConfigTerminal.setFunctionType(functionType);
+                    bpmnBankConfigTerminal.setBpmnBankConfigPK(bpmnBankConfigPKTerminal);
+                    bpmnBankConfigs.add(bpmnBankConfigTerminal);
                 }
             }
         }
-        return bpmnBankConfigs;
     }
 
     public static Optional<BpmnBankConfigPK> getBpmnBankConfigPK(String acquirerId, BranchConfigs branchConfig) {

@@ -145,7 +145,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .transformToUni(Unchecked.function(optionalBpmn -> {
                             if (optionalBpmn.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced BPMN files do not exists: %s", key);
+                                        "One or some of the referenced BPMN key does not exists: %s", key);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         BPMN_FILE_DOES_NOT_EXIST);
                             }
@@ -177,14 +177,14 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @WithTransaction
     public Uni<BpmnVersion> saveAndUpload(BpmnVersion bpmnVersion, File file, String filename) {
         return this.save(bpmnVersion)
-                .onItem().transformToUni(record -> this.bpmnFileStorageService.uploadFile(bpmnVersion, file, filename)
+                .onItem().transformToUni(element -> this.bpmnFileStorageService.uploadFile(bpmnVersion, file, filename)
                         .onFailure().recoverWithUni(failure -> {
                             log.error(failure.getMessage());
                             return Uni.createFrom().failure(new AtmLayerException("Failed to save BPMN in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                         })
                         .onItem().transformToUni(putObjectResponse -> {
                             log.info("Completed BPMN Creation");
-                            return Uni.createFrom().item(record);
+                            return Uni.createFrom().item(element);
                         }));
     }
 
