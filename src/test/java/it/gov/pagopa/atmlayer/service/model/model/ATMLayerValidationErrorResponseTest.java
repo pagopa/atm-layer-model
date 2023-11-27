@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusTest
-public class ATMLayerValidationErrorResponseTest {
+class ATMLayerValidationErrorResponseTest {
 
   @Test
-  public void testGetterAnnotations() {
+  void testGetterAnnotations() {
     ATMLayerValidationErrorResponse errorResponse = ATMLayerValidationErrorResponse.builder()
         .errorCode("E001")
         .type("Validation Error")
@@ -33,7 +33,7 @@ public class ATMLayerValidationErrorResponseTest {
   }
 
   @Test
-  public void testJsonPropertyOrder() {
+  void testJsonPropertyOrder() {
     ATMLayerValidationErrorResponse errorResponse = ATMLayerValidationErrorResponse.builder()
         .errorCode("E001")
         .type("Validation Error")

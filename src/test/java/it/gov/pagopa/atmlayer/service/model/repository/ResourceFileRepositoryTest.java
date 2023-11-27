@@ -14,14 +14,11 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
-public class ResourceFileRepositoryTest {
+class ResourceFileRepositoryTest {
 
     @Test
-    public void testFindByStorageKey() {
-        // Creare un mock per il repository
+    void testFindByStorageKey() {
         ResourceFileRepository repositoryMock = Mockito.mock(ResourceFileRepository.class);
-
-        // Crea un'istanza di ResourceFile
         ResourceFile entity = new ResourceFile();
         entity.setStorageKey("1");
         List<ResourceFile> mockResult = Collections.singletonList(entity);

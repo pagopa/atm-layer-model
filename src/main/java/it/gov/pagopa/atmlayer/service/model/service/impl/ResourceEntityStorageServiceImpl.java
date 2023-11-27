@@ -36,7 +36,7 @@ import static it.gov.pagopa.atmlayer.service.model.utils.EnumConverter.convertEn
 public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageService {
     @Inject
     ObjectStoreStrategy objectStoreStrategy;
-    private ObjectStoreService objectStoreService;
+    private final ObjectStoreService objectStoreService;
     @Inject
     ObjectStoreProperties objectStoreProperties;
     @Inject
@@ -68,7 +68,6 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
 
     @Override
     public Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath) {
-        S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
         String finalPath = calculateCompletePath(resourceEntity.getNoDeployableResourceType(),relativePath);
         log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
         return uploadFile(file, resourceEntity, fileNameWithExtension, finalPath, true);

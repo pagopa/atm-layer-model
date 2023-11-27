@@ -38,7 +38,7 @@ public class BpmnUtils {
         if (bpmnAssociationDto.getBranchesConfigs() != null && !bpmnAssociationDto.getBranchesConfigs().isEmpty()) {
             for (BranchConfigs branchConfig : bpmnAssociationDto.getBranchesConfigs()) {
                 BpmnBankConfig bpmnBankConfigBranchDefault = new BpmnBankConfig();
-                Optional<BpmnBankConfigPK> optionalBpmnBankConfigPKBranch = getBpmnBankConfigPK(bpmnAssociationDto, acquirerId, branchConfig);
+                Optional<BpmnBankConfigPK> optionalBpmnBankConfigPKBranch = getBpmnBankConfigPK(acquirerId, branchConfig);
                 if (optionalBpmnBankConfigPKBranch.isPresent()) {
                     bpmnBankConfigBranchDefault.setFunctionType(functionType);
                     bpmnBankConfigBranchDefault.setBpmnBankConfigPK(optionalBpmnBankConfigPKBranch.get());
@@ -65,7 +65,7 @@ public class BpmnUtils {
         return bpmnBankConfigs;
     }
 
-    public static Optional<BpmnBankConfigPK> getBpmnBankConfigPK(BpmnAssociationDto bpmnAssociationDto, String acquirerId, BranchConfigs branchConfig) {
+    public static Optional<BpmnBankConfigPK> getBpmnBankConfigPK(String acquirerId, BranchConfigs branchConfig) {
         if (Objects.isNull(branchConfig.getBranchDefaultTemplateId()) || Objects.isNull(branchConfig.getBranchDefaultTemplateVersion())) {
             return Optional.empty();
         }

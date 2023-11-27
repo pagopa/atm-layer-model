@@ -11,7 +11,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class BranchDtoTest {
+class BranchDtoTest {
 
   @Test
   void testCanEqual() {
@@ -35,7 +35,7 @@ public class BranchDtoTest {
     BranchDto branchDto = new BranchDto();
     branchDto.setBranchId("namesurname/featurebranch");
     branchDto.setTerminalId(new ArrayList<>());
-    assertNotEquals(branchDto, null);
+    assertNotEquals(null, branchDto);
   }
 }
 

@@ -13,7 +13,7 @@ import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class ConstraintViolationMappingUtilsImplTest {
+class ConstraintViolationMappingUtilsImplTest {
 
   @Test
   void testExtractErrorMessages() {

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class WorkflowResourceResourceTest {
+class WorkflowResourceResourceTest {
 
   @InjectMock
   WorkflowResourceService workflowResourceService;

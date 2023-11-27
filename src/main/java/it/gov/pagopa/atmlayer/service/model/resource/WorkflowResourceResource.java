@@ -124,7 +124,7 @@ public class WorkflowResourceResource {
     @PUT
     @Path("/rollback/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResourceDTO> rollback(@PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
+    public Uni<WorkflowResourceDTO> rollback(@PathParam("uuid") UUID uuid) {
         return workflowResourceService.rollback(uuid)
                 .onItem()
                 .transformToUni(rolledBackWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(rolledBackWorkflowResource)));

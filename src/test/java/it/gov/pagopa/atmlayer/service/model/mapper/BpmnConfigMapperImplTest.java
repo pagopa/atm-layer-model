@@ -12,7 +12,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
-public class BpmnConfigMapperImplTest {
+class BpmnConfigMapperImplTest {
 
     public BpmnConfigMapperImpl bpmnConfigMapperImpl;
 
@@ -22,14 +22,14 @@ public class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void toDTOtest_null(){
+    void toDTOTest_null(){
         BpmnBankConfig resourceFile = null;
         BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(resourceFile);
         assertNull(resource);
     }
 
     @Test
-    public void toDTOtest(){
+    void toDTOTest(){
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setBpmnId(UUID.randomUUID());
@@ -51,14 +51,14 @@ public class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void bpmnBankConfigDTOToBpmnBankConfigPKtest_null(){
+    void bpmnBankConfigDTOToBpmnBankConfigPKTest_null(){
         BpmnBankConfigDTO bankConfigDTO = null;
         BpmnBankConfigPK resource = bpmnConfigMapperImpl.bpmnBankConfigDTOToBpmnBankConfigPK(bankConfigDTO);
         assertNull(resource);
     }
 
     @Test
-    public void bpmnBankConfigDTOToBpmnBankConfigPKtest(){
+    void bpmnBankConfigDTOToBpmnBankConfigPKTest(){
         BpmnBankConfigDTO bankConfigDTO = new BpmnBankConfigDTO();
         BpmnBankConfigPK resource = bpmnConfigMapperImpl.bpmnBankConfigDTOToBpmnBankConfigPK(bankConfigDTO);
 
@@ -72,14 +72,14 @@ public class BpmnConfigMapperImplTest {
 
 
     @Test
-    public void toEntity_null(){
+    void toEntity_null(){
         BpmnBankConfigDTO bankConfigDTO = null;
         BpmnBankConfig resource = bpmnConfigMapperImpl.toEntity(bankConfigDTO);
         assertNull(resource);
     }
 
     @Test
-    public void toEntity(){
+    void toEntity(){
         BpmnBankConfigDTO bankConfigDTO = new BpmnBankConfigDTO();
         BpmnBankConfig resource = bpmnConfigMapperImpl.toEntity(bankConfigDTO);
 
@@ -93,7 +93,7 @@ public class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void bpmnBankConfigBpmnBankConfigPKBpmnIdTest_null_BpmnBankConfigPK(){
+    void bpmnBankConfigBpmnBankConfigPKBpmnIdTest_null_BpmnBankConfigPK(){
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         bpmnBankConfig.setBpmnBankConfigPK(null);
         BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(bpmnBankConfig);
@@ -101,7 +101,7 @@ public class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void bpmnBankConfigBpmnBankConfigPKBpmnIdTest_null_BpmnId(){
+    void bpmnBankConfigBpmnBankConfigPKBpmnIdTest_null_BpmnId(){
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setBpmnId(null);
@@ -112,7 +112,7 @@ public class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void bpmnBankConfigBpmnBankConfigPKBpmnIdTest(){
+    void bpmnBankConfigBpmnBankConfigPKBpmnIdTest(){
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setBpmnId(UUID.randomUUID());
@@ -126,7 +126,7 @@ public class BpmnConfigMapperImplTest {
 
 
     @Test
-    public void bpmnBankConfigBpmnBankConfigPKBpmnModelVersionTest(){
+    void bpmnBankConfigBpmnBankConfigPKBpmnModelVersionTest(){
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setBpmnModelVersion(1L);
@@ -139,7 +139,7 @@ public class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void bpmnBankConfigBpmnBankConfigPKAcquirerIdTest(){
+    void bpmnBankConfigBpmnBankConfigPKAcquirerIdTest(){
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setAcquirerId("id");
@@ -152,7 +152,7 @@ public class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void bpmnBankConfigBpmnBankConfigPKBranchIdTest_null_BranchId(){
+    void bpmnBankConfigBpmnBankConfigPKBranchIdTest_null_BranchId(){
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setBranchId(null);
@@ -163,7 +163,7 @@ public class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void bpmnBankConfigBpmnBankConfigPKTerminalId_null_TerminalId(){
+    void bpmnBankConfigBpmnBankConfigPKTerminalId_null_TerminalId(){
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setTerminalId(null);

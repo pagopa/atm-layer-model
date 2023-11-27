@@ -1,9 +1,5 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
@@ -13,15 +9,20 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceFileRepository;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 @QuarkusTest
-public class ResourceFileServiceImplTest {
+class ResourceFileServiceImplTest {
     @Mock
     ResourceFileRepository resourceFileRepository;
     @Mock
@@ -37,7 +38,7 @@ public class ResourceFileServiceImplTest {
     }
 
     @Test
-    public void testSaveResourceFile() {
+    void testSaveResourceFile() {
         ResourceFile resourceFile = new ResourceFile();
         resourceFile.setFileName("test.txt");
         resourceFile.setResourceType(S3ResourceTypeEnum.BPMN);
@@ -48,7 +49,7 @@ public class ResourceFileServiceImplTest {
     }
 
     @Test
-    public void testGetMethodsOK() {
+    void testGetMethodsOK() {
         ResourceEntity resourceEntity = new ResourceEntity();
         resourceEntity.setResourceId(UUID.randomUUID());
         ResourceFile expectedResourceFile = new ResourceFile();
@@ -71,7 +72,7 @@ public class ResourceFileServiceImplTest {
     }
 
     @Test
-    public void testGetStorageKeyResourceDoesNotExist() {
+    void testGetStorageKeyResourceDoesNotExist() {
         ResourceEntity resourceEntity = new ResourceEntity();
         resourceEntity.setResourceId(UUID.randomUUID());
         when(resourceFileRepository.findByResourceId(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());

@@ -11,7 +11,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class TerminalConfigsTest {
+class TerminalConfigsTest {
 
 
   @Test
@@ -34,7 +34,7 @@ public class TerminalConfigsTest {
     terminalConfigs.setTemplateId(UUID.randomUUID());
     terminalConfigs.setTemplateVersion(1L);
     terminalConfigs.setTerminalIds(new ArrayList<>());
-    assertNotEquals(terminalConfigs, null);
+    assertNotEquals(null, terminalConfigs);
   }
 }
 

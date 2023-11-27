@@ -18,7 +18,7 @@ public enum StatusEnum {
     DEPLOY_ERROR("DEPLOY_ERROR");
 
     @JsonValue
-    private String value;
+    private final String value;
 
     public static Set<StatusEnum> getUpdatableAndDeletableStatuses() {
         return new HashSet<>(Arrays.asList(CREATED, DEPLOY_ERROR));

@@ -11,13 +11,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 @QuarkusTest
-public class BpmnVersionMapperTest {
+class BpmnVersionMapperTest {
 
     @Inject
-    private BpmnVersionMapper bpmnMapper;
+    BpmnVersionMapper bpmnMapper;
 
     @Test
-    public void testToDTOList() {
+    void testToDTOList() {
 
         BpmnVersion bpmnVersion1 = new BpmnVersion();
         BpmnVersion bpmnVersion2 = new BpmnVersion();

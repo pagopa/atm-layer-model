@@ -21,7 +21,7 @@ public class AtmLayerException extends WebApplicationException {
     @Schema(example = "500")
     private final int statusCode;
 
-    private String message;
+    private final String message;
 
     private String errorCode;
 

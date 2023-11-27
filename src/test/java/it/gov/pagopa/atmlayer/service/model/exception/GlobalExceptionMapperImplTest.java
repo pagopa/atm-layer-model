@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 
@@ -23,7 +22,7 @@ import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
-public class GlobalExceptionMapperImplTest {
+class GlobalExceptionMapperImplTest {
 
     @Mock
     Logger logger;
@@ -40,18 +39,18 @@ public class GlobalExceptionMapperImplTest {
     }
 
     @Test
-    public void testConstraintViolationExceptionMapper() {
+    void testConstraintViolationExceptionMapper() {
         String message = "Message";
         HashSet<ConstraintViolation<?>> constraintViolations = new HashSet<>();
         ConstraintViolationException exception = new ConstraintViolationException(message, constraintViolations);
-        RestResponse<ATMLayerValidationErrorResponse> response = globalExceptionMapper.ConstraintViolationExceptionMapper(exception);
+        RestResponse<ATMLayerValidationErrorResponse> response = globalExceptionMapper.constraintViolationExceptionMapper(exception);
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 
     }
 
     @Test
-    public void testGenericExceptionMapper() {
+    void testGenericExceptionMapper() {
         Exception exception = new RuntimeException("Test exception");
         RestResponse<ATMLayerErrorResponse> response = globalExceptionMapper.genericExceptionMapper(exception);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());

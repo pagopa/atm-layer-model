@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum ObjectStoreStrategyEnum {
     AWS_S3("AWS_S3");
 
-    private String value;
+    private final String value;
 
     public static ObjectStoreStrategyEnum fromValue(String value) {
         return ObjectStoreStrategyEnum.valueOf(value);

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
-public class S3PreSignerLocalTest {
+class S3PreSignerLocalTest {
 
     @Mock
     private ObjectStoreProperties objectStoreProperties;

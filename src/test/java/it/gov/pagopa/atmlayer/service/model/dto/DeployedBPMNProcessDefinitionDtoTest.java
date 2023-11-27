@@ -10,7 +10,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class DeployedBPMNProcessDefinitionDtoTest {
+class DeployedBPMNProcessDefinitionDtoTest {
 
   @Test
   void testConstructor() {

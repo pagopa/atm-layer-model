@@ -49,7 +49,7 @@ public class InfoResource {
 
     @GET
     @NonBlocking
-    public InfoResponse info() throws InterruptedException {
+    public InfoResponse info() {
         logger.info("Info environment: [{}] - name: [{}] - version: [{}]", environment, name, version);
 
 

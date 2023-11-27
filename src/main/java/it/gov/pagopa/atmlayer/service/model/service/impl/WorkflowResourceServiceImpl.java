@@ -139,7 +139,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         return this.checkWorkflowResourceFileExistence(id)
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
-                    if (!x) {
+                    if (Boolean.FALSE.equals(x)) {
                         String errorMessage = "The referenced Workflow Resource file can not be deployed";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED);
