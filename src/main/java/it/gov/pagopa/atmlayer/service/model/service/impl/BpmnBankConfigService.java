@@ -15,7 +15,6 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BpmnBankConfigService {

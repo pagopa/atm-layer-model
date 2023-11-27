@@ -14,7 +14,6 @@ import org.mapstruct.Mapping;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "cdi")
 public abstract class BpmnVersionMapper {
