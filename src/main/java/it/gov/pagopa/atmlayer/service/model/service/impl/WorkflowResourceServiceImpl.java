@@ -41,6 +41,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_FILE_DOES_NOT_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_ROLLED_BACK;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_UPDATED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
@@ -205,13 +206,11 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         DeployedBPMNProcessDefinitionDto deployedProcessInfo = optionalDeployedProcessDefinition.get();
                         workflowResource.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
                         workflowResource.setDeploymentId(deployedProcessInfo.getDeploymentId());
-                        workflowResource.setCamundaDefinitionId(deployedProcessInfo.getId());
                         workflowResource.setDeployedFileName(deployedProcessInfo.getName());
                         workflowResource.setDescription(deployedProcessInfo.getDescription());
                         workflowResource.setResource(deployedProcessInfo.getResource());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
-                    }
-                    if (response.getDeployedDecisionDefinitions() != null) {
+                    } else if (response.getDeployedDecisionDefinitions() != null) {
                         Map<String, DeployedDMNDecisionDefinitionDto> deployedDecisionDefinitions = response.getDeployedDecisionDefinitions();
                         Optional<DeployedDMNDecisionDefinitionDto> optionalDeployedDecisionDefinition = deployedDecisionDefinitions.values()
                                 .stream().findFirst();
@@ -221,15 +220,14 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         DeployedDMNDecisionDefinitionDto deployedDecisionDefinition = optionalDeployedDecisionDefinition.get();
                         workflowResource.setDefinitionVersionCamunda(deployedDecisionDefinition.getVersion());
                         workflowResource.setDeploymentId(deployedDecisionDefinition.getDeploymentId());
-                        workflowResource.setCamundaDefinitionId(deployedDecisionDefinition.getId());
                         workflowResource.setDeployedFileName(deployedDecisionDefinition.getName());
                         workflowResource.setResource(deployedDecisionDefinition.getResource());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
                     } else {
-                        workflowResource.setCamundaDefinitionId(response.getId());
                         workflowResource.setDeployedFileName(response.getName());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
                     }
+                    workflowResource.setCamundaDefinitionId(response.getId());
                     return this.workflowResourceRepository.persist(workflowResource);
                 }));
     }
@@ -339,20 +337,22 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .onItem()
                 .transformToUni(Unchecked.function(workflow -> {
                     if (workflow.isEmpty()) {
-                        throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                        throw new AtmLayerException("The referenced workflow resource does not exist", Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
                     WorkflowResource workflowResourceToRollBack = workflow.get();
+                    if (workflowResourceToRollBack.getStatus().getValue().equals(StatusEnum.DEPLOYED.getValue())) {
+                        throw new AtmLayerException("Cannot rollback: the referenced resource is the latest version deployed", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_ROLLED_BACK);
+                    }
                     String camundaId = workflowResourceToRollBack.getCamundaDefinitionId();
                     if (camundaId == null) {
                         throw new AtmLayerException("CamundaDefinitionId of the referenced resource is null: cannot rollback", Response.Status.NOT_FOUND, WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK);
                     }
                     return processClient.getDeployedResource(camundaId)
-                            .onItem()
-                            .transformToUni(Unchecked.function(file -> update(id, file, true)))
                             .onFailure()
                             .recoverWithUni(exception ->
-                                    Uni.createFrom().failure(new AtmLayerException("Error retrieving workflow resource from Process", Response.Status.INTERNAL_SERVER_ERROR, DEPLOYED_FILE_WAS_NOT_RETRIEVED))
-                            );
+                                    Uni.createFrom().failure(new AtmLayerException("Error retrieving workflow resource from Process", Response.Status.INTERNAL_SERVER_ERROR, DEPLOYED_FILE_WAS_NOT_RETRIEVED)))
+                            .onItem()
+                            .transformToUni(Unchecked.function(file -> update(id, file, true)));
                 }));
     }
 }
