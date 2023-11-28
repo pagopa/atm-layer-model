@@ -54,8 +54,7 @@ class BpmnUtilsTest {
 
     when(branchConfig.getBranchDefaultTemplateId()).thenReturn(null);
 
-    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(bpmnAssociationDto,
-        acquirerId, branchConfig);
+    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(acquirerId, branchConfig);
 
     assertFalse(result.isPresent(),
         "Result should be empty when either templateId or version is null");
@@ -73,8 +72,7 @@ class BpmnUtilsTest {
     when(branchConfig.getBranchDefaultTemplateId()).thenReturn(UUID.randomUUID());
     when(branchConfig.getBranchDefaultTemplateVersion()).thenReturn(null);
 
-    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(bpmnAssociationDto,
-        acquirerId, branchConfig);
+    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(acquirerId, branchConfig);
 
     assertFalse(result.isPresent(),
         "Result should be empty when either templateId or version is null");
