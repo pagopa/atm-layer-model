@@ -13,6 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Test and Integration tests
+        run: |
+          mvn test -Dquarkus.package.type=native -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod
+
       - name: Add coverage to PR
         id: jacoco
         uses: madrapps/jacoco-report@7a334255fbce42f385d7567c25d986a9c62e2971
