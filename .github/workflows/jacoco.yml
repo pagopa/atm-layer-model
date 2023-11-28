@@ -30,6 +30,6 @@ jobs:
         with:
           paths: target/jacoco-report/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 90
+          min-coverage-overall: 100
           title: jacoco
           update-comment: true
