@@ -83,6 +83,16 @@ jobs:
           fail_below_threshold: false
           publish_only_summary: false
       
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@7a334255fbce42f385d7567c25d986a9c62e2971
+        with:
+          paths: target/jacoco-report/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 90
+          title: jacoco
+          update-comment: true
+
       - name: Build docker image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
