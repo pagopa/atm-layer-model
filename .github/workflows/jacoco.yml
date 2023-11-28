@@ -33,3 +33,10 @@ jobs:
           min-coverage-overall: 100
           title: jacoco
           update-comment: true
+
+      - name: Fail PR if overall coverage is less than 100%
+        if: ${{ steps.jacoco.outputs.coverage-overall < 100.0 }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.setFailed('Overall coverage is less than 100%!')
