@@ -70,16 +70,6 @@ jobs:
           name: html-report
           path: src/test/resources/integration-test/output/result.html
 
-      - name: Add coverage to PR
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
-        with:
-          paths: ${{ github.workspace }}/target/jacoco-report/jacoco.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 90
-          min-coverage-changed-files: 60
-          update-comment: true
-
       - name: Build docker image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -89,3 +79,15 @@ jobs:
           docker build -f src/main/java/it/gov/pagopa/atmlayer/service/model/docker/Dockerfile.native -t $REGISTRY/$REPOSITORY:$DOCKER_IMAGE_TAG . \
           --build-arg QUARKUS_PROFILE=prod \
           --build-arg APP_NAME=atm-layer-model
+
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: ${{ github.workspace }}/target/jacoco-report/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 90
+          min-coverage-changed-files: 60
+          title: jacoco
+          update-comment: true
+
