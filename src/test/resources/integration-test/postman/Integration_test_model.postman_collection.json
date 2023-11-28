@@ -7077,7 +7077,7 @@
 							"    // This is where you can set the locale. See faker.js docs for all available locales.",
 							"    window.faker.locale=\"it\";",
 							"    var content = window.faker.lorem.word(10)+ \"_\" + new Date().getTime();",
-							"    var fileName = window.faker.lorem.word(10)+\".other\";",
+							"    var fileName = window.faker.lorem.word(10)+\".txt\";",
 							"    pm.collectionVariables.set(\"other_1\", content);",
 							"    pm.collectionVariables.set(\"other_filename\",fileName);",
 							"    pm.collectionVariables.set(\"other_1_content\",content);",
@@ -7402,7 +7402,7 @@
 							"    // This is where you can set the locale. See faker.js docs for all available locales.",
 							"    window.faker.locale=\"it\";",
 							"    var content = window.faker.lorem.word(10)+ \"_\" + new Date().getTime();",
-							"    var fileName = window.faker.lorem.word(10)+\".html\";",
+							"    var fileName = window.faker.lorem.word(10)+\".txt\";",
 							"    var path = window.faker.lorem.word(10)+\"/\"+window.faker.lorem.word(10);",
 							"    pm.collectionVariables.set(\"other_1\", content);",
 							"    pm.collectionVariables.set(\"other_filename\",fileName);",
@@ -10169,8 +10169,7 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							""
+							"});"
 						],
 						"type": "text/javascript"
 					}
