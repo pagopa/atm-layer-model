@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 @QuarkusTest
-public class ResourceFileMapperImplTest {
+class ResourceFileMapperImplTest {
 
     private ResourceFileMapperImpl resourceFileMapper;
 
@@ -20,14 +20,14 @@ public class ResourceFileMapperImplTest {
     }
 
     @Test
-    public void toDTOtest_null(){
+    void toDTOTest_null(){
         ResourceFile resourceFile = null;
         ResourceFileDTO resource = resourceFileMapper.toDTO(resourceFile);
         assertNull(resource);
     }
 
     @Test
-    public void toDTOtest(){
+    void toDTOTest(){
         ResourceFile resourceFile = new ResourceFile();
         ResourceFileDTO resource = resourceFileMapper.toDTO(resourceFile);
 
@@ -44,14 +44,14 @@ public class ResourceFileMapperImplTest {
     }
 
     @Test
-    public void toEntity_null(){
+    void toEntity_null(){
         ResourceFileDTO  resourceFile = null;
         ResourceFile resource = resourceFileMapper.toEntity(resourceFile);
         assertNull(resource);
     }
 
     @Test
-    public void toEntity(){
+    void toEntity(){
         ResourceFileDTO resourceFile = new ResourceFileDTO();
         ResourceFile resource = resourceFileMapper.toEntity(resourceFile);
         assertNotNull(resource);

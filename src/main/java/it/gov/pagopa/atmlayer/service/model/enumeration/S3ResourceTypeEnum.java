@@ -13,6 +13,6 @@ public enum S3ResourceTypeEnum {
     HTML("html", "application/html"),
     OTHER("other", null);
 
-    String extension;
-    String mimetype;
+    final String extension;
+    final String mimetype;
 }

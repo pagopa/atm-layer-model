@@ -11,15 +11,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @QuarkusTest
-public class BpmnBankConfigDTOTest {
+class BpmnBankConfigDTOTest {
   @Test
-  public void testNoArgsConstructor() {
+  void testNoArgsConstructor() {
     BpmnBankConfigDTO dto = new BpmnBankConfigDTO();
     assertNotNull(dto);
   }
 
   @Test
-  public void testAllArgsConstructor() {
+  void testAllArgsConstructor() {
     BpmnBankConfigDTO dto = new BpmnBankConfigDTO(
         UUID.randomUUID(), 1L, "acquirer", "branch", "terminal",
         "MENU", new Timestamp(System.currentTimeMillis()),
@@ -28,26 +28,26 @@ public class BpmnBankConfigDTOTest {
   }
 
   @Test
-  public void testGetterAndSetter() {
+  void testGetterAndSetter() {
     BpmnBankConfigDTO dto = new BpmnBankConfigDTO();
 
     dto.setBpmnId(UUID.randomUUID());
     assertNotEquals(dto.getBpmnId(), UUID.randomUUID());
 
     dto.setBpmnModelVersion(1L);
-    assertEquals(dto.getBpmnModelVersion(), 1L);
+    assertEquals(1L, dto.getBpmnModelVersion());
 
     dto.setAcquirerId("acquirer");
-    assertEquals(dto.getAcquirerId(), "acquirer");
+    assertEquals("acquirer", dto.getAcquirerId());
 
     dto.setBranchId("branch");
-    assertEquals(dto.getBranchId(), "branch");
+    assertEquals("branch", dto.getBranchId());
 
     dto.setTerminalId("terminal");
-    assertEquals(dto.getTerminalId(), "terminal");
+    assertEquals("terminal", dto.getTerminalId());
 
     dto.setFunctionType("MENU");
-    assertEquals(dto.getFunctionType(), "MENU");
+    assertEquals("MENU", dto.getFunctionType());
 
     Timestamp createdAt = new Timestamp(System.currentTimeMillis());
     dto.setCreatedAt(createdAt);
@@ -58,14 +58,14 @@ public class BpmnBankConfigDTOTest {
     assertEquals(dto.getLastUpdatedAt(), lastUpdatedAt);
 
     dto.setCreatedBy("creator");
-    assertEquals(dto.getCreatedBy(), "creator");
+    assertEquals("creator", dto.getCreatedBy());
 
     dto.setLastUpdatedBy("updator");
-    assertEquals(dto.getLastUpdatedBy(), "updator");
+    assertEquals("updator", dto.getLastUpdatedBy());
   }
 
   @Test
-  public void testEqualsAndHashCode() {
+  void testEqualsAndHashCode() {
     BpmnBankConfigDTO dto1 = new BpmnBankConfigDTO(
         UUID.randomUUID(), 1L, "acquirer", "branch", "terminal",
             "MENU", new Timestamp(System.currentTimeMillis()),
@@ -80,7 +80,7 @@ public class BpmnBankConfigDTOTest {
   }
 
   @Test
-  public void testToString() {
+  void testToString() {
     BpmnBankConfigDTO dto = new BpmnBankConfigDTO(
         UUID.randomUUID(), 1L, "acquirer", "branch", "terminal",
             "MENU", new Timestamp(System.currentTimeMillis()),

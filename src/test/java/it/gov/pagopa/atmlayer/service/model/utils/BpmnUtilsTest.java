@@ -19,10 +19,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class BpmnUtilsTest {
+class BpmnUtilsTest {
 
   @Test
-  public void testGetBpmnBankConfigPK() {
+  void testGetBpmnBankConfigPK() {
 
     BpmnAssociationDto bpmnAssociationDto = new BpmnAssociationDto();
     String acquirerId = "ACQ123";
@@ -33,8 +33,8 @@ public class BpmnUtilsTest {
     when(branchConfig.getBranchDefaultTemplateVersion()).thenReturn(Long.valueOf("1"));
     when(branchConfig.getBranchId()).thenReturn("Branch123");
 
-    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(bpmnAssociationDto,
-        acquirerId, branchConfig);
+    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(
+            acquirerId, branchConfig);
 
     assertTrue(result.isPresent(), "Result should be present");
     BpmnBankConfigPK bpmnBankConfigPK = result.get();
@@ -54,8 +54,7 @@ public class BpmnUtilsTest {
 
     when(branchConfig.getBranchDefaultTemplateId()).thenReturn(null);
 
-    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(bpmnAssociationDto,
-        acquirerId, branchConfig);
+    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(acquirerId, branchConfig);
 
     assertFalse(result.isPresent(),
         "Result should be empty when either templateId or version is null");
@@ -73,8 +72,7 @@ public class BpmnUtilsTest {
     when(branchConfig.getBranchDefaultTemplateId()).thenReturn(UUID.randomUUID());
     when(branchConfig.getBranchDefaultTemplateVersion()).thenReturn(null);
 
-    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(bpmnAssociationDto,
-        acquirerId, branchConfig);
+    Optional<BpmnBankConfigPK> result = BpmnUtils.getBpmnBankConfigPK(acquirerId, branchConfig);
 
     assertFalse(result.isPresent(),
         "Result should be empty when either templateId or version is null");

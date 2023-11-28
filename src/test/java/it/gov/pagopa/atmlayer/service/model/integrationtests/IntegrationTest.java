@@ -4,6 +4,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.Testcontainers;
@@ -16,6 +17,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
 @QuarkusTestResource(value = EnvironmentTestServicesResource.DockerCompose.class, restrictToAnnotatedClass = true)
@@ -45,7 +47,7 @@ public class IntegrationTest {
         bucketCreationUtils.createBucketIfNotExisting();
         NEWMAN.start();
         log.info(NEWMAN.getLogs());
-        assertTrue(NEWMAN.getCurrentContainerInfo().getState().getExitCodeLong() == 0);
+        assertEquals(0, NEWMAN.getCurrentContainerInfo().getState().getExitCodeLong());
     }
 
 }

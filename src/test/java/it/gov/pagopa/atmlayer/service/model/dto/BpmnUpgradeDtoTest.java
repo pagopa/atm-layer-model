@@ -12,7 +12,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class BpmnUpgradeDtoTest {
+class BpmnUpgradeDtoTest {
 
 
   @Test
@@ -42,7 +42,7 @@ public class BpmnUpgradeDtoTest {
     bpmnUpgradeDto.setFilename("foo.txt");
     bpmnUpgradeDto.setFunctionType("MENU");
     bpmnUpgradeDto.setUuid(UUID.randomUUID());
-    assertNotEquals(bpmnUpgradeDto, null);
+    assertNotEquals(null, bpmnUpgradeDto);
   }
 }
 

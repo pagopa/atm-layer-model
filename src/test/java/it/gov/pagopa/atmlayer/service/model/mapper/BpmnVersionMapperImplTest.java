@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
-public class BpmnVersionMapperImplTest {
+class BpmnVersionMapperImplTest {
 
     private BpmnVersionMapperImpl bpmnVersionMapper;
 
@@ -23,14 +23,14 @@ public class BpmnVersionMapperImplTest {
     }
 
     @Test
-    public void toEntityTest_null(){
+    void toEntityTest_null(){
         BpmnDTO input = null;
         BpmnVersion resource = bpmnVersionMapper.toEntity(input);
         assertNull(resource);
     }
 
     @Test
-    public void toEntityTest(){
+    void toEntityTest(){
         BpmnDTO input = new BpmnDTO();
         BpmnVersion resource = bpmnVersionMapper.toEntity(input);
 
@@ -56,14 +56,14 @@ public class BpmnVersionMapperImplTest {
 
 
     @Test
-    public void resourceFileDTOToResourceFileTest_null(){
+    void resourceFileDTOToResourceFileTest_null(){
         ResourceFileDTO input = null;
         ResourceFile resource = bpmnVersionMapper.resourceFileDTOToResourceFile(input);
         assertNull(resource);
     }
 
     @Test
-    public void resourceFileDTOToResourceFileTest(){
+    void resourceFileDTOToResourceFileTest(){
         ResourceFileDTO input = new ResourceFileDTO();
         ResourceFile resource = bpmnVersionMapper.resourceFileDTOToResourceFile(input);
 
@@ -80,14 +80,14 @@ public class BpmnVersionMapperImplTest {
     }
 
     @Test
-    public void toDtoCreationTest_null(){
+    void toDtoCreationTest_null(){
         BpmnVersion input = null;
         BpmnCreationDto resource = bpmnVersionMapper.toDtoCreation(input);
         assertNull(resource);
     }
 
     @Test
-    public void toDtoCreationTest(){
+    void toDtoCreationTest(){
         BpmnVersion input = new BpmnVersion();
         BpmnCreationDto resource = bpmnVersionMapper.toDtoCreation(input);
 
@@ -96,14 +96,14 @@ public class BpmnVersionMapperImplTest {
     }
 
     @Test
-    public void toProcessDTOTest_null(){
+    void toProcessDTOTest_null(){
         BpmnDTO input = null;
         BpmnProcessDTO resource = bpmnVersionMapper.toProcessDTO(input);
         assertNull(resource);
     }
 
     @Test
-    public void toProcessDTOTest(){
+    void toProcessDTOTest(){
         BpmnDTO input = new BpmnDTO();
         BpmnProcessDTO resource = bpmnVersionMapper.toProcessDTO(input);
 

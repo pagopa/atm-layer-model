@@ -10,6 +10,6 @@ public enum DeployableResourceType {
     DMN("decision", "id"),
     FORM("id", null);
 
-    String tagName;
-    String attribute;
+    final String tagName;
+    final String attribute;
 }

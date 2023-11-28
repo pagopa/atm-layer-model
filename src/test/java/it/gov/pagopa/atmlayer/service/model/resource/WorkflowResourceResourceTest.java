@@ -29,7 +29,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class WorkflowResourceResourceTest {
+class WorkflowResourceResourceTest {
 
   @InjectMock
   WorkflowResourceService workflowResourceService;

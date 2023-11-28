@@ -10,7 +10,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class BpmnCreationDtoTest {
+class BpmnCreationDtoTest {
 
   @Test
   void testCanEqual() {
@@ -40,7 +40,7 @@ public class BpmnCreationDtoTest {
     bpmnCreationDto.setFile(Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toFile());
     bpmnCreationDto.setFilename("foo.txt");
     bpmnCreationDto.setFunctionType("MENU");
-    assertNotEquals(bpmnCreationDto, null);
+    assertNotEquals(null, bpmnCreationDto);
   }
 }
 

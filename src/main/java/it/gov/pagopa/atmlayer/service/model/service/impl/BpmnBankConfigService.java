@@ -15,7 +15,6 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BpmnBankConfigService {
@@ -58,7 +57,7 @@ public class BpmnBankConfigService {
                         return Uni.createFrom().item(
                                 configs.stream()
                                         .map(bpmnConfigMapper::toDTO)
-                                        .collect(Collectors.toList())
+                                        .toList()
                         );
                     }
                 }));

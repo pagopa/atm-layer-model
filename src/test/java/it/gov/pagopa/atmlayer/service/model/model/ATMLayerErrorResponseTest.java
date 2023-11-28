@@ -12,13 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusTest
-public class ATMLayerErrorResponseTest {
+class ATMLayerErrorResponseTest {
 
   @Inject
   ObjectMapper objectMapper;
 
   @Test
-  public void testATMLayerErrorResponseSerialization() throws IOException {
+  void testATMLayerErrorResponseSerialization() throws IOException {
     ATMLayerErrorResponse errorResponse = ATMLayerErrorResponse.builder()
         .errorCode("E001")
         .type("Validation Error")
@@ -32,7 +32,7 @@ public class ATMLayerErrorResponseTest {
   }
 
   @Test
-  public void testJsonPropertyOrder() {
+  void testJsonPropertyOrder() {
     ATMLayerErrorResponse errorResponse = ATMLayerErrorResponse.builder()
         .errorCode("E001")
         .type("Validation Error")
@@ -53,7 +53,7 @@ public class ATMLayerErrorResponseTest {
   }
 
   @Test
-  public void testGetterAnnotations() {
+  void testGetterAnnotations() {
     ATMLayerErrorResponse errorResponse = ATMLayerErrorResponse.builder()
         .errorCode("E001")
         .type("Validation Error")

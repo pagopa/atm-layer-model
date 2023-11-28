@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.FormParam;

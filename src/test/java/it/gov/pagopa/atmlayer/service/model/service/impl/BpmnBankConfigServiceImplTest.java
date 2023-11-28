@@ -5,7 +5,6 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
-import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapperImpl;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnBankConfigRepository;
@@ -27,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
-public class BpmnBankConfigServiceImplTest {
+class BpmnBankConfigServiceImplTest {
     @InjectMocks
     private BpmnBankConfigService bankConfigService;
     @Mock
@@ -41,7 +40,7 @@ public class BpmnBankConfigServiceImplTest {
     }
 
     @Test
-    public void testSaveList() {
+    void testSaveList() {
         List<BpmnBankConfig> mockConfigs = Collections.singletonList(new BpmnBankConfig());
         when(bankConfigRepository.persist(mockConfigs))
                 .thenReturn(Uni.createFrom().nullItem());
@@ -51,7 +50,7 @@ public class BpmnBankConfigServiceImplTest {
     }
 
     @Test
-    public void testFindByAcquirerIdAndFunctionType() {
+    void testFindByAcquirerIdAndFunctionType() {
         String acquirerId = "acquirer1";
         String functionType = "MENU";
         List<BpmnBankConfig> mockResult = Collections.singletonList(new BpmnBankConfig());
@@ -64,7 +63,7 @@ public class BpmnBankConfigServiceImplTest {
     }
 
     @Test
-    public void testDeleteByAcquirerIdAndFunctionType() {
+    void testDeleteByAcquirerIdAndFunctionType() {
         String acquirerId = "acquirer1";
         String functionType = "MENU";
         when(bankConfigRepository.deleteByAcquirerIdAndFunctionType(acquirerId, functionType))
@@ -76,7 +75,7 @@ public class BpmnBankConfigServiceImplTest {
     }
 
     @Test
-    public void testFindByConfigurationsAndFunctionOK() {
+    void testFindByConfigurationsAndFunctionOK() {
         List<BpmnBankConfig> expectedList = new ArrayList<>();
         expectedList.add(new BpmnBankConfig());
         when(bankConfigRepository.findByConfigAndFunctionType(any(String.class), any(String.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().item(expectedList));
@@ -87,7 +86,7 @@ public class BpmnBankConfigServiceImplTest {
     }
 
     @Test
-    public void testFindByConfigurationsAndFunctionMultipleFound() {
+    void testFindByConfigurationsAndFunctionMultipleFound() {
         List<BpmnBankConfig> expectedList = new ArrayList<>();
         expectedList.add(new BpmnBankConfig());
         expectedList.add(new BpmnBankConfig());
@@ -98,7 +97,7 @@ public class BpmnBankConfigServiceImplTest {
     }
 
     @Test
-    public void testFindByConfigurationsAndFunctionEmptyList() {
+    void testFindByConfigurationsAndFunctionEmptyList() {
         List<BpmnBankConfig> expectedList = new ArrayList<>();
         when(bankConfigRepository.findByConfigAndFunctionType(any(String.class), any(String.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().item(expectedList));
         bankConfigService.findByConfigurationsAndFunction("acq", "branch", "terminal", "function")
@@ -108,7 +107,7 @@ public class BpmnBankConfigServiceImplTest {
     }
 
     @Test
-    public void testfindByAcquirerIdOK(){
+    void testFindByAcquirerIdOK(){
         List<BpmnBankConfig> expectedList = new ArrayList<>();
         expectedList.add(new BpmnBankConfig());
         when(bankConfigRepository.findByAcquirerId(any(String.class))).thenReturn(Uni.createFrom().item(expectedList));
@@ -119,7 +118,7 @@ public class BpmnBankConfigServiceImplTest {
     }
 
     @Test
-    public void testfindByAcquirerIdEmptyList(){
+    void testfindByAcquirerIdEmptyList(){
         List<BpmnBankConfig> expectedList = new ArrayList<>();
         when(bankConfigRepository.findByAcquirerId(any(String.class))).thenReturn(Uni.createFrom().item(expectedList));
         bankConfigService.findByAcquirerId("acquirer")

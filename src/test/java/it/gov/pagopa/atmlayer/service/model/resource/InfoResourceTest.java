@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class InfoResourceTest {
 
     @Inject
-    private InfoResource sut;
+    InfoResource sut;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

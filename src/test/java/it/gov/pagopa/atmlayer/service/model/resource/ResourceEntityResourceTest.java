@@ -27,7 +27,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class ResourceEntityResourceTest {
+class ResourceEntityResourceTest {
 
   @InjectMock
   private ResourceEntityMapper resourceEntityMapper;
@@ -65,7 +65,7 @@ public class ResourceEntityResourceTest {
   }
 
   @Test
-  void testUpdateResource() throws NoSuchAlgorithmException, IOException {
+  void testUpdateResource() {
     ResourceEntity resourceEntity = new ResourceEntity();
     ResourceDTO resourceDTO = new ResourceDTO();
     UUID uuid = UUID.randomUUID();

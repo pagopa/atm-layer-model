@@ -12,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
-public class BankKeyDtoTest {
+class BankKeyDtoTest {
 
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @Test
-  public void testAcquirerIdNotNull() {
+  void testAcquirerIdNotNull() {
     BankKeyDto bankKeyDto = new BankKeyDto();
     Set<ConstraintViolation<BankKeyDto>> violations = validator.validate(bankKeyDto);
     assertTrue(violations.stream()
@@ -26,7 +26,7 @@ public class BankKeyDtoTest {
   }
 
   @Test
-  public void testGettersAndSetters(){
+  void testGettersAndSetters(){
     BankKeyDto bankKeyDto = new BankKeyDto();
     bankKeyDto.setAcquirerId("12345");
     bankKeyDto.setBranches(null);
@@ -35,7 +35,7 @@ public class BankKeyDtoTest {
   }
 
   @Test
-  public void testEqualsAndHashCode(){
+  void testEqualsAndHashCode(){
     BankKeyDto bankKeyDto1 = new BankKeyDto();
     bankKeyDto1.setAcquirerId("12345");
     bankKeyDto1.setBranches(null);
@@ -48,7 +48,7 @@ public class BankKeyDtoTest {
   }
 
   @Test
-  public void testToString(){
+  void testToString(){
     BankKeyDto bankKeyDto = new BankKeyDto();
     bankKeyDto.setAcquirerId("12345");
     bankKeyDto.setBranches(null);

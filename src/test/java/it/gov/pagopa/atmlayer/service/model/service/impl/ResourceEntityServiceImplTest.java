@@ -45,7 +45,7 @@ class ResourceEntityServiceImplTest {
 //    }
 
     @Test
-    public void uploadFailure() {
+    void uploadFailure() {
         File file = new File("src/test/resources/Test.bpmn");
         when(resourceEntityStorageService.saveFile(any(ResourceEntity.class), any(File.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
         resourceEntityService.upload(new ResourceEntity(), file, "filename", "path")
@@ -54,7 +54,7 @@ class ResourceEntityServiceImplTest {
     }
 
     @Test
-    public void testCreateAlreadyExists() {
+    void testCreateAlreadyExists() {
         File file = new File("src/test/resources/Test.bpmn");
         ResourceFile resourceFile = new ResourceFile();
         ResourceEntity resourceEntity = new ResourceEntity();
@@ -67,7 +67,7 @@ class ResourceEntityServiceImplTest {
     }
 
     @Test
-    public void testCreateSyncError() {
+    void testCreateSyncError() {
         File file = new File("src/test/resources/Test.bpmn");
         ResourceFile resourceFile = new ResourceFile();
         ResourceEntity resourceEntity = new ResourceEntity();

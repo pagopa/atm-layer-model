@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.validators;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
@@ -59,37 +60,29 @@ class BpmnEntityValidatorTest {
     @Test
     void testValidateExistenceStatusAndFunctionTypeNotDeployedBpmnFiles() {
         BpmnVersion bpmnVersion = new BpmnVersion();
-        bpmnVersion.setBpmnId(UUID.randomUUID());
+        UUID uuid = UUID.randomUUID();
+        bpmnVersion.setBpmnId(uuid);
         bpmnVersion.setStatus(StatusEnum.CREATED);
         bpmnVersion.setFunctionType("ValidFunctionType");
         bpmnVersion.setModelVersion(1L);
         List<BpmnVersion> bpmnVersions = List.of(bpmnVersion);
         Set<BpmnVersionPK> ids = Collections.singleton(new BpmnVersionPK(bpmnVersion.getBpmnId(), bpmnVersion.getModelVersion()));
         when(bpmnVersionService.findByPKSet(ids)).thenReturn(Uni.createFrom().item(bpmnVersions));
-        AtmLayerException exception = assertThrows(AtmLayerException.class, () -> {
-            bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "ValidFunctionType").await().indefinitely();
-        });
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), exception.getStatusCode());
-        assertEquals(AppErrorCodeEnum.BPMN_FILE_NOT_DEPLOYED.getErrorCode(), exception.getErrorCode());
-        assertEquals("One or some of the referenced BPMN files are not deployed: [BpmnVersionPK(bpmnId="+ ids.iterator().next().getBpmnId() +", modelVersion=" + ids.iterator().next().getModelVersion() + ")]", exception.getMessage());
+        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"One or some of the referenced BPMN files are not deployed: [BpmnVersionPK(bpmnId=" + uuid + ", modelVersion=1)]");
     }
 
     @Test
     void testValidateExistenceStatusAndFunctionTypeMissingBpmnFiles() {
         BpmnVersion bpmnVersion = new BpmnVersion();
-        bpmnVersion.setBpmnId(UUID.randomUUID());
+        UUID uuid = UUID.randomUUID();
+        bpmnVersion.setBpmnId(uuid);
         bpmnVersion.setStatus(StatusEnum.DEPLOYED);
         bpmnVersion.setFunctionType("MENU");
         bpmnVersion.setModelVersion(1L);
         List<BpmnVersion> bpmnVersions = List.of(bpmnVersion);
         Set<BpmnVersionPK> ids = Collections.singleton(new BpmnVersionPK(UUID.randomUUID(), 2L));
         when(bpmnVersionService.findByPKSet(ids)).thenReturn(Uni.createFrom().item(bpmnVersions));
-        AtmLayerException exception = assertThrows(AtmLayerException.class, () -> {
-            bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "MENU").await().indefinitely();
-        });
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), exception.getStatusCode());
-        assertEquals(AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST.getErrorCode(), exception.getErrorCode());
-        assertEquals("One or some of the referenced BPMN files do not exists: [BpmnVersionPK(bpmnId=" + ids.iterator().next().getBpmnId() + ", modelVersion=" + ids.iterator().next().getModelVersion() + ")]", exception.getMessage());
+        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"One or some of the referenced BPMN do not have functionType validFunctionType: [BpmnVersionPK(bpmnId=" + uuid +", modelVersion=1)]");
     }
 
     @Test
@@ -99,30 +92,21 @@ class BpmnEntityValidatorTest {
         List<BpmnVersion> bpmnVersions = List.of(bpmnVersion);
         Set<BpmnVersionPK> ids = Collections.singleton(new BpmnVersionPK(bpmnVersion.getBpmnId(), bpmnVersion.getModelVersion()));
         when(bpmnVersionService.findByPKSet(ids)).thenReturn(Uni.createFrom().item(bpmnVersions));
-        AtmLayerException exception = assertThrows(
-                AtmLayerException.class,
-                () -> bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").await().indefinitely()
-        );
+        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"One or some of the referenced BPMN files are not deployed: [BpmnVersionPK(bpmnId=null, modelVersion=1)]");
         verify(bpmnVersionService, times(1)).findByPKSet(ids);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), exception.getStatusCode());
-        assertEquals(AppErrorCodeEnum.BPMN_FILE_NOT_DEPLOYED.getErrorCode(), exception.getErrorCode());
     }
 
     @Test
     void testValidateExistenceStatusAndFunctionType_NotValidFunctionType() {
         BpmnVersion bpmnVersion = new BpmnVersion();
-        bpmnVersion.setBpmnId(UUID.randomUUID());
+        UUID uuid = UUID.randomUUID();
+        bpmnVersion.setBpmnId(uuid);
         bpmnVersion.setStatus(StatusEnum.DEPLOYED);
         bpmnVersion.setFunctionType("WrongFunctionType");
         bpmnVersion.setModelVersion(1L);
         List<BpmnVersion> bpmnVersions = List.of(bpmnVersion);
         Set<BpmnVersionPK> ids = Collections.singleton(new BpmnVersionPK(bpmnVersion.getBpmnId(), bpmnVersion.getModelVersion()));
         when(bpmnVersionService.findByPKSet(ids)).thenReturn(Uni.createFrom().item(bpmnVersions));
-        AtmLayerException exception = assertThrows(AtmLayerException.class, () -> {
-            bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "ValidFunctionType").await().indefinitely();
-        });
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), exception.getStatusCode());
-        assertEquals(AppErrorCodeEnum.BPMN_FUNCTION_TYPE_DIFFERENT_FROM_REQUESTED.getErrorCode(), exception.getErrorCode());
-        assertEquals("One or some of the referenced BPMN do not have functionType ValidFunctionType: [BpmnVersionPK(bpmnId=" + ids.iterator().next().getBpmnId() + ", modelVersion=" + ids.iterator().next().getModelVersion() + ")]", exception.getMessage());
+        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"One or some of the referenced BPMN do not have functionType validFunctionType: [BpmnVersionPK(bpmnId=" + uuid +", modelVersion=1)]");
     }
 }

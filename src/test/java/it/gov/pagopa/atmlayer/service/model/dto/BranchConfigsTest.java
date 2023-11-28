@@ -12,7 +12,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class BranchConfigsTest {
+class BranchConfigsTest {
 
   @Test
   void testCanEqual() {
@@ -42,7 +42,7 @@ public class BranchConfigsTest {
     branchConfigs.setBranchDefaultTemplateVersion(1L);
     branchConfigs.setBranchId("namesurname/featurebranch");
     branchConfigs.setTerminals(new ArrayList<>());
-    assertNotEquals(branchConfigs, null);
+    assertNotEquals(null, branchConfigs);
   }
 }
 

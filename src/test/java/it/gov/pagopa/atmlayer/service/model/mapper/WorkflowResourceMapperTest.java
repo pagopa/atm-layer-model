@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 @QuarkusTest
-public class WorkflowResourceMapperTest {
+class WorkflowResourceMapperTest {
   private WorkflowResourceMapper mapper;
 
   @BeforeEach
@@ -33,10 +33,10 @@ public class WorkflowResourceMapperTest {
   }
 
   @Test
-  public void testToEntityCreation() throws NoSuchAlgorithmException, IOException {
+  void testToEntityCreation() throws NoSuchAlgorithmException, IOException {
 
     WorkflowResourceCreationDto creationDto = mock(WorkflowResourceCreationDto.class);
-    File tempFile = createTemporaryFileWithContent("file content");
+    File tempFile = createTemporaryFileWithContent();
 
     when(creationDto.getFile()).thenReturn(tempFile);
     when(creationDto.getFilename()).thenReturn("testFile");
@@ -52,14 +52,14 @@ public class WorkflowResourceMapperTest {
     assertEquals("testFile.DMN", workflowResource.getDeployedFileName());
   }
 
-  private File createTemporaryFileWithContent(String content) throws IOException {
+  private File createTemporaryFileWithContent() throws IOException {
     Path tempFilePath = Files.createTempFile("temp-file", ".txt");
-    Files.write(tempFilePath, content.getBytes());
+    Files.write(tempFilePath, "file content".getBytes());
     return tempFilePath.toFile();
   }
 
   @Test
-  public void testToDTOList() {
+  void testToDTOList() {
 
     List<WorkflowResource> workflowResourceList = Arrays.asList(
         createWorkflowResource("file1", "BPMN"),

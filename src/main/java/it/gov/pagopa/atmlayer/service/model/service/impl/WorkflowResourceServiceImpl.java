@@ -106,7 +106,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .transform(Unchecked.function(optionalWorkflowResource -> {
                             if (optionalWorkflowResource.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced Workflow Resource files do not exists: %s", uuid);
+                                        "One or some of the referenced Workflow Resource files with id: %s do not exists", uuid);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         WORKFLOW_FILE_DOES_NOT_EXIST);
                             }
@@ -140,7 +140,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         return this.checkWorkflowResourceFileExistence(id)
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
-                    if (!x) {
+                    if (Boolean.FALSE.equals(x)) {
                         String errorMessage = "The referenced Workflow Resource file can not be deployed";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED);
@@ -236,14 +236,14 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @WithTransaction
     public Uni<WorkflowResource> saveAndUpload(WorkflowResource workflowResource, File file, String filename) {
         return this.save(workflowResource)
-                .onItem().transformToUni(record -> this.workflowResourceStorageService.uploadFile(workflowResource, file, filename)
+                .onItem().transformToUni(element -> this.workflowResourceStorageService.uploadFile(workflowResource, file, filename)
                         .onFailure().recoverWithUni(failure -> {
                             log.error(failure.getMessage());
                             return Uni.createFrom().failure(new AtmLayerException("Failed to save Workflow Resource in Object Store. Workflow Resource creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                         })
                         .onItem().transformToUni(putObjectResponse -> {
                             log.info("Completed Workflow Resource Creation");
-                            return Uni.createFrom().item(record);
+                            return Uni.createFrom().item(element);
                         }));
     }
 

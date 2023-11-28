@@ -82,10 +82,10 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     public Uni<ResourceEntity> saveAndUpload(ResourceEntity resourceEntity, File file,
                                              String filename, String path) {
         return this.save(resourceEntity)
-                .onItem().transformToUni(record -> upload(resourceEntity, file, filename, path)
+                .onItem().transformToUni(element -> upload(resourceEntity, file, filename, path)
                         .onItem().transformToUni(putObjectResponse -> {
                             log.info("Completed Resource Entity Creation");
-                            return Uni.createFrom().item(record);
+                            return Uni.createFrom().item(element);
                         }));
     }
 
