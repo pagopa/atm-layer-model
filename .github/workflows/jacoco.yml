@@ -13,6 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Setup JDK
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '17'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Test and Integration tests
         run: |
           mvn test -Dquarkus.package.type=native -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod
