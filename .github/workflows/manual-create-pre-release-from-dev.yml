@@ -94,6 +94,8 @@ jobs:
           paths: ${{ github.workspace }}/target/jacoco-report/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 90
+          min-coverage-changed-files: 60
+          update-comment: true
 
       - name: Build docker image
         env:
