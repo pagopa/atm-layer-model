@@ -1,0 +1,26 @@
+name: Check Build and Anchore on PR
+
+on:
+  pull_request:
+
+jobs:
+  pr_scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: ${{ github.workspace }}/target/jacoco-report/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 90
+          min-coverage-changed-files: 60
+          title: jacoco
+          update-comment: true
+
