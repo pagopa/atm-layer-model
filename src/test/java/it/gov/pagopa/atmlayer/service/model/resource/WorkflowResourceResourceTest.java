@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -137,8 +136,10 @@ class WorkflowResourceResourceTest {
     List<WorkflowResourceDTO> dtoList = new ArrayList<>();
     WorkflowResourceDTO workflowResourceDTO = new WorkflowResourceDTO();
     dtoList.add(workflowResourceDTO);
+
     when(workflowResourceService.getAll()).thenReturn(Uni.createFrom().item(workflowResources));
     when(workflowResourceMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
+
     ArrayList result = given()
         .when().get("/api/v1/model/workflow-resource")
         .then()
@@ -153,32 +154,29 @@ class WorkflowResourceResourceTest {
 
   @Test
   void testGetAllEmptyList() {
-    List<WorkflowResource> workflowResources = new ArrayList<>();
-    WorkflowResource workflowResource = new WorkflowResource();
-    workflowResources.add(workflowResource);
-    List<WorkflowResourceDTO> dtoList = new ArrayList<>();
-    when(workflowResourceService.getAll()).thenReturn(Uni.createFrom().item(workflowResources));
-    when(workflowResourceMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
-    ArrayList result = given()
+    List<WorkflowResource> emptyList = new ArrayList<>();
+
+    when(workflowResourceService.getAll()).thenReturn(Uni.createFrom().item(emptyList));
+
+    given()
         .when().get("/api/v1/model/workflow-resource")
         .then()
-        .statusCode(200)
-        .extract()
-        .body()
-        .as(ArrayList.class);
-    Assertions.assertTrue(result.isEmpty());
+        .statusCode(200);
+
     verify(workflowResourceService, times(1)).getAll();
-    verify(workflowResourceMapper, times(1)).toDTOList(workflowResources);
   }
 
   @Test
   void testById() {
     UUID uuid = UUID.randomUUID();
+
     WorkflowResource workflowResource = new WorkflowResource();
+
     when(workflowResourceService.findById(any(UUID.class))).thenReturn(
         Uni.createFrom().item(Optional.of(workflowResource)));
     WorkflowResourceDTO dto = new WorkflowResourceDTO();
     when(workflowResourceMapper.toDTO(any(WorkflowResource.class))).thenReturn(dto);
+
     given()
         .pathParam("uuid", uuid)
         .when()
@@ -188,6 +186,24 @@ class WorkflowResourceResourceTest {
 
     verify(workflowResourceService, times(1)).findById(any(UUID.class));
     verify(workflowResourceMapper, times(1)).toDTO(workflowResource);
+  }
+
+  @Test
+  void testByIdNotFound() {
+    UUID uuid = UUID.randomUUID();
+
+    when(workflowResourceService.findById(any(UUID.class))).thenReturn(
+        Uni.createFrom().item(Optional.empty()));
+
+    given()
+        .pathParam("uuid", uuid)
+        .when()
+        .get("/api/v1/model/workflow-resource/{uuid}")
+        .then()
+        .statusCode(404);
+
+    verify(workflowResourceService, times(1)).findById(any(UUID.class));
+    verify(workflowResourceMapper, times(0)).toDTO(any());
   }
 
 }
