@@ -4,6 +4,7 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
@@ -30,6 +31,10 @@ public class BpmnBankConfigService {
 
     public Uni<List<BpmnBankConfig>> findByAcquirerIdAndFunctionType(String acquirerId, String functionType) {
         return this.bankConfigRepository.findByAcquirerIdAndFunctionType(acquirerId, functionType);
+    }
+
+    public Uni<List<BpmnBankConfig>> findByBpmnVersionPK(BpmnVersionPK bpmnVersionPK){
+        return this.bankConfigRepository.findByBpmnPK(bpmnVersionPK);
     }
 
     @WithTransaction

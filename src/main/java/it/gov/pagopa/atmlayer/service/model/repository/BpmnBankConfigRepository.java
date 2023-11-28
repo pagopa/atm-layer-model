@@ -4,12 +4,14 @@ import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @ApplicationScoped
 public class BpmnBankConfigRepository implements PanacheRepositoryBase<BpmnBankConfig, BpmnBankConfigPK> {
@@ -44,5 +46,12 @@ public class BpmnBankConfigRepository implements PanacheRepositoryBase<BpmnBankC
         Map<String, Object> params = new HashMap<>();
         params.put("acquirerId", acquirerId);
         return find("select b from BpmnBankConfig b where b.bpmnBankConfigPK.acquirerId = :acquirerId", params).list();
+    }
+
+    public Uni<List<BpmnBankConfig>> findByBpmnPK(BpmnVersionPK bpmnVersionPK){
+        Map<String, Object> params = new HashMap<>();
+        params.put("bpmnId",bpmnVersionPK.getBpmnId());
+        params.put("version",bpmnVersionPK.getModelVersion());
+        return find("select b from BpmnBankConfig b where b.bpmnBankConfigPK.bpmnId = :bpmnId and b.bpmnBankConfigPK.bpmnModelVersion= :version", params).list();
     }
 }

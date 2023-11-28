@@ -273,4 +273,13 @@ public class BpmnResource {
     public Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") String acquirerId) {
         return bpmnBankConfigService.findByAcquirerId(acquirerId);
     }
+
+    @POST
+    @Path("/disable/{uuid}/version/{version}")
+    public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId,@PathParam("version") Long version){
+        BpmnVersionPK bpmnVersionPK=new BpmnVersionPK(bpmnId,version);
+        return bpmnVersionService.disable(bpmnVersionPK);
+    }
+
+
 }

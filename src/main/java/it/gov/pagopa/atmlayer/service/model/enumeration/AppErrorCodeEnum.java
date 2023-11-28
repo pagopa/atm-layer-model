@@ -46,7 +46,9 @@ public enum AppErrorCodeEnum {
     DEPLOYED_FILE_WAS_NOT_RETRIEVED("ATMLM_4000033","Error with Process communication: the referenced file was not retrieved", INTERNAL),
     WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK("ATMLM_4000034","CamundaDefinitionId of the referenced resource is null: cannot rollback", NOT_EXISTING_REFERENCED_ENTITY),
     WORKFLOW_RESOURCE_CANNOT_BE_ROLLED_BACK("ATMLM_4000035","Cannot rollback: the referenced resource coincides with the latest deployed version", CANNOT_ROLLBACK),
-    MISSING_AWS_ENDPOINT("ATMLM_4000036","Error generating presigned url: No AWS endpoint provided for local configuration", INTERNAL);
+    MISSING_AWS_ENDPOINT("ATMLM_4000036","Error generating presigned url: No AWS endpoint provided for local configuration", INTERNAL),
+    BPMN_CANNOT_BE_DISABLED_FOR_ASSOCIATIONS("ATMLM_4000037", "The referenced BPMN file has associations and cannot be disabled", CANNOT_DISABLE),
+    BPMN_ALREADY_DISABLED("ATMLM_4000038", "The referenced BPMN file is already disabled", CANNOT_DISABLE);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;
