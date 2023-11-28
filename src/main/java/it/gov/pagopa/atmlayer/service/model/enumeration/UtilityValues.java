@@ -10,7 +10,8 @@ public enum UtilityValues {
     ACQUIRER_ID("acquirerId"),
     BRANCH_ID("branchId"),
     TERMINAL_ID("terminalId"),
-    FUNCTION_TYPE("functionType");
+    FUNCTION_TYPE("functionType"),
+    DISABLED_FLAG("_disabled_");
 
     @JsonValue
     private final String value;
