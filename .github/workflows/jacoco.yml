@@ -15,9 +15,9 @@ jobs:
 
       - name: Add coverage to PR
         id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
+        uses: madrapps/jacoco-report@7a334255fbce42f385d7567c25d986a9c62e2971
         with:
-          paths: /home/runner/work/atm-layer-model/target/jacoco-report/jacoco.xml
+          paths: ${{ github.workspace }}/target/jacoco-report/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 90
           title: jacoco
