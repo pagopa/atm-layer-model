@@ -82,7 +82,14 @@ jobs:
           minimum_coverage: 90
           fail_below_threshold: false
           publish_only_summary: false
-      
+
+      - name: Fail Build if overall coverage is less than 90%
+        if: steps.jacoco_reporter.outputs.coverage_percentage < 90.0 
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.setFailed('Overall coverage is less than 90%!')
+
       - name: Build docker image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
