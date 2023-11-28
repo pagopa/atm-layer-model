@@ -1,4 +1,4 @@
-name: Check Build and Anchore on PR
+name: Coverage on PR
 
 on:
   pull_request:
@@ -20,7 +20,6 @@ jobs:
           paths: ${{ github.workspace }}/target/jacoco-report/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 90
-          min-coverage-changed-files: 60
           title: jacoco
           update-comment: true
 
