@@ -140,6 +140,54 @@ class WorkflowResourceServiceImplTest {
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, ("No file associated to Workflow Resource or no storage key found: ").concat(expectedId.toString()));
     }
+    @Test
+    void deployResourceWithBlanckStorageKey() {
+        UUID expectedId = UUID.randomUUID();
+        WorkflowResource deployableWorkflowResource = new WorkflowResource();
+        deployableWorkflowResource.setStatus(StatusEnum.CREATED);
+        WorkflowResource waitingdWorkflowResource = new WorkflowResource();
+        waitingdWorkflowResource.setStatus(StatusEnum.WAITING_DEPLOY);
+        waitingdWorkflowResource.setResourceFile(new ResourceFile());
+        waitingdWorkflowResource.getResourceFile().setStorageKey("");
+        when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(deployableWorkflowResource));
+        when(workflowResourceRepository.persist(any(WorkflowResource.class))).thenReturn(Uni.createFrom().item(waitingdWorkflowResource));
+        workflowResourceService.deploy(expectedId, Optional.of(new WorkflowResource()))
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class, ("No file associated to Workflow Resource or no storage key found: ").concat(expectedId.toString()));
+    }
+
+    @Test
+    void deployResourceWithNullStorageKey() {
+        UUID expectedId = UUID.randomUUID();
+        WorkflowResource deployableWorkflowResource = new WorkflowResource();
+        deployableWorkflowResource.setStatus(StatusEnum.CREATED);
+        WorkflowResource waitingdWorkflowResource = new WorkflowResource();
+        waitingdWorkflowResource.setStatus(StatusEnum.WAITING_DEPLOY);
+        waitingdWorkflowResource.setResourceFile(new ResourceFile());
+        waitingdWorkflowResource.getResourceFile().setStorageKey(null);
+        when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(deployableWorkflowResource));
+        when(workflowResourceRepository.persist(any(WorkflowResource.class))).thenReturn(Uni.createFrom().item(waitingdWorkflowResource));
+        workflowResourceService.deploy(expectedId, Optional.of(new WorkflowResource()))
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class, ("No file associated to Workflow Resource or no storage key found: ").concat(expectedId.toString()));
+    }
+
+    @Test
+    void deployResourceWithNullResourceFile() {
+        UUID expectedId = UUID.randomUUID();
+        WorkflowResource deployableWorkflowResource = new WorkflowResource();
+        deployableWorkflowResource.setStatus(StatusEnum.CREATED);
+        WorkflowResource waitingdWorkflowResource = new WorkflowResource();
+        waitingdWorkflowResource.setStatus(StatusEnum.WAITING_DEPLOY);
+        waitingdWorkflowResource.setResourceFile(null);
+        when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(deployableWorkflowResource));
+        when(workflowResourceRepository.persist(any(WorkflowResource.class))).thenReturn(Uni.createFrom().item(waitingdWorkflowResource));
+        workflowResourceService.deploy(expectedId, Optional.of(new WorkflowResource()))
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class, ("No file associated to Workflow Resource or no storage key found: ").concat(expectedId.toString()));
+    }
+
+
 
     @Test
     void deployPresignedURLFailure() {
