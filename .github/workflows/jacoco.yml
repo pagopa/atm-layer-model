@@ -13,9 +13,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Setup JDK
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '17'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test and Integration tests
+        run: |
+          mvn test -Dquarkus.package.type=native -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod
+
       - name: Add coverage to PR
         id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
+        uses: madrapps/jacoco-report@7a334255fbce42f385d7567c25d986a9c62e2971
         with:
           paths: target/jacoco-report/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -23,3 +34,9 @@ jobs:
           title: jacoco
           update-comment: true
 
+      - name: Fail PR if overall coverage is less than 90%
+        if: ${{ steps.jacoco.outputs.coverage-overall < 90.0 }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.setFailed('Overall coverage is less than 90%!')
