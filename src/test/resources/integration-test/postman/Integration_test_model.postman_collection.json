@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "6a4633ad-d23b-4b54-8f96-d865ccd76524",
-		"name": "Integration_test_model_completa",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "30399095"
+		"_postman_id": "09d201f8-c818-4d02-bfe5-07d7758ec931",
+		"name": "Integration_test_model_completa_29nov_v2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29456304"
 	},
 	"item": [
 		{
@@ -87,7 +87,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/bpmn"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn"
+					]
+				}
 			},
 			"response": [
 				{
@@ -127,7 +138,286 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"bpmnId\": \"7a7a6585-5e05-8244-ADae-E978C9DdC92F\",\n  \"modelVersion\": \"<long>\",\n  \"deployedFileName\": \"<string>\",\n  \"definitionKey\": \"<string>\",\n  \"functionType\": \"MENU\",\n  \"status\": \"DEPLOYED\",\n  \"sha256\": \"<string>\",\n  \"definitionVersionCamunda\": \"<integer>\",\n  \"camundaDefinitionId\": \"<string>\",\n  \"description\": \"<string>\",\n  \"resourceFile\": {\n    \"id\": \"B2D42af0-e3AE-fAe7-5BFf-EddD3daEeB00\",\n    \"resourceType\": \"BPMN\",\n    \"storageKey\": \"<string>\",\n    \"fileName\": \"<string>\",\n    \"extension\": \"<string>\",\n    \"createdAt\": {\n      \"year\": \"<integer>\",\n      \"month\": \"<integer>\",\n      \"date\": \"<integer>\",\n      \"day\": \"<integer>\",\n      \"hours\": \"<integer>\",\n      \"minutes\": \"<integer>\",\n      \"seconds\": \"<integer>\",\n      \"timeImpl\": \"<long>\",\n      \"timezoneOffset\": \"<integer>\",\n      \"calendarDate\": {\n        \"era\": {\n          \"name\": \"<string>\",\n          \"abbr\": \"<string>\",\n          \"since\": \"<long>\",\n          \"sinceDate\": {\n            \"era\": {\n              \"value\": \"<Circular reference to #/components/schemas/Era detected>\"\n            },\n            \"year\": \"<integer>\",\n            \"month\": \"<integer>\",\n            \"dayOfMonth\": \"<integer>\",\n            \"dayOfWeek\": \"<integer>\",\n            \"leapYear\": \"<boolean>\",\n            \"hours\": \"<integer>\",\n            \"minutes\": \"<integer>\",\n            \"seconds\": \"<integer>\",\n            \"millis\": \"<integer>\",\n            \"fraction\": \"<long>\",\n            \"normalized\": \"<boolean>\",\n            \"zoneinfo\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            },\n            \"zoneOffset\": \"<integer>\",\n            \"daylightSaving\": \"<integer>\",\n            \"forceStandardTime\": \"<boolean>\",\n            \"locale\": {\n              \"language\": \"<string>\",\n              \"script\": \"<string>\",\n              \"country\": \"<string>\",\n              \"variant\": \"<string>\",\n              \"extensionKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleAttributes\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"iSO3Language\": \"<string>\",\n              \"iSO3Country\": \"<string>\",\n              \"displayLanguage\": \"<string>\",\n              \"displayScript\": \"<string>\",\n              \"displayCountry\": \"<string>\",\n              \"displayVariant\": \"<string>\",\n              \"displayName\": \"<string>\"\n            },\n            \"timeOfDay\": \"<long>\",\n            \"standardTime\": \"<boolean>\",\n            \"daylightTime\": \"<boolean>\",\n            \"zone\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            }\n          },\n          \"localTime\": \"<boolean>\",\n          \"hash\": \"<integer>\",\n          \"abbreviation\": \"<string>\"\n        },\n        \"year\": \"<integer>\",\n        \"month\": \"<integer>\",\n        \"dayOfMonth\": \"<integer>\",\n        \"dayOfWeek\": \"<integer>\",\n        \"leapYear\": \"<boolean>\",\n        \"hours\": \"<integer>\",\n        \"minutes\": \"<integer>\",\n        \"seconds\": \"<integer>\",\n        \"millis\": \"<integer>\",\n        \"fraction\": \"<long>\",\n        \"normalized\": \"<boolean>\",\n        \"zoneinfo\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"zoneOffset\": \"<integer>\",\n        \"daylightSaving\": \"<integer>\",\n        \"forceStandardTime\": \"<boolean>\",\n        \"locale\": {\n          \"language\": \"<string>\",\n          \"script\": \"<string>\",\n          \"country\": \"<string>\",\n          \"variant\": \"<string>\",\n          \"extensionKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleAttributes\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"iSO3Language\": \"<string>\",\n          \"iSO3Country\": \"<string>\",\n          \"displayLanguage\": \"<string>\",\n          \"displayScript\": \"<string>\",\n          \"displayCountry\": \"<string>\",\n          \"displayVariant\": \"<string>\",\n          \"displayName\": \"<string>\"\n        },\n        \"timeOfDay\": \"<long>\",\n        \"standardTime\": \"<boolean>\",\n        \"daylightTime\": \"<boolean>\",\n        \"zone\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"cachedYear\": \"<integer>\",\n        \"cachedFixedDateJan1\": \"<long>\",\n        \"cachedFixedDateNextJan1\": \"<long>\",\n        \"normalizedYear\": \"<integer>\",\n        \"cachedJan1\": \"<long>\"\n      },\n      \"nanos\": \"<integer>\",\n      \"time\": \"<long>\"\n    },\n    \"lastUpdatedAt\": {\n      \"year\": \"<integer>\",\n      \"month\": \"<integer>\",\n      \"date\": \"<integer>\",\n      \"day\": \"<integer>\",\n      \"hours\": \"<integer>\",\n      \"minutes\": \"<integer>\",\n      \"seconds\": \"<integer>\",\n      \"timeImpl\": \"<long>\",\n      \"timezoneOffset\": \"<integer>\",\n      \"calendarDate\": {\n        \"era\": {\n          \"name\": \"<string>\",\n          \"abbr\": \"<string>\",\n          \"since\": \"<long>\",\n          \"sinceDate\": {\n            \"era\": {\n              \"value\": \"<Circular reference to #/components/schemas/Era detected>\"\n            },\n            \"year\": \"<integer>\",\n            \"month\": \"<integer>\",\n            \"dayOfMonth\": \"<integer>\",\n            \"dayOfWeek\": \"<integer>\",\n            \"leapYear\": \"<boolean>\",\n            \"hours\": \"<integer>\",\n            \"minutes\": \"<integer>\",\n            \"seconds\": \"<integer>\",\n            \"millis\": \"<integer>\",\n            \"fraction\": \"<long>\",\n            \"normalized\": \"<boolean>\",\n            \"zoneinfo\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            },\n            \"zoneOffset\": \"<integer>\",\n            \"daylightSaving\": \"<integer>\",\n            \"forceStandardTime\": \"<boolean>\",\n            \"locale\": {\n              \"language\": \"<string>\",\n              \"script\": \"<string>\",\n              \"country\": \"<string>\",\n              \"variant\": \"<string>\",\n              \"extensionKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleAttributes\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"iSO3Language\": \"<string>\",\n              \"iSO3Country\": \"<string>\",\n              \"displayLanguage\": \"<string>\",\n              \"displayScript\": \"<string>\",\n              \"displayCountry\": \"<string>\",\n              \"displayVariant\": \"<string>\",\n              \"displayName\": \"<string>\"\n            },\n            \"timeOfDay\": \"<long>\",\n            \"standardTime\": \"<boolean>\",\n            \"daylightTime\": \"<boolean>\",\n            \"zone\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            }\n          },\n          \"localTime\": \"<boolean>\",\n          \"hash\": \"<integer>\",\n          \"abbreviation\": \"<string>\"\n        },\n        \"year\": \"<integer>\",\n        \"month\": \"<integer>\",\n        \"dayOfMonth\": \"<integer>\",\n        \"dayOfWeek\": \"<integer>\",\n        \"leapYear\": \"<boolean>\",\n        \"hours\": \"<integer>\",\n        \"minutes\": \"<integer>\",\n        \"seconds\": \"<integer>\",\n        \"millis\": \"<integer>\",\n        \"fraction\": \"<long>\",\n        \"normalized\": \"<boolean>\",\n        \"zoneinfo\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"zoneOffset\": \"<integer>\",\n        \"daylightSaving\": \"<integer>\",\n        \"forceStandardTime\": \"<boolean>\",\n        \"locale\": {\n          \"language\": \"<string>\",\n          \"script\": \"<string>\",\n          \"country\": \"<string>\",\n          \"variant\": \"<string>\",\n          \"extensionKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleAttributes\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"iSO3Language\": \"<string>\",\n          \"iSO3Country\": \"<string>\",\n          \"displayLanguage\": \"<string>\",\n          \"displayScript\": \"<string>\",\n          \"displayCountry\": \"<string>\",\n          \"displayVariant\": \"<string>\",\n          \"displayName\": \"<string>\"\n        },\n        \"timeOfDay\": \"<long>\",\n        \"standardTime\": \"<boolean>\",\n        \"daylightTime\": \"<boolean>\",\n        \"zone\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"cachedYear\": \"<integer>\",\n        \"cachedFixedDateJan1\": \"<long>\",\n        \"cachedFixedDateNextJan1\": \"<long>\",\n        \"normalizedYear\": \"<integer>\",\n        \"cachedJan1\": \"<long>\"\n      },\n      \"nanos\": \"<integer>\",\n      \"time\": \"<long>\"\n    },\n    \"createdBy\": \"<string>\",\n    \"lastUpdatedBy\": \"<string>\"\n  },\n  \"resource\": \"<string>\",\n  \"deploymentId\": \"8FFED2c8-FA9f-fd7D-B25a-B8fA41DB7D3d\",\n  \"createdAt\": {\n    \"year\": \"<integer>\",\n    \"month\": \"<integer>\",\n    \"date\": \"<integer>\",\n    \"day\": \"<integer>\",\n    \"hours\": \"<integer>\",\n    \"minutes\": \"<integer>\",\n    \"seconds\": \"<integer>\",\n    \"timeImpl\": \"<long>\",\n    \"timezoneOffset\": \"<integer>\",\n    \"calendarDate\": {\n      \"era\": {\n        \"name\": \"<string>\",\n        \"abbr\": \"<string>\",\n        \"since\": \"<long>\",\n        \"sinceDate\": {\n          \"era\": {\n            \"value\": \"<Circular reference to #/components/schemas/Era detected>\"\n          },\n          \"year\": \"<integer>\",\n          \"month\": \"<integer>\",\n          \"dayOfMonth\": \"<integer>\",\n          \"dayOfWeek\": \"<integer>\",\n          \"leapYear\": \"<boolean>\",\n          \"hours\": \"<integer>\",\n          \"minutes\": \"<integer>\",\n          \"seconds\": \"<integer>\",\n          \"millis\": \"<integer>\",\n          \"fraction\": \"<long>\",\n          \"normalized\": \"<boolean>\",\n          \"zoneinfo\": {\n            \"ID\": \"<string>\",\n            \"rawOffset\": \"<integer>\",\n            \"iD\": \"<string>\",\n            \"displayName\": \"<string>\",\n            \"dSTSavings\": \"<integer>\"\n          },\n          \"zoneOffset\": \"<integer>\",\n          \"daylightSaving\": \"<integer>\",\n          \"forceStandardTime\": \"<boolean>\",\n          \"locale\": {\n            \"language\": \"<string>\",\n            \"script\": \"<string>\",\n            \"country\": \"<string>\",\n            \"variant\": \"<string>\",\n            \"extensionKeys\": [\n              \"<string>\",\n              \"<string>\"\n            ],\n            \"unicodeLocaleAttributes\": [\n              \"<string>\",\n              \"<string>\"\n            ],\n            \"unicodeLocaleKeys\": [\n              \"<string>\",\n              \"<string>\"\n            ],\n            \"iSO3Language\": \"<string>\",\n            \"iSO3Country\": \"<string>\",\n            \"displayLanguage\": \"<string>\",\n            \"displayScript\": \"<string>\",\n            \"displayCountry\": \"<string>\",\n            \"displayVariant\": \"<string>\",\n            \"displayName\": \"<string>\"\n          },\n          \"timeOfDay\": \"<long>\",\n          \"standardTime\": \"<boolean>\",\n          \"daylightTime\": \"<boolean>\",\n          \"zone\": {\n            \"ID\": \"<string>\",\n            \"rawOffset\": \"<integer>\",\n            \"iD\": \"<string>\",\n            \"displayName\": \"<string>\",\n            \"dSTSavings\": \"<integer>\"\n          }\n        },\n        \"localTime\": \"<boolean>\",\n        \"hash\": \"<integer>\",\n        \"abbreviation\": \"<string>\"\n      },\n      \"year\": \"<integer>\",\n      \"month\": \"<integer>\",\n      \"dayOfMonth\": \"<integer>\",\n      \"dayOfWeek\": \"<integer>\",\n      \"leapYear\": \"<boolean>\",\n      \"hours\": \"<integer>\",\n      \"minutes\": \"<integer>\",\n      \"seconds\": \"<integer>\",\n      \"millis\": \"<integer>\",\n      \"fraction\": \"<long>\",\n      \"normalized\": \"<boolean>\",\n      \"zoneinfo\": {\n        \"ID\": \"<string>\",\n        \"rawOffset\": \"<integer>\",\n        \"iD\": \"<string>\",\n        \"displayName\": \"<string>\",\n        \"dSTSavings\": \"<integer>\"\n      },\n      \"zoneOffset\": \"<integer>\",\n      \"daylightSaving\": \"<integer>\",\n      \"forceStandardTime\": \"<boolean>\",\n      \"locale\": {\n        \"language\": \"<string>\",\n        \"script\": \"<string>\",\n        \"country\": \"<string>\",\n        \"variant\": \"<string>\",\n        \"extensionKeys\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"unicodeLocaleAttributes\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"unicodeLocaleKeys\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"iSO3Language\": \"<string>\",\n        \"iSO3Country\": \"<string>\",\n        \"displayLanguage\": \"<string>\",\n        \"displayScript\": \"<string>\",\n        \"displayCountry\": \"<string>\",\n        \"displayVariant\": \"<string>\",\n        \"displayName\": \"<string>\"\n      },\n      \"timeOfDay\": \"<long>\",\n      \"standardTime\": \"<boolean>\",\n      \"daylightTime\": \"<boolean>\",\n      \"zone\": {\n        \"ID\": \"<string>\",\n        \"rawOffset\": \"<integer>\",\n        \"iD\": \"<string>\",\n        \"displayName\": \"<string>\",\n        \"dSTSavings\": \"<integer>\"\n      },\n      \"cachedYear\": \"<integer>\",\n      \"cachedFixedDateJan1\": \"<long>\",\n      \"cachedFixedDateNextJan1\": \"<long>\",\n      \"normalizedYear\": \"<integer>\",\n      \"cachedJan1\": \"<long>\"\n    },\n    \"nanos\": \"<integer>\",\n    \"time\": \"<long>\"\n  },\n  \"lastUpdatedAt\": {\n    \"year\": \"<integer>\",\n    \"month\": \"<integer>\",\n    \"date\": \"<integer>\",\n    \"day\": \"<integer>\",\n    \"hours\": \"<integer>\",\n    \"minutes\": \"<integer>\",\n    \"seconds\": \"<integer>\",\n    \"timeImpl\": \"<long>\",\n    \"timezoneOffset\": \"<integer>\",\n    \"calendarDate\": {\n      \"era\": {\n        \"name\": \"<string>\",\n        \"abbr\": \"<string>\",\n        \"since\": \"<long>\",\n        \"sinceDate\": {\n          \"era\": {\n            \"value\": \"<Circular reference to #/components/schemas/Era detected>\"\n          },\n          \"year\": \"<integer>\",\n          \"month\": \"<integer>\",\n          \"dayOfMonth\": \"<integer>\",\n          \"dayOfWeek\": \"<integer>\",\n          \"leapYear\": \"<boolean>\",\n          \"hours\": \"<integer>\",\n          \"minutes\": \"<integer>\",\n          \"seconds\": \"<integer>\",\n          \"millis\": \"<integer>\",\n          \"fraction\": \"<long>\",\n          \"normalized\": \"<boolean>\",\n          \"zoneinfo\": {\n            \"ID\": \"<string>\",\n            \"rawOffset\": \"<integer>\",\n            \"iD\": \"<string>\",\n            \"displayName\": \"<string>\",\n            \"dSTSavings\": \"<integer>\"\n          },\n          \"zoneOffset\": \"<integer>\",\n          \"daylightSaving\": \"<integer>\",\n          \"forceStandardTime\": \"<boolean>\",\n          \"locale\": {\n            \"language\": \"<string>\",\n            \"script\": \"<string>\",\n            \"country\": \"<string>\",\n            \"variant\": \"<string>\",\n            \"extensionKeys\": [\n              \"<string>\",\n              \"<string>\"\n            ],\n            \"unicodeLocaleAttributes\": [\n              \"<string>\",\n              \"<string>\"\n            ],\n            \"unicodeLocaleKeys\": [\n              \"<string>\",\n              \"<string>\"\n            ],\n            \"iSO3Language\": \"<string>\",\n            \"iSO3Country\": \"<string>\",\n            \"displayLanguage\": \"<string>\",\n            \"displayScript\": \"<string>\",\n            \"displayCountry\": \"<string>\",\n            \"displayVariant\": \"<string>\",\n            \"displayName\": \"<string>\"\n          },\n          \"timeOfDay\": \"<long>\",\n          \"standardTime\": \"<boolean>\",\n          \"daylightTime\": \"<boolean>\",\n          \"zone\": {\n            \"ID\": \"<string>\",\n            \"rawOffset\": \"<integer>\",\n            \"iD\": \"<string>\",\n            \"displayName\": \"<string>\",\n            \"dSTSavings\": \"<integer>\"\n          }\n        },\n        \"localTime\": \"<boolean>\",\n        \"hash\": \"<integer>\",\n        \"abbreviation\": \"<string>\"\n      },\n      \"year\": \"<integer>\",\n      \"month\": \"<integer>\",\n      \"dayOfMonth\": \"<integer>\",\n      \"dayOfWeek\": \"<integer>\",\n      \"leapYear\": \"<boolean>\",\n      \"hours\": \"<integer>\",\n      \"minutes\": \"<integer>\",\n      \"seconds\": \"<integer>\",\n      \"millis\": \"<integer>\",\n      \"fraction\": \"<long>\",\n      \"normalized\": \"<boolean>\",\n      \"zoneinfo\": {\n        \"ID\": \"<string>\",\n        \"rawOffset\": \"<integer>\",\n        \"iD\": \"<string>\",\n        \"displayName\": \"<string>\",\n        \"dSTSavings\": \"<integer>\"\n      },\n      \"zoneOffset\": \"<integer>\",\n      \"daylightSaving\": \"<integer>\",\n      \"forceStandardTime\": \"<boolean>\",\n      \"locale\": {\n        \"language\": \"<string>\",\n        \"script\": \"<string>\",\n        \"country\": \"<string>\",\n        \"variant\": \"<string>\",\n        \"extensionKeys\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"unicodeLocaleAttributes\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"unicodeLocaleKeys\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"iSO3Language\": \"<string>\",\n        \"iSO3Country\": \"<string>\",\n        \"displayLanguage\": \"<string>\",\n        \"displayScript\": \"<string>\",\n        \"displayCountry\": \"<string>\",\n        \"displayVariant\": \"<string>\",\n        \"displayName\": \"<string>\"\n      },\n      \"timeOfDay\": \"<long>\",\n      \"standardTime\": \"<boolean>\",\n      \"daylightTime\": \"<boolean>\",\n      \"zone\": {\n        \"ID\": \"<string>\",\n        \"rawOffset\": \"<integer>\",\n        \"iD\": \"<string>\",\n        \"displayName\": \"<string>\",\n        \"dSTSavings\": \"<integer>\"\n      },\n      \"cachedYear\": \"<integer>\",\n      \"cachedFixedDateJan1\": \"<long>\",\n      \"cachedFixedDateNextJan1\": \"<long>\",\n      \"normalizedYear\": \"<integer>\",\n      \"cachedJan1\": \"<long>\"\n    },\n    \"nanos\": \"<integer>\",\n    \"time\": \"<long>\"\n  },\n  \"createdBy\": \"<string>\",\n  \"lastUpdatedBy\": \"<string>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Disabilita BPMN 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn/disable/:uuid/version/:version",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn",
+						"disable",
+						":uuid",
+						"version",
+						":version"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{bpmn_1_id}}"
+						},
+						{
+							"key": "version",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fallisci nel disabilitare BPMN inesistente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var uuid = require(\"uuid\");\r",
+							"var myUUID = uuid.v4();\r",
+							"pm.collectionVariables.set(\"not_found_uuid\", myUUID);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn/disable/:uuid/version/:version",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn",
+						"disable",
+						":uuid",
+						"version",
+						":version"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{not_found_uuid}}"
+						},
+						{
+							"key": "version",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Salva Modello BPMN 1 dopo disable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"bpmn_1_id\", jsonData.bpmnId);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"window = {};",
+							"",
+							"pm.sendRequest(\"https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js\", (error, response) => {",
+							"    if (error || response.code !== 200) {",
+							"        pm.expect.fail('Could not load external library');",
+							"    }",
+							"",
+							"    eval(response.text());",
+							"",
+							"    // This is where you can set the locale. See faker.js docs for all available locales.",
+							"    window.faker.locale=\"it\";",
+							"    var id = window.faker.lorem.word(10)+ \"_\" + new Date().getTime();",
+							"    pm.collectionVariables.set(\"bpmn_1\",",
+							"    pm.collectionVariables.get(\"bpmn_part1\")+id+pm.collectionVariables.get(\"bpmn1_part2\"));",
+							"    pm.collectionVariables.set(\"bpmn_1_definition_key\",id); ",
+							"   ",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"value": "{{bpmn_1}}",
+							"description": "(Required) ",
+							"type": "text"
+						},
+						{
+							"key": "filename",
+							"value": "demo_0611_1",
+							"description": "(Required) ",
+							"type": "text"
+						},
+						{
+							"key": "functionType",
+							"value": "MENU",
+							"description": "(Required)  (This can only be one of MENU,SPONTANEOUS_PAYMENT)",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"value": "<string>",
+									"description": "(Required) ",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "B3q5VzcAJo_",
+									"description": "(Required) ",
+									"type": "text"
+								},
+								{
+									"key": "functionType",
+									"value": "MENU",
+									"description": "(Required)  (This can only be one of MENU,SPONTANEOUS_PAYMENT)",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -204,7 +494,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/bpmn"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn"
+					]
+				}
 			},
 			"response": [
 				{
@@ -244,7 +545,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -1043,6 +1357,53 @@
 			]
 		},
 		{
+			"name": "Fallisci nel disabilitare un BPMN associato",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn/disable/:uuid/version/:version",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn",
+						"disable",
+						":uuid",
+						"version",
+						":version"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{bpmn_1_id}}"
+						},
+						{
+							"key": "version",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Salva Modello BPMN_3 di tipo MENU",
 			"event": [
 				{
@@ -1122,7 +1483,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/bpmn"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn"
+					]
+				}
 			},
 			"response": [
 				{
@@ -1162,7 +1534,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -1742,7 +2127,19 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/bpmn/upgrade"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn/upgrade",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn",
+						"upgrade"
+					]
+				}
 			},
 			"response": [
 				{
@@ -1788,7 +2185,19 @@
 								}
 							]
 						},
-						"url": "{{baseUrl}}/api/v1/model/bpmn/upgrade"
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/model/bpmn/upgrade",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn",
+								"upgrade"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -2494,7 +2903,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/bpmn"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn"
+					]
+				}
 			},
 			"response": [
 				{
@@ -2534,7 +2954,18 @@
 								}
 							]
 						},
-						"url": "{{baseUrl}}/api/v1/model/bpmn"
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/model/bpmn",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -2860,7 +3291,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -2900,7 +3342,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -3039,7 +3494,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -3079,7 +3545,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -3158,7 +3637,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -3198,7 +3688,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -3277,7 +3780,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -3317,7 +3831,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -3413,7 +3940,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -3453,7 +3991,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -3551,7 +4102,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -3591,7 +4153,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -3711,7 +4286,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -3751,7 +4337,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -3827,7 +4426,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -3867,7 +4477,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -3942,7 +4565,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -3982,7 +4616,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -4073,7 +4720,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -4113,7 +4771,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -4210,7 +4881,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -4250,7 +4932,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -4387,7 +5082,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -4427,7 +5133,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -4506,7 +5225,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -4546,7 +5276,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -4622,7 +5365,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -4662,7 +5416,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -4755,7 +5522,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -4795,7 +5573,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -5798,7 +6589,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -5838,7 +6640,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -5913,7 +6728,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -5953,7 +6779,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -6029,7 +6868,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -6069,7 +6919,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -6144,7 +7007,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -6184,7 +7058,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -6260,7 +7147,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -6300,7 +7198,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -6375,7 +7286,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": [
 				{
@@ -6415,7 +7337,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -6449,7 +7384,18 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "{{baseUrl}}/api/v1/model/workflow-resource"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource"
+					]
+				}
 			},
 			"response": []
 		},
@@ -6540,7 +7486,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/resources"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources"
+					]
+				}
 			},
 			"response": [
 				{
@@ -6580,7 +7537,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -6724,7 +7694,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/resources"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources"
+					]
+				}
 			},
 			"response": [
 				{
@@ -6764,7 +7745,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -6868,7 +7862,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/resources"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources"
+					]
+				}
 			},
 			"response": [
 				{
@@ -6908,7 +7913,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -6988,7 +8006,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/resources"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources"
+					]
+				}
 			},
 			"response": [
 				{
@@ -7028,7 +8057,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -7130,7 +8172,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/resources"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources"
+					]
+				}
 			},
 			"response": [
 				{
@@ -7170,7 +8223,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -7313,7 +8379,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/resources"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources"
+					]
+				}
 			},
 			"response": [
 				{
@@ -7353,7 +8430,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -7456,7 +8546,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/resources"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources"
+					]
+				}
 			},
 			"response": [
 				{
@@ -7496,7 +8597,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -7593,7 +8707,18 @@
 						}
 					]
 				},
-				"url": "{{baseUrl}}/api/v1/model/resources"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources"
+					]
+				}
 			},
 			"response": [
 				{
@@ -7633,7 +8758,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -7667,7 +8805,18 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "{{baseUrl}}/api/v1/model/resources"
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources"
+					]
+				}
 			},
 			"response": []
 		},
@@ -7775,7 +8924,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -7895,7 +9057,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -8015,7 +9190,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -8135,7 +9323,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -8275,7 +9476,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -8458,7 +9672,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -8625,7 +9852,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -8747,7 +9987,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -8870,7 +10123,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -9002,7 +10268,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -9169,7 +10448,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -9291,7 +10583,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -9414,7 +10719,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -9546,7 +10864,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -9713,7 +11044,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -9835,7 +11179,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -9958,7 +11315,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -10090,7 +11460,20 @@
 								}
 							]
 						},
-						"url": "http://localhost:8086/api/v1/model/bpmn"
+						"url": {
+							"raw": "http://localhost:8086/api/v1/model/bpmn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn"
+							]
+						}
 					},
 					"status": "OK",
 					"code": 200,
@@ -10210,10 +11593,18 @@
 	],
 	"auth": {
 		"type": "apikey",
-		"apikey": {
-			"value": "TfRV0R7jTX1ZhzWxdZBvn2ALZxlhgd446EPfuECc",
-			"key": "x-api-key"
-		}
+		"apikey": [
+			{
+				"key": "value",
+				"value": "TfRV0R7jTX1ZhzWxdZBvn2ALZxlhgd446EPfuECc",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "x-api-key",
+				"type": "string"
+			}
+		]
 	},
 	"event": [
 		{
