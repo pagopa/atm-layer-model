@@ -11,6 +11,9 @@ public enum UtilityValues {
     BRANCH_ID("branchId"),
     TERMINAL_ID("terminalId"),
     FUNCTION_TYPE("functionType"),
+    XML_EXTENSION("xml"),
+    JSON_EXTENSION("json"),
+    TXT_EXTENSION("txt"),
     DISABLED_FLAG("_disabled_");
 
     @JsonValue

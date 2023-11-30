@@ -46,4 +46,14 @@ public class FileUtilitiesTest {
     Files.write(tempFilePath, randomBytes);
     return tempFile;
   }
+
+  @Test
+  public void testExtractIdValueFromJSONBlankDefinitionKey() {
+    File file = new File("src/test/resources/TestMalformed.form");
+    DeployableResourceType resourceType = DeployableResourceType.FORM;
+    Element element = mock(Element.class);
+    when(element.getAttribute(anyString())).thenReturn("");
+    assertThrows(
+            AtmLayerException.class, () -> FileUtilities.extractIdValue(file, resourceType));
+  }
 }
