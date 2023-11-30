@@ -1,24 +1,12 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.MALFORMED_FILE;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Objects;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -28,6 +16,18 @@ import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
+
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.MALFORMED_FILE;
 
 @ApplicationScoped
 @Slf4j
@@ -98,9 +98,14 @@ public class FileUtilities {
     }
 
     public static boolean isExtensionValid(File file, String fileName) throws IOException, MimeTypeException {
-
         String detectedExtension = getExtension(file);
         String extension = FilenameUtils.getExtension(fileName);
+        if (Objects.equals(extension, "bpmn") || Objects.equals(extension, "dmn")) {
+            extension = UtilityValues.XML_EXTENSION.getValue();
+        }
+        if (Objects.equals(extension, "form")) {
+            extension = UtilityValues.TXT_EXTENSION.getValue();
+        }
         return Objects.equals(extension, detectedExtension);
     }
 
@@ -109,7 +114,7 @@ public class FileUtilities {
         String detectedType = tika.detect(file);
         MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
         MimeType type = allTypes.forName(detectedType);
-        return type.getExtension().replace(".","");
+        return type.getExtension().replace(".", "");
     }
 
 }
