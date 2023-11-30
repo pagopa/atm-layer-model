@@ -1,15 +1,16 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import java.io.File;
@@ -50,6 +51,28 @@ class WorkflowResourceMapperTest {
     assertEquals(StatusEnum.CREATED, workflowResource.getStatus());
     assertEquals(expectedSha256, workflowResource.getSha256());
     assertEquals("testFile.DMN", workflowResource.getDeployedFileName());
+  }
+
+  @Test
+  void toDto_null(){
+    WorkflowResource resourceFile = null;
+    WorkflowResourceDTO resource = mapper.toDTO(resourceFile);
+    assertNull(resource);
+  }
+  @Test
+  void toDtoCreation_null(){
+    WorkflowResourceCreationDto resourceFile = null;
+    WorkflowResourceCreationDto resource = mapper.toDtoCreation(resourceFile);
+    assertNull(resource);
+  }
+
+  @Test
+  void toDtoCreation(){
+    WorkflowResourceCreationDto resourceFile = new WorkflowResourceCreationDto();;
+    resourceFile.setResourceType(DeployableResourceType.BPMN);
+    WorkflowResourceCreationDto resource = mapper.toDtoCreation(resourceFile);
+    assertNotNull(resource);
+    assertEquals(DeployableResourceType.BPMN, resource.getResourceType());
   }
 
   private File createTemporaryFileWithContent() throws IOException {
