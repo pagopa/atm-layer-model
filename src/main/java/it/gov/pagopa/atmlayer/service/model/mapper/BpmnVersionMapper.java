@@ -14,7 +14,6 @@ import org.mapstruct.Mapping;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "cdi")
 public abstract class BpmnVersionMapper {
@@ -38,7 +37,7 @@ public abstract class BpmnVersionMapper {
     public abstract BpmnProcessDTO toProcessDTO(BpmnDTO bpmnProcessDTO);
 
     public List<BpmnDTO> toDTOList(List<BpmnVersion> list) {
-        return list.stream().map(this::toDTO).collect(Collectors.toList());
+        return list.stream().map(this::toDTO).toList();
     }
 
     @Mapping(ignore = true, target = "enabled")

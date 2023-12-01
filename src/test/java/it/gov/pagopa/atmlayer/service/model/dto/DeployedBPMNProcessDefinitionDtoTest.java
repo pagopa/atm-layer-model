@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.UUID;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-public class DeployedBPMNProcessDefinitionDtoTest {
+@QuarkusTest
+class DeployedBPMNProcessDefinitionDtoTest {
 
   @Test
   void testConstructor() {

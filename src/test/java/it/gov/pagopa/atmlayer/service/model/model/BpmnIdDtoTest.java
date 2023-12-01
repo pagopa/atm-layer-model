@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -7,23 +8,23 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class BpmnIdDtoTest {
+@QuarkusTest
+class BpmnIdDtoTest {
 
   @Test
-  public void testEqualsAndHashCode() {
+  void testEqualsAndHashCode() {
     BpmnIdDto dto1 = new BpmnIdDto(UUID.randomUUID(), 1L);
     BpmnIdDto dto2 = new BpmnIdDto(UUID.randomUUID(), 1L);
 
-    assertEquals(dto1, dto1);
     assertNotEquals(dto1, dto2);
-    assertNotEquals(dto1, null);
+    assertNotEquals(null, dto1);
 
     BpmnIdDto dto3 = new BpmnIdDto(UUID.randomUUID(), 2L);
     assertNotEquals(dto1, dto3);
   }
 
   @Test
-  public void testToString() {
+  void testToString() {
     UUID uuid = UUID.randomUUID();
     BpmnIdDto dto = new BpmnIdDto(uuid, 1L);
 
@@ -32,7 +33,7 @@ public class BpmnIdDtoTest {
   }
 
   @Test
-  public void testGetterAndSetter() {
+  void testGetterAndSetter() {
     BpmnIdDto dto = new BpmnIdDto(UUID.randomUUID(), 1L);
 
     UUID newUuid = UUID.randomUUID();

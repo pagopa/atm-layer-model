@@ -19,6 +19,7 @@
 //import static org.junit.jupiter.api.Assertions.assertEquals;
 //import static org.mockito.Mockito.*;
 //
+//@QuarkusTest
 //class ObjectStoreStrategyConfigTest {
 //    @InjectMocks
 //    private ObjectStoreStrategyConfig objectStoreStrategyConfig;

@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
-public class BpmnBankConfigTest {
+class BpmnBankConfigTest {
 
   private BpmnBankConfig bpmnBankConfig;
 
@@ -19,7 +19,7 @@ public class BpmnBankConfigTest {
   }
 
   @Test
-  public void testGettersAndSetters() {
+  void testGettersAndSetters() {
 
     BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
     bpmnBankConfig.setBpmnBankConfigPK(bpmnBankConfigPK);

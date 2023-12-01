@@ -9,5 +9,5 @@ public enum FileParsingUtilityValues {
     TAG_NAME("bpmn:process"),
     ATTRIBUTE("id");
 
-    private String value;
+    private final String value;
 }

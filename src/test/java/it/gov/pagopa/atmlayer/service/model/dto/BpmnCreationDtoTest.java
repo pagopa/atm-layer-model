@@ -5,9 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.nio.file.Paths;
+
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-public class BpmnCreationDtoTest {
+@QuarkusTest
+class BpmnCreationDtoTest {
 
   @Test
   void testCanEqual() {
@@ -37,7 +40,7 @@ public class BpmnCreationDtoTest {
     bpmnCreationDto.setFile(Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toFile());
     bpmnCreationDto.setFilename("foo.txt");
     bpmnCreationDto.setFunctionType("MENU");
-    assertNotEquals(bpmnCreationDto, null);
+    assertNotEquals(null, bpmnCreationDto);
   }
 }
 

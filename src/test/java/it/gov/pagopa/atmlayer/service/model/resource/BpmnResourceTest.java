@@ -3,7 +3,6 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
@@ -20,12 +19,12 @@ import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnFileStorageServiceImpl;
 import it.gov.pagopa.atmlayer.service.model.validators.BpmnEntityValidator;
 import jakarta.ws.rs.core.MediaType;
-import org.jboss.resteasy.reactive.RestMulti;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +39,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static io.vertx.core.buffer.Buffer.buffer;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,7 +63,7 @@ class BpmnResourceTest {
     BpmnBankConfigService bpmnBankConfigService;
 
     @Test
-    void testGetAllBpmnOK() {
+    void testGetAllBpmn() {
         List<BpmnVersion> bpmnList = new ArrayList<>();
         BpmnVersion bpmnVersion = new BpmnVersion();
         bpmnList.add(bpmnVersion);
@@ -82,6 +80,24 @@ class BpmnResourceTest {
                 .body()
                 .as(ArrayList.class);
         assertEquals(1, result.size());
+        verify(bpmnVersionService, times(1)).getAll();
+        verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
+    }
+
+    @Test
+    void testGetAllEmptyList() {
+        List<BpmnVersion> bpmnList = new ArrayList<>();
+        List<BpmnDTO> dtoList = new ArrayList<>();
+        when(bpmnVersionService.getAll()).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
+        ArrayList result = given()
+                .when().get("/api/v1/model/bpmn")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(ArrayList.class);
+        assertEquals(0, result.size());
         verify(bpmnVersionService, times(1)).getAll();
         verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
     }
@@ -146,7 +162,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void testAssociateBPMNOK() {
+    void testAssociateBPMN() {
         BpmnAssociationDto bpmnAssociationDto = getBpmnAssociationDtoInstance();
         List<BpmnBankConfig> bankConfigList = new ArrayList<>();
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
@@ -170,7 +186,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void createBPMNOK() throws NoSuchAlgorithmException, IOException {
+    void testCreateBPMN() throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = new BpmnVersion();
         BpmnDTO bpmnDTO = new BpmnDTO();
         when(bpmnVersionMapper.toEntityCreation(any(BpmnCreationDto.class))).thenReturn(bpmnVersion);
@@ -189,7 +205,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void deleteBpmn() {
+    void testDeleteBpmn() {
         UUID bpmnId = UUID.randomUUID();
         Long version = 1L;
         BpmnVersionPK key = new BpmnVersionPK(bpmnId, version);
@@ -204,11 +220,11 @@ class BpmnResourceTest {
     }
 
     @Test
-    void deployBPMN() {
+    void testDeployBPMN() {
         UUID bpmnId = UUID.randomUUID();
         Long version = 1L;
         BpmnVersionPK expectedKey = new BpmnVersionPK(bpmnId, version);
-        BpmnVersion expectedBpmn = (new BpmnVersion());
+        BpmnVersion expectedBpmn = new BpmnVersion();
         BpmnDTO expectedDto = new BpmnDTO();
         expectedDto.setBpmnId(bpmnId);
         expectedDto.setModelVersion(version);
@@ -228,7 +244,7 @@ class BpmnResourceTest {
     }
 
 //    @Test
-//    void downloadBpmnOK() {
+//    void downloadBpmn() {
 //        UUID bpmnId=UUID.randomUUID();
 //        Long version=1L;
 //        BpmnVersionPK expectedKey=new BpmnVersionPK(bpmnId,version);
@@ -252,7 +268,7 @@ class BpmnResourceTest {
 //    }
 
     @Test
-    void downloadBpmnNullResourceFile() {
+    void testDownloadBpmnNullResourceFile() {
         UUID bpmnId = UUID.randomUUID();
         Long version = 1L;
         BpmnVersionPK expectedKey = new BpmnVersionPK(bpmnId, version);
@@ -272,13 +288,14 @@ class BpmnResourceTest {
     }
 
     @Test
-    void downloadBpmnBlankStorageKey() {
+    void testDownloadBpmnBlankStorageKey() {
         UUID bpmnId = UUID.randomUUID();
         Long version = 1L;
         BpmnVersionPK expectedKey = new BpmnVersionPK(bpmnId, version);
         ResourceFile expectedResourceFile = getResourceFileInstance();
         expectedResourceFile.setStorageKey("");
-        BpmnVersion expectedBpmn = (new BpmnVersion());
+        BpmnVersion expectedBpmn = new BpmnVersion();
+        expectedBpmn.setResourceFile(expectedResourceFile);
         BpmnDTO expectedDto = new BpmnDTO();
         expectedDto.setBpmnId(bpmnId);
         expectedDto.setModelVersion(version);
@@ -294,7 +311,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void downloadBpmnDoesNotExist() {
+    void testDownloadBpmnDoesNotExist() {
         UUID bpmnId = UUID.randomUUID();
         Long version = 1L;
         BpmnVersionPK expectedKey = new BpmnVersionPK(bpmnId, version);
@@ -315,7 +332,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void findBPMNByTriadThreeValues() {
+    void testFindBPMNByTriadThreeValues() {
         BpmnBankConfigPK expectedBankConfigPK = getBpmnBankConfigPKThreeValueInstance();
         BpmnBankConfig expectedBankConfig = new BpmnBankConfig();
         expectedBankConfig.setBpmnBankConfigPK(expectedBankConfigPK);
@@ -334,10 +351,20 @@ class BpmnResourceTest {
                 .statusCode(200);
         verify(bpmnBankConfigService, times(1)).findByConfigurationsAndFunction("ACQ", "BRANCH", "TERMINAL", "MENU");
         verify(bpmnVersionService, times(1)).findByPk(expectedBpmnVersionPK);
+        BpmnProcessDTO bpmnProcessDTO=new BpmnProcessDTO();
+        when(bpmnVersionMapper.toProcessDTO(any(BpmnDTO.class))).thenReturn(bpmnProcessDTO);
+        given()
+                .pathParam("functionType", "MENU")
+                .pathParam("acquirerId", "ACQ")
+                .pathParam("branchId", "BRANCH")
+                .pathParam("terminalId", "TERMINAL")
+                .when().get("/api/v1/model/bpmn/process/function/{functionType}/bank/{acquirerId}/branch/{branchId}/terminal/{terminalId}")
+                .then()
+                .statusCode(200);
     }
 
     @Test
-    void findBPMNByTriadTwoValues() {
+    void testFindBPMNByTriadTwoValues() {
         BpmnBankConfigPK expectedBankConfigPK = getBpmnBankConfigPKThreeValueInstance();
         BpmnBankConfig expectedBankConfig = new BpmnBankConfig();
         expectedBankConfig.setBpmnBankConfigPK(expectedBankConfigPK);
@@ -361,7 +388,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void findBPMNByTriadOneValues() {
+    void testFindBPMNByTriadOneValues() {
         BpmnBankConfigPK expectedBankConfigPK = getBpmnBankConfigPKThreeValueInstance();
         BpmnBankConfig expectedBankConfig = new BpmnBankConfig();
         expectedBankConfig.setBpmnBankConfigPK(expectedBankConfigPK);
@@ -386,7 +413,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void findBPMNByTriadNotFoundException() {
+    void testFindBPMNByTriadNotFoundException() {
         BpmnBankConfigPK expectedBankConfigPK = getBpmnBankConfigPKThreeValueInstance();
         BpmnBankConfig expectedBankConfig = new BpmnBankConfig();
         expectedBankConfig.setBpmnBankConfigPK(expectedBankConfigPK);
@@ -411,7 +438,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void upgradeBPMN() {
+    void testUpgradeBPMN() {
         BpmnUpgradeDto expectedUpmnUpgradeDto = new BpmnUpgradeDto();
         when(bpmnVersionService.upgrade(any(BpmnUpgradeDto.class))).thenReturn(Uni.createFrom().item(new BpmnDTO()));
         given()
@@ -427,7 +454,7 @@ class BpmnResourceTest {
     }
 
     @Test
-    void getAssociations() {
+    void testGetAssociations() {
         BpmnBankConfigDTO bpmnBankConfigDTO = new BpmnBankConfigDTO();
         List<BpmnBankConfigDTO> expectedList = new ArrayList<>();
         expectedList.add(bpmnBankConfigDTO);

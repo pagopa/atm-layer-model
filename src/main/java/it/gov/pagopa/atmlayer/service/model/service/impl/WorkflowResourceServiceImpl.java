@@ -37,12 +37,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOYED_FILE_WAS_NOT_RETRIEVED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_FILE_DOES_NOT_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_ROLLED_BACK;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_UPDATED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculateSha256;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.extractIdValue;
@@ -50,20 +53,15 @@ import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.extractId
 @ApplicationScoped
 @Slf4j
 public class WorkflowResourceServiceImpl implements WorkflowResourceService {
-
     @Inject
     WorkflowResourceRepository workflowResourceRepository;
-
     @Inject
     ResourceFileRepository resourceFileRepository;
-
     @Inject
     WorkflowResourceStorageService workflowResourceStorageService;
-
     @Inject
     @RestClient
     ProcessClient processClient;
-
 
     @Override
     @WithTransaction
@@ -102,14 +100,13 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
     }
 
-
     public Uni<Boolean> checkWorkflowResourceFileExistence(UUID uuid) {
         return this.findById(uuid)
                 .onItem()
                 .transform(Unchecked.function(optionalWorkflowResource -> {
                             if (optionalWorkflowResource.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced Workflow Resource files do not exists: %s", uuid);
+                                        "One or some of the referenced Workflow Resource files with id: %s do not exists", uuid);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         WORKFLOW_FILE_DOES_NOT_EXIST);
                             }
@@ -143,7 +140,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         return this.checkWorkflowResourceFileExistence(id)
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
-                    if (!x) {
+                    if (Boolean.FALSE.equals(x)) {
                         String errorMessage = "The referenced Workflow Resource file can not be deployed";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED);
@@ -199,7 +196,6 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                                 WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
                     WorkflowResource workflowResource = optionalWorkflowResource.get();
-
                     if (response.getDeployedProcessDefinitions() != null) {
                         Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
                         Optional<DeployedBPMNProcessDefinitionDto> optionalDeployedProcessDefinition = deployedProcessDefinitions.values()
@@ -210,13 +206,11 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         DeployedBPMNProcessDefinitionDto deployedProcessInfo = optionalDeployedProcessDefinition.get();
                         workflowResource.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
                         workflowResource.setDeploymentId(deployedProcessInfo.getDeploymentId());
-                        workflowResource.setCamundaDefinitionId(deployedProcessInfo.getId());
                         workflowResource.setDeployedFileName(deployedProcessInfo.getName());
                         workflowResource.setDescription(deployedProcessInfo.getDescription());
                         workflowResource.setResource(deployedProcessInfo.getResource());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
-                    }
-                    if (response.getDeployedDecisionDefinitions() != null) {
+                    } else if (response.getDeployedDecisionDefinitions() != null) {
                         Map<String, DeployedDMNDecisionDefinitionDto> deployedDecisionDefinitions = response.getDeployedDecisionDefinitions();
                         Optional<DeployedDMNDecisionDefinitionDto> optionalDeployedDecisionDefinition = deployedDecisionDefinitions.values()
                                 .stream().findFirst();
@@ -226,15 +220,14 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         DeployedDMNDecisionDefinitionDto deployedDecisionDefinition = optionalDeployedDecisionDefinition.get();
                         workflowResource.setDefinitionVersionCamunda(deployedDecisionDefinition.getVersion());
                         workflowResource.setDeploymentId(deployedDecisionDefinition.getDeploymentId());
-                        workflowResource.setCamundaDefinitionId(deployedDecisionDefinition.getId());
                         workflowResource.setDeployedFileName(deployedDecisionDefinition.getName());
                         workflowResource.setResource(deployedDecisionDefinition.getResource());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
                     } else {
-                        workflowResource.setCamundaDefinitionId(response.getId());
                         workflowResource.setDeployedFileName(response.getName());
                         workflowResource.setStatus(StatusEnum.DEPLOYED);
                     }
+                    workflowResource.setCamundaDefinitionId(response.getId());
                     return this.workflowResourceRepository.persist(workflowResource);
                 }));
     }
@@ -243,14 +236,14 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @WithTransaction
     public Uni<WorkflowResource> saveAndUpload(WorkflowResource workflowResource, File file, String filename) {
         return this.save(workflowResource)
-                .onItem().transformToUni(record -> this.workflowResourceStorageService.uploadFile(workflowResource, file, filename)
+                .onItem().transformToUni(element -> this.workflowResourceStorageService.uploadFile(workflowResource, file, filename)
                         .onFailure().recoverWithUni(failure -> {
                             log.error(failure.getMessage());
                             return Uni.createFrom().failure(new AtmLayerException("Failed to save Workflow Resource in Object Store. Workflow Resource creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                         })
                         .onItem().transformToUni(putObjectResponse -> {
                             log.info("Completed Workflow Resource Creation");
-                            return Uni.createFrom().item(record);
+                            return Uni.createFrom().item(element);
                         }));
     }
 
@@ -300,7 +293,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
 
     @Override
     @WithTransaction
-    public Uni<WorkflowResource> update(UUID id, File file) throws NoSuchAlgorithmException, IOException {
+    public Uni<WorkflowResource> update(UUID id, File file, boolean isRollback) throws NoSuchAlgorithmException, IOException {
         return this.findById(id)
                 .onItem()
                 .transformToUni(Unchecked.function(workflow -> {
@@ -321,8 +314,11 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     if (!workflowFound.getDefinitionKey().equals(definitionKey)) {
                         throw new AtmLayerException(String.format("The definition key in your Workflow Resource: %s does not match the Workflow Resource you are trying to update", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
                     }
-                    if (workflowFound.getStatus().equals(StatusEnum.DEPLOYED)) {
+                    if (!isRollback && workflowFound.getStatus().equals(StatusEnum.DEPLOYED)) {
                         workflowFound.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
+                    }
+                    if (isRollback && workflowFound.getStatus().equals(StatusEnum.UPDATED_BUT_NOT_DEPLOYED)) {
+                        workflowFound.setStatus(StatusEnum.DEPLOYED);
                     }
                     Date date = new Date();
                     workflowFound.setLastUpdatedAt(new Timestamp(date.getTime()));
@@ -333,7 +329,30 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                             .onItem().transformToUni(updatedFile -> this.findById(id)
                                     .onItem().transformToUni(optionalWorkflowResource -> Uni.createFrom().item(optionalWorkflowResource.get())));
                 }));
+    }
 
-
+    @Override
+    public Uni<WorkflowResource> rollback(UUID id) {
+        return this.findById(id)
+                .onItem()
+                .transformToUni(Unchecked.function(workflow -> {
+                    if (workflow.isEmpty()) {
+                        throw new AtmLayerException("The referenced workflow resource does not exist", Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                    }
+                    WorkflowResource workflowResourceToRollBack = workflow.get();
+                    if (workflowResourceToRollBack.getStatus().getValue().equals(StatusEnum.DEPLOYED.getValue())) {
+                        throw new AtmLayerException("Cannot rollback: the referenced resource is the latest version deployed", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_ROLLED_BACK);
+                    }
+                    String camundaId = workflowResourceToRollBack.getCamundaDefinitionId();
+                    if (camundaId == null) {
+                        throw new AtmLayerException("CamundaDefinitionId of the referenced resource is null: cannot rollback", Response.Status.NOT_FOUND, WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK);
+                    }
+                    return processClient.getDeployedResource(camundaId)
+                            .onFailure()
+                            .recoverWithUni(exception ->
+                                    Uni.createFrom().failure(new AtmLayerException("Error retrieving workflow resource from Process", Response.Status.INTERNAL_SERVER_ERROR, DEPLOYED_FILE_WAS_NOT_RETRIEVED)))
+                            .onItem()
+                            .transformToUni(Unchecked.function(file -> update(id, file, true)));
+                }));
     }
 }

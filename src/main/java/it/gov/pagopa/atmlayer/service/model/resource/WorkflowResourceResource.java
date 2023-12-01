@@ -79,14 +79,14 @@ public class WorkflowResourceResource {
     }
 
     @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
-    @NonBlocking
-    public Uni<WorkflowResourceDTO> create(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
-        WorkflowResource workflowResource = workflowResourceMapper.toEntityCreation(workflowResourceCreationDto);
-        return this.workflowResourceService.createWorkflowResource(workflowResource, workflowResourceCreationDto.getFile(), workflowResourceCreationDto.getFilename())
-                .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(bpmn)));
-    }
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @Produces(MediaType.APPLICATION_JSON)
+  @NonBlocking
+  public Uni<WorkflowResourceDTO> create(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
+    WorkflowResource workflowResource = workflowResourceMapper.toEntityCreation(workflowResourceCreationDto);
+    return this.workflowResourceService.createWorkflowResource(workflowResource, workflowResourceCreationDto.getFile(), workflowResourceCreationDto.getFilename())
+        .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(bpmn)));
+  }
 
     @POST
     @Path("/deploy/{uuid}")
@@ -116,9 +116,18 @@ public class WorkflowResourceResource {
     public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") File file,
                                            @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
 
-        return workflowResourceService.update(uuid, file)
+        return workflowResourceService.update(uuid, file,false)
                 .onItem()
                 .transformToUni(updatedWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(updatedWorkflowResource)));
-
     }
+
+    @PUT
+    @Path("/rollback/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<WorkflowResourceDTO> rollback(@PathParam("uuid") UUID uuid) {
+        return workflowResourceService.rollback(uuid)
+                .onItem()
+                .transformToUni(rolledBackWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(rolledBackWorkflowResource)));
+    }
+
 }

@@ -7,9 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.ArrayList;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-public class BranchDtoTest {
+@QuarkusTest
+class BranchDtoTest {
 
   @Test
   void testCanEqual() {
@@ -33,7 +35,7 @@ public class BranchDtoTest {
     BranchDto branchDto = new BranchDto();
     branchDto.setBranchId("namesurname/featurebranch");
     branchDto.setTerminalId(new ArrayList<>());
-    assertNotEquals(branchDto, null);
+    assertNotEquals(null, branchDto);
   }
 }
 

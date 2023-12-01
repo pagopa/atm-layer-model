@@ -30,5 +30,7 @@ public interface WorkflowResourceService {
 
     Uni<List<WorkflowResource>> getAll();
 
-    Uni<WorkflowResource> update(UUID id, File file) throws NoSuchAlgorithmException, IOException;
+    Uni<WorkflowResource> update(UUID id, File file,boolean isRollback) throws NoSuchAlgorithmException, IOException;
+
+    Uni<WorkflowResource> rollback(UUID id);
 }

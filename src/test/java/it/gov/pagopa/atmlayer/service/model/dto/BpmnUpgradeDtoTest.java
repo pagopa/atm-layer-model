@@ -8,9 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-public class BpmnUpgradeDtoTest {
+@QuarkusTest
+class BpmnUpgradeDtoTest {
 
 
   @Test
@@ -40,7 +42,7 @@ public class BpmnUpgradeDtoTest {
     bpmnUpgradeDto.setFilename("foo.txt");
     bpmnUpgradeDto.setFunctionType("MENU");
     bpmnUpgradeDto.setUuid(UUID.randomUUID());
-    assertNotEquals(bpmnUpgradeDto, null);
+    assertNotEquals(null, bpmnUpgradeDto);
   }
 }
 

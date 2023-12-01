@@ -7,15 +7,20 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion, BpmnVersionPK> {
+
     public Uni<BpmnVersion> findBySHA256(String sha256) {
-        return find("sha256", sha256).firstResult();
+        Map<String,Object> params=new HashMap<>();
+        params.put("sha256",sha256);
+        return find("select b from BpmnVersion b where b.sha256 = :sha256", params).firstResult();
     }
 
     public Uni<List<BpmnVersion>> findByIds(Set<BpmnVersionPK> ids) {
@@ -32,6 +37,6 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
     }
 
     public Uni<BpmnVersion> findByDefinitionKey(String definitionKey) {
-        return find("definitionKey", definitionKey).firstResult();
+        return find("select b from BpmnVersion b where b.definitionKey = :definitionKey", Parameters.with("definitionKey",definitionKey)).firstResult();
     }
 }

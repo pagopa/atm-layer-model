@@ -3,11 +3,17 @@ package it.gov.pagopa.atmlayer.service.model.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -16,10 +22,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import java.util.Objects;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.MALFORMED_FILE;
@@ -36,7 +41,8 @@ public class FileUtilities {
             case FORM -> {
                 return extractIdValueFromJson(file, resourceTypeEnum);
             }
-            default -> throw new AtmLayerException("File not supported", Response.Status.NOT_ACCEPTABLE, MALFORMED_FILE);
+            default ->
+                    throw new AtmLayerException("File not supported", Response.Status.NOT_ACCEPTABLE, MALFORMED_FILE);
         }
     }
 
@@ -72,26 +78,14 @@ public class FileUtilities {
         }
     }
 
-    public static byte[] fileToByteArray(File file) throws IOException {
-        return FileUtils.readFileToByteArray(file);
-    }
-
     public static String calculateSha256(File file) throws NoSuchAlgorithmException, IOException {
         byte[] array = toSha256ByteArray(file);
         return toHexString(array);
     }
 
-    public static byte[] encodeToBase64(byte[] array) {
-        return Base64.getEncoder().encode(array);
-    }
-
     public static byte[] toSha256ByteArray(File file) throws NoSuchAlgorithmException, IOException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         return digest.digest(FileUtils.readFileToByteArray(file));
-    }
-
-    public static byte[] base64ToByteArray(String base64) {
-        return Base64.getDecoder().decode(base64);
     }
 
     public static String toHexString(byte[] hash) {
@@ -103,7 +97,24 @@ public class FileUtilities {
         return hexString.toString();
     }
 
-    public static String byteArrayToString(byte[] byteArray) {
-        return new String(byteArray, StandardCharsets.UTF_8);
+    public static boolean isExtensionValid(File file, String fileName) throws IOException, MimeTypeException {
+        String detectedExtension = getExtension(file);
+        String extension = FilenameUtils.getExtension(fileName);
+        if (Objects.equals(extension, "bpmn") || Objects.equals(extension, "dmn")) {
+            extension = UtilityValues.XML_EXTENSION.getValue();
+        }
+        if (Objects.equals(extension, "form")) {
+            extension = UtilityValues.TXT_EXTENSION.getValue();
+        }
+        return Objects.equals(extension, detectedExtension);
     }
+
+    public static String getExtension(File file) throws IOException, MimeTypeException {
+        Tika tika = new Tika();
+        String detectedType = tika.detect(file);
+        MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+        MimeType type = allTypes.forName(detectedType);
+        return type.getExtension().replace(".", "");
+    }
+
 }

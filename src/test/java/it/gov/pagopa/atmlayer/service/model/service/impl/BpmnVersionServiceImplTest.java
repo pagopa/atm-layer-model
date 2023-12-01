@@ -42,10 +42,13 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @QuarkusTest
 class BpmnVersionServiceImplTest {
@@ -255,7 +258,7 @@ class BpmnVersionServiceImplTest {
     void testSetBpmnVersionStatusBpmnVersionDoesNotExist() {
         ListObjectsResponse list=mock(ListObjectsResponse.class);
         BpmnVersionPK bpmnVersionPK = new BpmnVersionPK(UUID.randomUUID(), 1L);
-        String expectedErrorMessage = String.format("One or some of the referenced BPMN files do not exists: %s", bpmnVersionPK);
+        String expectedErrorMessage = String.format("The referenced BPMN key does not exist: %s", bpmnVersionPK);
         when(bpmnVersionRepoMock.findById(bpmnVersionPK)).thenReturn(Uni.createFrom().nullItem());
         bpmnVersionServiceImpl.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOYED)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())

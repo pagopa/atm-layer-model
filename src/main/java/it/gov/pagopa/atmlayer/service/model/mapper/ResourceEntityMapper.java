@@ -11,7 +11,6 @@ import org.mapstruct.Mapper;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "cdi")
 public abstract class ResourceEntityMapper {
@@ -33,6 +32,6 @@ public abstract class ResourceEntityMapper {
     public abstract ResourceDTO toDTO(ResourceEntity resourceEntity);
 
     public List<ResourceDTO> toDTOList(List<ResourceEntity> list) {
-        return list.stream().map(this::toDTO).collect(Collectors.toList());
+        return list.stream().map(this::toDTO).toList();
     }
 }

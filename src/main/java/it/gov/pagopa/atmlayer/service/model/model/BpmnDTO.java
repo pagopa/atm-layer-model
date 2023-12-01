@@ -29,6 +29,7 @@ public class BpmnDTO {
     private String functionType;
     private StatusEnum status;
     private String sha256;
+    private Boolean enabled;
     private Integer definitionVersionCamunda;
     private String camundaDefinitionId;
     private String description;

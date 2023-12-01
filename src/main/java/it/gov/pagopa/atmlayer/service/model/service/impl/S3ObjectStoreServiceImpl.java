@@ -119,7 +119,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
                 })
                 .onItem().transformToUni(res -> {
                     log.info("success uploading from s3");
-                    return Uni.createFrom().item(ObjectStorePutResponse.builder().storage_key(putObjectRequest.key()).build());
+                    return Uni.createFrom().item(ObjectStorePutResponse.builder().storageKey(putObjectRequest.key()).build());
                 });
 
     }

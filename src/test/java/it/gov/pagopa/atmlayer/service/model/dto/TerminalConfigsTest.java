@@ -7,9 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-public class TerminalConfigsTest {
+@QuarkusTest
+class TerminalConfigsTest {
 
 
   @Test
@@ -32,7 +34,7 @@ public class TerminalConfigsTest {
     terminalConfigs.setTemplateId(UUID.randomUUID());
     terminalConfigs.setTemplateVersion(1L);
     terminalConfigs.setTerminalIds(new ArrayList<>());
-    assertNotEquals(terminalConfigs, null);
+    assertNotEquals(null, terminalConfigs);
   }
 }
 

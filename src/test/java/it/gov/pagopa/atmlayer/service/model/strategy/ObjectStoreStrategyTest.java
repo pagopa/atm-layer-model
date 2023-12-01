@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 @QuarkusTest
 class ObjectStoreStrategyTest {
     @Test
-    public void testGetTypeWhenEnumFoundThenReturnService() {
+    void testGetTypeWhenEnumFoundThenReturnService() {
         ObjectStoreService objectStoreService = Mockito.mock(ObjectStoreService.class);
         Map<ObjectStoreStrategyEnum, ObjectStoreService> selectObjectStoreByType = new HashMap<>();
         selectObjectStoreByType.put(ObjectStoreStrategyEnum.AWS_S3, objectStoreService);

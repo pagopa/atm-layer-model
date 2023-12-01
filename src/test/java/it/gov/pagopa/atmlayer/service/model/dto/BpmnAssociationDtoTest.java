@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-public class BpmnAssociationDtoTest {
+@QuarkusTest
+class BpmnAssociationDtoTest {
 
   @Test
   void testCanEqual() {

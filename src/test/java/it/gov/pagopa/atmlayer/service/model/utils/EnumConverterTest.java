@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
@@ -7,10 +8,11 @@ import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class EnumConverterTest {
+@QuarkusTest
+class EnumConverterTest {
 
   @Test
-  public void testValidEnumConversion() {
+  void testValidEnumConversion() {
     NoDeployableResourceType validEnum = NoDeployableResourceType.HTML;
     S3ResourceTypeEnum expectedType = S3ResourceTypeEnum.HTML;
     S3ResourceTypeEnum convertedType = EnumConverter.convertEnum(validEnum);
@@ -19,7 +21,7 @@ public class EnumConverterTest {
   }
 
   @Test
-  public void testInvalidEnumConversion() {
+  void testInvalidEnumConversion() {
     ObjectStoreStrategyEnum invalidEnum = ObjectStoreStrategyEnum.AWS_S3;
     AtmLayerException exception = Assertions.assertThrows(AtmLayerException.class, () -> EnumConverter.convertEnum(invalidEnum));
     Assertions.assertEquals("Resource Type not allowed", exception.getMessage());

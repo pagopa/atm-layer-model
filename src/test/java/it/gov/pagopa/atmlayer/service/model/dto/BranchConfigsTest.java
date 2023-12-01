@@ -8,9 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-public class BranchConfigsTest {
+@QuarkusTest
+class BranchConfigsTest {
 
   @Test
   void testCanEqual() {
@@ -40,7 +42,7 @@ public class BranchConfigsTest {
     branchConfigs.setBranchDefaultTemplateVersion(1L);
     branchConfigs.setBranchId("namesurname/featurebranch");
     branchConfigs.setTerminals(new ArrayList<>());
-    assertNotEquals(branchConfigs, null);
+    assertNotEquals(null, branchConfigs);
   }
 }
 

@@ -7,9 +7,6 @@ public class FileObject {
 
     private Long size;
 
-    public FileObject() {
-    }
-
     public static FileObject from(S3Object s3Object) {
         FileObject file = new FileObject();
         if (s3Object != null) {

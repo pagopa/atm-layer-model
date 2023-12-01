@@ -1,14 +1,16 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import java.io.File;
@@ -22,7 +24,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-public class WorkflowResourceMapperTest {
+@QuarkusTest
+class WorkflowResourceMapperTest {
   private WorkflowResourceMapper mapper;
 
   @BeforeEach
@@ -31,10 +34,10 @@ public class WorkflowResourceMapperTest {
   }
 
   @Test
-  public void testToEntityCreation() throws NoSuchAlgorithmException, IOException {
+  void testToEntityCreation() throws NoSuchAlgorithmException, IOException {
 
     WorkflowResourceCreationDto creationDto = mock(WorkflowResourceCreationDto.class);
-    File tempFile = createTemporaryFileWithContent("file content");
+    File tempFile = createTemporaryFileWithContent();
 
     when(creationDto.getFile()).thenReturn(tempFile);
     when(creationDto.getFilename()).thenReturn("testFile");
@@ -50,14 +53,36 @@ public class WorkflowResourceMapperTest {
     assertEquals("testFile.DMN", workflowResource.getDeployedFileName());
   }
 
-  private File createTemporaryFileWithContent(String content) throws IOException {
+  @Test
+  void toDto_null(){
+    WorkflowResource resourceFile = null;
+    WorkflowResourceDTO resource = mapper.toDTO(resourceFile);
+    assertNull(resource);
+  }
+  @Test
+  void toDtoCreation_null(){
+    WorkflowResourceCreationDto resourceFile = null;
+    WorkflowResourceCreationDto resource = mapper.toDtoCreation(resourceFile);
+    assertNull(resource);
+  }
+
+  @Test
+  void toDtoCreation(){
+    WorkflowResourceCreationDto resourceFile = new WorkflowResourceCreationDto();;
+    resourceFile.setResourceType(DeployableResourceType.BPMN);
+    WorkflowResourceCreationDto resource = mapper.toDtoCreation(resourceFile);
+    assertNotNull(resource);
+    assertEquals(DeployableResourceType.BPMN, resource.getResourceType());
+  }
+
+  private File createTemporaryFileWithContent() throws IOException {
     Path tempFilePath = Files.createTempFile("temp-file", ".txt");
-    Files.write(tempFilePath, content.getBytes());
+    Files.write(tempFilePath, "file content".getBytes());
     return tempFilePath.toFile();
   }
 
   @Test
-  public void testToDTOList() {
+  void testToDTOList() {
 
     List<WorkflowResource> workflowResourceList = Arrays.asList(
         createWorkflowResource("file1", "BPMN"),

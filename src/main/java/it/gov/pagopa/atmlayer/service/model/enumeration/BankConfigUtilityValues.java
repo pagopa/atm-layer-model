@@ -8,5 +8,5 @@ import lombok.Getter;
 public enum BankConfigUtilityValues {
     NULL_VALUE("ALL");
 
-    private String value;
+    private final String value;
 }

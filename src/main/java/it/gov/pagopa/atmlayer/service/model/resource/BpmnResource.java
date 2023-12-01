@@ -115,15 +115,16 @@ public class BpmnResource {
     @Path("/bank/{acquirerId}/associations/function/{functionType}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Collection<BpmnBankConfigDTO>> associateBPMN(@PathParam("acquirerId") String acquirerId,
-                                                            @PathParam("functionType") String functionType,
-                                                            @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto)
-            throws NoSuchAlgorithmException, IOException {
+    public Uni<Collection<BpmnBankConfigDTO>> associateBPMN(
+            @PathParam("acquirerId") String acquirerId,
+            @PathParam("functionType") String functionType,
+            @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto) {
         List<BpmnBankConfig> configs = getAcquirerConfigs(bpmnAssociationDto, acquirerId,
                 functionType);
         Set<BpmnVersionPK> bpmnIds = BpmnUtils.extractBpmnUUIDFromAssociations(configs);
         return bpmnEntityValidator.validateExistenceStatusAndFunctionType(bpmnIds, functionType)
-                .onItem().transformToUni(
+                .onItem()
+                .transformToUni(
                         x -> this.bpmnVersionService.putAssociations(acquirerId, functionType, configs))
                 .onItem()
                 .transformToUni(list -> Uni.createFrom().item(this.bpmnConfigMapper.toDTOList(list)));
@@ -133,10 +134,14 @@ public class BpmnResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @NonBlocking
-    public Uni<BpmnDTO> createBPMN(@RequestBody(required = true) @Valid BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
+    public Uni<BpmnDTO> createBPMN(
+            @RequestBody(required = true) @Valid BpmnCreationDto bpmnCreationDto)
+            throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = bpmnVersionMapper.toEntityCreation(bpmnCreationDto);
-        return this.bpmnVersionService.createBPMN(bpmnVersion, bpmnCreationDto.getFile(), bpmnCreationDto.getFilename())
-                .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn)));
+        return this.bpmnVersionService.createBPMN(bpmnVersion, bpmnCreationDto.getFile(),
+                        bpmnCreationDto.getFilename())
+                .onItem()
+                .transformToUni(bpmn -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn)));
     }
 
     @DELETE
@@ -147,7 +152,9 @@ public class BpmnResource {
                                 @PathParam("version") Long version) {
 
         return this.bpmnVersionService.delete(new BpmnVersionPK(bpmnId, version))
-                .onItem().ignore().andSwitchTo(Uni.createFrom().voidItem());
+                .onItem()
+                .ignore()
+                .andSwitchTo(Uni.createFrom().voidItem());
     }
 
     @POST
@@ -155,9 +162,9 @@ public class BpmnResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnDTO> deployBPMN(@PathParam("uuid") UUID uuid,
                                    @PathParam("version") Long version) {
-
         return this.bpmnVersionService.deploy(new BpmnVersionPK(uuid, version))
-                .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn)));
+                .onItem()
+                .transformToUni(bpmn -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn)));
     }
 
     @GET
@@ -177,10 +184,13 @@ public class BpmnResource {
                                 throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
                             }
                             ResourceFile resourceFile = bpmn.get().getResourceFile();
-                            if (Objects.isNull(resourceFile) || StringUtils.isBlank(resourceFile.getStorageKey())) {
-                                String errorMessage = String.format("No file associated to BPMN or no storage key found: %s", key);
+                            if (Objects.isNull(resourceFile) || StringUtils.isBlank(
+                                    resourceFile.getStorageKey())) {
+                                String errorMessage = String.format(
+                                        "No file associated to BPMN or no storage key found: %s", key);
                                 log.error(errorMessage);
-                                throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
+                                throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR,
+                                        AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
                             }
                             return this.bpmnFileStorageService.download(resourceFile.getStorageKey());
                         }));
@@ -193,26 +203,44 @@ public class BpmnResource {
                                         @PathParam("acquirerId") String acquirerId,
                                         @PathParam("branchId") String branchId,
                                         @PathParam("terminalId") String terminalId) {
-        return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId, functionType)
+        return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId,
+                        functionType)
                 .onItem()
                 .transformToUni(x1 -> {
                     if (x1.isPresent()) {
-                        return bpmnVersionService.findByPk(new BpmnVersionPK(x1.get().getBpmnBankConfigPK().getBpmnId(), x1.get().getBpmnBankConfigPK().getBpmnModelVersion()))
-                                .onItem().transformToUni(bpmn1 -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn1.get())));
+                        return bpmnVersionService.findByPk(
+                                        new BpmnVersionPK(x1.get().getBpmnBankConfigPK().getBpmnId(),
+                                                x1.get().getBpmnBankConfigPK().getBpmnModelVersion()))
+                                .onItem()
+                                .transformToUni(
+                                        bpmn1 -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn1.get())));
                     }
-                    return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, BankConfigUtilityValues.NULL_VALUE.getValue(), functionType)
-                            .onItem().transformToUni(x2 -> {
+                    return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId,
+                                    BankConfigUtilityValues.NULL_VALUE.getValue(), functionType)
+                            .onItem()
+                            .transformToUni(x2 -> {
                                 if (x2.isPresent()) {
-                                    return bpmnVersionService.findByPk(new BpmnVersionPK(x2.get().getBpmnBankConfigPK().getBpmnId(), x2.get().getBpmnBankConfigPK().getBpmnModelVersion()))
-                                            .onItem().transformToUni(bpmn2 -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn2.get())));
+                                    return bpmnVersionService.findByPk(
+                                                    new BpmnVersionPK(x2.get().getBpmnBankConfigPK().getBpmnId(),
+                                                            x2.get().getBpmnBankConfigPK().getBpmnModelVersion()))
+                                            .onItem().transformToUni(bpmn2 -> Uni.createFrom()
+                                                    .item(this.bpmnVersionMapper.toDTO(bpmn2.get())));
                                 }
-                                return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, BankConfigUtilityValues.NULL_VALUE.getValue(), BankConfigUtilityValues.NULL_VALUE.getValue(), functionType)
+                                return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId,
+                                                BankConfigUtilityValues.NULL_VALUE.getValue(),
+                                                BankConfigUtilityValues.NULL_VALUE.getValue(), functionType)
                                         .onItem().transformToUni(Unchecked.function(x3 -> {
                                             if (x3.isPresent()) {
-                                                return bpmnVersionService.findByPk(new BpmnVersionPK(x3.get().getBpmnBankConfigPK().getBpmnId(), x3.get().getBpmnBankConfigPK().getBpmnModelVersion()))
-                                                        .onItem().transformToUni(bpmn3 -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn3.get())));
+                                                return bpmnVersionService.findByPk(
+                                                                new BpmnVersionPK(x3.get().getBpmnBankConfigPK().getBpmnId(),
+                                                                        x3.get().getBpmnBankConfigPK().getBpmnModelVersion()))
+                                                        .onItem()
+                                                        .transformToUni(bpmn3 -> Uni.createFrom()
+                                                                .item(this.bpmnVersionMapper.toDTO(bpmn3.get())));
                                             }
-                                            throw new AtmLayerException("No runnable BPMN found for selection", Response.Status.BAD_REQUEST, AppErrorCodeEnum.NO_BPMN_FOUND_FOR_CONFIGURATION);
+                                            throw new AtmLayerException("No runnable BPMN found for selection",
+                                                    Response.Status.BAD_REQUEST,
+                                                    AppErrorCodeEnum.NO_BPMN_FOUND_FOR_CONFIGURATION);
                                         }));
                             });
                 });
@@ -221,12 +249,14 @@ public class BpmnResource {
     @GET
     @Path("/process/function/{functionType}/bank/{acquirerId}/branch/{branchId}/terminal/{terminalId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<BpmnProcessDTO> findBPMNByTriadForProcessService(@PathParam("functionType") String functionType,
-                                                                @PathParam("acquirerId") String acquirerId,
-                                                                @PathParam("branchId") String branchId,
-                                                                @PathParam("terminalId") String terminalId) {
+    public Uni<BpmnProcessDTO> findBPMNByTriadForProcessService(
+            @PathParam("functionType") String functionType,
+            @PathParam("acquirerId") String acquirerId,
+            @PathParam("branchId") String branchId,
+            @PathParam("terminalId") String terminalId) {
         return this.findBPMNByTriad(functionType, acquirerId, branchId, terminalId)
-                .onItem().transformToUni(bpmn -> Uni.createFrom().item(bpmnVersionMapper.toProcessDTO(bpmn)));
+                .onItem()
+                .transformToUni(bpmn -> Uni.createFrom().item(bpmnVersionMapper.toProcessDTO(bpmn)));
     }
 
     @POST
@@ -243,4 +273,13 @@ public class BpmnResource {
     public Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") String acquirerId) {
         return bpmnBankConfigService.findByAcquirerId(acquirerId);
     }
+
+    @POST
+    @Path("/disable/{uuid}/version/{version}")
+    public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId,@PathParam("version") Long version){
+        BpmnVersionPK bpmnVersionPK=new BpmnVersionPK(bpmnId,version);
+        return bpmnVersionService.disable(bpmnVersionPK);
+    }
+
+
 }

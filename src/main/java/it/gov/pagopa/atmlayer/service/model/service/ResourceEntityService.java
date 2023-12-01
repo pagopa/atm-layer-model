@@ -1,7 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 
@@ -13,8 +12,6 @@ import java.util.UUID;
 public interface ResourceEntityService {
 
     Uni<ResourceEntity> save(ResourceEntity resourceEntity);
-
-    Uni<Boolean> delete(BpmnVersionPK bpmnVersionPK);
 
     Uni<Optional<ResourceEntity>> findBySHA256(String sha256);
 

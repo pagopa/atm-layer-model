@@ -42,7 +42,7 @@ import static it.gov.pagopa.atmlayer.service.model.utils.EnumConverter.convertEn
 @Slf4j
 public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStorageService {
 
-    private final String WORKFLOW_TEMPLATE_PATH_DEFAULT = "WORKFLOW_RESOURCE/files/${RESOURCE_TYPE}/${uuid}";
+    private static final String WORKFLOW_TEMPLATE_PATH_DEFAULT = "WORKFLOW_RESOURCE/files/${RESOURCE_TYPE}/${uuid}";
 
     @Inject
     ObjectStoreStrategy objectStoreStrategy;
@@ -104,7 +104,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
                 .fileName(filename)
                 .resourceType(convertEnum(workflowResource.getResourceType()))
                 .workflowResource(workflowResource)
-                .storageKey(putObjectResponse.getStorage_key())
+                .storageKey(putObjectResponse.getStorageKey())
                 .build();
         return resourceFileService.save(entity);
     }
