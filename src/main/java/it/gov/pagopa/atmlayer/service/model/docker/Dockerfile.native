@@ -1,3 +1,7 @@
+# Stage 1: Set up environment for POI
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9 as POI
+RUN microdnf update && microdnf install -y freetype fontconfig && microdnf clean all
+# Stage 2: BUILD
 FROM quay.io/quarkus/ubi-quarkus-graalvmce-builder-image:22.3-java17 AS build
 COPY --chown=quarkus:quarkus mvnw /code/mvnw
 COPY --chown=quarkus:quarkus .mvn /code/.mvn
@@ -10,8 +14,36 @@ ARG QUARKUS_PROFILE
 ARG APP_NAME
 RUN ./mvnw package -Pnative -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod -DskipTests
 
-## Stage 2 : create the docker final image
+## Stage 3 : create the docker final image
 FROM quay.io/quarkus/quarkus-micro-image:2.0
+
+COPY --from=POI \
+   /lib64/libfreetype.so.6 \
+   /lib64/libgcc_s.so.1 \
+   /lib64/libbz2.so.1 \
+   /lib64/libpng16.so.16 \
+   /lib64/libm.so.6 \
+   /lib64/libbz2.so.1 \
+   /lib64/libexpat.so.1 \
+   /lib64/libuuid.so.1 \
+   /lib64/
+
+COPY --from=POI \
+   /usr/lib64/libfontconfig.so.1 \
+   /usr/lib64/
+
+COPY --from=POI \
+    /usr/share/fonts /usr/share/fonts
+
+COPY --from=POI \
+    /usr/share/fontconfig /usr/share/fontconfig
+
+COPY --from=POI \
+    /usr/lib/fontconfig /usr/lib/fontconfig
+
+COPY --from=POI \
+     /etc/fonts /etc/fonts
+
 WORKDIR /work/
 COPY --from=build /code/target/*-runner /work/application
 
