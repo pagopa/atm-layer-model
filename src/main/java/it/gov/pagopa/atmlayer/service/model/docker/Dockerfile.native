@@ -14,7 +14,7 @@ ARG QUARKUS_PROFILE
 ARG APP_NAME
 RUN ./mvnw package -Pnative -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod -DskipTests
 
-## Stage 3 : create the docker final image
+# Stage 3 : create the docker final image
 FROM quay.io/quarkus/quarkus-micro-image:2.0
 
 COPY --from=POI \
