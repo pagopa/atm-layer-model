@@ -203,7 +203,8 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                             log.error(failure.getMessage());
                             return Uni.createFrom().failure(new AtmLayerException("Failed to save BPMN in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                         })
-                        .onItem().transformToUni(putObjectResponse -> {
+                        .onItem().transformToUni(resourceFile -> {
+                            element.setResourceFile(resourceFile);
                             log.info("Completed BPMN Creation");
                             return Uni.createFrom().item(element);
                         }));
