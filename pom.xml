@@ -53,11 +53,6 @@
             <artifactId>quarkus-tika</artifactId>
             <version>${tika-core.version}</version>
         </dependency>
-        <!-- some of the operations done here require AWT -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-awt</artifactId>
-        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
