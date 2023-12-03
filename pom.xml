@@ -27,7 +27,7 @@
         <mockito.core.version>5.4.0</mockito.core.version>
         <easy.random.version>5.0.0</easy.random.version>
         <commons-io.version>2.15.0</commons-io.version>
-        <tika-core.version>2.9.1</tika-core.version>
+        <quarkus-tika.version>2.0.3</quarkus-tika.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -49,11 +49,14 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>org.apache.tika</groupId>
-            <artifactId>tika-core</artifactId>
-            <version>${tika-core.version}</version>
+            <groupId>io.quarkiverse.tika</groupId>
+            <artifactId>quarkus-tika</artifactId>
+            <version>${quarkus-tika.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-awt</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive-jackson</artifactId>

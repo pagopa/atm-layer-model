@@ -97,24 +97,25 @@ public class FileUtilities {
         return hexString.toString();
     }
 
-//    public static boolean isExtensionValid(File file, String fileName) throws IOException, MimeTypeException {
-//        String detectedExtension = getExtension(file);
-//        String extension = FilenameUtils.getExtension(fileName);
-//        if (Objects.equals(extension, "bpmn") || Objects.equals(extension, "dmn")) {
-//            extension = UtilityValues.XML_EXTENSION.getValue();
-//        }
-//        if (Objects.equals(extension, "form")) {
-//            extension = UtilityValues.TXT_EXTENSION.getValue();
-//        }
-//        return Objects.equals(extension, detectedExtension);
-//    }
-//
-//    public static String getExtension(File file) throws IOException, MimeTypeException {
-//        Tika tika = new Tika();
-//        String detectedType = tika.detect(file);
-//        MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
-//        MimeType type = allTypes.forName(detectedType);
-//        return type.getExtension().replace(".", "");
-//    }
+    public static boolean isExtensionValid(File file, String fileName) throws IOException, MimeTypeException {
+        String detectedExtension = getExtension(file);
+        String extension = FilenameUtils.getExtension(fileName);
+        if (Objects.equals(extension, "bpmn") || Objects.equals(extension, "dmn")) {
+            extension = UtilityValues.XML_EXTENSION.getValue();
+        }
+        if (Objects.equals(extension, "form")) {
+            extension = UtilityValues.TXT_EXTENSION.getValue();
+        }
+        return Objects.equals(extension, detectedExtension);
+    }
+
+    public static String getExtension(File file) throws IOException, MimeTypeException {
+        Tika tika = new Tika();
+        String mimeType = tika.detect(file);
+        log.info("Detected mimeType: {}", mimeType);
+        MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+        MimeType type = allTypes.forName(mimeType);
+        return type.getExtension().replace(".", "");
+    }
 
 }
