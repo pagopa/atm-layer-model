@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 97.05%               |
-| :heavy_check_mark: Number of Lines Covered | 1415    |
-| :x: Number of Lines Missed  | 43     |
-| Total Number of Lines   | 1458     |
+| Code Coverage %         | 97.28%               |
+| :heavy_check_mark: Number of Lines Covered | 1464    |
+| :x: Number of Lines Missed  | 41     |
+| Total Number of Lines   | 1505     |
 
 
 ## Details:
@@ -196,11 +196,19 @@
 
 <details>
     <summary>
+<<<<<<< HEAD
+:heavy_check_mark: WorkflowResourceMapperImpl.java
+    </summary>
+
+        
+#### All Lines Covered!
+=======
 :x: WorkflowResourceMapperImpl.java
     </summary>
 
         
 #### Lines Missed:
+>>>>>>> origin/main
         
 </details>
 

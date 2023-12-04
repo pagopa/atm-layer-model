@@ -203,7 +203,8 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                             log.error(failure.getMessage());
                             return Uni.createFrom().failure(new AtmLayerException("Failed to save BPMN in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                         })
-                        .onItem().transformToUni(putObjectResponse -> {
+                        .onItem().transformToUni(resourceFile -> {
+                            element.setResourceFile(resourceFile);
                             log.info("Completed BPMN Creation");
                             return Uni.createFrom().item(element);
                         }));
@@ -307,8 +308,8 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     }
                     DeployedBPMNProcessDefinitionDto deployedProcessInfo = optionalDeployedProcessInfo.get();
                     bpmnVersion.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
-                    bpmnVersion.setDeploymentId(deployedProcessInfo.getDeploymentId());
-                    bpmnVersion.setCamundaDefinitionId(response.getId());
+                    bpmnVersion.setDeploymentId(UUID.fromString(response.getId()));
+                    bpmnVersion.setCamundaDefinitionId(deployedProcessInfo.getId());
                     bpmnVersion.setDeployedFileName(deployedProcessInfo.getName());
                     bpmnVersion.setDescription(deployedProcessInfo.getDescription());
                     bpmnVersion.setResource(deployedProcessInfo.getResource());

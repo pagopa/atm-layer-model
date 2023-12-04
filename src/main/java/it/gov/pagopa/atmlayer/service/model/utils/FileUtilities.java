@@ -111,9 +111,10 @@ public class FileUtilities {
 
     public static String getExtension(File file) throws IOException, MimeTypeException {
         Tika tika = new Tika();
-        String detectedType = tika.detect(file);
+        String mimeType = tika.detect(file);
+        log.info("Detected mimeType: {}", mimeType);
         MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
-        MimeType type = allTypes.forName(detectedType);
+        MimeType type = allTypes.forName(mimeType);
         return type.getExtension().replace(".", "");
     }
 
