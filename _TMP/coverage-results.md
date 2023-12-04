@@ -196,11 +196,19 @@
 
 <details>
     <summary>
+<<<<<<< HEAD
 :heavy_check_mark: WorkflowResourceMapperImpl.java
     </summary>
 
         
 #### All Lines Covered!
+=======
+:x: WorkflowResourceMapperImpl.java
+    </summary>
+
+        
+#### Lines Missed:
+>>>>>>> origin/main
         
 </details>
 
