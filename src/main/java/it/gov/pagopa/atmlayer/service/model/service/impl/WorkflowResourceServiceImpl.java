@@ -343,11 +343,11 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     if (workflowResourceToRollBack.getStatus().getValue().equals(StatusEnum.DEPLOYED.getValue())) {
                         throw new AtmLayerException("Cannot rollback: the referenced resource is the latest version deployed", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_ROLLED_BACK);
                     }
-                    String deploymentId = String.valueOf(workflowResourceToRollBack.getDeploymentId());
-                    if (deploymentId.equals("null")) {
+                    UUID deploymentId = workflowResourceToRollBack.getDeploymentId();
+                    if (deploymentId == null) {
                         throw new AtmLayerException("CamundaDefinitionId of the referenced resource is null: cannot rollback", Response.Status.NOT_FOUND, WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK);
                     }
-                    return processClient.getDeployedResource(deploymentId)
+                    return processClient.getDeployedResource(deploymentId.toString())
                             .onFailure()
                             .recoverWithUni(exception ->
                                     Uni.createFrom().failure(new AtmLayerException("Error retrieving workflow resource from Process", Response.Status.INTERNAL_SERVER_ERROR, DEPLOYED_FILE_WAS_NOT_RETRIEVED)))
