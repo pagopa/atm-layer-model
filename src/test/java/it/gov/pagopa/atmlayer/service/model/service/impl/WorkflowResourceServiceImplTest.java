@@ -334,7 +334,7 @@ class WorkflowResourceServiceImplTest {
         File expectedFile = new File("src/test/resources/Test.bpmn");
         WorkflowResource expectedWorkflowResource=new WorkflowResource();
         expectedWorkflowResource.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
-        expectedWorkflowResource.setCamundaDefinitionId("camundaId");
+        expectedWorkflowResource.setDeploymentId(UUID.randomUUID());
         expectedWorkflowResource.setResourceType(DeployableResourceType.BPMN);
         expectedWorkflowResource.setSha256("sha256");
         ResourceFile resourceFile=new ResourceFile();
@@ -382,7 +382,7 @@ class WorkflowResourceServiceImplTest {
     void testRollbackProcessFailure(){
         WorkflowResource expectedWorkflowResource=new WorkflowResource();
         expectedWorkflowResource.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
-        expectedWorkflowResource.setCamundaDefinitionId("camundaId");
+        expectedWorkflowResource.setDeploymentId(UUID.randomUUID());
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
         when(processClient.getDeployedResource(any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
         workflowResourceService.rollback(UUID.randomUUID())
