@@ -409,6 +409,7 @@ class BpmnVersionServiceImplTest {
         Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions=new HashMap<>();
         deployedProcessDefinitions.put("key",processInfo);
         response.setDeployedProcessDefinitions(deployedProcessDefinitions);
+        response.setId(UUID.randomUUID().toString());
         when(bpmnVersionRepoMock.findById(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(bpmnVersion));
         when(bpmnFileStorageServiceMock.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().item(url));
         when(processClientMock.deploy(any(String.class),eq(DeployableResourceType.BPMN.name()))).thenReturn(Uni.createFrom().item(response));
