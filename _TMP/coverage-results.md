@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 97.58%               |
-| :heavy_check_mark: Number of Lines Covered | 1449    |
-| :x: Number of Lines Missed  | 36     |
-| Total Number of Lines   | 1485     |
+| Code Coverage %         | 97.21%               |
+| :heavy_check_mark: Number of Lines Covered | 1463    |
+| :x: Number of Lines Missed  | 42     |
+| Total Number of Lines   | 1505     |
 
 
 ## Details:
@@ -522,11 +522,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityServiceImpl.java
+:x: ResourceEntityServiceImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
