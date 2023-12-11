@@ -181,7 +181,9 @@ public class BpmnResource {
                 .onItem().transformToMulti(
                         Unchecked.function(bpmn -> {
                             if (bpmn.isEmpty()) {
-                                throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
+                                String errorMessage = String.format("No BPMN file found with Id: %s and version: %s", bpmnId, version);
+                                log.error(errorMessage);
+                                throw new AtmLayerException(errorMessage, Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
                             }
                             ResourceFile resourceFile = bpmn.get().getResourceFile();
                             if (Objects.isNull(resourceFile) || StringUtils.isBlank(
