@@ -49,7 +49,8 @@ public enum AppErrorCodeEnum {
     MISSING_AWS_ENDPOINT("ATMLM_4000036","Error generating presigned url: No AWS endpoint provided for local configuration", INTERNAL),
     EXTENSION_MISMATCH("ATMLM_4000037","Mismatch between the file extension and the filename", NOT_VALID_FILE),
     BPMN_CANNOT_BE_DISABLED_FOR_ASSOCIATIONS("ATMLM_4000038", "The referenced BPMN file has associations and cannot be disabled", CANNOT_DISABLE),
-    BPMN_ALREADY_DISABLED("ATMLM_4000039", "The referenced BPMN file is already disabled", CANNOT_DISABLE);
+    BPMN_ALREADY_DISABLED("ATMLM_4000039", "The referenced BPMN file is already disabled", CANNOT_DISABLE),
+    DUPLICATE_ASSOCIATION_CONFIGS("ATMLM_4000040","Cannot save associations: duplicate configurations in input",CANNOT_ASSOCIATE);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;

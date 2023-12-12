@@ -43,6 +43,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DUPLICATE_ASSOCIATION_CONFIGS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.SHA256_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.extractIdValue;
@@ -134,7 +135,9 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         Uni<Long> deleteExistingUni = this.bpmnBankConfigService.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
         return deleteExistingUni
                 .onItem()
-                .transformToUni(x -> this.bpmnBankConfigService.saveList(bpmnBankConfigs))
+                .transformToUni(x -> this.bpmnBankConfigService.saveList(bpmnBankConfigs)
+                        .onFailure()
+                        .recoverWithUni(Uni.createFrom().failure(new AtmLayerException(Response.Status.BAD_REQUEST,DUPLICATE_ASSOCIATION_CONFIGS))))
                 .onItem()
                 .transformToUni(y -> this.bpmnBankConfigService.findByAcquirerIdAndFunctionType(acquirerId, functionType));
     }
