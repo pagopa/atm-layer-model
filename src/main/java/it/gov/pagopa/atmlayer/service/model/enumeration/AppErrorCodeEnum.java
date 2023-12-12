@@ -24,7 +24,7 @@ public enum AppErrorCodeEnum {
     BPMN_FILE_CANNOT_BE_UPGRADED("ATMLM_4000011", "The referenced BPMN file can not be upgraded", NOT_UPGRADABLE),
     BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS("ATMLM_4000012","A BPMN file with the same Camunda definition key already exists", CONSTRAINT_VIOLATION),
     BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY("ATMLM_4000013","BPMN file does not have a definition key",NOT_VALID_FILE),
-    MALFORMED_FILE("ATMLM_4000014","Cannot Read Input File",NOT_VALID_FILE),
+    CANNOT_EXTRACT_FILE_DEFINITION_KEY("ATMLM_4000014","Failed to extract definition key: either the uploaded file is malformed or the wrong file type was selected",NOT_VALID_FILE),
     SHA256_ERROR("ATMLM_4000015","Cannot calculate SHA256 of Input file",NOT_VALID_FILE),
     DEPLOY_ERROR("ATMLM_4000016","Empty Process Infos in deploy payload",INVALID_DEPLOY),
     NO_CONFIGURATION_FOR_ACQUIRER("ATMLM_4000017","No configuration found for the provided acquirer Id", ID_NOT_FOUND),
