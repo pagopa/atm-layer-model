@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
+import it.gov.pagopa.atmlayer.service.model.dto.BankConfigTripletDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BranchConfigs;
 import it.gov.pagopa.atmlayer.service.model.dto.TerminalConfigs;
@@ -7,18 +8,22 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
+import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.core.Response;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DUPLICATE_ASSOCIATION_CONFIGS;
+
 @ApplicationScoped
 public class BpmnUtils {
-
     public static Set<BpmnVersionPK> extractBpmnUUIDFromAssociations(List<BpmnBankConfig> associations) {
         return associations.stream().map(association -> BpmnVersionPK.builder()
                 .bpmnId(association.getBpmnBankConfigPK().getBpmnId())
@@ -36,7 +41,23 @@ public class BpmnUtils {
         bpmnBankConfigAcquirerDefault.setFunctionType(functionType);
         bpmnBankConfigs.add(bpmnBankConfigAcquirerDefault);
         getBranchConfig(bpmnAssociationDto, acquirerId, functionType, bpmnBankConfigs);
+        if (checkBankConfigsDuplicates(bpmnBankConfigs)) {
+            throw new AtmLayerException("Duplicate triplets in input body", Response.Status.BAD_REQUEST, DUPLICATE_ASSOCIATION_CONFIGS);
+        }
         return bpmnBankConfigs;
+    }
+
+    private static boolean checkBankConfigsDuplicates(List<BpmnBankConfig> bpmnBankConfigs) {
+        List<BankConfigTripletDto> configTriplets = new ArrayList<>();
+        for (BpmnBankConfig bpmnBankConfig : bpmnBankConfigs) {
+            configTriplets.add(new BankConfigTripletDto(bpmnBankConfig.getBpmnBankConfigPK().getAcquirerId(),
+                    bpmnBankConfig.getBpmnBankConfigPK().getBranchId(),
+                    bpmnBankConfig.getBpmnBankConfigPK().getTerminalId()));
+        }
+        Set<BankConfigTripletDto> duplicates = configTriplets.stream()
+                .filter(triplet -> Collections.frequency(configTriplets, triplet) > 1)
+                .collect(Collectors.toSet());
+        return !duplicates.isEmpty();
     }
 
     private static void getBranchConfig(BpmnAssociationDto bpmnAssociationDto, String acquirerId, String functionType, List<BpmnBankConfig> bpmnBankConfigs) {
@@ -84,7 +105,5 @@ public class BpmnUtils {
         bpmnBankConfigPK.setBranchId(branchConfig.getBranchId());
         bpmnBankConfigPK.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
         return Optional.of(bpmnBankConfigPK);
-
     }
-
 }
