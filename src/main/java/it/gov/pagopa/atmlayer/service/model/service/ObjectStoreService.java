@@ -20,4 +20,6 @@ public interface ObjectStoreService {
     Uni<URL> generatePresignedUrl(String objectKey);
 
     RestMulti<Buffer> download(String key);
+
+    Uni<Void> delete(String key);
 }

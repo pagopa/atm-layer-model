@@ -3,7 +3,10 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.vertx.mutiny.core.Context;
+import io.vertx.mutiny.core.Vertx;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
@@ -26,6 +29,7 @@ import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -260,17 +264,27 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     public Uni<Void> deleteByFileName(String fileName) {
-        return resourceFileRepository.findByFileName(fileName).onItem()
-                .transformToUni(resourceFiles -> {
-                    List<UUID> uuids = resourceFiles.stream().map(resource -> resource.getBpmn().getBpmnId()).toList();
-                    return Uni.combine().all()
-                            .unis(
-                                    bpmnBankConfigRepository.deleteByBPMNIdList(uuids),
-                                    resourceFileRepository.deleteByBPMNIdList(uuids),
-                                    bpmnVersionRepository.deleteByIdList(uuids)
-                            )
-                            .combinedWith((bpmnBankConfigDeleteResult, resourceFileDeleteResult, bpmnVersionDeleteResult) -> null);
-                });
+        Context context = Vertx.currentContext();
+        return resourceFileRepository.findByFileName(fileName)
+                .onItem()
+                .transformToUni(this::deleteResourceAndS3)
+                .emitOn(command -> context.runOnContext(() -> command.run()));
+    }
+
+    private Uni<Void> deleteResourceAndS3(List<ResourceFile> resources) {
+        Context context = Vertx.currentContext();
+        List<UUID> uuids = resources.stream().map(resource -> resource.getBpmn().getBpmnId()).toList();
+        List<String> keys = resources.stream().map(ResourceFile::getStorageKey).toList();
+        return Uni.combine().all()
+                .unis(
+                        bpmnFileStorageService.deleteList(keys),
+                        bpmnBankConfigRepository.deleteByBPMNIdList(uuids),
+                        resourceFileRepository.deleteByBPMNIdList(uuids),
+                        bpmnVersionRepository.deleteByIdList(uuids)
+
+                )
+                .combinedWith((S3Delete, bpmnBankConfigDeleteResult, resourceFileDeleteResult, bpmnVersionDeleteResult) -> null)
+                .emitOn(command -> context.runOnContext(() -> command.run())).replaceWithVoid();
     }
 
     public Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK) {

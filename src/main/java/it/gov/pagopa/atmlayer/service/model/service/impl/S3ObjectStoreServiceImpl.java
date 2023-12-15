@@ -91,6 +91,13 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
                         List.of(response.response().contentType())));
     }
 
+    @Override
+    public Uni<Void> delete(String key) {
+        return Uni.createFrom().completionStage(() -> s3.deleteObject(fileStorageS3Utils.buildDeleteRequest(key)))
+                .onFailure().invoke(failure -> {
+                    log.error("Errore durante l'eliminazione dal bucket S3: {}", failure.getMessage());
+                }).replaceWithVoid();
+    }
 
     public Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) {
         if (StringUtils.isBlank(filename)) {

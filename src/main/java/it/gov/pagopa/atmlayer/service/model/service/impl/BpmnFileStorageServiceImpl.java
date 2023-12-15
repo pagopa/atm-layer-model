@@ -26,6 +26,7 @@ import org.jboss.resteasy.reactive.RestMulti;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -77,6 +78,16 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
 
     public RestMulti<Buffer> download(String storageKey) {
         return this.objectStoreService.download(storageKey);
+    }
+
+    public Uni<Void> delete(String key) {
+        return this.objectStoreService.delete(key);
+    }
+
+    public Uni<Void> deleteList(List<String> keys) {
+        return Uni.combine().all().unis(keys.stream()
+                .map(this::delete)
+                .toArray(Uni[]::new)).discardItems();
     }
 
     private String calculatePath(BpmnIdDto bpmnVersionPK) {
