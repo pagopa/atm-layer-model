@@ -39,4 +39,8 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
     public Uni<BpmnVersion> findByDefinitionKey(String definitionKey) {
         return find("select b from BpmnVersion b where b.definitionKey = :definitionKey", Parameters.with("definitionKey",definitionKey)).firstResult();
     }
+
+    public Uni<Void> deleteByIdList(List<UUID> uuids) {
+        return delete("delete from BpmnVersion b where b.bpmnId IN ?1", uuids).replaceWithVoid();
+    }
 }

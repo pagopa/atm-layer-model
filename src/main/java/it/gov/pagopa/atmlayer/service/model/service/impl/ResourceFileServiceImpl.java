@@ -72,4 +72,10 @@ public class ResourceFileServiceImpl implements ResourceFileService {
                         .replace(resourceType, ""))
                 .onItem().transform(relativePathWithSlash -> relativePathWithSlash.substring(relativePathWithSlash.indexOf("/") + 1));
     }
+
+    @Override
+    @WithTransaction
+    public Uni<Void> deleteByFileName(String fileName) {
+        return this.resourceFileRepository.deleteByFileName(fileName);
+    }
 }

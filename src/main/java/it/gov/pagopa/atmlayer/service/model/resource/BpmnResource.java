@@ -60,6 +60,7 @@ import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerCo
 @Slf4j
 public class BpmnResource {
 
+    final static String fileNamePerformanceTest = "performance_test";
 
     @Inject
     BpmnVersionService bpmnVersionService;
@@ -279,6 +280,12 @@ public class BpmnResource {
     public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId,@PathParam("version") Long version){
         BpmnVersionPK bpmnVersionPK=new BpmnVersionPK(bpmnId,version);
         return bpmnVersionService.disable(bpmnVersionPK);
+    }
+
+    @DELETE
+    @Path("/deletePerformanceTests")
+    public Uni<Void> deleteBPMNPerformanceTests() {
+        return bpmnVersionService.deleteByFileName(fileNamePerformanceTest);
     }
 
 

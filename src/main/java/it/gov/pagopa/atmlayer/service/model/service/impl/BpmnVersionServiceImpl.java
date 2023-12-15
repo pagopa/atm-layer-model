@@ -19,7 +19,9 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
+import it.gov.pagopa.atmlayer.service.model.repository.BpmnBankConfigRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
+import it.gov.pagopa.atmlayer.service.model.repository.ResourceFileRepository;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -59,6 +61,11 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @Inject
     @RestClient
     ProcessClient processClient;
+
+    @Inject
+    BpmnBankConfigRepository bpmnBankConfigRepository;
+    @Inject
+    ResourceFileRepository resourceFileRepository;
     @Inject
     BpmnVersionMapper bpmnVersionMapper;
     static final DeployableResourceType resourceType = DeployableResourceType.BPMN;
@@ -248,6 +255,21 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                         .onItem()
                                         .transformToUni(disabledShaBpmn -> Uni.createFrom().voidItem());
                             });
+                });
+    }
+
+    @Override
+    public Uni<Void> deleteByFileName(String fileName) {
+        return resourceFileRepository.findByFileName(fileName).onItem()
+                .transformToUni(resourceFiles -> {
+                    List<UUID> uuids = resourceFiles.stream().map(resource -> resource.getBpmn().getBpmnId()).toList();
+                    return Uni.combine().all()
+                            .unis(
+                                    bpmnBankConfigRepository.deleteByBPMNIdList(uuids),
+                                    resourceFileRepository.deleteByBPMNIdList(uuids),
+                                    bpmnVersionRepository.deleteByIdList(uuids)
+                            )
+                            .combinedWith((bpmnBankConfigDeleteResult, resourceFileDeleteResult, bpmnVersionDeleteResult) -> null);
                 });
     }
 

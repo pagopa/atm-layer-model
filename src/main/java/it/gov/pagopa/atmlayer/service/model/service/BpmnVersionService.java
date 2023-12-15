@@ -41,4 +41,6 @@ public interface BpmnVersionService {
     Uni<BpmnVersion> createBPMN(BpmnVersion bpmnVersion, File file, String filename);
 
     Uni<Void> disable(BpmnVersionPK bpmnVersionPK);
+
+    Uni<Void> deleteByFileName(String fileName);
 }

@@ -16,4 +16,6 @@ public interface ResourceFileService {
     Uni<String> getCompletePath(ResourceEntity resourceEntity);
 
     Uni<String> getRelativePath(ResourceEntity resourceEntity);
+
+    Uni<Void> deleteByFileName(String fileName);
 }

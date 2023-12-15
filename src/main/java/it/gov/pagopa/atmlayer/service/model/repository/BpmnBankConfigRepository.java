@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.repository;
 
 import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
+import io.quarkus.panache.common.Parameters;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
@@ -53,5 +54,9 @@ public class BpmnBankConfigRepository implements PanacheRepositoryBase<BpmnBankC
         params.put("bpmnId",bpmnVersionPK.getBpmnId());
         params.put("version",bpmnVersionPK.getModelVersion());
         return find("select b from BpmnBankConfig b where b.bpmnBankConfigPK.bpmnId = :bpmnId and b.bpmnBankConfigPK.bpmnModelVersion= :version", params).list();
+    }
+
+    public Uni<Void> deleteByBPMNIdList(List<UUID> uuids) {
+        return delete("delete from BpmnBankConfig b where b.bpmnBankConfigPK.bpmnId IN ?1", uuids).replaceWithVoid();
     }
 }
