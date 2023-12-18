@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 97.58%               |
-| :heavy_check_mark: Number of Lines Covered | 1450    |
-| :x: Number of Lines Missed  | 36     |
-| Total Number of Lines   | 1486     |
+| Code Coverage %         | 97.54%               |
+| :heavy_check_mark: Number of Lines Covered | 1470    |
+| :x: Number of Lines Missed  | 37     |
+| Total Number of Lines   | 1507     |
 
 
 ## Details:
@@ -972,6 +972,18 @@
 :x: BankKeyDto.java
     </summary>
 
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: BankConfigTripletDto.java
+    </summary>
+
+        
+#### Lines Missed:
         
 </details>
 
