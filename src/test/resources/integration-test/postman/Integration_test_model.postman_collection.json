@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "09d201f8-c818-4d02-bfe5-07d7758ec931",
-		"name": "Integration_test_model_completa_29nov_v2",
+		"_postman_id": "f166e4cc-683c-4283-9e1b-de15943ac611",
+		"name": "Integration_test_model_completa_12dic",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "29456304"
 	},
@@ -2343,6 +2343,136 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n  \"defaultTemplateId\": \"{{bpmn_3_id}}\",\n  \"defaultTemplateVersion\": \"1\",\n  \"branchesConfigs\": [\n    {\n      \"branchId\": \"1\",\n      \"branchDefaultTemplateId\": \"{{bpmn_1_id}}\",\n      \"branchDefaultTemplateVersion\": \"2\",\n      \"terminals\": [\n        {\n          \"templateId\": \"{{bpmn_1_id}}\",\n          \"templateVersion\": \"1\",\n          \"terminalIds\": [\n            \"1\",\n            \"2\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"headerFamily": "json",
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn/bank/:acquirerId/associations/function/:functionType",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn",
+						"bank",
+						":acquirerId",
+						"associations",
+						"function",
+						":functionType"
+					],
+					"variable": [
+						{
+							"key": "acquirerId",
+							"value": "{{acquirer_id_1}}"
+						},
+						{
+							"key": "functionType",
+							"value": "MENU"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"defaultTemplateId\": \"5FbCebC2-34EF-5Cba-Db1B-fBaF2ae4DCC2\",\n  \"defaultTemplateVersion\": \"<long>\",\n  \"branchesConfigs\": [\n    {\n      \"branchId\": \"<string>\",\n      \"branchDefaultTemplateId\": \"2c2AD5aD-51dd-9AfA-FCcC-dDE9c5DAdcCc\",\n      \"branchDefaultTemplateVersion\": \"<long>\",\n      \"terminals\": [\n        {\n          \"templateId\": \"2cbDF1eE-F24E-2a5a-ce30-01B5cDb182DF\",\n          \"templateVersion\": \"<long>\",\n          \"terminalIds\": [\n            \"<string>\",\n            \"<string>\"\n          ]\n        },\n        {\n          \"templateId\": \"cedb8aaf-b685-E8eF-78cC-FE6B44B3Da8D\",\n          \"templateVersion\": \"<long>\",\n          \"terminalIds\": [\n            \"<string>\",\n            \"<string>\"\n          ]\n        }\n      ]\n    },\n    {\n      \"branchId\": \"<string>\",\n      \"branchDefaultTemplateId\": \"1bB4EE2e-a10E-f840-f74f-e47ebFe6c15a\",\n      \"branchDefaultTemplateVersion\": \"<long>\",\n      \"terminals\": [\n        {\n          \"templateId\": \"fBaDDFC6-8afD-5FFD-F701-cffbfFce3Fe4\",\n          \"templateVersion\": \"<long>\",\n          \"terminalIds\": [\n            \"<string>\",\n            \"<string>\"\n          ]\n        },\n        {\n          \"templateId\": \"FB0119e4-0A9D-03de-fCdb-4CcdD4FFA4ce\",\n          \"templateVersion\": \"<long>\",\n          \"terminalIds\": [\n            \"<string>\",\n            \"<string>\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/model/bpmn/bank/:acquirerId/associations/function/:functionType",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"model",
+								"bpmn",
+								"bank",
+								":acquirerId",
+								"associations",
+								"function",
+								":functionType"
+							],
+							"variable": [
+								{
+									"key": "acquirerId"
+								},
+								{
+									"key": "functionType"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n  {\n    \"bpmnId\": \"a78D6007-9eAF-d2C0-7AED-fB764A84469D\",\n    \"bpmnModelVersion\": \"<long>\",\n    \"acquirerId\": \"<string>\",\n    \"branchId\": \"<string>\",\n    \"terminalId\": \"<string>\",\n    \"functionType\": \"SPONTANEOUS_PAYMENT\",\n    \"createdAt\": {\n      \"year\": \"<integer>\",\n      \"month\": \"<integer>\",\n      \"date\": \"<integer>\",\n      \"day\": \"<integer>\",\n      \"hours\": \"<integer>\",\n      \"minutes\": \"<integer>\",\n      \"seconds\": \"<integer>\",\n      \"timeImpl\": \"<long>\",\n      \"timezoneOffset\": \"<integer>\",\n      \"calendarDate\": {\n        \"era\": {\n          \"name\": \"<string>\",\n          \"abbr\": \"<string>\",\n          \"since\": \"<long>\",\n          \"sinceDate\": {\n            \"era\": {\n              \"value\": \"<Circular reference to #/components/schemas/Era detected>\"\n            },\n            \"year\": \"<integer>\",\n            \"month\": \"<integer>\",\n            \"dayOfMonth\": \"<integer>\",\n            \"dayOfWeek\": \"<integer>\",\n            \"leapYear\": \"<boolean>\",\n            \"hours\": \"<integer>\",\n            \"minutes\": \"<integer>\",\n            \"seconds\": \"<integer>\",\n            \"millis\": \"<integer>\",\n            \"fraction\": \"<long>\",\n            \"normalized\": \"<boolean>\",\n            \"zoneinfo\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            },\n            \"zoneOffset\": \"<integer>\",\n            \"daylightSaving\": \"<integer>\",\n            \"forceStandardTime\": \"<boolean>\",\n            \"locale\": {\n              \"language\": \"<string>\",\n              \"script\": \"<string>\",\n              \"country\": \"<string>\",\n              \"variant\": \"<string>\",\n              \"extensionKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleAttributes\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"iSO3Language\": \"<string>\",\n              \"iSO3Country\": \"<string>\",\n              \"displayLanguage\": \"<string>\",\n              \"displayScript\": \"<string>\",\n              \"displayCountry\": \"<string>\",\n              \"displayVariant\": \"<string>\",\n              \"displayName\": \"<string>\"\n            },\n            \"timeOfDay\": \"<long>\",\n            \"standardTime\": \"<boolean>\",\n            \"daylightTime\": \"<boolean>\",\n            \"zone\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            }\n          },\n          \"localTime\": \"<boolean>\",\n          \"hash\": \"<integer>\",\n          \"abbreviation\": \"<string>\"\n        },\n        \"year\": \"<integer>\",\n        \"month\": \"<integer>\",\n        \"dayOfMonth\": \"<integer>\",\n        \"dayOfWeek\": \"<integer>\",\n        \"leapYear\": \"<boolean>\",\n        \"hours\": \"<integer>\",\n        \"minutes\": \"<integer>\",\n        \"seconds\": \"<integer>\",\n        \"millis\": \"<integer>\",\n        \"fraction\": \"<long>\",\n        \"normalized\": \"<boolean>\",\n        \"zoneinfo\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"zoneOffset\": \"<integer>\",\n        \"daylightSaving\": \"<integer>\",\n        \"forceStandardTime\": \"<boolean>\",\n        \"locale\": {\n          \"language\": \"<string>\",\n          \"script\": \"<string>\",\n          \"country\": \"<string>\",\n          \"variant\": \"<string>\",\n          \"extensionKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleAttributes\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"iSO3Language\": \"<string>\",\n          \"iSO3Country\": \"<string>\",\n          \"displayLanguage\": \"<string>\",\n          \"displayScript\": \"<string>\",\n          \"displayCountry\": \"<string>\",\n          \"displayVariant\": \"<string>\",\n          \"displayName\": \"<string>\"\n        },\n        \"timeOfDay\": \"<long>\",\n        \"standardTime\": \"<boolean>\",\n        \"daylightTime\": \"<boolean>\",\n        \"zone\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"cachedYear\": \"<integer>\",\n        \"cachedFixedDateJan1\": \"<long>\",\n        \"cachedFixedDateNextJan1\": \"<long>\",\n        \"normalizedYear\": \"<integer>\",\n        \"cachedJan1\": \"<long>\"\n      },\n      \"nanos\": \"<integer>\",\n      \"time\": \"<long>\"\n    },\n    \"lastUpdatedAt\": {\n      \"year\": \"<integer>\",\n      \"month\": \"<integer>\",\n      \"date\": \"<integer>\",\n      \"day\": \"<integer>\",\n      \"hours\": \"<integer>\",\n      \"minutes\": \"<integer>\",\n      \"seconds\": \"<integer>\",\n      \"timeImpl\": \"<long>\",\n      \"timezoneOffset\": \"<integer>\",\n      \"calendarDate\": {\n        \"era\": {\n          \"name\": \"<string>\",\n          \"abbr\": \"<string>\",\n          \"since\": \"<long>\",\n          \"sinceDate\": {\n            \"era\": {\n              \"value\": \"<Circular reference to #/components/schemas/Era detected>\"\n            },\n            \"year\": \"<integer>\",\n            \"month\": \"<integer>\",\n            \"dayOfMonth\": \"<integer>\",\n            \"dayOfWeek\": \"<integer>\",\n            \"leapYear\": \"<boolean>\",\n            \"hours\": \"<integer>\",\n            \"minutes\": \"<integer>\",\n            \"seconds\": \"<integer>\",\n            \"millis\": \"<integer>\",\n            \"fraction\": \"<long>\",\n            \"normalized\": \"<boolean>\",\n            \"zoneinfo\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            },\n            \"zoneOffset\": \"<integer>\",\n            \"daylightSaving\": \"<integer>\",\n            \"forceStandardTime\": \"<boolean>\",\n            \"locale\": {\n              \"language\": \"<string>\",\n              \"script\": \"<string>\",\n              \"country\": \"<string>\",\n              \"variant\": \"<string>\",\n              \"extensionKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleAttributes\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"iSO3Language\": \"<string>\",\n              \"iSO3Country\": \"<string>\",\n              \"displayLanguage\": \"<string>\",\n              \"displayScript\": \"<string>\",\n              \"displayCountry\": \"<string>\",\n              \"displayVariant\": \"<string>\",\n              \"displayName\": \"<string>\"\n            },\n            \"timeOfDay\": \"<long>\",\n            \"standardTime\": \"<boolean>\",\n            \"daylightTime\": \"<boolean>\",\n            \"zone\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            }\n          },\n          \"localTime\": \"<boolean>\",\n          \"hash\": \"<integer>\",\n          \"abbreviation\": \"<string>\"\n        },\n        \"year\": \"<integer>\",\n        \"month\": \"<integer>\",\n        \"dayOfMonth\": \"<integer>\",\n        \"dayOfWeek\": \"<integer>\",\n        \"leapYear\": \"<boolean>\",\n        \"hours\": \"<integer>\",\n        \"minutes\": \"<integer>\",\n        \"seconds\": \"<integer>\",\n        \"millis\": \"<integer>\",\n        \"fraction\": \"<long>\",\n        \"normalized\": \"<boolean>\",\n        \"zoneinfo\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"zoneOffset\": \"<integer>\",\n        \"daylightSaving\": \"<integer>\",\n        \"forceStandardTime\": \"<boolean>\",\n        \"locale\": {\n          \"language\": \"<string>\",\n          \"script\": \"<string>\",\n          \"country\": \"<string>\",\n          \"variant\": \"<string>\",\n          \"extensionKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleAttributes\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"iSO3Language\": \"<string>\",\n          \"iSO3Country\": \"<string>\",\n          \"displayLanguage\": \"<string>\",\n          \"displayScript\": \"<string>\",\n          \"displayCountry\": \"<string>\",\n          \"displayVariant\": \"<string>\",\n          \"displayName\": \"<string>\"\n        },\n        \"timeOfDay\": \"<long>\",\n        \"standardTime\": \"<boolean>\",\n        \"daylightTime\": \"<boolean>\",\n        \"zone\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"cachedYear\": \"<integer>\",\n        \"cachedFixedDateJan1\": \"<long>\",\n        \"cachedFixedDateNextJan1\": \"<long>\",\n        \"normalizedYear\": \"<integer>\",\n        \"cachedJan1\": \"<long>\"\n      },\n      \"nanos\": \"<integer>\",\n      \"time\": \"<long>\"\n    },\n    \"createdBy\": \"<string>\",\n    \"lastUpdatedBy\": \"<string>\"\n  },\n  {\n    \"bpmnId\": \"F7978319-A91C-b5FF-C21e-bdf685D50AD7\",\n    \"bpmnModelVersion\": \"<long>\",\n    \"acquirerId\": \"<string>\",\n    \"branchId\": \"<string>\",\n    \"terminalId\": \"<string>\",\n    \"functionType\": \"MENU\",\n    \"createdAt\": {\n      \"year\": \"<integer>\",\n      \"month\": \"<integer>\",\n      \"date\": \"<integer>\",\n      \"day\": \"<integer>\",\n      \"hours\": \"<integer>\",\n      \"minutes\": \"<integer>\",\n      \"seconds\": \"<integer>\",\n      \"timeImpl\": \"<long>\",\n      \"timezoneOffset\": \"<integer>\",\n      \"calendarDate\": {\n        \"era\": {\n          \"name\": \"<string>\",\n          \"abbr\": \"<string>\",\n          \"since\": \"<long>\",\n          \"sinceDate\": {\n            \"era\": {\n              \"value\": \"<Circular reference to #/components/schemas/Era detected>\"\n            },\n            \"year\": \"<integer>\",\n            \"month\": \"<integer>\",\n            \"dayOfMonth\": \"<integer>\",\n            \"dayOfWeek\": \"<integer>\",\n            \"leapYear\": \"<boolean>\",\n            \"hours\": \"<integer>\",\n            \"minutes\": \"<integer>\",\n            \"seconds\": \"<integer>\",\n            \"millis\": \"<integer>\",\n            \"fraction\": \"<long>\",\n            \"normalized\": \"<boolean>\",\n            \"zoneinfo\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            },\n            \"zoneOffset\": \"<integer>\",\n            \"daylightSaving\": \"<integer>\",\n            \"forceStandardTime\": \"<boolean>\",\n            \"locale\": {\n              \"language\": \"<string>\",\n              \"script\": \"<string>\",\n              \"country\": \"<string>\",\n              \"variant\": \"<string>\",\n              \"extensionKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleAttributes\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"iSO3Language\": \"<string>\",\n              \"iSO3Country\": \"<string>\",\n              \"displayLanguage\": \"<string>\",\n              \"displayScript\": \"<string>\",\n              \"displayCountry\": \"<string>\",\n              \"displayVariant\": \"<string>\",\n              \"displayName\": \"<string>\"\n            },\n            \"timeOfDay\": \"<long>\",\n            \"standardTime\": \"<boolean>\",\n            \"daylightTime\": \"<boolean>\",\n            \"zone\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            }\n          },\n          \"localTime\": \"<boolean>\",\n          \"hash\": \"<integer>\",\n          \"abbreviation\": \"<string>\"\n        },\n        \"year\": \"<integer>\",\n        \"month\": \"<integer>\",\n        \"dayOfMonth\": \"<integer>\",\n        \"dayOfWeek\": \"<integer>\",\n        \"leapYear\": \"<boolean>\",\n        \"hours\": \"<integer>\",\n        \"minutes\": \"<integer>\",\n        \"seconds\": \"<integer>\",\n        \"millis\": \"<integer>\",\n        \"fraction\": \"<long>\",\n        \"normalized\": \"<boolean>\",\n        \"zoneinfo\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"zoneOffset\": \"<integer>\",\n        \"daylightSaving\": \"<integer>\",\n        \"forceStandardTime\": \"<boolean>\",\n        \"locale\": {\n          \"language\": \"<string>\",\n          \"script\": \"<string>\",\n          \"country\": \"<string>\",\n          \"variant\": \"<string>\",\n          \"extensionKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleAttributes\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"iSO3Language\": \"<string>\",\n          \"iSO3Country\": \"<string>\",\n          \"displayLanguage\": \"<string>\",\n          \"displayScript\": \"<string>\",\n          \"displayCountry\": \"<string>\",\n          \"displayVariant\": \"<string>\",\n          \"displayName\": \"<string>\"\n        },\n        \"timeOfDay\": \"<long>\",\n        \"standardTime\": \"<boolean>\",\n        \"daylightTime\": \"<boolean>\",\n        \"zone\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"cachedYear\": \"<integer>\",\n        \"cachedFixedDateJan1\": \"<long>\",\n        \"cachedFixedDateNextJan1\": \"<long>\",\n        \"normalizedYear\": \"<integer>\",\n        \"cachedJan1\": \"<long>\"\n      },\n      \"nanos\": \"<integer>\",\n      \"time\": \"<long>\"\n    },\n    \"lastUpdatedAt\": {\n      \"year\": \"<integer>\",\n      \"month\": \"<integer>\",\n      \"date\": \"<integer>\",\n      \"day\": \"<integer>\",\n      \"hours\": \"<integer>\",\n      \"minutes\": \"<integer>\",\n      \"seconds\": \"<integer>\",\n      \"timeImpl\": \"<long>\",\n      \"timezoneOffset\": \"<integer>\",\n      \"calendarDate\": {\n        \"era\": {\n          \"name\": \"<string>\",\n          \"abbr\": \"<string>\",\n          \"since\": \"<long>\",\n          \"sinceDate\": {\n            \"era\": {\n              \"value\": \"<Circular reference to #/components/schemas/Era detected>\"\n            },\n            \"year\": \"<integer>\",\n            \"month\": \"<integer>\",\n            \"dayOfMonth\": \"<integer>\",\n            \"dayOfWeek\": \"<integer>\",\n            \"leapYear\": \"<boolean>\",\n            \"hours\": \"<integer>\",\n            \"minutes\": \"<integer>\",\n            \"seconds\": \"<integer>\",\n            \"millis\": \"<integer>\",\n            \"fraction\": \"<long>\",\n            \"normalized\": \"<boolean>\",\n            \"zoneinfo\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            },\n            \"zoneOffset\": \"<integer>\",\n            \"daylightSaving\": \"<integer>\",\n            \"forceStandardTime\": \"<boolean>\",\n            \"locale\": {\n              \"language\": \"<string>\",\n              \"script\": \"<string>\",\n              \"country\": \"<string>\",\n              \"variant\": \"<string>\",\n              \"extensionKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleAttributes\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"unicodeLocaleKeys\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"iSO3Language\": \"<string>\",\n              \"iSO3Country\": \"<string>\",\n              \"displayLanguage\": \"<string>\",\n              \"displayScript\": \"<string>\",\n              \"displayCountry\": \"<string>\",\n              \"displayVariant\": \"<string>\",\n              \"displayName\": \"<string>\"\n            },\n            \"timeOfDay\": \"<long>\",\n            \"standardTime\": \"<boolean>\",\n            \"daylightTime\": \"<boolean>\",\n            \"zone\": {\n              \"ID\": \"<string>\",\n              \"rawOffset\": \"<integer>\",\n              \"iD\": \"<string>\",\n              \"displayName\": \"<string>\",\n              \"dSTSavings\": \"<integer>\"\n            }\n          },\n          \"localTime\": \"<boolean>\",\n          \"hash\": \"<integer>\",\n          \"abbreviation\": \"<string>\"\n        },\n        \"year\": \"<integer>\",\n        \"month\": \"<integer>\",\n        \"dayOfMonth\": \"<integer>\",\n        \"dayOfWeek\": \"<integer>\",\n        \"leapYear\": \"<boolean>\",\n        \"hours\": \"<integer>\",\n        \"minutes\": \"<integer>\",\n        \"seconds\": \"<integer>\",\n        \"millis\": \"<integer>\",\n        \"fraction\": \"<long>\",\n        \"normalized\": \"<boolean>\",\n        \"zoneinfo\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"zoneOffset\": \"<integer>\",\n        \"daylightSaving\": \"<integer>\",\n        \"forceStandardTime\": \"<boolean>\",\n        \"locale\": {\n          \"language\": \"<string>\",\n          \"script\": \"<string>\",\n          \"country\": \"<string>\",\n          \"variant\": \"<string>\",\n          \"extensionKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleAttributes\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"unicodeLocaleKeys\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"iSO3Language\": \"<string>\",\n          \"iSO3Country\": \"<string>\",\n          \"displayLanguage\": \"<string>\",\n          \"displayScript\": \"<string>\",\n          \"displayCountry\": \"<string>\",\n          \"displayVariant\": \"<string>\",\n          \"displayName\": \"<string>\"\n        },\n        \"timeOfDay\": \"<long>\",\n        \"standardTime\": \"<boolean>\",\n        \"daylightTime\": \"<boolean>\",\n        \"zone\": {\n          \"ID\": \"<string>\",\n          \"rawOffset\": \"<integer>\",\n          \"iD\": \"<string>\",\n          \"displayName\": \"<string>\",\n          \"dSTSavings\": \"<integer>\"\n        },\n        \"cachedYear\": \"<integer>\",\n        \"cachedFixedDateJan1\": \"<long>\",\n        \"cachedFixedDateNextJan1\": \"<long>\",\n        \"normalizedYear\": \"<integer>\",\n        \"cachedJan1\": \"<long>\"\n      },\n      \"nanos\": \"<integer>\",\n      \"time\": \"<long>\"\n    },\n    \"createdBy\": \"<string>\",\n    \"lastUpdatedBy\": \"<string>\"\n  }\n]"
+				}
+			]
+		},
+		{
+			"name": "fallisci nel creare delle associazioni inviando delle triplette duplicate nel body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"defaultTemplateId\": \"{{bpmn_3_id}}\",\n  \"defaultTemplateVersion\": \"1\",\n  \"branchesConfigs\": [\n    {\n      \"branchId\": \"1\",\n      \"branchDefaultTemplateId\": \"{{bpmn_1_id}}\",\n      \"branchDefaultTemplateVersion\": \"2\",\n      \"terminals\": [\n        {\n          \"templateId\": \"{{bpmn_1_id}}\",\n          \"templateVersion\": \"1\",\n          \"terminalIds\": [\n            \"1\",\n            \"1\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
 					"options": {
 						"raw": {
 							"headerFamily": "json",

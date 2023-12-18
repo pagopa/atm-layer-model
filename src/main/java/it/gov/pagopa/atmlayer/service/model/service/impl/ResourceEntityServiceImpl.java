@@ -34,8 +34,6 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculateSha256;
-import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.getExtension;
-import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.isExtensionValid;
 
 @ApplicationScoped
 @Slf4j
@@ -119,10 +117,10 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                     throw new AtmLayerException(String.format("Cannot upload %s: resource with same file name and path already exists",
                                             resourceEntity.getStorageKey()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
                                 }
-                                if (!isExtensionValid(file, filename)) {
-                                    throw new AtmLayerException(String.format("Cannot upload file: the extension %s doesn't match with the provided filename %s",
-                                            getExtension(file), filename), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
-                                }
+//                                if (!isExtensionValid(file, filename)) {
+//                                    throw new AtmLayerException(String.format("Cannot upload file: the extension %s doesn't match with the provided filename %s",
+//                                            getExtension(file), filename), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
+//                                }
                                 return saveAndUpload(resourceEntity, file, filename, path)
                                         .onItem().transformToUni(bpmn -> this.findByUUID(resourceEntity.getResourceId())
                                                 .onItem().transformToUni(optionalResource -> {
@@ -154,10 +152,10 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     }
                     String fileNameDb = resourceEntity.getFileName();
                     String extensionDb = FilenameUtils.getExtension(fileNameDb);
-                    if (!Objects.equals(extensionDb, getExtension(file))) {
-                        throw new AtmLayerException(String.format("Cannot upload file: the extension %s doesn't match with the file you are trying to update: %s",
-                                getExtension(file), fileNameDb), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
-                    }
+//                    if (!Objects.equals(extensionDb, getExtension(file))) {
+//                        throw new AtmLayerException(String.format("Cannot upload file: the extension %s doesn't match with the file you are trying to update: %s",
+//                                getExtension(file), fileNameDb), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
+//                    }
                     resourceEntity.setSha256(newFileSha256);
                     Date date = new Date();
                     resourceEntity.setLastUpdatedAt(new Timestamp(date.getTime()));
