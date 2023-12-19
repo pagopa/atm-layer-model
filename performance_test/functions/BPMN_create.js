@@ -13,14 +13,12 @@ export function createBpmn(baseUrl, token, fileBpmn) {
         'x-api-key': token,
     };
 
-    const response = http.post(
-        `${baseUrl}/bpmn`,
-        fd.body(),
-        {
-            headers: headers,
-            tags: { name: 'BPMNcreate' }
-        },
-    );
+    const params = {
+        headers: headers,
+        tags: { name: 'BPMNcreate' }
+    };
+
+    const response = http.post(`${baseUrl}/bpmn`, fd.body(), params);
 
     check(response, {
         'response code was 200': (response) => response.status == 200

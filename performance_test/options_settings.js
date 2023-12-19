@@ -27,7 +27,14 @@ export const nameThresholds={
   'http_req_duration{name:BPMNupgrade}': ['p(95)<1500'],
   'http_req_waiting{name:BPMNupgrade}':['p(95)<00'],
   'http_req_failed{name:BPMNupgrade}':['rate<0.01'],
-  'http_reqs{name:BPMNupgrade}':[]
+  'http_reqs{name:BPMNupgrade}':[],
+
+  // RESOURCES
+
+  'http_req_duration{name:RESOURCECreate}': ['p(95)<1500'],
+  'http_req_waiting{name:RESOURCECreate}':['p(95)<00'],
+  'http_req_failed{name:RESOURCECreate}':['rate<0.01'],
+  'http_reqs{name:RESOURCECreate}':[]
 }
 
 

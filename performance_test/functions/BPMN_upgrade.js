@@ -13,26 +13,22 @@ export function upgradeBpmn(uuid, fileBpmn, token, baseUrl, tagName) {
         'Content-Type': 'multipart/form-data; boundary=' + fd.boundary,
         'x-api-key': token,
     };
-    
+
     const endPoint = '/bpmn/upgrade';
     const url = baseUrl + endPoint;
 
-    const response = http.post(
-        url,
-        fd.body(),
-        {
-            headers: headers,
-            tags: { name: tagName }
-        },
-    );
+    const params = {
+        headers: headers,
+        tags: { name: tagName }
+    }
 
-    console.log('Response status UPGRADE:', response.request);
-    console.log('Response status UPGRADE:', response.status);
-    console.log('Response body UPGRADE:', response.body);
+    const response = http.post(url,fd.body(), params);
+
+    // console.log('Response status UPGRADE:', response.request);
+    // console.log('Response status UPGRADE:', response.status);
+    // console.log('Response body UPGRADE:', response.body);
 
     check(response, {
         'response code was 200': (response) => response.status == 200
     });
-
-    //return typeof response !== 'undefined' ? response.body : {};
 }
