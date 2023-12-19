@@ -31,9 +31,9 @@ objectStore:
   region: eu-south-1
   type: AWS_S3
   bucket_name: pagopa-dev-atm-layer-s3-model
-  bpmn_template_path: BPMN/files/UUID/[uuid]/VERSION/[version]
-  workflow_resource_path: WORKFLOW_RESOURCE/[RESOURCE_TYPE]/files/UUID/[uuid]
-  resource_template_path: RESOURCE/files/[RESOURCE_TYPE]
+  bpmn_template_path: /BPMN/files/UUID/[uuid]/VERSION/[version]
+  workflow_resource_path: /WORKFLOW_RESOURCE/[RESOURCE_TYPE]/files/UUID/[uuid]
+  resource_template_path: /RESOURCES/files/[RESOURCE_TYPE]
 
 cdn:
   offset_path: RESOURCES/
