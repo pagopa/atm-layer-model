@@ -5,7 +5,7 @@ import { createBpmnAndGetId } from '../utils_functions.js';
 
 export function deployBpmn(baseUrl, token, tagName, version) {
 
-        const newBpmnUuid = createBpmnAndGetId(baseUrl, token);
+        const newBpmnBody = createBpmnAndGetId(baseUrl, token);
         const fd = new FormData();
         const params = {
             headers: {
@@ -15,15 +15,15 @@ export function deployBpmn(baseUrl, token, tagName, version) {
             tags: { name: tagName }
         };
 
-        const endPoint = '/bpmn/deploy/' + newBpmnUuid + '/version/' + version;
+        const endPoint = '/bpmn/deploy/' + newBpmnBody.bpmnId + '/version/' + version;
         const url = baseUrl + endPoint;
 
         const response = http.post(url, fd.body(), params);
 
         console.error();
-        console.log('Response status:', response.request);
-        console.log('Response status:', response.status);
-        console.log('Response body:', response.body);
+        console.log('Response status DEPLOY:', response.request);
+        console.log('Response status DEPLOY:', response.status);
+        console.log('Response body DEPLOY:', response.body);
 
         check(response, {
             'response code was 200': (response) => response.status == 200,

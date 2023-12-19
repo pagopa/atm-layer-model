@@ -2,15 +2,18 @@ import http from 'k6/http';
 import { group, check } from 'k6';
 import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
 import { createBpmn } from './BPMN_create.js';
-import { generateRandomBpmn, createBpmnAndGetId, generateAssociationBody } from '../utils_functions.js';
+import { generateRandomBpmn, createBpmnAndGetId, generateAssociationBody, generateUpgradedBpmnByDefKey } from '../utils_functions.js';
 import { deployBpmn } from './BPMN_deploy.js';
+import { upgradeBpmn } from './BPMN_upgrade.js';
 
 export function associateRouteBpmn(baseUrl, token, acquirerId, tagName, version) {
     group(tagName, function () {
 
         const deployedBpmn=deployBpmn(baseUrl, token, 'BPMNdeploy', version);
-        const bpmnIdForAssociations=JSON.parse(deployedBpmn).bpmnId;
-        const associationBody = generateAssociationBody(bpmnIdForAssociations);
+        const deployedBpmnId=JSON.parse(deployedBpmn).bpmnId;
+        const deployedBpmnDefKey=JSON.parse(deployedBpmn).definitionKey;
+        upgradeBpmn(deployedBpmnId, generateUpgradedBpmnByDefKey(deployedBpmnDefKey), token, baseUrl, 'BPMNupgrade');
+        const associationBody = generateAssociationBody(deployedBpmnId);
 
         const fd = new FormData();
         const params = {
@@ -27,9 +30,9 @@ export function associateRouteBpmn(baseUrl, token, acquirerId, tagName, version)
         const response = http.put(url, associationBody, params);
 
         console.error();
-        console.log('Response status:', response.request);
-        console.log('Response status:', response.status);
-        console.log('Response body:', response.body);
+        console.log('Response status ASSOCIATE:', response.request);
+        console.log('Response status ASSOCIATE:', response.status);
+        console.log('Response body ASSOCIATE:', response.body);
 
         check(response, {
             'response code was 200': (response) => response.status == 200,

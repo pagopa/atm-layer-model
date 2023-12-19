@@ -6,12 +6,28 @@ export const thresholdsSettings = {
 export const nameThresholds={
   'http_req_duration{name:BPMNcreate}': ['p(95)<500'],
   'http_req_waiting{name:BPMNcreate}':['p(95)<200'],
+  'http_req_failed{name:BPMNcreate}':['rate<0.01'],
+  'http_reqs{name:BPMNcreate}':[],
+
   'http_req_duration{name:BPMNgetAll}': ['p(95)<6000'],
   'http_req_waiting{name:BPMNgetAll}':['p(95)<6000'],
+  'http_req_failed{name:BPMNgetAll}':['rate<0.01'],
+  'http_reqs{name:BPMNgetAll}':[],
+
   'http_req_duration{name:BPMNdeploy}': ['p(95)<1500'],
   'http_req_waiting{name:BPMNdeploy}':['p(95)<300'],
+  'http_req_failed{name:BPMNdeploy}':['rate<0.01'],
+  'http_reqs{name:BPMNdeploy}':[],
+
   'http_req_duration{name:BPMNassociate}': ['p(95)<1500'],
-  'http_req_waiting{name:BPMNassociate}':['p(95)<00']
+  'http_req_waiting{name:BPMNassociate}':['p(95)<00'],
+  'http_req_failed{name:BPMNassociate}':['rate<0.01'],
+  'http_reqs{name:BPMNassociate}':[],
+
+  'http_req_duration{name:BPMNupgrade}': ['p(95)<1500'],
+  'http_req_waiting{name:BPMNupgrade}':['p(95)<00'],
+  'http_req_failed{name:BPMNupgrade}':['rate<0.01'],
+  'http_reqs{name:BPMNupgrade}':[]
 }
 
 
