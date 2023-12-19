@@ -34,7 +34,12 @@ export const nameThresholds={
   'http_req_duration{name:RESOURCECreate}': ['p(95)<1500'],
   'http_req_waiting{name:RESOURCECreate}':['p(95)<00'],
   'http_req_failed{name:RESOURCECreate}':['rate<0.01'],
-  'http_reqs{name:RESOURCECreate}':[]
+  'http_reqs{name:RESOURCECreate}':[],
+
+  'http_req_duration{name:RESOURCEUpdate}': ['p(95)<1500'],
+  'http_req_waiting{name:RESOURCEUpdate}':['p(95)<00'],
+  'http_req_failed{name:RESOURCEUpdate}':['rate<0.01'],
+  'http_reqs{name:RESOURCEUpdate}':[]
 }
 
 

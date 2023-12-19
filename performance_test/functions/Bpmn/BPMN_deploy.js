@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { check } from 'k6';
 import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
-import { createBpmnAndGetId } from '../utils_functions.js';
+import { createBpmnAndGetId } from '../../utils_functions.js';
 
 export function deployBpmn(baseUrl, token, tagName, version) {
 

@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { group, check } from 'k6';
 import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
-import { generateAssociationBody, generateUpgradedBpmnByDefKey } from '../utils_functions.js';
+import { generateAssociationBody, generateUpgradedBpmnByDefKey } from '../../utils_functions.js';
 import { deployBpmn } from './BPMN_deploy.js';
 import { upgradeBpmn } from './BPMN_upgrade.js';
 

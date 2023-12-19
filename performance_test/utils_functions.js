@@ -1,5 +1,5 @@
-import { createBpmn } from "./functions/BPMN_create.js";
-import { createHtmlResource } from "./functions/RESOURCES_create.js";
+import { createBpmn } from "./functions/Bpmn/BPMN_create.js";
+import { createHtmlResource } from "./functions/Resources/RESOURCES_create.js";
 
 export function generateRandomBpmn() {
     const bpmn_part1 = '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0hfksvi" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.16.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0"><bpmn:process id="';
@@ -30,7 +30,7 @@ export function generateRandomHTML() {
     )
 }
 
-export function createHTMLResource(baseUrl, token) {
+export function generatedHTMLResource(baseUrl, token) {
     const htmlResource = createHtmlResource(baseUrl, token, generateRandomHTML());
     return JSON.parse(htmlResource);
 }
