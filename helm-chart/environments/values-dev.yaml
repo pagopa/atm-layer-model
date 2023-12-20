@@ -36,7 +36,7 @@ objectStore:
   resource_template_path: /RESOURCES/files/[RESOURCE_TYPE]
 
 cdn:
-  offset_path: RESOURCES/
+  offset_path: RESOURCE/
   credentialsSecretName: "pagopa-dev-atm-layer-model-cdn-base-path"
   credentialsSecretKeys:
     cdn_base_path: CDN_BASE_PATH
