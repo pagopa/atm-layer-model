@@ -1,12 +1,12 @@
 import { nameThresholds, low_load } from "./options_settings.js";
-// import { getAllBpmn } from "./functions/Bpmn/BPMN_getAll.js";
+import { getAllBpmn } from "./functions/Bpmn/BPMN_getAll.js";
 import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
-// import { associateRouteBpmn } from "./functions/Bpmn/BPMN_associate.js";
+import { associateRouteBpmn } from "./functions/Bpmn/BPMN_associate.js";
 import { updateHtmlResource } from "./functions/Resources/RESOUCRES_update.js";
 
-const baseUrl = 'https://8o3pf45im8.execute-api.eu-south-1.amazonaws.com/dev';
-const relativePath = '/api/v1/model';
-const token = 'TfRV0R7jTX1ZhzWxdZBvn2ALZxlhgd446EPfuECc';
+var appBaseUrl = `${__ENV.MODEL_APPLICATION_BASE_URL}`;
+var appBasePath = `${__ENV.MODEL_APPLICATION_BASE_PATH}`;
+var token = `${__ENV.MODEL_APPLICATION_KEY}`;
 
 
 export const options = {
@@ -22,7 +22,7 @@ export function handleSummary(data) {
 }
 
 export default function () {
-    getAllBpmn(baseUrl, token);
-    associateRouteBpmn(baseUrl.concat(relativePath),token,'performance_acquirer','BPMNassociate',1);
-    updateHtmlResource(baseUrl.concat(relativePath), token);
+    getAllBpmn(appBaseUrl, token);
+    associateRouteBpmn(appBaseUrl.concat(appBasePath),token,'performance_acquirer','BPMNassociate',1);
+    updateHtmlResource(appBaseUrl.concat(appBasePath), token);
 }

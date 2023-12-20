@@ -55,7 +55,7 @@ export const average_load = {
 export const low_load = {
     executor: 'ramping-vus',
     stages: [
-      { duration: '2s', target: 1 },
-      { duration: '2s', target: 0 },
+      { duration: '4s', target: 1 },
+      { duration: '4s', target: 0 },
     ],
   };
