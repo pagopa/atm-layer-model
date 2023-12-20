@@ -31,4 +31,4 @@ jobs:
             MODEL_APPLICATION_BASE_PATH: ${{ vars.MODEL_APPLICATION_BASE_PATH }}
             MODEL_APPLICATION_KEY: ${{ secrets.MODEL_APPLICATION_KEY }}
         with:
-          filename: "perfomance_test/run_performance_tests.js"
+          filename: performance_test/run_performance_tests.js
