@@ -32,10 +32,10 @@ export function associateRouteBpmn(baseUrl, token, acquirerId, tagName, version)
 
         const response = http.put(url, generateAssociationBody(deployedBpmn.bpmnId), params);
 
-        // console.error();
-        // console.log('Response status ASSOCIATE:', response.request);
-        // console.log('Response status ASSOCIATE:', response.status);
-        // console.log('Response body ASSOCIATE:', response.body);
+        console.error();
+        console.log('Response status ASSOCIATE:', response.request);
+        console.log('Response status ASSOCIATE:', response.status);
+        console.log('Response body ASSOCIATE:', response.body);
 
         check(response, {
             'response code was 200': (response) => response.status == 200,
