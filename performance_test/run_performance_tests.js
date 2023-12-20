@@ -22,7 +22,7 @@ export function handleSummary(data) {
 }
 
 export default function () {
-    // getAllBpmn(baseUrl, token);
+    getAllBpmn(baseUrl, token);
     associateRouteBpmn(baseUrl.concat(relativePath),token,'performance_acquirer','BPMNassociate',1);
     updateHtmlResource(baseUrl.concat(relativePath), token);
 }
