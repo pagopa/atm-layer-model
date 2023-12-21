@@ -32,4 +32,3 @@ jobs:
             APPLICATION_KEY: ${{ secrets.APPLICATION_KEY }}
         with:
           filename: performance_test/run_performance_tests.js
-          flags: -e BASE_URL=http://httpbin:8080
