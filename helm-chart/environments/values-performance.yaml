@@ -1,0 +1,137 @@
+# Default values for atm-layer-model.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: 00000000000.dkr.ecr.eu-south-1.amazonaws.com/xxxxxxx
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: latest
+
+namespace: pagopa
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+modelProcessBasePath: http://pagopa-performance-atm-layer-wf-process.pagopa.svc.cluster.local:8080
+
+database:
+  type: postgresql
+  url: postgresql://pagopa-performance-atm-layer-rds.cluster-csdbokdg0q4t.eu-south-1.rds.amazonaws.com:5432/pagopadb?search_path=atm_layer_model_schema
+  db_name: pagopadb
+  credentialsSecretName: "pagopa-performance-atm-layer-model-database"
+  credentialsSecretKeys:
+    username: USERNAME_DB
+    password: PASSWORD_DB
+
+objectStore:
+  region: eu-south-1
+  type: AWS_S3
+  bucket_name: pagopa-performance-atm-layer-s3-model
+  bpmn_template_path: BPMN/files/UUID/[uuid]/VERSION/[version]
+  workflow_resource_path: WORKFLOW_RESOURCE/[RESOURCE_TYPE]/files/UUID/[uuid]
+  resource_template_path: RESOURCE/files/[RESOURCE_TYPE]
+
+cdn:
+  offset_path: RESOURCE/
+  credentialsSecretName: "pagopa-performance-atm-layer-model-cdn-base-path"
+  credentialsSecretKeys:
+    cdn_base_path: CDN_BASE_PATH
+
+secretProviderClass:
+  name: atm-layer-model-secrets
+  env: performance
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::00000000000:role/pagopa-performance-atm-layer-xxxxxx-serviceaccount-role
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: pagopa-performance-atm-layer-model
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+deployment:
+  name: pagopa-performance-atm-layer-model
+  annotations:
+    reloader.stakater.com/auto: "true"
+    secret.reloader.stakater.com/reload: pagopa-performance-atm-layer-model-database, , pagopa-performance-atm-layer-model-cdn-base-path
+
+service:
+  name: pagopa-performance-atm-layer-model
+  type: NodePort
+  port: 8080
+
+ingress:
+  enabled: true
+  name: pagopa-performance-atm-layer-model
+  className: ""
+  annotations: 
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: "internal"
+    alb.ingress.kubernetes.io/group.name: "alb-controller"
+    alb.ingress.kubernetes.io/load-balancer-name: "pagopa-performance-atm-layer-alb-int"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTP": 8080}]'
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-path: /health/v1/model
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '20'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '8'
+    alb.ingress.kubernetes.io/success-codes: '200'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
+  hosts:
+    - host:
+      paths:
+        - path: /api/v1/model
+          pathType: Prefix
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+Release:
+  Time:
+    Seconds: 60
