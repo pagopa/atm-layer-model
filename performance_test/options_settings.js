@@ -4,6 +4,7 @@ export const thresholdsSettings = {
 };
 
 export const nameThresholds={
+
   'http_req_duration{name:BPMNcreate}': ['p(95)<10000'],
   'http_req_waiting{name:BPMNcreate}':['p(95)<10000'],
   'http_req_failed{name:BPMNcreate}':['rate<0.01'],
@@ -38,6 +39,7 @@ export const nameThresholds={
 
   'http_req_duration{name:RESOURCEUpdate}': ['p(95)<10000'],
   'http_req_waiting{name:RESOURCEUpdate}':['p(95)<10000'],
+
   'http_req_failed{name:RESOURCEUpdate}':['rate<0.01'],
   'http_reqs{name:RESOURCEUpdate}':[]
 }
