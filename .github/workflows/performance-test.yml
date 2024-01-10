@@ -10,7 +10,7 @@ defaults:
 permissions: write-all
 
 jobs:
-  manual-create-pre-release:
+  manual-run-performance-test:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/dev'
     strategy:
       matrix:
