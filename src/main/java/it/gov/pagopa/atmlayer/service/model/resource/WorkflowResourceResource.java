@@ -13,6 +13,7 @@ import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.FormParam;
@@ -113,7 +114,7 @@ public class WorkflowResourceResource {
     @Path("/update/{uuid}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") File file,
+    public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") @NotNull (message = "input file is required") File file,
                                            @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
 
         return workflowResourceService.update(uuid, file,false)
