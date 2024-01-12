@@ -11,10 +11,10 @@ permissions: write-all
 
 jobs:
   manual-run-performance-test:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/dev'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/uat'
     strategy:
       matrix:
-        environment: [dev]
+        environment: [uat]
 
     name: "manual-run-performance-test"
     runs-on: ubuntu-latest
