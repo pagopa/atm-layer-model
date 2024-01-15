@@ -21,7 +21,6 @@ export function updateHtmlResource(baseUrl, token) {
 
     const response = http.put(`${baseUrl}/resources/${resourceId}`, fd.body(), params);
 
-    console.error();
     console.log('Response request Resource UPDATE:', response.request);
     console.log('Response status Resource UPDATE:', response.status);
     console.log('Response body Resource UPDATE:', response.body);

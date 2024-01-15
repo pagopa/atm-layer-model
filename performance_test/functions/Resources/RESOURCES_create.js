@@ -21,7 +21,6 @@ export function createHtmlResource(baseUrl, token, file) {
 
     const response = http.post(`${baseUrl}/resources`, fd.body(), params);
 
-    console.error();
     console.log('Response request Resource CREATE:', response.request);
     console.log('Response status Resource CREATE:', response.status);
     console.log('Response body Resource CREATE:', response.body);
