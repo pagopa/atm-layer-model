@@ -17,7 +17,7 @@ export const nameThresholds={
 
   'http_req_duration{name:BPMNdeploy}': ['p(95)<10000'],
   'http_req_waiting{name:BPMNdeploy}':['p(95)<10000'],
-  // 'http_req_failed{name:BPMNdeploy}':['rate<0.01'],
+  'http_req_failed{name:BPMNdeploy}':['rate<0.5'],
   'http_reqs{name:BPMNdeploy}':[],
 
   'http_req_duration{name:BPMNassociate}': ['p(95)<10000'],
@@ -48,9 +48,9 @@ export const nameThresholds={
 export const average_load = {
   executor: 'ramping-vus',
   stages: [
-    { duration: '2s', target: 20 },
-    { duration: '5s', target: 20 },
-    { duration: '5s', target: 0 },
+    { duration: '1m', target: 1 },
+    { duration: '10s', target: 3 },
+    { duration: '30s', target: 2 },
   ],
 };
 

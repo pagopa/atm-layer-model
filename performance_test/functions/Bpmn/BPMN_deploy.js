@@ -20,7 +20,6 @@ export function deployBpmn(baseUrl, token, tagName, version) {
 
     const response = http.post(url, fd.body(), params);
 
-    console.error();
     console.log('Response status DEPLOY:', response.request);
     console.log('Response status DEPLOY:', response.status);
     console.log('Response body DEPLOY:', response.body);
