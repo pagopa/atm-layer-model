@@ -10,6 +10,7 @@ import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,4 +42,8 @@ public interface BpmnVersionService {
     Uni<BpmnVersion> createBPMN(BpmnVersion bpmnVersion, File file, String filename);
 
     Uni<Void> disable(BpmnVersionPK bpmnVersionPK);
+
+    Uni<List<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda, String createdAt, String lastUpdatedAt,
+                                            String bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
+                                            String lastUpdatedBy, String resource, String sha256, String status);
 }

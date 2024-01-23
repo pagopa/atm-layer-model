@@ -28,9 +28,11 @@ import it.gov.pagopa.atmlayer.service.model.validators.BpmnEntityValidator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -59,22 +61,16 @@ import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerCo
 @Tag(name = "BPMN", description = "BPMN operations")
 @Slf4j
 public class BpmnResource {
-
-
     @Inject
     BpmnVersionService bpmnVersionService;
-
     @Inject
     BpmnBankConfigService bpmnBankConfigService;
-
     @Inject
     BpmnEntityValidator bpmnEntityValidator;
     @Inject
     BpmnFileStorageService bpmnFileStorageService;
-
     @Inject
     BpmnVersionMapper bpmnVersionMapper;
-
     @Inject
     BpmnConfigMapper bpmnConfigMapper;
 
@@ -150,7 +146,6 @@ public class BpmnResource {
     @Path("/{bpmnId}/version/{version}")
     public Uni<Void> deleteBpmn(@PathParam("bpmnId") UUID bpmnId,
                                 @PathParam("version") Long version) {
-
         return this.bpmnVersionService.delete(new BpmnVersionPK(bpmnId, version))
                 .onItem()
                 .ignore()
@@ -172,7 +167,6 @@ public class BpmnResource {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Multi<Buffer> downloadBpmn(@PathParam("uuid") UUID bpmnId,
                                       @PathParam("version") Long version) {
-
         BpmnVersionPK key = BpmnVersionPK.builder()
                 .bpmnId(bpmnId)
                 .modelVersion(version)
@@ -276,10 +270,35 @@ public class BpmnResource {
 
     @POST
     @Path("/disable/{uuid}/version/{version}")
-    public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId,@PathParam("version") Long version){
-        BpmnVersionPK bpmnVersionPK=new BpmnVersionPK(bpmnId,version);
+    public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version) {
+        BpmnVersionPK bpmnVersionPK = new BpmnVersionPK(bpmnId, version);
         return bpmnVersionService.disable(bpmnVersionPK);
     }
 
-
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/filter")
+    public Uni<List<BpmnDTO>> getBpmnFiltered(@HeaderParam("pageIndex") int pageIndex,
+                                              @HeaderParam("pageSize") int pageSize,
+                                              @HeaderParam("functionType") String functionType,
+                                              @HeaderParam("modelVersion") String modelVersion,
+                                              @HeaderParam("definitionVersionCamunda") String definitionVersionCamunda,
+                                              @HeaderParam("createdAt") String createdAt,
+                                              @HeaderParam("lastUpdatedAt") String lastUpdatedAt,
+                                              @HeaderParam("bpmnId") String bpmnId,
+                                              @HeaderParam("deploymentId") String deploymentId,
+                                              @HeaderParam("camundaDefinitionId") String camundaDefinitionId,
+                                              @HeaderParam("createdBy") String createdBy,
+                                              @HeaderParam("definitionKey") String definitionKey,
+                                              @HeaderParam("deployedFileName") String deployedFileName,
+                                              @HeaderParam("lastUpdatedBy") String lastUpdatedBy,
+                                              @HeaderParam("resource") String resource,
+                                              @HeaderParam("sha256") String sha256,
+                                              @HeaderParam("status") String status) {
+        return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda, createdAt, lastUpdatedAt,
+                        bpmnId, deploymentId, camundaDefinitionId, createdBy, definitionKey, deployedFileName,
+                        lastUpdatedBy, resource, sha256, status)
+                .onItem()
+                .transform(bpmn -> bpmnVersionMapper.toDTOList(bpmn));
+    }
 }
