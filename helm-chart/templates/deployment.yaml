@@ -9,7 +9,7 @@ metadata:
     {{- toYaml .Values.deployment.annotations | nindent 4 }}
 
 spec:
-  replicas: {{ .Values.replicaCount }}
+  # replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       App: {{ .Values.deployment.name }}
@@ -64,16 +64,28 @@ spec:
               value: "{{ .Values.modelProcessBasePath }}"
             - name: CDN_OFFSET_PATH
               value: "{{ .Values.cdn.offset_path }}"
+            - name: TRACING_ENABLED
+              value: "{{ .Values.tracing.enabled }}"
+            - name: TRACING_ENDPOINT_BASE_PATH
+              value: "{{ .Values.tracing.endpointBasePath }}"
+            - name: TRACING_ENABLE_JDBC_MONITORING
+              value: "{{ .Values.tracing.enableJDBCMonitoring }}"
             - name: CDN_BASE_PATH
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.cdn.credentialsSecretName }}
                   key: {{ .Values.cdn.credentialsSecretKeys.cdn_base_path }}
-
           volumeMounts:
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"
             readOnly: true
+          resources:
+            limits:
+              cpu: {{ .Values.autoscaling.cpuLimits }}
+              memory: {{ .Values.autoscaling.memoryLimits }}
+            requests:
+              cpu: {{ .Values.autoscaling.cpuRequest }}
+              memory: {{ .Values.autoscaling.memoryRequests }}
 
   strategy:
     type: Recreate
