@@ -5,10 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.FormParam;
-import java.io.File;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+import java.io.File;
 
 @Data
 @NoArgsConstructor

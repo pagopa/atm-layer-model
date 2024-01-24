@@ -19,7 +19,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -33,7 +32,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_FILE_DOES_NOT_EXIST;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum.CREATED;
 
 @ApplicationScoped
 @Path("/workflow-resource")
@@ -52,8 +50,11 @@ public class WorkflowResourceResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<WorkflowResourceDTO>> getAll() {
-        return this.workflowResourceService.getAll()
+    public Uni<List<WorkflowResourceDTO>> getAll(@QueryParam("pageIndex") @DefaultValue("0")
+                                                 @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                 @QueryParam("pageSize") @DefaultValue("10")
+                                                 @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize) {
+        return this.workflowResourceService.getAll(pageIndex, pageSize)
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {
