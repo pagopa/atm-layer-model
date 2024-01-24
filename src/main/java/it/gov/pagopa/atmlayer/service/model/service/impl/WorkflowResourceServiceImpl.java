@@ -293,6 +293,15 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
     @Override
+    public Uni<List<WorkflowResource>> getAllFiltred(StatusEnum status, int page, int size){
+
+        if(status == null){
+            return this.workflowResourceRepository.findAll().list();
+        }
+        return this.workflowResourceRepository.findByStatus(status, page, size);
+    }
+
+    @Override
     @WithTransaction
     public Uni<WorkflowResource> update(UUID id, File file, boolean isRollback) throws NoSuchAlgorithmException, IOException {
         return this.findById(id)
