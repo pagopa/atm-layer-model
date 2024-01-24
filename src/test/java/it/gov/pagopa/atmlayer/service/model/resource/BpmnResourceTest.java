@@ -70,7 +70,7 @@ class BpmnResourceTest {
         List<BpmnDTO> dtoList = new ArrayList<>();
         BpmnDTO bpmnDTO = new BpmnDTO();
         dtoList.add(bpmnDTO);
-        when(bpmnVersionService.getAll(0, 20)).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionService.getAll()).thenReturn(Uni.createFrom().item(bpmnList));
         when(bpmnVersionMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
         ArrayList result = given()
                 .when().get("/api/v1/model/bpmn")
@@ -80,7 +80,7 @@ class BpmnResourceTest {
                 .body()
                 .as(ArrayList.class);
         assertEquals(1, result.size());
-        verify(bpmnVersionService, times(1)).getAll(0, 20);
+        verify(bpmnVersionService, times(1)).getAll();
         verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
     }
 
@@ -88,7 +88,7 @@ class BpmnResourceTest {
     void testGetAllEmptyList() {
         List<BpmnVersion> bpmnList = new ArrayList<>();
         List<BpmnDTO> dtoList = new ArrayList<>();
-        when(bpmnVersionService.getAll(0, 20)).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionService.getAll()).thenReturn(Uni.createFrom().item(bpmnList));
         when(bpmnVersionMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
         ArrayList result = given()
                 .when().get("/api/v1/model/bpmn")
@@ -98,7 +98,7 @@ class BpmnResourceTest {
                 .body()
                 .as(ArrayList.class);
         assertEquals(0, result.size());
-        verify(bpmnVersionService, times(1)).getAll(0, 20);
+        verify(bpmnVersionService, times(1)).getAll();
         verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
     }
 
@@ -108,7 +108,7 @@ class BpmnResourceTest {
         BpmnVersion bpmnVersion = new BpmnVersion();
         bpmnList.add(bpmnVersion);
         List<BpmnDTO> dtoList = new ArrayList<>();
-        when(bpmnVersionService.getAll(0, 20)).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionService.getAll()).thenReturn(Uni.createFrom().item(bpmnList));
         when(bpmnVersionMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
         ArrayList result = given()
                 .when().get("/api/v1/model/bpmn")
@@ -118,7 +118,7 @@ class BpmnResourceTest {
                 .body()
                 .as(ArrayList.class);
         Assertions.assertTrue(result.isEmpty());
-        verify(bpmnVersionService, times(1)).getAll(0, 20);
+        verify(bpmnVersionService, times(1)).getAll();
         verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
     }
 
