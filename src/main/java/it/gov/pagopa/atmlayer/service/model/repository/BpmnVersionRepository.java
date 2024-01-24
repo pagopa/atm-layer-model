@@ -1,25 +1,31 @@
 package it.gov.pagopa.atmlayer.service.model.repository;
 
 import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
+import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Parameters;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion, BpmnVersionPK> {
+    public Uni<List<BpmnVersion>> findByFilters(Map<String,Object> params, int pageIndex, int pageSize) {
+        String queryFilters = params.keySet().stream().map(key -> {
+                if (Objects.equals(key, "modelVersion") || Objects.equals(key, "definitionVersionCamunda")) {
+                    return ("where b." + key + " = :"+key);
+        } else {
+                    return ("where b." + key + " LIKE concat(concat('%', :"+key+"), '%')");}
+        }).collect(Collectors.joining(" and "));
+        return find(("select b from BpmnVersion b ").concat(queryFilters), params).page(Page.of(pageIndex,pageSize)).list();
+    }
 
     public Uni<BpmnVersion> findBySHA256(String sha256) {
-        Map<String,Object> params=new HashMap<>();
-        params.put("sha256",sha256);
+        Map<String, Object> params = new HashMap<>();
+        params.put("sha256", sha256);
         return find("select b from BpmnVersion b where b.sha256 = :sha256", params).firstResult();
     }
 
@@ -37,6 +43,6 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
     }
 
     public Uni<BpmnVersion> findByDefinitionKey(String definitionKey) {
-        return find("select b from BpmnVersion b where b.definitionKey = :definitionKey", Parameters.with("definitionKey",definitionKey)).firstResult();
+        return find("select b from BpmnVersion b where b.definitionKey = :definitionKey", Parameters.with("definitionKey", definitionKey)).firstResult();
     }
 }

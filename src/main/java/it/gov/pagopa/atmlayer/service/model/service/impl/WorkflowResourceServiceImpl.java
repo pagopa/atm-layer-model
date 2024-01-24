@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.quarkus.panache.common.Page;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
@@ -29,24 +30,9 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOYED_FILE_WAS_NOT_RETRIEVED;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_FILE_DOES_NOT_EXIST;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_ROLLED_BACK;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_UPDATED;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.*;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculateSha256;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.extractIdValue;
 
@@ -290,6 +276,18 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @Override
     public Uni<List<WorkflowResource>> getAll() {
         return this.workflowResourceRepository.findAll().list();
+    }
+
+    @Override
+    @WithSession
+    public Uni<List<WorkflowResource>> getAllFiltred(String deployedFileName, StatusEnum status, int pageIndex, int pageSize){
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("deployedFileName", deployedFileName);
+        filters.put("status", status);
+        filters.remove(null);
+        filters.values().removeAll(Collections.singleton(null));
+        filters.values().removeAll(Collections.singleton(""));
+        return workflowResourceRepository.findByFilters(filters, pageIndex, pageSize);
     }
 
     @Override

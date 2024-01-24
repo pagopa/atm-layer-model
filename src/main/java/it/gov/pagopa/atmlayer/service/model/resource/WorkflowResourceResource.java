@@ -5,6 +5,7 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
+import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceFileMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.WorkflowResourceMapper;
@@ -14,18 +15,13 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -56,6 +52,26 @@ public class WorkflowResourceResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<List<WorkflowResourceDTO>> getAll() {
         return this.workflowResourceService.getAll()
+                .onItem()
+                .transform(Unchecked.function(list -> {
+                    if (list.isEmpty()) {
+                        log.info("No Workflow Resource files saved in database");
+                    }
+                    return workflowResourceMapper.toDTOList(list);
+                }));
+    }
+
+    @GET
+    @Path("/filtred")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<List<WorkflowResourceDTO>> getAllFiltred(@HeaderParam("deployedFileName") String deployedFileName,
+                                                        @HeaderParam("status")
+                                                        @Schema(implementation = String.class, type = SchemaType.STRING, enumeration = {"CREATED", "WAITING_DEPLOY", "UPDATED_BUT_NOT_DEPLOYED", "DEPLOYED", "DEPLOY_ERROR"}) StatusEnum status,
+                                                        @QueryParam("pageIndex") @DefaultValue("0")
+                                                        @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) Integer page,
+                                                        @QueryParam("pageSize") @DefaultValue("10")
+                                                        @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) Integer size) {
+        return this.workflowResourceService.getAllFiltred( deployedFileName, status, page, size)
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {
