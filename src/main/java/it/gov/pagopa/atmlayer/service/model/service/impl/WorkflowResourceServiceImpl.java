@@ -29,12 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOYED_FILE_WAS_NOT_RETRIEVED;
@@ -293,12 +288,16 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
     @Override
-    public Uni<List<WorkflowResource>> getAllFiltred(StatusEnum status, int page, int size){
+    @WithSession
+    public Uni<List<WorkflowResource>> getAllFiltred(String deployedFileName, StatusEnum status, int pageIndex, int pageSize){
 
-        if(status == null){
-            return this.workflowResourceRepository.findAll().list();
-        }
-        return this.workflowResourceRepository.findByStatus(status, page, size);
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("deployedFileName", deployedFileName);
+        filters.put("status", status);
+        filters.remove(null);
+        filters.values().removeAll(Collections.singleton(null));
+        filters.values().removeAll(Collections.singleton(""));
+        return workflowResourceRepository.findByFilters(filters, pageIndex, pageSize);
     }
 
     @Override

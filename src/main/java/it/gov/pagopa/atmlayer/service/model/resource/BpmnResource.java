@@ -29,19 +29,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -76,8 +71,11 @@ public class BpmnResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<BpmnDTO>> getAllBpmn() {
-        return this.bpmnVersionService.getAll()
+    public Uni<List<BpmnDTO>> getAllBpmn(@QueryParam("pageIndex") @DefaultValue("0")
+                                         @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                         @QueryParam("pageSize") @DefaultValue("10")
+                                         @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize) {
+        return this.bpmnVersionService.getAll(pageIndex, pageSize)
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {
@@ -278,8 +276,10 @@ public class BpmnResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/filter")
-    public Uni<List<BpmnDTO>> getBpmnFiltered(@HeaderParam("pageIndex") int pageIndex,
-                                              @HeaderParam("pageSize") int pageSize,
+    public Uni<List<BpmnDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+                                              @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                              @QueryParam("pageSize") @DefaultValue("10")
+                                              @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
                                               @HeaderParam("functionType") String functionType,
                                               @HeaderParam("modelVersion") String modelVersion,
                                               @HeaderParam("definitionVersionCamunda") String definitionVersionCamunda,

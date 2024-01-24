@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.repository;
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.hibernate.reactive.panache.PanacheQuery;
 import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
+import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
@@ -11,7 +12,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class WorkflowResourceRepository implements PanacheRepositoryBase<WorkflowResource, UUID> {
@@ -24,10 +28,16 @@ public class WorkflowResourceRepository implements PanacheRepositoryBase<Workflo
         return find("definitionKey", definitionKey).firstResult();
     }
 
-    @Transactional
     public Uni<List<WorkflowResource>> findByStatus(StatusEnum status, int page, int size) {
         return find("status = ?1", status/*, Sort.ascending("id")*/)
                 .page(page, size)
                 .list();
+    }
+
+    public Uni<List<WorkflowResource>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
+        String queryFilters = params.keySet().stream()
+                .map(key -> "where b." + key + " LIKE concat(concat('%', :" + key + "), '%')")
+                .collect(Collectors.joining(" and "));
+        return find(("select b from WorkflowResource b ").concat(queryFilters), params).page(Page.of(pageIndex, pageSize)).list();
     }
 }

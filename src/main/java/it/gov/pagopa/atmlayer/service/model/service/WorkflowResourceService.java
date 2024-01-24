@@ -31,7 +31,7 @@ public interface WorkflowResourceService {
 
     Uni<List<WorkflowResource>> getAll();
 
-    Uni<List<WorkflowResource>> getAllFiltred(StatusEnum status, int page, int size);
+    Uni<List<WorkflowResource>> getAllFiltred(String deployedFileName, StatusEnum status, int page, int size);
 
     Uni<WorkflowResource> update(UUID id, File file,boolean isRollback) throws NoSuchAlgorithmException, IOException;
 

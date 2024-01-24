@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.quarkus.panache.common.Page;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
@@ -66,8 +67,8 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     static final DeployableResourceType resourceType = DeployableResourceType.BPMN;
 
     @Override
-    public Uni<List<BpmnVersion>> getAll() {
-        return this.bpmnVersionRepository.findAll().list();
+    public Uni<List<BpmnVersion>> getAll(int pageIndex, int pageSize) {
+        return this.bpmnVersionRepository.findAll().page(Page.of(pageIndex,pageSize)).list();
     }
 
     @Override

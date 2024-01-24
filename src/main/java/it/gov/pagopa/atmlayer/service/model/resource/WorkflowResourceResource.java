@@ -66,14 +66,14 @@ public class WorkflowResourceResource {
     @GET
     @Path("/filtred")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<WorkflowResourceDTO>> getAllFiltred(@HeaderParam("Status")
-                                                        @Schema(implementation = String.class, type = SchemaType.STRING, enumeration = {"CREATED", "WAITING_DEPLOY", "UPDATED_BUT_NOT_DEPLOYED", "DEPLOYED", "DEPLOY_ERROR"})
-                                                        StatusEnum status,
-                                                        @QueryParam("page") @DefaultValue("0")
+    public Uni<List<WorkflowResourceDTO>> getAllFiltred(@HeaderParam("deployedFileName") String deployedFileName,
+                                                        @HeaderParam("status")
+                                                        @Schema(implementation = String.class, type = SchemaType.STRING, enumeration = {"CREATED", "WAITING_DEPLOY", "UPDATED_BUT_NOT_DEPLOYED", "DEPLOYED", "DEPLOY_ERROR"}) StatusEnum status,
+                                                        @QueryParam("pageIndex") @DefaultValue("0")
                                                         @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int page,
-                                                        @QueryParam("size") @DefaultValue("10")
+                                                        @QueryParam("pageSize") @DefaultValue("10")
                                                         @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int size) {
-        return this.workflowResourceService.getAllFiltred(status, page, size)
+        return this.workflowResourceService.getAllFiltred( deployedFileName, status, page, size)
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {
