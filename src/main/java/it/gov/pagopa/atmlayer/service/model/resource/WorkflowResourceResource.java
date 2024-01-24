@@ -71,9 +71,9 @@ public class WorkflowResourceResource {
                                                         @HeaderParam("status")
                                                         @Schema(implementation = String.class, type = SchemaType.STRING, enumeration = {"CREATED", "WAITING_DEPLOY", "UPDATED_BUT_NOT_DEPLOYED", "DEPLOYED", "DEPLOY_ERROR"}) StatusEnum status,
                                                         @QueryParam("pageIndex") @DefaultValue("0")
-                                                        @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int page,
+                                                        @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) Integer page,
                                                         @QueryParam("pageSize") @DefaultValue("10")
-                                                        @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int size) {
+                                                        @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) Integer size) {
         return this.workflowResourceService.getAllFiltred( deployedFileName, status, page, size)
                 .onItem()
                 .transform(Unchecked.function(list -> {

@@ -281,7 +281,6 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @Override
     @WithSession
     public Uni<List<WorkflowResource>> getAllFiltred(String deployedFileName, StatusEnum status, int pageIndex, int pageSize){
-
         Map<String, Object> filters = new HashMap<>();
         filters.put("deployedFileName", deployedFileName);
         filters.put("status", status);

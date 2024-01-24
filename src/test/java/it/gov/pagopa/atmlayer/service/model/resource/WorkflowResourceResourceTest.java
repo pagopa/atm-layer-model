@@ -137,7 +137,7 @@ class WorkflowResourceResourceTest {
     WorkflowResourceDTO workflowResourceDTO = new WorkflowResourceDTO();
     dtoList.add(workflowResourceDTO);
 
-    when(workflowResourceService.getAll()).thenReturn(Uni.createFrom().item(workflowResources));
+    when(workflowResourceService.getAll(0, 20)).thenReturn(Uni.createFrom().item(workflowResources));
     when(workflowResourceMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
 
     ArrayList result = given()
@@ -148,7 +148,7 @@ class WorkflowResourceResourceTest {
         .body()
         .as(ArrayList.class);
     assertEquals(1, result.size());
-    verify(workflowResourceService, times(1)).getAll();
+    verify(workflowResourceService, times(1)).getAll(0, 20);
     verify(workflowResourceMapper, times(1)).toDTOList(workflowResources);
   }
 
@@ -156,14 +156,14 @@ class WorkflowResourceResourceTest {
   void testGetAllEmptyList() {
     List<WorkflowResource> emptyList = new ArrayList<>();
 
-    when(workflowResourceService.getAll()).thenReturn(Uni.createFrom().item(emptyList));
+    when(workflowResourceService.getAll(0, 20)).thenReturn(Uni.createFrom().item(emptyList));
 
     given()
         .when().get("/api/v1/model/workflow-resource")
         .then()
         .statusCode(200);
 
-    verify(workflowResourceService, times(1)).getAll();
+    verify(workflowResourceService, times(1)).getAll(0, 20);
   }
 
   @Test
