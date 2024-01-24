@@ -294,6 +294,11 @@ public class BpmnResource {
                         bpmnId, deploymentId, camundaDefinitionId, createdBy, definitionKey, deployedFileName,
                         lastUpdatedBy, resource, sha256, status)
                 .onItem()
-                .transform(bpmn -> bpmnVersionMapper.toDTOList(bpmn));
+                .transform(Unchecked.function(list -> {
+                    if (list.isEmpty()) {
+                        log.info("No Bpmn files saved in database");
+                    }
+                    return bpmnVersionMapper.toDTOList(list);
+                }));
     }
 }
