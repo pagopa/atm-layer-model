@@ -53,8 +53,8 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     static final DeployableResourceType resourceType = DeployableResourceType.BPMN;
 
     @Override
-    public Uni<List<BpmnVersion>> getAll(int pageIndex, int pageSize) {
-        return this.bpmnVersionRepository.findAll().page(Page.of(pageIndex,pageSize)).list();
+    public Uni<List<BpmnVersion>> getAll() {
+        return this.bpmnVersionRepository.findAll().list();
     }
 
     @Override

@@ -50,11 +50,8 @@ public class WorkflowResourceResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<WorkflowResourceDTO>> getAll(@QueryParam("pageIndex") @DefaultValue("0")
-                                                 @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
-                                                 @QueryParam("pageSize") @DefaultValue("10")
-                                                 @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize) {
-        return this.workflowResourceService.getAll(pageIndex, pageSize)
+    public Uni<List<WorkflowResourceDTO>> getAll() {
+        return this.workflowResourceService.getAll()
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {

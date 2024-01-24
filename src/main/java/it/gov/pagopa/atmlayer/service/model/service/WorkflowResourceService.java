@@ -29,7 +29,7 @@ public interface WorkflowResourceService {
 
     Uni<Boolean> delete(UUID uuid);
 
-    Uni<List<WorkflowResource>> getAll(int pageIndex, int pageSize);
+    Uni<List<WorkflowResource>> getAll();
 
     Uni<List<WorkflowResource>> getAllFiltred(String deployedFileName, StatusEnum status, int page, int size);
 

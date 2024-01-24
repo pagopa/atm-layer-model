@@ -274,8 +274,8 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
     @Override
-    public Uni<List<WorkflowResource>> getAll(int pageIndex, int pageSize) {
-        return this.workflowResourceRepository.findAll().page(Page.of(pageIndex, pageSize)).list();
+    public Uni<List<WorkflowResource>> getAll() {
+        return this.workflowResourceRepository.findAll().list();
     }
 
     @Override
