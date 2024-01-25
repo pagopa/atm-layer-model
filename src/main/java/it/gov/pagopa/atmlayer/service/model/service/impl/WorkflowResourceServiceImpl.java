@@ -283,7 +283,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     public Uni<List<WorkflowResource>> getAllFiltred(String deployedFileName, StatusEnum status, int pageIndex, int pageSize){
         Map<String, Object> filters = new HashMap<>();
         filters.put("deployedFileName", deployedFileName);
-        filters.put("status", status.name());
+        if(status!=null) filters.put("status", status.name());
         filters.remove(null);
         filters.values().removeAll(Collections.singleton(null));
         filters.values().removeAll(Collections.singleton(""));
