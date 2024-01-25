@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 97.61%               |
+| Code Coverage %         | 94.29%               |
 | :heavy_check_mark: Number of Lines Covered | 1471    |
-| :x: Number of Lines Missed  | 36     |
-| Total Number of Lines   | 1507     |
+| :x: Number of Lines Missed  | 89     |
+| Total Number of Lines   | 1560     |
 
 
 ## Details:
@@ -91,11 +91,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: BpmnResource.java
+:x: BpmnResource.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -283,12 +283,20 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceRepository.java
+:x: WorkflowResourceRepository.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
+- Line #28
+```
+                .page(page, size)
+```
+- Line #29
+```
+                .list();
+```
 </details>
 
     
@@ -307,11 +315,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: BpmnVersionRepository.java
+:x: BpmnVersionRepository.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -510,11 +518,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceServiceImpl.java
+:x: WorkflowResourceServiceImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
