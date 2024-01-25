@@ -16,11 +16,11 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
     public Uni<List<BpmnVersion>> findByFilters(Map<String,Object> params, int pageIndex, int pageSize) {
         String queryFilters = params.keySet().stream().map(key -> {
                 if (Objects.equals(key, "modelVersion") || Objects.equals(key, "definitionVersionCamunda")) {
-                    return ("where b." + key + " = :"+key);
+                    return ("b." + key + " = :"+key);
         } else {
-                    return ("where b." + key + " LIKE concat(concat('%', :"+key+"), '%')");}
+                    return ("b." + key + " LIKE concat(concat('%', :"+key+"), '%')");}
         }).collect(Collectors.joining(" and "));
-        return find(("select b from BpmnVersion b ").concat(queryFilters), params).page(Page.of(pageIndex,pageSize)).list();
+        return find(("select b from BpmnVersion b ").concat(queryFilters.isBlank()?"":" where " + queryFilters), params).page(Page.of(pageIndex,pageSize)).list();
     }
 
     public Uni<BpmnVersion> findBySHA256(String sha256) {
