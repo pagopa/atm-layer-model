@@ -10,11 +10,6 @@ defaults:
 permissions: write-all
 
 jobs:
-  manual-create-pre-release:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/dev'
-    strategy:
-      matrix:
-        environment: [dev]
   manual-run-performance-test:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/uat'
     strategy:
@@ -32,9 +27,9 @@ jobs:
       - name: Run k6 local test
         uses: grafana/k6-action@v0.3.1
         env:
-            MODEL_APPLICATION_BASE_URL: ${{ vars.APPLICATION_BASE_URL }}
-            MODEL_APPLICATION_BASE_PATH: ${{ vars.APPLICATION_BASE_PATH }}
-            MODEL_APPLICATION_KEY: ${{ secrets.APPLICATION_KEY }}
+          MODEL_APPLICATION_BASE_URL: ${{ vars.APPLICATION_BASE_URL }}
+          MODEL_APPLICATION_BASE_PATH: ${{ vars.APPLICATION_BASE_PATH }}
+          MODEL_APPLICATION_KEY: ${{ secrets.APPLICATION_KEY }}
         with:
           filename: performance_test/run_performance_tests.js
 
