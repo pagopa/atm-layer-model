@@ -21,9 +21,10 @@ export function updateHtmlResource(baseUrl, token) {
 
     const response = http.put(`${baseUrl}/resources/${resourceId}`, fd.body(), params);
 
-    console.log('Response request Resource UPDATE:', response.request);
-    console.log('Response status Resource UPDATE:', response.status);
-    console.log('Response body Resource UPDATE:', response.body);
+    // console.error();
+    // console.log('Response request Resource UPDATE:', response.request);
+    // console.log('Response status Resource UPDATE:', response.status);
+    // console.log('Response body Resource UPDATE:', response.body);
 
     check(response, {
         'response code was 200': (response) => response.status == 200
