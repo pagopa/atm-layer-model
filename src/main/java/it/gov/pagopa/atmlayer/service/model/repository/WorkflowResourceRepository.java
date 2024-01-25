@@ -31,8 +31,8 @@ public class WorkflowResourceRepository implements PanacheRepositoryBase<Workflo
 
     public Uni<List<WorkflowResource>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
         String queryFilters = params.keySet().stream()
-                .map(key -> "where b." + key + " LIKE concat(concat('%', :" + key + "), '%')")
+                .map(key -> "b." + key + " LIKE concat(concat('%', :" + key + "), '%')")
                 .collect(Collectors.joining(" and "));
-        return find(("select b from WorkflowResource b ").concat(queryFilters), params).page(Page.of(pageIndex, pageSize)).list();
+        return find(("select b from WorkflowResource b").concat(queryFilters.isBlank()?"":" where " + queryFilters), params).page(Page.of(pageIndex, pageSize)).list();
     }
 }

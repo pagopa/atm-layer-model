@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.enumeration;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Arrays;
 import java.util.HashSet;
