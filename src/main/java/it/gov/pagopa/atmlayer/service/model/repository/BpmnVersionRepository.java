@@ -22,7 +22,7 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
                 }else {
                     return ("b." + key + " LIKE concat(concat('%', :"+key+"), '%')");}
         }).collect(Collectors.joining(" and "));
-        return find(("select b from BpmnVersion b join BpmnBankConfig bc on b.bpmnId = bc.bpmnBankConfigPK.bpmnId and b.modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion ").concat(queryFilters.isBlank()?"":" where " + queryFilters),params).page(Page.of(pageIndex,pageSize)).list();
+        return find(("select b from BpmnVersion b").concat(!params.containsKey("acquirerId")?"":" join BpmnBankConfig bc on b.bpmnId = bc.bpmnBankConfigPK.bpmnId and b.modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank()?"":" where " + queryFilters),params).page(Page.of(pageIndex,pageSize)).list();
     }
 
     public Uni<BpmnVersion> findBySHA256(String sha256) {
