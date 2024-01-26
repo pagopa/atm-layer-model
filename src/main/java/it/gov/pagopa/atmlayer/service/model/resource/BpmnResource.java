@@ -286,10 +286,13 @@ public class BpmnResource {
                                               @HeaderParam("lastUpdatedBy") String lastUpdatedBy,
                                               @HeaderParam("resource") String resource,
                                               @HeaderParam("sha256") String sha256,
-                                              @HeaderParam("status") String status) {
+                                              @HeaderParam("status") String status,
+                                              @HeaderParam("acquirerId") String acquirerId,
+                                              @HeaderParam("branchId") String branchId,
+                                              @HeaderParam("terminalId") String terminalId) {
         return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda, createdAt, lastUpdatedAt,
                         bpmnId, deploymentId, camundaDefinitionId, createdBy, definitionKey, deployedFileName,
-                        lastUpdatedBy, resource, sha256, status)
+                        lastUpdatedBy, resource, sha256, status, acquirerId, branchId, terminalId)
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {
