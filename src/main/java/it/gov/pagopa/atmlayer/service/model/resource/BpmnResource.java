@@ -270,27 +270,29 @@ public class BpmnResource {
     @Path("/filter")
     public Uni<List<BpmnDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
                                               @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
-                                                              @QueryParam("pageSize") @DefaultValue("10")
+                                              @QueryParam("pageSize") @DefaultValue("10")
                                               @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
+                                              @HeaderParam("functionType") String functionType,
+                                              @HeaderParam("modelVersion") String modelVersion,
+                                              @HeaderParam("definitionVersionCamunda") String definitionVersionCamunda,
+                                              @HeaderParam("createdAt") String createdAt,
+                                              @HeaderParam("lastUpdatedAt") String lastUpdatedAt,
+                                              @HeaderParam("bpmnId") String bpmnId,
+                                              @HeaderParam("deploymentId") String deploymentId,
+                                              @HeaderParam("camundaDefinitionId") String camundaDefinitionId,
+                                              @HeaderParam("createdBy") String createdBy,
+                                              @HeaderParam("definitionKey") String definitionKey,
+                                              @HeaderParam("deployedFileName") String deployedFileName,
+                                              @HeaderParam("lastUpdatedBy") String lastUpdatedBy,
+                                              @HeaderParam("resource") String resource,
+                                              @HeaderParam("sha256") String sha256,
+                                              @HeaderParam("status") String status,
                                               @HeaderParam("acquirerId") String acquirerId,
-                                                              @HeaderParam("functionType") String functionType,
-                                                              @HeaderParam("modelVersion") String modelVersion,
-                                                              @HeaderParam("definitionVersionCamunda") String definitionVersionCamunda,
-                                                              @HeaderParam("createdAt") String createdAt,
-                                                              @HeaderParam("lastUpdatedAt") String lastUpdatedAt,
-                                                              @HeaderParam("bpmnId") String bpmnId,
-                                                              @HeaderParam("deploymentId") String deploymentId,
-                                                              @HeaderParam("camundaDefinitionId") String camundaDefinitionId,
-                                                              @HeaderParam("createdBy") String createdBy,
-                                                              @HeaderParam("definitionKey") String definitionKey,
-                                                              @HeaderParam("deployedFileName") String deployedFileName,
-                                                              @HeaderParam("lastUpdatedBy") String lastUpdatedBy,
-                                                              @HeaderParam("resource") String resource,
-                                                              @HeaderParam("sha256") String sha256,
-                                                              @HeaderParam("status") String status) {
+                                              @HeaderParam("branchId") String branchId,
+                                              @HeaderParam("terminalId") String terminalId) {
         return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda, createdAt, lastUpdatedAt,
                         bpmnId, deploymentId, camundaDefinitionId, createdBy, definitionKey, deployedFileName,
-                        lastUpdatedBy, resource, sha256, status,acquirerId)
+                        lastUpdatedBy, resource, sha256, status, acquirerId, branchId, terminalId)
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {
