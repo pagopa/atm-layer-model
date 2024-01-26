@@ -1,8 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
-import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
-import io.opentelemetry.context.Scope;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -18,7 +16,18 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -41,16 +50,12 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @Tag(name = "Workflow Resource", description = "Workflow Resource Operations")
 @Slf4j
 public class WorkflowResourceResource {
-
     @Inject
     WorkflowResourceService workflowResourceService;
-
     @Inject
     WorkflowResourceMapper workflowResourceMapper;
-
     @Inject
     ResourceFileMapper resourceFileMapper;
-
     @Inject
     Tracer tracer;
 
@@ -77,7 +82,7 @@ public class WorkflowResourceResource {
                                                         @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) Integer page,
                                                         @QueryParam("pageSize") @DefaultValue("10")
                                                         @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) Integer size) {
-        return this.workflowResourceService.getAllFiltred( deployedFileName, status, page, size)
+        return this.workflowResourceService.getAllFiltred(deployedFileName, status, page, size)
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {
@@ -87,46 +92,29 @@ public class WorkflowResourceResource {
                 }));
     }
 
-//    @GET
-//    @Path("/{uuid}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Uni<WorkflowResourceDTO> getById(@PathParam("uuid") UUID id) {
-//        return this.workflowResourceService.findById(id)
-//                .onItem()
-//                .transform(Unchecked.function(x -> {
-//                    if (x.isEmpty()) {
-//                        throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
-//                    }
-//                    return workflowResourceMapper.toDTO(x.get());
-//                }));
-//    }
-
     @GET
     @Path("/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<WorkflowResourceDTO> getById(@PathParam("uuid") UUID id) {
-        Span span = tracer.spanBuilder("getById").startSpan();
-        try (Scope scope = span.makeCurrent()) {
-            return this.workflowResourceService.findById(id)
-                    .onItem()
-                    .transform(Unchecked.function(x -> {
-                        if (x.isEmpty()) {
-                            throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
-                        }
-                        return workflowResourceMapper.toDTO(x.get());
-                    }));
-        }
+        return this.workflowResourceService.findById(id)
+                .onItem()
+                .transform(Unchecked.function(x -> {
+                    if (x.isEmpty()) {
+                        throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                    }
+                    return workflowResourceMapper.toDTO(x.get());
+                }));
     }
 
     @POST
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces(MediaType.APPLICATION_JSON)
-  @NonBlocking
-  public Uni<WorkflowResourceDTO> create(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
-    WorkflowResource workflowResource = workflowResourceMapper.toEntityCreation(workflowResourceCreationDto);
-    return this.workflowResourceService.createWorkflowResource(workflowResource, workflowResourceCreationDto.getFile(), workflowResourceCreationDto.getFilename())
-        .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(bpmn)));
-  }
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @NonBlocking
+    public Uni<WorkflowResourceDTO> create(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
+        WorkflowResource workflowResource = workflowResourceMapper.toEntityCreation(workflowResourceCreationDto);
+        return this.workflowResourceService.createWorkflowResource(workflowResource, workflowResourceCreationDto.getFile(), workflowResourceCreationDto.getFilename())
+                .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(bpmn)));
+    }
 
     @POST
     @Path("/deploy/{uuid}")
@@ -144,7 +132,6 @@ public class WorkflowResourceResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{uuid}")
     public Uni<Void> delete(@PathParam("uuid") UUID uuid) {
-
         return this.workflowResourceService.delete(uuid)
                 .onItem().ignore().andSwitchTo(Uni.createFrom().voidItem());
     }
@@ -153,10 +140,9 @@ public class WorkflowResourceResource {
     @Path("/update/{uuid}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") @NotNull (message = "input file is required") File file,
+    public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") @NotNull(message = "input file is required") File file,
                                            @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
-
-        return workflowResourceService.update(uuid, file,false)
+        return workflowResourceService.update(uuid, file, false)
                 .onItem()
                 .transformToUni(updatedWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(updatedWorkflowResource)));
     }
@@ -169,5 +155,4 @@ public class WorkflowResourceResource {
                 .onItem()
                 .transformToUni(rolledBackWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(rolledBackWorkflowResource)));
     }
-
 }
