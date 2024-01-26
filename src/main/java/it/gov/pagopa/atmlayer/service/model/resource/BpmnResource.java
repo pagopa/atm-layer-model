@@ -1,8 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
-import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
-import io.opentelemetry.context.Scope;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -31,7 +29,17 @@ import it.gov.pagopa.atmlayer.service.model.validators.BpmnEntityValidator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +52,11 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
@@ -66,7 +78,6 @@ public class BpmnResource {
     BpmnVersionMapper bpmnVersionMapper;
     @Inject
     BpmnConfigMapper bpmnConfigMapper;
-
     @Inject
     Tracer tracer;
 
@@ -83,47 +94,24 @@ public class BpmnResource {
                 }));
     }
 
-//    @GET
-//    @Path("/{bpmnId}/version/{version}")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Uni<BpmnDTO> getEncodedFile(@PathParam("bpmnId") UUID bpmnId,
-//                                       @PathParam("version") Long version) {
-//        BpmnVersionPK key = BpmnVersionPK.builder()
-//                .bpmnId(bpmnId)
-//                .modelVersion(version)
-//                .build();
-//        return this.bpmnVersionService.findByPk(key)
-//                .onItem()
-//                .transform(Unchecked.function(x -> {
-//                    if (x.isEmpty()) {
-//                        throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
-//                    }
-//                    return bpmnVersionMapper.toDTO(x.get());
-//                }));
-//    }
-
     @GET
     @Path("/{bpmnId}/version/{version}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnDTO> getEncodedFile(@PathParam("bpmnId") UUID bpmnId,
                                        @PathParam("version") Long version) {
-        Span span = tracer.spanBuilder("getEncodedFile").startSpan();
-        try (Scope scope = span.makeCurrent()) {
-            BpmnVersionPK key = BpmnVersionPK.builder()
-                    .bpmnId(bpmnId)
-                    .modelVersion(version)
-                    .build();
-            return this.bpmnVersionService.findByPk(key)
-                    .onItem()
-                    .transform(Unchecked.function(x -> {
-                        if (x.isEmpty()) {
-                            throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
-                        }
-                        return bpmnVersionMapper.toDTO(x.get());
-                    }));
-        }
+        BpmnVersionPK key = BpmnVersionPK.builder()
+                .bpmnId(bpmnId)
+                .modelVersion(version)
+                .build();
+        return this.bpmnVersionService.findByPk(key)
+                .onItem()
+                .transform(Unchecked.function(x -> {
+                    if (x.isEmpty()) {
+                        throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
+                    }
+                    return bpmnVersionMapper.toDTO(x.get());
+                }));
     }
 
     @PUT
