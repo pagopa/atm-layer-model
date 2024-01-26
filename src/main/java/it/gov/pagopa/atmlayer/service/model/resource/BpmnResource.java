@@ -1,5 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -64,6 +67,9 @@ public class BpmnResource {
     @Inject
     BpmnConfigMapper bpmnConfigMapper;
 
+    @Inject
+    Tracer tracer;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<List<BpmnDTO>> getAllBpmn() {
@@ -77,24 +83,47 @@ public class BpmnResource {
                 }));
     }
 
+//    @GET
+//    @Path("/{bpmnId}/version/{version}")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Uni<BpmnDTO> getEncodedFile(@PathParam("bpmnId") UUID bpmnId,
+//                                       @PathParam("version") Long version) {
+//        BpmnVersionPK key = BpmnVersionPK.builder()
+//                .bpmnId(bpmnId)
+//                .modelVersion(version)
+//                .build();
+//        return this.bpmnVersionService.findByPk(key)
+//                .onItem()
+//                .transform(Unchecked.function(x -> {
+//                    if (x.isEmpty()) {
+//                        throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
+//                    }
+//                    return bpmnVersionMapper.toDTO(x.get());
+//                }));
+//    }
+
     @GET
     @Path("/{bpmnId}/version/{version}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnDTO> getEncodedFile(@PathParam("bpmnId") UUID bpmnId,
                                        @PathParam("version") Long version) {
-        BpmnVersionPK key = BpmnVersionPK.builder()
-                .bpmnId(bpmnId)
-                .modelVersion(version)
-                .build();
-        return this.bpmnVersionService.findByPk(key)
-                .onItem()
-                .transform(Unchecked.function(x -> {
-                    if (x.isEmpty()) {
-                        throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
-                    }
-                    return bpmnVersionMapper.toDTO(x.get());
-                }));
+        Span span = tracer.spanBuilder("getEncodedFile").startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            BpmnVersionPK key = BpmnVersionPK.builder()
+                    .bpmnId(bpmnId)
+                    .modelVersion(version)
+                    .build();
+            return this.bpmnVersionService.findByPk(key)
+                    .onItem()
+                    .transform(Unchecked.function(x -> {
+                        if (x.isEmpty()) {
+                            throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
+                        }
+                        return bpmnVersionMapper.toDTO(x.get());
+                    }));
+        }
     }
 
     @PUT

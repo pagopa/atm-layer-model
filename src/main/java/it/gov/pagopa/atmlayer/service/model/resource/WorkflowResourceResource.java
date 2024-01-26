@@ -1,5 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -48,6 +51,9 @@ public class WorkflowResourceResource {
     @Inject
     ResourceFileMapper resourceFileMapper;
 
+    @Inject
+    Tracer tracer;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<List<WorkflowResourceDTO>> getAll() {
@@ -81,18 +87,35 @@ public class WorkflowResourceResource {
                 }));
     }
 
+//    @GET
+//    @Path("/{uuid}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Uni<WorkflowResourceDTO> getById(@PathParam("uuid") UUID id) {
+//        return this.workflowResourceService.findById(id)
+//                .onItem()
+//                .transform(Unchecked.function(x -> {
+//                    if (x.isEmpty()) {
+//                        throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+//                    }
+//                    return workflowResourceMapper.toDTO(x.get());
+//                }));
+//    }
+
     @GET
     @Path("/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<WorkflowResourceDTO> getById(@PathParam("uuid") UUID id) {
-        return this.workflowResourceService.findById(id)
-                .onItem()
-                .transform(Unchecked.function(x -> {
-                    if (x.isEmpty()) {
-                        throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
-                    }
-                    return workflowResourceMapper.toDTO(x.get());
-                }));
+        Span span = tracer.spanBuilder("getById").startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            return this.workflowResourceService.findById(id)
+                    .onItem()
+                    .transform(Unchecked.function(x -> {
+                        if (x.isEmpty()) {
+                            throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                        }
+                        return workflowResourceMapper.toDTO(x.get());
+                    }));
+        }
     }
 
     @POST
