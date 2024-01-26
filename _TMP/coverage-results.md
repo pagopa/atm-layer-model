@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 94.07%               |
-| :heavy_check_mark: Number of Lines Covered | 1476    |
-| :x: Number of Lines Missed  | 93     |
-| Total Number of Lines   | 1569     |
+| Code Coverage %         | 93.96%               |
+| :heavy_check_mark: Number of Lines Covered | 1478    |
+| :x: Number of Lines Missed  | 95     |
+| Total Number of Lines   | 1573     |
 
 
 ## Details:
@@ -605,6 +605,18 @@
 
     
 ### it/gov/pagopa/atmlayer/service/model/configurations
+
+<details>
+    <summary>
+:heavy_check_mark: CorsFilter.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
 
 <details>
     <summary>
