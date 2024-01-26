@@ -29,7 +29,7 @@ database:
 
 tracing:
   enabled: "true"
-  endpointBasePath: "appmesh-jaeger.kube-system.svc.cluster.local:9411"
+  endpointBasePath: "http://jaeger-collector.default.svc.cluster.local:4317"
   enableJDBCMonitoring: "true"
 
 objectStore:
