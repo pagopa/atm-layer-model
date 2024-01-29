@@ -244,7 +244,10 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @WithSession
     public Uni<List<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda, String createdAt, String lastUpdatedAt,
                                                    String bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
-                                                   String lastUpdatedBy, String resource, String sha256, String status) {
+                                                   String lastUpdatedBy, String resource, String sha256, String status, String acquirerId, String branchId, String terminalId) {
+        if((StringUtils.isEmpty(acquirerId) && (!StringUtils.isEmpty(branchId) || !StringUtils.isEmpty(terminalId)))||StringUtils.isEmpty(branchId) && !StringUtils.isEmpty(terminalId)){
+            return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST,NO_BPMN_FOUND_FOR_CONFIGURATION));
+        }
         Map<String, Object> filters = new HashMap<>();
         filters.put("functionType", functionType);
         filters.put("modelVersion", modelVersion);
@@ -261,7 +264,9 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         filters.put("resource", resource);
         filters.put("sha256", sha256);
         filters.put("status", status);
-
+        filters.put("acquirerId",acquirerId);
+        filters.put("branchId",branchId);
+        filters.put("terminalId",terminalId);
         filters.remove(null);
         filters.values().removeAll(Collections.singleton(null));
         filters.values().removeAll(Collections.singleton(""));

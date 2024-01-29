@@ -51,7 +51,8 @@ public enum AppErrorCodeEnum {
     BPMN_CANNOT_BE_DISABLED_FOR_ASSOCIATIONS("ATMLM_4000038", "The referenced BPMN file has associations and cannot be disabled", CANNOT_DISABLE),
     BPMN_ALREADY_DISABLED("ATMLM_4000039", "The referenced BPMN file is already disabled", CANNOT_DISABLE),
     DUPLICATE_ASSOCIATION_CONFIGS("ATMLM_4000040","Cannot save associations: duplicate configurations in input",CANNOT_ASSOCIATE),
-    PAGE_SIZE_WRONG_VALUE("ATMLM_4000041", "Page and Size must not be null or empty, and Size greater than zero", INVALID_ARGUMENT);
+    PAGE_SIZE_WRONG_VALUE("ATMLM_4000041", "Page and Size must not be null or empty, and Size greater than zero", INVALID_ARGUMENT),
+    ILLEGALE_CONFIGURATION_TRIPLET("ATMLM_4000042","AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId",INVALID_ARGUMENT);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;

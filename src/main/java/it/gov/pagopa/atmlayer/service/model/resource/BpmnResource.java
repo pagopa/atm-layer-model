@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+import io.opentelemetry.api.trace.Tracer;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -28,7 +29,17 @@ import it.gov.pagopa.atmlayer.service.model.validators.BpmnEntityValidator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +52,11 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
@@ -63,6 +78,8 @@ public class BpmnResource {
     BpmnVersionMapper bpmnVersionMapper;
     @Inject
     BpmnConfigMapper bpmnConfigMapper;
+    @Inject
+    Tracer tracer;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -286,10 +303,13 @@ public class BpmnResource {
                                               @HeaderParam("lastUpdatedBy") String lastUpdatedBy,
                                               @HeaderParam("resource") String resource,
                                               @HeaderParam("sha256") String sha256,
-                                              @HeaderParam("status") String status) {
+                                              @HeaderParam("status") String status,
+                                              @HeaderParam("acquirerId") String acquirerId,
+                                              @HeaderParam("branchId") String branchId,
+                                              @HeaderParam("terminalId") String terminalId) {
         return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda, createdAt, lastUpdatedAt,
                         bpmnId, deploymentId, camundaDefinitionId, createdBy, definitionKey, deployedFileName,
-                        lastUpdatedBy, resource, sha256, status)
+                        lastUpdatedBy, resource, sha256, status, acquirerId, branchId, terminalId)
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {
