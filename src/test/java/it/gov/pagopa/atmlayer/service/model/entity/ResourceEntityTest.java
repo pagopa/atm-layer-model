@@ -76,5 +76,13 @@ class ResourceEntityTest {
                 cdnBaseUrl + "/" + resourceFile.getStorageKey().substring(cdnOffsetPath.length() + 1);
         assertNotEquals(expectedCdnUrl, resourceEntity.getCdnUrl());
     }
+    
+    @Test
+    void testDescriptionGetterGetter() {
+        ResourceEntity resourceEntity = new ResourceEntity();
+        String description = "Sample description";
+        resourceEntity.setDescription(description);
+        assertEquals(description, resourceEntity.getDescription());
+    }
 }
 

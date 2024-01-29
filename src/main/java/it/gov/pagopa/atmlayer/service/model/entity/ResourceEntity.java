@@ -49,6 +49,8 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
     @Transient
     @Getter(AccessLevel.NONE)
     private String cdnUrl;
+    @Column(name = "description")
+    private String description;
 
     @PrePersist
     public void generateUUID() {
