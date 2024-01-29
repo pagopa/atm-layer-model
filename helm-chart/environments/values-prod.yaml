@@ -18,6 +18,8 @@ fullnameOverride: ""
 
 modelProcessBasePath: http://pagopa-prod-atm-layer-wf-process.pagopa.svc.cluster.local:8080
 
+allowedCrossOrigins: "*"
+
 database:
   type: postgresql
   url: postgresql://pagopa-prod-atm-layer-rds.cluster-cjww3kikqdtw.eu-south-1.rds.amazonaws.com:5432/pagopadb?search_path=atm_layer_model_schema
