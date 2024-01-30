@@ -15,9 +15,9 @@ public class CorsFilter implements ContainerResponseFilter {
     @Override
     public void filter(final ContainerRequestContext requestContext,
                        final ContainerResponseContext cres) throws IOException {
-        cres.getHeaders().add("Access-Control-Allow-Origin","http://localhost:3005");
+        cres.getHeaders().add("Access-Control-Allow-Origin","*");
         cres.getHeaders().add("Access-Control-Allow-Headers", "Content-Type,Allowed,x-api-key");
-        cres.getHeaders().add("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+        cres.getHeaders().add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,PATCH");
         cres.getHeaders().add("Access-Control-Allow-Credentials","true");
         cres.getHeaders().add("Content-Type","application/json");
     }
