@@ -14,7 +14,6 @@ import java.util.Map;
 
 @ApplicationScoped
 public class BpmnBankConfigRepository implements PanacheRepositoryBase<BpmnBankConfig, BpmnBankConfigPK> {
-
     public Uni<Long> deleteByAcquirerIdAndFunctionType(String acquirerId, String functionType) {
         Map<String, Object> params = new HashMap<>();
         params.put(UtilityValues.ACQUIRER_ID.getValue(), acquirerId);
@@ -47,10 +46,10 @@ public class BpmnBankConfigRepository implements PanacheRepositoryBase<BpmnBankC
         return find("select b from BpmnBankConfig b where b.bpmnBankConfigPK.acquirerId = :acquirerId", params).list();
     }
 
-    public Uni<List<BpmnBankConfig>> findByBpmnPK(BpmnVersionPK bpmnVersionPK){
+    public Uni<List<BpmnBankConfig>> findByBpmnPK(BpmnVersionPK bpmnVersionPK) {
         Map<String, Object> params = new HashMap<>();
-        params.put("bpmnId",bpmnVersionPK.getBpmnId());
-        params.put("version",bpmnVersionPK.getModelVersion());
+        params.put("bpmnId", bpmnVersionPK.getBpmnId());
+        params.put("version", bpmnVersionPK.getModelVersion());
         return find("select b from BpmnBankConfig b where b.bpmnBankConfigPK.bpmnId = :bpmnId and b.bpmnBankConfigPK.bpmnModelVersion= :version", params).list();
     }
 }

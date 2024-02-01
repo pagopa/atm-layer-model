@@ -34,7 +34,6 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -287,9 +286,9 @@ public class BpmnResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/filter")
     public Uni<List<BpmnVersionFrontEndDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
-                                              @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                             @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
                                                              @QueryParam("pageSize") @DefaultValue("10")
-                                              @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
+                                                             @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
                                                              @QueryParam("functionType") String functionType,
                                                              @QueryParam("modelVersion") String modelVersion,
                                                              @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
@@ -318,5 +317,19 @@ public class BpmnResource {
                     }
                     return bpmnVersionMapper.toFrontEndDTOList(list);
                 }));
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/associations/{uuid}/version/{version}")
+    public Uni<Collection<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version) {
+        return bpmnBankConfigService.findByBpmnVersionPK(new BpmnVersionPK(bpmnId, version))
+                .onItem()
+                .transformToUni(associations -> {
+                    if (associations.isEmpty()) {
+                        log.info("No associations found for BpmnInd= {} and modelVersion= {}", bpmnId, version);
+                    }
+                    return Uni.createFrom().item(bpmnConfigMapper.toDTOList(associations));
+                });
     }
 }
