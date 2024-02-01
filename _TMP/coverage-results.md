@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 91.86%               |
-| :heavy_check_mark: Number of Lines Covered | 1478    |
-| :x: Number of Lines Missed  | 131     |
-| Total Number of Lines   | 1609     |
+| Code Coverage %         | 92.92%               |
+| :heavy_check_mark: Number of Lines Covered | 1509    |
+| :x: Number of Lines Missed  | 115     |
+| Total Number of Lines   | 1624     |
 
 
 ## Details:
@@ -142,11 +142,11 @@
 
 <details>
     <summary>
-:x: BpmnVersionMapper.java
+:heavy_check_mark: BpmnVersionMapper.java
     </summary>
 
         
-#### Lines Missed:
+#### All Lines Covered!
         
 </details>
 
@@ -333,6 +333,16 @@
 <details>
     <summary>
 :x: BpmnVersionFrontEndDTO.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: PageInfo.java
     </summary>
 
         
@@ -562,6 +572,10 @@
         
 #### Lines Missed:
         
+- Line #278
+```
+                        .map(count -> {
+```
 </details>
 
     
