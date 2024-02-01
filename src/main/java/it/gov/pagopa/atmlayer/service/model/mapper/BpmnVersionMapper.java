@@ -7,6 +7,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -38,6 +39,10 @@ public abstract class BpmnVersionMapper {
 
     public List<BpmnDTO> toDTOList(List<BpmnVersion> list) {
         return list.stream().map(this::toDTO).toList();
+    }
+
+    public PageInfo<BpmnDTO>  toDTOList(PageInfo<BpmnVersion> input) {
+        return new PageInfo<>(input.getPage(), input.getLimit(), input.getItemsFound(), input.getTotalPages(), toDTOList(input.getResults()));
     }
 
     @Mapping(ignore = true, target = "enabled")

@@ -7,6 +7,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 
 import java.io.File;
 import java.util.List;
@@ -42,7 +43,7 @@ public interface BpmnVersionService {
 
     Uni<Void> disable(BpmnVersionPK bpmnVersionPK);
 
-    Uni<List<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda, String createdAt, String lastUpdatedAt,
-                                            String bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
-                                            String lastUpdatedBy, String resource, String sha256, String status, String acquirerId, String branchId, String terminalId);
+    Uni<PageInfo<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda, String createdAt, String lastUpdatedAt,
+                                                String bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
+                                                String lastUpdatedBy, String resource, String sha256, String status, String acquirerId, String branchId, String terminalId);
 }

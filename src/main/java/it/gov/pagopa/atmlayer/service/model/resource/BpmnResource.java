@@ -1,5 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+//import io.opentelemetry.api.trace.Tracer;
+
 import io.opentelemetry.api.trace.Tracer;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Multi;
@@ -21,6 +23,7 @@ import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
@@ -29,17 +32,7 @@ import it.gov.pagopa.atmlayer.service.model.validators.BpmnEntityValidator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.DefaultValue;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -52,11 +45,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
@@ -285,37 +274,37 @@ public class BpmnResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/filter")
-    public Uni<List<BpmnDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
-                                              @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
-                                              @QueryParam("pageSize") @DefaultValue("10")
-                                              @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
-                                              @QueryParam("functionType") String functionType,
-                                              @QueryParam("modelVersion") String modelVersion,
-                                              @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
-                                              @QueryParam("createdAt") String createdAt,
-                                              @QueryParam("lastUpdatedAt") String lastUpdatedAt,
-                                              @QueryParam("bpmnId") String bpmnId,
-                                              @QueryParam("deploymentId") String deploymentId,
-                                              @QueryParam("camundaDefinitionId") String camundaDefinitionId,
-                                              @QueryParam("createdBy") String createdBy,
-                                              @QueryParam("definitionKey") String definitionKey,
-                                              @QueryParam("deployedFileName") String deployedFileName,
-                                              @QueryParam("lastUpdatedBy") String lastUpdatedBy,
-                                              @QueryParam("resource") String resource,
-                                              @QueryParam("sha256") String sha256,
-                                              @QueryParam("status") String status,
-                                              @QueryParam("acquirerId") String acquirerId,
-                                              @QueryParam("branchId") String branchId,
-                                              @QueryParam("terminalId") String terminalId) {
+    public Uni<PageInfo<BpmnDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                  @QueryParam("pageSize") @DefaultValue("10")
+                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
+                                                  @QueryParam("functionType") String functionType,
+                                                  @QueryParam("modelVersion") String modelVersion,
+                                                  @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
+                                                  @QueryParam("createdAt") String createdAt,
+                                                  @QueryParam("lastUpdatedAt") String lastUpdatedAt,
+                                                  @QueryParam("bpmnId") String bpmnId,
+                                                  @QueryParam("deploymentId") String deploymentId,
+                                                  @QueryParam("camundaDefinitionId") String camundaDefinitionId,
+                                                  @QueryParam("createdBy") String createdBy,
+                                                  @QueryParam("definitionKey") String definitionKey,
+                                                  @QueryParam("deployedFileName") String deployedFileName,
+                                                  @QueryParam("lastUpdatedBy") String lastUpdatedBy,
+                                                  @QueryParam("resource") String resource,
+                                                  @QueryParam("sha256") String sha256,
+                                                  @QueryParam("status") String status,
+                                                  @QueryParam("acquirerId") String acquirerId,
+                                                  @QueryParam("branchId") String branchId,
+                                                  @QueryParam("terminalId") String terminalId) {
         return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda, createdAt, lastUpdatedAt,
                         bpmnId, deploymentId, camundaDefinitionId, createdBy, definitionKey, deployedFileName,
                         lastUpdatedBy, resource, sha256, status, acquirerId, branchId, terminalId)
                 .onItem()
-                .transform(Unchecked.function(list -> {
-                    if (list.isEmpty()) {
+                .transform(Unchecked.function(pagedList -> {
+                    if (pagedList.getResults().isEmpty()) {
                         log.info("No Bpmn files saved in database");
                     }
-                    return bpmnVersionMapper.toDTOList(list);
+                    return bpmnVersionMapper.toDTOList(pagedList);
                 }));
     }
 }
