@@ -8,21 +8,27 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion, BpmnVersionPK> {
-    public Uni<List<BpmnVersion>> findByFilters(Map<String,Object> params, int pageIndex, int pageSize) {
+    public Uni<List<BpmnVersion>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
         String queryFilters = params.keySet().stream().map(key -> {
-                if (Objects.equals(key, "modelVersion") || Objects.equals(key, "definitionVersionCamunda")) {
-                    return ("b." + key + " = :"+key);
-        } else if (Objects.equals(key, "acquirerId")||Objects.equals(key, "branchId")||Objects.equals(key, "terminalId")){
-                    return ("bc.bpmnBankConfigPK."+key + " = :"+key);
-                }else {
-                    return ("b." + key + " LIKE concat(concat('%', :"+key+"), '%')");}
+            if (Objects.equals(key, "modelVersion") || Objects.equals(key, "definitionVersionCamunda")) {
+                return ("b." + key + " = :" + key);
+            } else if (Objects.equals(key, "acquirerId") || Objects.equals(key, "branchId") || Objects.equals(key, "terminalId")) {
+                return ("bc.bpmnBankConfigPK." + key + " = :" + key);
+            } else {
+                return ("b." + key + " LIKE concat(concat('%', :" + key + "), '%')");
+            }
         }).collect(Collectors.joining(" and "));
-        return find(("select b from BpmnVersion b").concat(!params.containsKey("acquirerId")?"":" join BpmnBankConfig bc on b.bpmnId = bc.bpmnBankConfigPK.bpmnId and b.modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank()?"":" where " + queryFilters),params).page(Page.of(pageIndex,pageSize)).list();
+        return find(("select b from BpmnVersion b").concat(!params.containsKey("acquirerId") ? "" : " join BpmnBankConfig bc on b.bpmnId = bc.bpmnBankConfigPK.bpmnId and b.modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank() ? "" : " where " + queryFilters), params).page(Page.of(pageIndex, pageSize)).list();
     }
 
     public Uni<BpmnVersion> findBySHA256(String sha256) {
@@ -51,15 +57,15 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
     public Uni<Long> countWithFilters(Map<String, Object> params) {
         String queryFilters = params.keySet().stream().map(key -> {
             if (Objects.equals(key, "modelVersion") || Objects.equals(key, "definitionVersionCamunda")) {
-                return (key + " = :"+key);
-            } else if (Objects.equals(key, "acquirerId")||Objects.equals(key, "branchId")||Objects.equals(key, "terminalId")){
-                return ("bc.bpmnBankConfigPK."+key + " = :"+key);
-            } else if (Objects.equals(key,"functionType")){
-                return ("bc."+ key + " LIKE concat(concat('%', :"+key+"), '%')");
-            }else {
-                return (key + " LIKE concat(concat('%', :"+key+"), '%')");}
+                return (key + " = :" + key);
+            } else if (Objects.equals(key, "acquirerId") || Objects.equals(key, "branchId") || Objects.equals(key, "terminalId")) {
+                return ("bc.bpmnBankConfigPK." + key + " = :" + key);
+            } else if (Objects.equals(key, "functionType")) {
+                return ("bc." + key + " LIKE concat(concat('%', :" + key + "), '%')");
+            } else {
+                return (key + " LIKE concat(concat('%', :" + key + "), '%')");
+            }
         }).collect(Collectors.joining(" and "));
-        return count((!params.containsKey("acquirerId")?"":" join BpmnBankConfig bc on bpmnId = bc.bpmnBankConfigPK.bpmnId and modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank()?"":" where " + queryFilters),params);
-
+        return count(("left join BpmnBankConfig bc on bpmnId = bc.bpmnBankConfigPK.bpmnId and modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank() ? "" : " where " + queryFilters), params);
     }
 }
