@@ -33,7 +33,20 @@ import it.gov.pagopa.atmlayer.service.model.validators.BpmnEntityValidator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+<<<<<<< HEAD
 import jakarta.ws.rs.*;
+=======
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+>>>>>>> dev
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -308,5 +321,19 @@ public class BpmnResource {
                     return bpmnVersionMapper.toFrontEndDTOListPaged(pagedList);
 
                 }));
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/associations/{uuid}/version/{version}")
+    public Uni<Collection<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version) {
+        return bpmnBankConfigService.findByBpmnVersionPK(new BpmnVersionPK(bpmnId, version))
+                .onItem()
+                .transformToUni(associations -> {
+                    if (associations.isEmpty()) {
+                        log.info("No associations found for BpmnInd= {} and modelVersion= {}", bpmnId, version);
+                    }
+                    return Uni.createFrom().item(bpmnConfigMapper.toDTOList(associations));
+                });
     }
 }
