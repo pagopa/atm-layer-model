@@ -47,4 +47,17 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
     public Uni<BpmnVersion> findByDefinitionKey(String definitionKey) {
         return find("select b from BpmnVersion b where b.definitionKey = :definitionKey", Parameters.with("definitionKey", definitionKey)).firstResult();
     }
+
+    public Uni<Long> countWithFilters(Map<String, Object> params) {
+        String queryFilters = params.keySet().stream().map(key -> {
+            if (Objects.equals(key, "modelVersion") || Objects.equals(key, "definitionVersionCamunda")) {
+                return (key + " = :"+key);
+            } else if (Objects.equals(key, "acquirerId")||Objects.equals(key, "branchId")||Objects.equals(key, "terminalId")){
+                return ("bc.bpmnBankConfigPK."+key + " = :"+key);
+            }else {
+                return (key + " LIKE concat(concat('%', :"+key+"), '%')");}
+        }).collect(Collectors.joining(" and "));
+        return count((!params.containsKey("acquirerId")?"":" join BpmnBankConfig bc on bpmnId = bc.bpmnBankConfigPK.bpmnId and modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank()?"":"where " + queryFilters),params);
+
+    }
 }

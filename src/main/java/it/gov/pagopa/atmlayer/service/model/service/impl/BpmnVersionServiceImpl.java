@@ -2,7 +2,6 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
-import io.quarkus.panache.common.Page;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
@@ -20,6 +19,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
@@ -242,9 +242,9 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     @WithSession
-    public Uni<List<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda, String createdAt, String lastUpdatedAt,
-                                                   String bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
-                                                   String lastUpdatedBy, String resource, String sha256, String status, String acquirerId, String branchId, String terminalId) {
+    public Uni<PageInfo<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda, String createdAt, String lastUpdatedAt,
+                                                       String bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
+                                                       String lastUpdatedBy, String resource, String sha256, String status, String acquirerId, String branchId, String terminalId) {
         if((StringUtils.isEmpty(acquirerId) && (!StringUtils.isEmpty(branchId) || !StringUtils.isEmpty(terminalId)))||StringUtils.isEmpty(branchId) && !StringUtils.isEmpty(terminalId)){
             return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST,NO_BPMN_FOUND_FOR_CONFIGURATION));
         }
@@ -270,7 +270,16 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         filters.remove(null);
         filters.values().removeAll(Collections.singleton(null));
         filters.values().removeAll(Collections.singleton(""));
-        return bpmnVersionRepository.findByFilters(filters, pageIndex, pageSize);
+
+        Uni<List<BpmnVersion>> resultsUni = bpmnVersionRepository.findByFilters(filters, pageIndex, pageSize);
+
+        return resultsUni.onItem().transformToUni(results ->
+                bpmnVersionRepository.countWithFilters(filters)
+                        .map(count -> {
+                            int totalCount = count.intValue();
+                            int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+                            return new PageInfo<>(pageIndex, pageSize, totalCount, totalPages, results);
+                        }));
     }
 
     public Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK) {

@@ -7,6 +7,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnVersionFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import org.mapstruct.Mapper;
@@ -70,6 +71,10 @@ public abstract class BpmnVersionMapper {
 
     public List<BpmnDTO> toDTOList(List<BpmnVersion> list) {
         return list.stream().map(this::toDTO).toList();
+    }
+
+    public PageInfo<BpmnVersionFrontEndDTO>  toFrontEndDTOListPaged(PageInfo<BpmnVersion> input) {
+        return new PageInfo<>(input.getPage(), input.getLimit(), input.getItemsFound(), input.getTotalPages(), toFrontEndDTOList(input.getResults()));
     }
 
     public List<BpmnVersionFrontEndDTO> toFrontEndDTOList(List<BpmnVersion> list){
