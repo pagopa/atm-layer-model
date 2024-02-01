@@ -21,6 +21,7 @@ import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnVersionFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
@@ -285,28 +286,28 @@ public class BpmnResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/filter")
-    public Uni<List<BpmnDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+    public Uni<List<BpmnVersionFrontEndDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
                                               @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
-                                              @QueryParam("pageSize") @DefaultValue("10")
+                                                             @QueryParam("pageSize") @DefaultValue("10")
                                               @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
-                                              @QueryParam("functionType") String functionType,
-                                              @QueryParam("modelVersion") String modelVersion,
-                                              @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
-                                              @QueryParam("createdAt") String createdAt,
-                                              @QueryParam("lastUpdatedAt") String lastUpdatedAt,
-                                              @QueryParam("bpmnId") String bpmnId,
-                                              @QueryParam("deploymentId") String deploymentId,
-                                              @QueryParam("camundaDefinitionId") String camundaDefinitionId,
-                                              @QueryParam("createdBy") String createdBy,
-                                              @QueryParam("definitionKey") String definitionKey,
-                                              @QueryParam("deployedFileName") String deployedFileName,
-                                              @QueryParam("lastUpdatedBy") String lastUpdatedBy,
-                                              @QueryParam("resource") String resource,
-                                              @QueryParam("sha256") String sha256,
-                                              @QueryParam("status") String status,
-                                              @QueryParam("acquirerId") String acquirerId,
-                                              @QueryParam("branchId") String branchId,
-                                              @QueryParam("terminalId") String terminalId) {
+                                                             @QueryParam("functionType") String functionType,
+                                                             @QueryParam("modelVersion") String modelVersion,
+                                                             @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
+                                                             @QueryParam("createdAt") String createdAt,
+                                                             @QueryParam("lastUpdatedAt") String lastUpdatedAt,
+                                                             @QueryParam("bpmnId") String bpmnId,
+                                                             @QueryParam("deploymentId") String deploymentId,
+                                                             @QueryParam("camundaDefinitionId") String camundaDefinitionId,
+                                                             @QueryParam("createdBy") String createdBy,
+                                                             @QueryParam("definitionKey") String definitionKey,
+                                                             @QueryParam("deployedFileName") String deployedFileName,
+                                                             @QueryParam("lastUpdatedBy") String lastUpdatedBy,
+                                                             @QueryParam("resource") String resource,
+                                                             @QueryParam("sha256") String sha256,
+                                                             @QueryParam("status") String status,
+                                                             @QueryParam("acquirerId") String acquirerId,
+                                                             @QueryParam("branchId") String branchId,
+                                                             @QueryParam("terminalId") String terminalId) {
         return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda, createdAt, lastUpdatedAt,
                         bpmnId, deploymentId, camundaDefinitionId, createdBy, definitionKey, deployedFileName,
                         lastUpdatedBy, resource, sha256, status, acquirerId, branchId, terminalId)
@@ -315,7 +316,7 @@ public class BpmnResource {
                     if (list.isEmpty()) {
                         log.info("No Bpmn files saved in database");
                     }
-                    return bpmnVersionMapper.toDTOList(list);
+                    return bpmnVersionMapper.toFrontEndDTOList(list);
                 }));
     }
 }
