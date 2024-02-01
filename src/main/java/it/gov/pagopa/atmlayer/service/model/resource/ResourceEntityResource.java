@@ -49,7 +49,7 @@ public class ResourceEntityResource {
             throws NoSuchAlgorithmException, IOException {
         ResourceEntity resourceEntity = resourceEntityMapper.toEntityCreation(resourceCreationDto);
         return resourceEntityService.createResource(resourceEntity, resourceCreationDto.getFile(),
-                        resourceCreationDto.getFilename(), resourceCreationDto.getPath())
+                        resourceCreationDto.getFilename(), resourceCreationDto.getPath(), resourceCreationDto.getDescription())
                 .onItem()
                 .transformToUni(resource -> Uni.createFrom().item(resourceEntityMapper.toDTO(resource)));
     }

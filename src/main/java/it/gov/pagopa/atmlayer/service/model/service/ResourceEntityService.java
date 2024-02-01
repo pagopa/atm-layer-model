@@ -22,7 +22,7 @@ public interface ResourceEntityService {
 
     Uni<ResourceFile> upload(ResourceEntity resourceEntity, File file, String filename, String path);
 
-    Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file, String filename, String path);
+    Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file, String filename, String path, String description);
 
     Uni<ResourceEntity> updateResource(UUID uuid, File file);
 

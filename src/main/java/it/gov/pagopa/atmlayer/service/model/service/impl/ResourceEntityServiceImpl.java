@@ -95,7 +95,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
 
     @Override
     public Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file,
-                                              String filename, String path) {
+                                              String filename, String path, String description) {
         return findBySHA256(resourceEntity.getSha256())
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.isPresent()) {

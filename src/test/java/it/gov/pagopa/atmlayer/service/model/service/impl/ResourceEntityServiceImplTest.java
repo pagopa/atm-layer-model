@@ -61,7 +61,7 @@ class ResourceEntityServiceImplTest {
         resourceEntity.setStorageKey("storageKey");
         when(resourceEntityRepository.findBySHA256(any(String.class))).thenReturn(Uni.createFrom().nullItem());
         when(resourceFileService.findByStorageKey(any(String.class))).thenReturn(Uni.createFrom().item(Optional.of(resourceFile)));
-        resourceEntityService.createResource(resourceEntity, file, "filename", "path")
+        resourceEntityService.createResource(resourceEntity, file, "filename", "path", "description")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "Cannot upload storageKey: resource with same file name and path already exists");
     }
@@ -77,7 +77,7 @@ class ResourceEntityServiceImplTest {
         when(resourceEntityRepository.persist(any(ResourceEntity.class))).thenReturn(Uni.createFrom().item(resourceEntity));
         when(resourceEntityStorageService.saveFile(any(ResourceEntity.class), any(File.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().item(resourceFile));
         when(resourceEntityRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
-        resourceEntityService.createResource(resourceEntity, file, "filename.xml", "path")
+        resourceEntityService.createResource(resourceEntity, file, "filename.xml", "path", "description")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "Sync problem on resource creation");
     }

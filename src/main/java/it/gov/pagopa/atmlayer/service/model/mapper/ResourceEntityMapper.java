@@ -26,6 +26,7 @@ public abstract class ResourceEntityMapper {
         resourceEntity.setStorageKey(resourceEntityStorageService.calculateStorageKey(
                 resourceCreationDto.getResourceType(),resourceCreationDto.getPath(),resourceCreationDto.getFilename()
         ));
+        resourceEntity.setDescription(resourceCreationDto.getDescription());
         return resourceEntity;
     }
 
