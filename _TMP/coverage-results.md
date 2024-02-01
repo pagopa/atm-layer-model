@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 93.96%               |
-| :heavy_check_mark: Number of Lines Covered | 1479    |
-| :x: Number of Lines Missed  | 95     |
-| Total Number of Lines   | 1574     |
+| Code Coverage %         | 91.86%               |
+| :heavy_check_mark: Number of Lines Covered | 1478    |
+| :x: Number of Lines Missed  | 131     |
+| Total Number of Lines   | 1609     |
 
 
 ## Details:
@@ -97,6 +97,10 @@
         
 #### Lines Missed:
         
+- Line #328
+```
+                .transformToUni(associations -> {
+```
 </details>
 
     
@@ -138,11 +142,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: BpmnVersionMapper.java
+:x: BpmnVersionMapper.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -325,6 +329,16 @@
 
     
 ### it/gov/pagopa/atmlayer/service/model/model
+
+<details>
+    <summary>
+:x: BpmnVersionFrontEndDTO.java
+    </summary>
+
+        
+</details>
+
+    
 
 <details>
     <summary>
