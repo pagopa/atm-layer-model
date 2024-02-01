@@ -8,6 +8,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnVersionFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -37,12 +38,47 @@ public abstract class BpmnVersionMapper {
 
     public abstract BpmnProcessDTO toProcessDTO(BpmnDTO bpmnProcessDTO);
 
+    public BpmnVersionFrontEndDTO toFrontEndDTO(BpmnVersion bpmnVersion){
+        BpmnVersionFrontEndDTO bpmnVersionFrontEndDTO=new BpmnVersionFrontEndDTO();
+        bpmnVersionFrontEndDTO.setBpmnId(bpmnVersion.getBpmnId());
+        bpmnVersionFrontEndDTO.setModelVersion(bpmnVersion.getModelVersion());
+        bpmnVersionFrontEndDTO.setDeployedFileName(bpmnVersion.getDeployedFileName());
+        bpmnVersionFrontEndDTO.setDefinitionKey(bpmnVersion.getDefinitionKey());
+        bpmnVersionFrontEndDTO.setFunctionType(bpmnVersion.getFunctionType());
+        bpmnVersionFrontEndDTO.setStatus(bpmnVersion.getStatus());
+        bpmnVersionFrontEndDTO.setSha256(bpmnVersion.getSha256());
+        bpmnVersionFrontEndDTO.setEnabled(bpmnVersion.getEnabled());
+        bpmnVersionFrontEndDTO.setDefinitionVersionCamunda(bpmnVersion.getDefinitionVersionCamunda());
+        bpmnVersionFrontEndDTO.setCamundaDefinitionId(bpmnVersion.getCamundaDefinitionId());
+        bpmnVersionFrontEndDTO.setDescription(bpmnVersion.getDescription());
+        bpmnVersionFrontEndDTO.setResourceId(bpmnVersion.getResourceFile().getId());
+        bpmnVersionFrontEndDTO.setResourceType(bpmnVersion.getResourceFile().getResourceType());
+        bpmnVersionFrontEndDTO.setStorageKey(bpmnVersion.getResourceFile().getStorageKey());
+        bpmnVersionFrontEndDTO.setFileName(bpmnVersion.getResourceFile().getFileName());
+        bpmnVersionFrontEndDTO.setExtension(bpmnVersion.getResourceFile().getExtension());
+        bpmnVersionFrontEndDTO.setResourceCreatedAt(bpmnVersion.getResourceFile().getCreatedAt());
+        bpmnVersionFrontEndDTO.setResourceLastUpdatedAt(bpmnVersion.getResourceFile().getLastUpdatedAt());
+        bpmnVersionFrontEndDTO.setResourceCreatedBy(bpmnVersion.getResourceFile().getCreatedBy());
+        bpmnVersionFrontEndDTO.setResourceLastUpdatedBy(bpmnVersion.getResourceFile().getLastUpdatedBy());
+        bpmnVersionFrontEndDTO.setResource(bpmnVersion.getResource());
+        bpmnVersionFrontEndDTO.setDeploymentId(bpmnVersion.getDeploymentId());
+        bpmnVersionFrontEndDTO.setCreatedAt(bpmnVersion.getCreatedAt());
+        bpmnVersionFrontEndDTO.setLastUpdatedAt(bpmnVersion.getLastUpdatedAt());
+        bpmnVersionFrontEndDTO.setCreatedBy(bpmnVersion.getCreatedBy());
+        bpmnVersionFrontEndDTO.setLastUpdatedBy(bpmnVersion.getCreatedBy());
+        return bpmnVersionFrontEndDTO;
+    }
+
     public List<BpmnDTO> toDTOList(List<BpmnVersion> list) {
         return list.stream().map(this::toDTO).toList();
     }
 
-    public PageInfo<BpmnDTO>  toDTOList(PageInfo<BpmnVersion> input) {
-        return new PageInfo<>(input.getPage(), input.getLimit(), input.getItemsFound(), input.getTotalPages(), toDTOList(input.getResults()));
+    public PageInfo<BpmnVersionFrontEndDTO>  toFrontEndDTOListPaged(PageInfo<BpmnVersion> input) {
+        return new PageInfo<>(input.getPage(), input.getLimit(), input.getItemsFound(), input.getTotalPages(), toFrontEndDTOList(input.getResults()));
+    }
+
+    public List<BpmnVersionFrontEndDTO> toFrontEndDTOList(List<BpmnVersion> list){
+        return list.stream().map(this::toFrontEndDTO).toList();
     }
 
     @Mapping(ignore = true, target = "enabled")

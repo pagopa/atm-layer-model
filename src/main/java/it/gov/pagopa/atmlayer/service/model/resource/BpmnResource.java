@@ -24,6 +24,7 @@ import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnVersionFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
@@ -274,7 +275,7 @@ public class BpmnResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/filter")
-    public Uni<PageInfo<BpmnDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+    public Uni<PageInfo<BpmnVersionFrontEndDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
                                                   @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
                                                   @QueryParam("pageSize") @DefaultValue("10")
                                                   @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
@@ -304,7 +305,8 @@ public class BpmnResource {
                     if (pagedList.getResults().isEmpty()) {
                         log.info("No Bpmn files saved in database");
                     }
-                    return bpmnVersionMapper.toDTOList(pagedList);
+                    return bpmnVersionMapper.toFrontEndDTOListPaged(pagedList);
+
                 }));
     }
 }
