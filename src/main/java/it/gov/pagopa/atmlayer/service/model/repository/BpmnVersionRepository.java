@@ -54,10 +54,12 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
                 return (key + " = :"+key);
             } else if (Objects.equals(key, "acquirerId")||Objects.equals(key, "branchId")||Objects.equals(key, "terminalId")){
                 return ("bc.bpmnBankConfigPK."+key + " = :"+key);
+            } else if (Objects.equals(key,"functionType")){
+                return ("bc."+ key + " LIKE concat(concat('%', :"+key+"), '%')");
             }else {
                 return (key + " LIKE concat(concat('%', :"+key+"), '%')");}
         }).collect(Collectors.joining(" and "));
-        return count((!params.containsKey("acquirerId")?"":" join BpmnBankConfig bc on bpmnId = bc.bpmnBankConfigPK.bpmnId and modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank()?"":"where " + queryFilters),params);
+        return count((!params.containsKey("acquirerId")?"":" join BpmnBankConfig bc on bpmnId = bc.bpmnBankConfigPK.bpmnId and modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank()?"":" where " + queryFilters),params);
 
     }
 }
