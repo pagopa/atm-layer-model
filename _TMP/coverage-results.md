@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 92.92%               |
-| :heavy_check_mark: Number of Lines Covered | 1509    |
-| :x: Number of Lines Missed  | 115     |
-| Total Number of Lines   | 1624     |
+| Code Coverage %         | 92.63%               |
+| :heavy_check_mark: Number of Lines Covered | 1508    |
+| :x: Number of Lines Missed  | 120     |
+| Total Number of Lines   | 1628     |
 
 
 ## Details:
@@ -97,7 +97,7 @@
         
 #### Lines Missed:
         
-- Line #328
+- Line #329
 ```
                 .transformToUni(associations -> {
 ```
@@ -572,10 +572,6 @@
         
 #### Lines Missed:
         
-- Line #278
-```
-                        .map(count -> {
-```
 </details>
 
     
