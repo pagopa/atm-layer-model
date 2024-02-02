@@ -243,7 +243,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @Override
     @WithSession
     public Uni<PageInfo<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda, String createdAt, String lastUpdatedAt,
-                                                       String bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
+                                                       UUID bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
                                                        String lastUpdatedBy, String resource, String sha256, String status, String acquirerId, String branchId, String terminalId) {
         if((StringUtils.isEmpty(acquirerId) && (!StringUtils.isEmpty(branchId) || !StringUtils.isEmpty(terminalId)))||StringUtils.isEmpty(branchId) && !StringUtils.isEmpty(terminalId)){
             return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST,NO_BPMN_FOUND_FOR_CONFIGURATION));
@@ -271,15 +271,15 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         filters.values().removeAll(Collections.singleton(null));
         filters.values().removeAll(Collections.singleton(""));
 
-        Uni<List<BpmnVersion>> resultsUni = bpmnVersionRepository.findByFilters(filters, pageIndex, pageSize);
+        return bpmnVersionRepository.findByFilters(filters, pageIndex, pageSize);
 
-        return resultsUni.onItem().transformToUni(results ->
-                bpmnVersionRepository.countWithFilters(filters)
-                        .map(count -> {
-                            int totalCount = count.intValue();
-                            int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-                            return new PageInfo<>(pageIndex, pageSize, totalCount, totalPages, results);
-                        }));
+//        return resultsUni.onItem().transformToUni(results ->
+//                bpmnVersionRepository.countWithFilters(filters)
+//                        .map(count -> {
+//                            int totalCount = count.intValue();
+//                            int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+//                            return new PageInfo<>(pageIndex, pageSize, totalCount, totalPages, results);
+//                        }));
     }
 
     public Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK) {

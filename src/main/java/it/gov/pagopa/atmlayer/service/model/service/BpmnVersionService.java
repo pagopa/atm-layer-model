@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 public interface BpmnVersionService {
     Uni<List<BpmnVersion>> getAll();
@@ -44,6 +45,6 @@ public interface BpmnVersionService {
     Uni<Void> disable(BpmnVersionPK bpmnVersionPK);
 
     Uni<PageInfo<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda, String createdAt, String lastUpdatedAt,
-                                                String bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
+                                                UUID bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
                                                 String lastUpdatedBy, String resource, String sha256, String status, String acquirerId, String branchId, String terminalId);
 }

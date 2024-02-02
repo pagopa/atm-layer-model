@@ -293,7 +293,7 @@ public class BpmnResource {
                                                   @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
                                                   @QueryParam("createdAt") String createdAt,
                                                   @QueryParam("lastUpdatedAt") String lastUpdatedAt,
-                                                  @QueryParam("bpmnId") String bpmnId,
+                                                  @QueryParam("bpmnId") UUID bpmnId,
                                                   @QueryParam("deploymentId") String deploymentId,
                                                   @QueryParam("camundaDefinitionId") String camundaDefinitionId,
                                                   @QueryParam("createdBy") String createdBy,
