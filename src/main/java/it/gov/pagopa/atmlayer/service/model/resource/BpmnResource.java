@@ -293,8 +293,8 @@ public class BpmnResource {
                                                   @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
                                                   @QueryParam("createdAt") String createdAt,
                                                   @QueryParam("lastUpdatedAt") String lastUpdatedAt,
-                                                  @QueryParam("bpmnId") String bpmnId,
-                                                  @QueryParam("deploymentId") String deploymentId,
+                                                  @QueryParam("bpmnId") UUID bpmnId,
+                                                  @QueryParam("deploymentId") UUID deploymentId,
                                                   @QueryParam("camundaDefinitionId") String camundaDefinitionId,
                                                   @QueryParam("createdBy") String createdBy,
                                                   @QueryParam("definitionKey") String definitionKey,
@@ -305,14 +305,15 @@ public class BpmnResource {
                                                   @QueryParam("status") String status,
                                                   @QueryParam("acquirerId") String acquirerId,
                                                   @QueryParam("branchId") String branchId,
-                                                  @QueryParam("terminalId") String terminalId) {
+                                                  @QueryParam("terminalId") String terminalId,
+                                                                 @QueryParam("fileName") String fileName) {
         return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda, createdAt, lastUpdatedAt,
                         bpmnId, deploymentId, camundaDefinitionId, createdBy, definitionKey, deployedFileName,
-                        lastUpdatedBy, resource, sha256, status, acquirerId, branchId, terminalId)
+                        lastUpdatedBy, resource, sha256, status, acquirerId, branchId, terminalId, fileName)
                 .onItem()
                 .transform(Unchecked.function(pagedList -> {
                     if (pagedList.getResults().isEmpty()) {
-                        log.info("No Bpmn files saved in database");
+                        log.info("No Bpmn file meets the applied filters");
                     }
                     return bpmnVersionMapper.toFrontEndDTOListPaged(pagedList);
 
