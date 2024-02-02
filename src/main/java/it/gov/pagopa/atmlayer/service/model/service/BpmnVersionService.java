@@ -45,6 +45,6 @@ public interface BpmnVersionService {
     Uni<Void> disable(BpmnVersionPK bpmnVersionPK);
 
     Uni<PageInfo<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda, String createdAt, String lastUpdatedAt,
-                                                UUID bpmnId, String deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
-                                                String lastUpdatedBy, String resource, String sha256, String status, String acquirerId, String branchId, String terminalId);
+                                                UUID bpmnId, UUID deploymentId, String camundaDefinitionId, String createdBy, String definitionKey, String deployedFileName,
+                                                String lastUpdatedBy, String resource, String sha256, String status, String acquirerId, String branchId, String terminalId, String filename);
 }

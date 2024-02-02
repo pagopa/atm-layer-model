@@ -22,17 +22,20 @@ import java.util.stream.Collectors;
 public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion, BpmnVersionPK> {
     public Uni<PageInfo<BpmnVersion>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
         String queryFilters = params.keySet().stream().map(key -> {
-            if (Objects.equals(key, "modelVersion") || Objects.equals(key, "definitionVersionCamunda") || Objects.equals(key,"bpmnId")) {
-                return ("b." + key + " = :" + key);
-            } else if (Objects.equals(key, "acquirerId") || Objects.equals(key, "branchId") || Objects.equals(key, "terminalId")) {
-                return ("bc.bpmnBankConfigPK." + key + " = :" + key);
-            } else {
-                return ("b." + key + " LIKE concat(concat('%', :" + key + "), '%')");
+            switch (key) {
+                case "modelVersion","definitionVersionCamunda","bpmnId":
+                    return ("b." + key + " = :" + key);
+                case "acquirerId","branchId","terminalId":
+                    return ("bc.bpmnBankConfigPK." + key + " = :" + key);
+                case "fileName":
+                    return ("b.resourceFile." + key + " LIKE concat(concat('%', :" + key + "), '%')");
+                default:
+                    return ("b." + key + " LIKE concat(concat('%', :" + key + "), '%')");
             }
         }).collect(Collectors.joining(" and "));
         PanacheQuery<BpmnVersion> queryResult = find(("select distinct b from BpmnVersion b").concat(!params.containsKey("acquirerId") ? "" : " join BpmnBankConfig bc on b.bpmnId = bc.bpmnBankConfigPK.bpmnId and b.modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank() ? "" : " where " + queryFilters), params).page(Page.of(pageIndex, pageSize));
         return queryResult.count()
-                .onItem().transformToUni(count ->{
+                .onItem().transformToUni(count -> {
                     int totalCount = count.intValue();
                     int totalPages = (int) Math.ceil((double) totalCount / pageSize);
                     return queryResult.list()
