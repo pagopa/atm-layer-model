@@ -21,7 +21,7 @@ import java.util.UUID;
 @Builder
 @ToString
 @EqualsAndHashCode
-public class BpmnVersionFrontEndDTO {
+public class BpmnFrontEndDTO {
     private UUID bpmnId;
     private Long modelVersion;
     private String deployedFileName;
