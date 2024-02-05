@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfileCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileDto;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.UserProfileEnum;
@@ -15,6 +16,11 @@ public abstract class UserProfileMapper {
     @Mapping(source = "userProfile.createdAt", target = "createdAt")
     @Mapping(source = "userProfile.lastUpdatedAt", target = "lastUpdatedAt")
     public abstract UserProfileDto toUserProfileDto(UserProfile userProfile);
+    @Mapping(source = "userProfile.userId", target = "userId")
+    @Mapping(source = "userProfile.profile", target = "profile")
+    @Mapping(source = "userProfile.createdAt", target = "createdAt")
+    @Mapping(source = "userProfile.lastUpdatedAt", target = "lastUpdatedAt")
+    public abstract UserProfile toUserProfile(UserProfileCreationDto userProfile);
 
     UserProfileEnum getEnumValue(int source) {
         return UserProfileEnum.valueOf(source);

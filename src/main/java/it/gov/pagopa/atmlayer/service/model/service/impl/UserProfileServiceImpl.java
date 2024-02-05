@@ -6,8 +6,8 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfile;
-import it.gov.pagopa.atmlayer.service.model.enumeration.UserProfileEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.mapper.UserProfileMapper;
 import it.gov.pagopa.atmlayer.service.model.repository.UserProfileRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserProfileService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -27,15 +27,15 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Inject
     UserProfileRepository userProfileRepository;
 
+    @Inject
+    UserProfileMapper userProfileMapper;
+
     @Override
     @WithSession
     @WithTransaction
     public Uni<UserProfile> save(UserProfileCreationDto userProfile) {
         log.info("Create user {}", userProfile.getUserId());
-        UserProfile localUserProfile = new UserProfile(userProfile.getUserId(),
-                                                        userProfile.getProfile(),
-                                                        new Timestamp(System.currentTimeMillis()),
-                                                        new Timestamp(System.currentTimeMillis()));
+        UserProfile localUserProfile = this.userProfileMapper.toUserProfile(userProfile);
         return this.userProfileRepository.findUserId(localUserProfile.getUserId())
                 .onItem().transformToUni(Unchecked.function(x -> {
                             if(x != null){
