@@ -187,7 +187,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .transform(Unchecked.function(optionalBpmn -> {
                             if (optionalBpmn.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced BPMN files do not exists: %s", bpmnVersionPK);
+                                        "One or some of the referenced BPMN files do not exist: %s", bpmnVersionPK);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         BPMN_FILE_DOES_NOT_EXIST);
                             }
