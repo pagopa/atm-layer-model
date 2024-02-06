@@ -17,6 +17,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
+import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
@@ -24,7 +25,7 @@ import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
-import it.gov.pagopa.atmlayer.service.model.model.BpmnVersionFrontEndDTO;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
@@ -284,32 +285,27 @@ public class BpmnResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/filter")
-    public Uni<PageInfo<BpmnVersionFrontEndDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+    public Uni<PageInfo<BpmnFrontEndDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
                                                   @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
-                                                  @QueryParam("pageSize") @DefaultValue("10")
+                                                          @QueryParam("pageSize") @DefaultValue("10")
                                                   @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
-                                                  @QueryParam("functionType") String functionType,
-                                                  @QueryParam("modelVersion") String modelVersion,
-                                                  @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
-                                                  @QueryParam("createdAt") String createdAt,
-                                                  @QueryParam("lastUpdatedAt") String lastUpdatedAt,
-                                                  @QueryParam("bpmnId") UUID bpmnId,
-                                                  @QueryParam("deploymentId") UUID deploymentId,
-                                                  @QueryParam("camundaDefinitionId") String camundaDefinitionId,
-                                                  @QueryParam("createdBy") String createdBy,
-                                                  @QueryParam("definitionKey") String definitionKey,
-                                                  @QueryParam("deployedFileName") String deployedFileName,
-                                                  @QueryParam("lastUpdatedBy") String lastUpdatedBy,
-                                                  @QueryParam("resource") String resource,
-                                                  @QueryParam("sha256") String sha256,
-                                                  @QueryParam("status") String status,
-                                                  @QueryParam("acquirerId") String acquirerId,
-                                                  @QueryParam("branchId") String branchId,
-                                                  @QueryParam("terminalId") String terminalId,
-                                                                 @QueryParam("fileName") String fileName) {
-        return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda, createdAt, lastUpdatedAt,
-                        bpmnId, deploymentId, camundaDefinitionId, createdBy, definitionKey, deployedFileName,
-                        lastUpdatedBy, resource, sha256, status, acquirerId, branchId, terminalId, fileName)
+                                                          @QueryParam("functionType") String functionType,
+                                                          @QueryParam("modelVersion") String modelVersion,
+                                                          @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
+                                                          @QueryParam("bpmnId") UUID bpmnId,
+                                                          @QueryParam("deploymentId") UUID deploymentId,
+                                                          @QueryParam("camundaDefinitionId") String camundaDefinitionId,
+                                                          @QueryParam("definitionKey") String definitionKey,
+                                                          @QueryParam("deployedFileName") String deployedFileName,
+                                                          @QueryParam("resource") String resource,
+                                                          @QueryParam("sha256") String sha256,
+                                                          @QueryParam("status") StatusEnum status,
+                                                          @QueryParam("acquirerId") String acquirerId,
+                                                          @QueryParam("branchId") String branchId,
+                                                          @QueryParam("terminalId") String terminalId,
+                                                          @QueryParam("fileName") String fileName) {
+        return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda,
+                        bpmnId, deploymentId, camundaDefinitionId, definitionKey, deployedFileName, resource, sha256, status, acquirerId, branchId, terminalId, fileName)
                 .onItem()
                 .transform(Unchecked.function(pagedList -> {
                     if (pagedList.getResults().isEmpty()) {

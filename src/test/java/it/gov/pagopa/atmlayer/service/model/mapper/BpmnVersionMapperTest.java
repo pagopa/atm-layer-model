@@ -2,7 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
-import it.gov.pagopa.atmlayer.service.model.model.BpmnVersionFrontEndDTO;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import jakarta.inject.Inject;
 
@@ -42,7 +42,7 @@ class BpmnVersionMapperTest {
         bpmnVersion2.setResourceFile(new ResourceFile());
 
         List<BpmnVersion> bpmnVersionList = Arrays.asList(bpmnVersion1, bpmnVersion2);
-        List<BpmnVersionFrontEndDTO> result = bpmnMapper.toFrontEndDTOList(bpmnVersionList);
+        List<BpmnFrontEndDTO> result = bpmnMapper.toFrontEndDTOList(bpmnVersionList);
 
         assertEquals(bpmnVersionList.size(), result.size());
 
@@ -59,7 +59,7 @@ class BpmnVersionMapperTest {
         bpmnVersion2.setResourceFile(new ResourceFile());
         List<BpmnVersion> bpmnVersionList = Arrays.asList(bpmnVersion1, bpmnVersion2);
         PageInfo<BpmnVersion> pageInfo = new PageInfo<>(0, 1, 2, 2, bpmnVersionList);
-        PageInfo<BpmnVersionFrontEndDTO> result = bpmnMapper.toFrontEndDTOListPaged(pageInfo);
+        PageInfo<BpmnFrontEndDTO> result = bpmnMapper.toFrontEndDTOListPaged(pageInfo);
 
         assertEquals(bpmnVersionList.size(), result.getResults().size());
 
