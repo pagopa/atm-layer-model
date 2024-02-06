@@ -3,6 +3,8 @@ package it.gov.pagopa.atmlayer.service.model.service;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
+import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 
 import java.io.File;
 import java.util.List;
@@ -28,4 +30,6 @@ public interface ResourceEntityService {
 
 
     Uni<List<ResourceEntity>> getAll();
+
+    Uni<PageInfo<ResourceEntity>> findResourceFiltered(int pageIndex, int pageSize, UUID resourceId, String sha256, NoDeployableResourceType noDeployableResourceType, String fileName, String storageKey, String extension);
 }

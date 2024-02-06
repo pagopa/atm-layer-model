@@ -5,10 +5,13 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
+import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceEntityMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceFileMapper;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
+import it.gov.pagopa.atmlayer.service.model.model.ResourceFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -17,6 +20,9 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -89,6 +95,30 @@ public class ResourceEntityResource {
                         throw new AtmLayerException(Response.Status.NOT_FOUND, RESOURCE_FILE_DOES_NOT_EXIST);
                     }
                     return resourceEntityMapper.toDTO(x.get());
+                }));
+    }
+
+    @GET
+    @Path("/filter")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<PageInfo<ResourceFrontEndDTO>> getResourceFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+                                                                      @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                                  @QueryParam("pageSize") @DefaultValue("10")
+                                                                      @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
+                                                                  @QueryParam("resourceId") UUID resourceId,
+                                                                  @QueryParam("sha256") String sha256,
+                                                                  @QueryParam("noDeployableResourceType") NoDeployableResourceType noDeployableResourceType,
+                                                                  @QueryParam("fileName") String fileName,
+                                                                  @QueryParam("storageKey") String storageKey,
+                                                                  @QueryParam("extension") String extension){
+        return resourceEntityService.findResourceFiltered(pageIndex, pageSize, resourceId, sha256, noDeployableResourceType, fileName, storageKey, extension)
+                .onItem()
+                .transform(Unchecked.function(pagedList -> {
+                    if (pagedList.getResults().isEmpty()) {
+                        log.info("No Resource entity meets the applied filters");
+                    }
+                    return resourceEntityMapper.toFrontEndDTOPaged(pagedList);
+
                 }));
     }
 }
