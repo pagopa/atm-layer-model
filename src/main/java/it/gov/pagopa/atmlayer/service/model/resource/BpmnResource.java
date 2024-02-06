@@ -1,5 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+//import io.opentelemetry.api.trace.Tracer;
+
+import io.opentelemetry.api.trace.Tracer;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -14,12 +17,15 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
+import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
@@ -30,26 +36,27 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
@@ -59,24 +66,20 @@ import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerCo
 @Tag(name = "BPMN", description = "BPMN operations")
 @Slf4j
 public class BpmnResource {
-
-
     @Inject
     BpmnVersionService bpmnVersionService;
-
     @Inject
     BpmnBankConfigService bpmnBankConfigService;
-
     @Inject
     BpmnEntityValidator bpmnEntityValidator;
     @Inject
     BpmnFileStorageService bpmnFileStorageService;
-
     @Inject
     BpmnVersionMapper bpmnVersionMapper;
-
     @Inject
     BpmnConfigMapper bpmnConfigMapper;
+    @Inject
+    Tracer tracer;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -150,7 +153,6 @@ public class BpmnResource {
     @Path("/{bpmnId}/version/{version}")
     public Uni<Void> deleteBpmn(@PathParam("bpmnId") UUID bpmnId,
                                 @PathParam("version") Long version) {
-
         return this.bpmnVersionService.delete(new BpmnVersionPK(bpmnId, version))
                 .onItem()
                 .ignore()
@@ -172,7 +174,6 @@ public class BpmnResource {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Multi<Buffer> downloadBpmn(@PathParam("uuid") UUID bpmnId,
                                       @PathParam("version") Long version) {
-
         BpmnVersionPK key = BpmnVersionPK.builder()
                 .bpmnId(bpmnId)
                 .modelVersion(version)
@@ -276,10 +277,56 @@ public class BpmnResource {
 
     @POST
     @Path("/disable/{uuid}/version/{version}")
-    public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId,@PathParam("version") Long version){
-        BpmnVersionPK bpmnVersionPK=new BpmnVersionPK(bpmnId,version);
+    public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version) {
+        BpmnVersionPK bpmnVersionPK = new BpmnVersionPK(bpmnId, version);
         return bpmnVersionService.disable(bpmnVersionPK);
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/filter")
+    public Uni<PageInfo<BpmnFrontEndDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                          @QueryParam("pageSize") @DefaultValue("10")
+                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
+                                                          @QueryParam("functionType") String functionType,
+                                                          @QueryParam("modelVersion") String modelVersion,
+                                                          @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
+                                                          @QueryParam("bpmnId") UUID bpmnId,
+                                                          @QueryParam("deploymentId") UUID deploymentId,
+                                                          @QueryParam("camundaDefinitionId") String camundaDefinitionId,
+                                                          @QueryParam("definitionKey") String definitionKey,
+                                                          @QueryParam("deployedFileName") String deployedFileName,
+                                                          @QueryParam("resource") String resource,
+                                                          @QueryParam("sha256") String sha256,
+                                                          @QueryParam("status") StatusEnum status,
+                                                          @QueryParam("acquirerId") String acquirerId,
+                                                          @QueryParam("branchId") String branchId,
+                                                          @QueryParam("terminalId") String terminalId,
+                                                          @QueryParam("fileName") String fileName) {
+        return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda,
+                        bpmnId, deploymentId, camundaDefinitionId, definitionKey, deployedFileName, resource, sha256, status, acquirerId, branchId, terminalId, fileName)
+                .onItem()
+                .transform(Unchecked.function(pagedList -> {
+                    if (pagedList.getResults().isEmpty()) {
+                        log.info("No Bpmn file meets the applied filters");
+                    }
+                    return bpmnVersionMapper.toFrontEndDTOListPaged(pagedList);
 
+                }));
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/associations/{uuid}/version/{version}")
+    public Uni<Collection<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version) {
+        return bpmnBankConfigService.findByBpmnVersionPK(new BpmnVersionPK(bpmnId, version))
+                .onItem()
+                .transformToUni(associations -> {
+                    if (associations.isEmpty()) {
+                        log.info("No associations found for BpmnInd= {} and modelVersion= {}", bpmnId, version);
+                    }
+                    return Uni.createFrom().item(bpmnConfigMapper.toDTOList(associations));
+                });
+    }
 }

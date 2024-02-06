@@ -19,6 +19,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
@@ -30,6 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,6 +46,7 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.NO_BPMN_FOUND_FOR_CONFIGURATION;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.SHA256_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.extractIdValue;
@@ -183,7 +187,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .transform(Unchecked.function(optionalBpmn -> {
                             if (optionalBpmn.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced BPMN files do not exists: %s", bpmnVersionPK);
+                                        "One or some of the referenced BPMN files do not exist: %s", bpmnVersionPK);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         BPMN_FILE_DOES_NOT_EXIST);
                             }
@@ -249,6 +253,36 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                         .transformToUni(disabledShaBpmn -> Uni.createFrom().voidItem());
                             });
                 });
+    }
+
+    @Override
+    @WithSession
+    public Uni<PageInfo<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda,
+                                                       UUID bpmnId, UUID deploymentId, String camundaDefinitionId, String definitionKey, String deployedFileName,
+                                                       String resource, String sha256, StatusEnum status, String acquirerId, String branchId, String terminalId, String fileName) {
+        if ((StringUtils.isEmpty(acquirerId) && (!StringUtils.isEmpty(branchId) || !StringUtils.isEmpty(terminalId))) || StringUtils.isEmpty(branchId) && !StringUtils.isEmpty(terminalId)) {
+            return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST, NO_BPMN_FOUND_FOR_CONFIGURATION));
+        }
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("functionType", functionType);
+        filters.put("modelVersion", modelVersion);
+        filters.put("definitionVersionCamunda", definitionVersionCamunda);
+        filters.put("bpmnId", bpmnId);
+        filters.put("deploymentId", deploymentId);
+        filters.put("camundaDefinitionId", camundaDefinitionId);
+        filters.put("definitionKey", definitionKey);
+        filters.put("deployedFileName", deployedFileName);
+        filters.put("resource", resource);
+        filters.put("sha256", sha256);
+        if (status != null) filters.put("status", status.name());
+        filters.put("acquirerId", acquirerId);
+        filters.put("branchId", branchId);
+        filters.put("terminalId", terminalId);
+        filters.put("fileName", fileName);
+        filters.remove(null);
+        filters.values().removeAll(Collections.singleton(null));
+        filters.values().removeAll(Collections.singleton(""));
+        return bpmnVersionRepository.findByFilters(filters, pageIndex, pageSize);
     }
 
     public Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK) {

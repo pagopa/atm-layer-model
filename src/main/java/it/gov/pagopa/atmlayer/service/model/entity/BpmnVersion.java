@@ -2,16 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

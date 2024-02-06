@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 97.61%               |
-| :heavy_check_mark: Number of Lines Covered | 1471    |
-| :x: Number of Lines Missed  | 36     |
-| Total Number of Lines   | 1507     |
+| Code Coverage %         | 97.36%               |
+| :heavy_check_mark: Number of Lines Covered | 1622    |
+| :x: Number of Lines Missed  | 44     |
+| Total Number of Lines   | 1666     |
 
 
 ## Details:
@@ -91,11 +91,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: BpmnResource.java
+:x: BpmnResource.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -138,11 +138,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: BpmnVersionMapper.java
+:x: BpmnVersionMapper.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -162,11 +162,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceMapper.java
+:x: WorkflowResourceMapper.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -283,12 +283,20 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceRepository.java
+:x: WorkflowResourceRepository.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
+- Line #29
+```
+                .page(page, size)
+```
+- Line #30
+```
+                .list();
+```
 </details>
 
     
@@ -307,16 +315,26 @@
 
 <details>
     <summary>
-:heavy_check_mark: BpmnVersionRepository.java
+:x: BpmnVersionRepository.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
     
 ### it/gov/pagopa/atmlayer/service/model/model
+
+<details>
+    <summary>
+:x: PageInfo.java
+    </summary>
+
+        
+</details>
+
+    
 
 <details>
     <summary>
@@ -450,7 +468,27 @@
 
 <details>
     <summary>
+:x: BpmnFrontEndDTO.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: InfoResponse.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: WorkflowResourceFrontEndDTO.java
     </summary>
 
         
@@ -597,6 +635,18 @@
 
     
 ### it/gov/pagopa/atmlayer/service/model/configurations
+
+<details>
+    <summary>
+:heavy_check_mark: CorsFilter.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
 
 <details>
     <summary>

@@ -2,6 +2,9 @@ package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
+import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +32,8 @@ public interface WorkflowResourceService {
     Uni<Boolean> delete(UUID uuid);
 
     Uni<List<WorkflowResource>> getAll();
+
+    Uni<PageInfo<WorkflowResource>> getAllFiltered(int page, int size, StatusEnum status, UUID workflowResourceId, String deployedFileName, String definitionKey, DeployableResourceType resourceType, String sha256, String definitionVersionCamunda, String camundaDefinitionId, String description, String resource, UUID deploymentId, String fileName);
 
     Uni<WorkflowResource> update(UUID id, File file,boolean isRollback) throws NoSuchAlgorithmException, IOException;
 

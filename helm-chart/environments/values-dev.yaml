@@ -18,6 +18,8 @@ fullnameOverride: ""
 
 modelProcessBasePath: http://pagopa-dev-atm-layer-wf-process.pagopa.svc.cluster.local:8080
 
+allowedCrossOrigins: "*"
+
 database:
   type: postgresql
   url: postgresql://pagopa-dev-atm-layer-rds.cluster-cyezwzpjc2tj.eu-south-1.rds.amazonaws.com:5431/pagopadb?search_path=atm_layer_model_schema
@@ -26,6 +28,11 @@ database:
   credentialsSecretKeys:
     username: USERNAME_DB
     password: PASSWORD_DB
+
+tracing:
+  enabled: "true"
+  endpointBasePath: "http://jaeger-collector.default.svc.cluster.local:4317"
+  enableJDBCMonitoring: "true"
 
 objectStore:
   region: eu-south-1

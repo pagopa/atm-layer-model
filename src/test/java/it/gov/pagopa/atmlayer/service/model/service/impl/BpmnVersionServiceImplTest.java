@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -259,6 +260,19 @@ class BpmnVersionServiceImplTest {
                 .assertFailedWith(AtmLayerException.class, expectedErrorMessage);
         verify(bpmnVersionRepoMock, times(1)).findById(bpmnVersionPK);
         verify(bpmnVersionRepoMock, never()).persist(any(BpmnVersion.class));
+    }
+
+    @Test
+    void testMethodsBpmnDoesNotExist(){
+        BpmnVersionPK bpmnVersionPK=new BpmnVersionPK(UUID.randomUUID(),new Random().nextLong());
+        String expectedErrorMessageSetDisabled = String.format("The referenced BPMN key does not exist: %s", bpmnVersionPK);
+        bpmnVersionServiceImpl.setDisabledBpmnAttributes(bpmnVersionPK)
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class,expectedErrorMessageSetDisabled);
+        String expectedErrorMessageCheckExistence=String.format("One or some of the referenced BPMN files do not exist: %s",bpmnVersionPK);
+        bpmnVersionServiceImpl.checkBpmnFileExistence(bpmnVersionPK)
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class,expectedErrorMessageCheckExistence);
     }
 
     @Test

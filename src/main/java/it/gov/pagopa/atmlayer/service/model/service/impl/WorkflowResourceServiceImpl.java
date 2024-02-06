@@ -14,6 +14,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceFileRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.WorkflowResourceRepository;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
@@ -29,7 +30,9 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,7 +65,6 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @Inject
     @RestClient
     ProcessClient processClient;
-
 
     @Override
     @WithTransaction
@@ -290,6 +292,28 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @Override
     public Uni<List<WorkflowResource>> getAll() {
         return this.workflowResourceRepository.findAll().list();
+    }
+
+    @Override
+    @WithSession
+    public Uni<PageInfo<WorkflowResource>> getAllFiltered(int pageIndex, int pageSize, StatusEnum status, UUID workflowResourceId, String deployedFileName, String definitionKey, DeployableResourceType resourceType, String sha256, String definitionVersionCamunda, String camundaDefinitionId, String description, String resource, UUID deploymentId, String fileName) {
+        Map<String, Object> filters = new HashMap<>();
+        if (status != null) filters.put("status", status.name());
+        filters.put("workflowResourceId", workflowResourceId);
+        filters.put("deployedFileName", deployedFileName);
+        filters.put("definitionKey", definitionKey);
+        if (resourceType != null) filters.put("resourceType", resourceType.name());
+        filters.put("sha256", sha256);
+        filters.put("definitionVersionCamunda", definitionVersionCamunda);
+        filters.put("camundaDefinitionId", camundaDefinitionId);
+        filters.put("description", description);
+        filters.put("resource", resource);
+        filters.put("deploymentId", deploymentId);
+        filters.put("fileName", fileName);
+        filters.remove(null);
+        filters.values().removeAll(Collections.singleton(null));
+        filters.values().removeAll(Collections.singleton(""));
+        return workflowResourceRepository.findByFilters(filters, pageIndex, pageSize);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class BpmnBankConfigService {
         return this.bankConfigRepository.findByAcquirerIdAndFunctionType(acquirerId, functionType);
     }
 
-    public Uni<List<BpmnBankConfig>> findByBpmnVersionPK(BpmnVersionPK bpmnVersionPK){
+    public Uni<List<BpmnBankConfig>> findByBpmnVersionPK(BpmnVersionPK bpmnVersionPK) {
         return this.bankConfigRepository.findByBpmnPK(bpmnVersionPK);
     }
 
