@@ -33,7 +33,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     @WithSession
     @WithTransaction
-    public Uni<UserProfile> save(UserProfileCreationDto userProfile) {
+    public Uni<UserProfile> createUser(UserProfileCreationDto userProfile) {
         log.info("Create user {}", userProfile.getUserId());
         UserProfile localUserProfile = this.userProfileMapper.toUserProfile(userProfile);
         return this.userProfileRepository.findUserId(localUserProfile.getUserId())
@@ -65,14 +65,14 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     @WithSession
-    public Uni<List<UserProfile>> getAll() {
+    public Uni<List<UserProfile>> getUsers() {
         return this.userProfileRepository.findAll().list();
     }
 
     @Override
     @WithSession
     @WithTransaction
-    public Uni<Void> delete(String userId) {
+    public Uni<Void> deleteUser(String userId) {
         log.info("Delete user {} from database", userId);
         return this.findByUserId(userId)
                 .onItem().transformToUni(Unchecked.function(x -> userProfileRepository.delete(x)
@@ -82,7 +82,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     @WithSession
     @WithTransaction
-    public Uni<UserProfile> update(UserProfileCreationDto userProfile) {
+    public Uni<UserProfile> updateUser(UserProfileCreationDto userProfile) {
         log.info("Update user {}", userProfile.getUserId());
         return this.findByUserId(userProfile.getUserId())
                 .onItem().transformToUni(Unchecked.function(x -> {

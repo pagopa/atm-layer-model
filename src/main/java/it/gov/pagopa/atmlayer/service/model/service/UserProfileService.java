@@ -11,9 +11,9 @@ import java.util.UUID;
 
 public interface UserProfileService {
 
-    Uni<UserProfile> save(UserProfileCreationDto userProfile);
+    Uni<UserProfile> createUser(UserProfileCreationDto userProfile);
     Uni<UserProfile> findByUserId(String userId);
-    Uni<List<UserProfile>> getAll();
-    Uni<Void> delete(String userId);
-    Uni<UserProfile> update(UserProfileCreationDto userProfile);
+    Uni<List<UserProfile>> getUsers();
+    Uni<Void> deleteUser(String userId);
+    Uni<UserProfile> updateUser(UserProfileCreationDto userProfile);
 }

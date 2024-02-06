@@ -4,7 +4,6 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileDto;
-import it.gov.pagopa.atmlayer.service.model.entity.UserProfile;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserProfileMapper;
 import it.gov.pagopa.atmlayer.service.model.service.UserProfileService;
 import it.gov.pagopa.atmlayer.service.model.validators.UserProfileValidator;
@@ -49,8 +48,8 @@ public class UserProfileResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<UserProfileDto>> getAll(){
-        return this.userProfileService.getAll()
+    public Uni<List<UserProfileDto>> getUsers(){
+        return this.userProfileService.getUsers()
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {
@@ -65,19 +64,19 @@ public class UserProfileResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<UserProfileDto> create(
-            @RequestBody(required = true) @Valid UserProfileCreationDto user) throws IOException {
+    public Uni<UserProfileDto> createUser(
+            @RequestBody(required = true) @Valid UserProfileCreationDto user){
         return this.userProfileValidator.validateExistenceProfileType(user.getProfile())
                 .onItem()
-                .transformToUni((x) -> this.userProfileService.save(user)
+                .transformToUni((x) -> this.userProfileService.createUser(user)
                          .onItem()
                          .transformToUni(Unchecked.function(u -> Uni.createFrom().item(this.userProfileMapper.toUserProfileDto(u)))));
     }
 
     @DELETE
     @Path("/search")
-    public Uni<Void> delete(@NotNull @QueryParam("userId") String userId) {
-        return this.userProfileService.delete(userId);
+    public Uni<Void> deleteUser(@NotNull @QueryParam("userId") String userId) {
+        return this.userProfileService.deleteUser(userId);
     }
 
     @PUT
@@ -87,7 +86,7 @@ public class UserProfileResource {
             @RequestBody(required = true) @Valid UserProfileCreationDto user) throws NoSuchAlgorithmException, IOException {
         return this.userProfileValidator.validateExistenceProfileType(user.getProfile())
                 .onItem()
-                .transformToUni((x) -> this.userProfileService.update(user)
+                .transformToUni((x) -> this.userProfileService.updateUser(user)
                         .onItem()
                         .transformToUni(Unchecked.function(u -> Uni.createFrom().item(this.userProfileMapper.toUserProfileDto(u)))));
     }
