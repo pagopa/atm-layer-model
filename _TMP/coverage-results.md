@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 97.36%               |
-| :heavy_check_mark: Number of Lines Covered | 1622    |
-| :x: Number of Lines Missed  | 44     |
-| Total Number of Lines   | 1666     |
+| Code Coverage %         | 93.61%               |
+| :heavy_check_mark: Number of Lines Covered | 1934    |
+| :x: Number of Lines Missed  | 132     |
+| Total Number of Lines   | 2066     |
 
 
 ## Details:
@@ -79,11 +79,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityResource.java
+:x: ResourceEntityResource.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -110,6 +110,10 @@
         
 #### Lines Missed:
         
+- Line #39
+```
+        catch ( DatatypeConfigurationException ex ) {
+```
 </details>
 
     
@@ -138,11 +142,11 @@
 
 <details>
     <summary>
-:x: BpmnVersionMapper.java
+:heavy_check_mark: BpmnVersionMapper.java
     </summary>
 
         
-#### Lines Missed:
+#### All Lines Covered!
         
 </details>
 
@@ -162,11 +166,11 @@
 
 <details>
     <summary>
-:x: WorkflowResourceMapper.java
+:heavy_check_mark: WorkflowResourceMapper.java
     </summary>
 
         
-#### Lines Missed:
+#### All Lines Covered!
         
 </details>
 
@@ -196,12 +200,16 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceMapperImpl.java
+:x: WorkflowResourceMapperImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
+- Line #38
+```
+        catch ( DatatypeConfigurationException ex ) {
+```
 </details>
 
     
@@ -303,11 +311,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityRepository.java
+:x: ResourceEntityRepository.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -489,6 +497,16 @@
 <details>
     <summary>
 :x: WorkflowResourceFrontEndDTO.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: ResourceFrontEndDTO.java
     </summary>
 
         
