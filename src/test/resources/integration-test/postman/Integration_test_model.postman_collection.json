@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "63b17525-314b-4da1-a6c0-3f19231f01ea",
-		"name": "Integration_test_model_completa_5jan",
+		"_postman_id": "0176c86c-03cb-444b-a670-2bb86c166909",
+		"name": "Integration_test_model_completa_6jan",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "29456304"
 	},
@@ -873,7 +873,7 @@
 							"});",
 							"var data = pm.response.json();",
 							"pm.test(\"Four bpmnBankConfigs found\", function (){",
-							"    pm.expect(data.length).to.equal(4);",
+							"    pm.expect(data.results.length).to.equal(4);",
 							"})"
 						],
 						"type": "text/javascript"
@@ -893,7 +893,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/api/v1/model/bpmn/associations/:uuid/version/:version",
+					"raw": "{{baseUrl}}/api/v1/model/bpmn/associations/:uuid/version/:version?pageIndex=0&pageSize=10",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -906,6 +906,16 @@
 						":uuid",
 						"version",
 						":version"
+					],
+					"query": [
+						{
+							"key": "pageIndex",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
 					],
 					"variable": [
 						{
