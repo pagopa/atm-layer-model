@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 92.63%               |
-| :heavy_check_mark: Number of Lines Covered | 1508    |
-| :x: Number of Lines Missed  | 120     |
-| Total Number of Lines   | 1628     |
+| Code Coverage %         | 97.36%               |
+| :heavy_check_mark: Number of Lines Covered | 1622    |
+| :x: Number of Lines Missed  | 44     |
+| Total Number of Lines   | 1666     |
 
 
 ## Details:
@@ -97,10 +97,6 @@
         
 #### Lines Missed:
         
-- Line #329
-```
-                .transformToUni(associations -> {
-```
 </details>
 
     
@@ -142,11 +138,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: BpmnVersionMapper.java
+:x: BpmnVersionMapper.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -166,11 +162,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceMapper.java
+:x: WorkflowResourceMapper.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -293,11 +289,11 @@
         
 #### Lines Missed:
         
-- Line #28
+- Line #29
 ```
                 .page(page, size)
 ```
-- Line #29
+- Line #30
 ```
                 .list();
 ```
@@ -329,16 +325,6 @@
 
     
 ### it/gov/pagopa/atmlayer/service/model/model
-
-<details>
-    <summary>
-:x: BpmnVersionFrontEndDTO.java
-    </summary>
-
-        
-</details>
-
-    
 
 <details>
     <summary>
@@ -482,7 +468,27 @@
 
 <details>
     <summary>
+:x: BpmnFrontEndDTO.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: InfoResponse.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: WorkflowResourceFrontEndDTO.java
     </summary>
 
         
@@ -542,11 +548,11 @@
 
 <details>
     <summary>
-:x: WorkflowResourceServiceImpl.java
+:heavy_check_mark: WorkflowResourceServiceImpl.java
     </summary>
 
         
-#### Lines Missed:
+#### All Lines Covered!
         
 </details>
 
