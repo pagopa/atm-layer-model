@@ -19,11 +19,11 @@ public class BpmnCreationDto {
     private File file;
 
     @FormParam("filename")
-    @NotNull(message = "filename  is required")
+    @NotNull(message = "field is required")
     @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "deve essere della forma ${regexp} e non contenere l'estensione del file")
     private String filename;
 
     @FormParam("functionType")
-    @NotNull(message = "function type is required")
+    @NotNull(message = "field is required")
     private String functionType;
 }
