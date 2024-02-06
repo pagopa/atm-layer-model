@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileCreationDto;
@@ -17,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @ApplicationScoped
@@ -62,6 +61,7 @@ public class UserProfileResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @NonBlocking
     public Uni<UserProfileDto> createUser(
             @RequestBody(required = true) @Valid UserProfileCreationDto user){
         return this.userProfileValidator.validateExistenceProfileType(user.getProfile())
@@ -80,8 +80,8 @@ public class UserProfileResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<UserProfileDto> update(
-            @RequestBody(required = true) @Valid UserProfileCreationDto user) throws NoSuchAlgorithmException, IOException {
+    public Uni<UserProfileDto> updateUser(
+            @RequestBody(required = true) @Valid UserProfileCreationDto user) {
         return this.userProfileValidator.validateExistenceProfileType(user.getProfile())
                 .onItem()
                 .transformToUni((x) -> this.userProfileService.updateUser(user)
