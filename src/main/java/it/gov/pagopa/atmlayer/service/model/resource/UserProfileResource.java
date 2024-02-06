@@ -55,9 +55,7 @@ public class UserProfileResource {
                     if (list.isEmpty()) {
                         log.info("No User profiles saved in database");
                     }
-                    return list.stream()
-                            .map( x -> this.userProfileMapper.toUserProfileDto(x))
-                            .toList();
+                    return userProfileMapper.toDtoList(list);
                 }));
     }
 

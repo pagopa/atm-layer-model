@@ -8,6 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.util.List;
+
 @Mapper(componentModel = "cdi", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class UserProfileMapper {
 
@@ -46,5 +48,9 @@ public abstract class UserProfileMapper {
             }
         }
         return userProfileDTO;
+    }
+
+    public List<UserProfileDto> toDtoList(List<UserProfile> list){
+        return list.stream().map( x -> this.toUserProfileDto(x)).toList();
     }
 }
