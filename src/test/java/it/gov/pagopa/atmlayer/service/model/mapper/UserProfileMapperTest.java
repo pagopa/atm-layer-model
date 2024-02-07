@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import io.quarkus.test.junit.QuarkusTest;
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfileAllDto;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileDto;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfile;
@@ -35,6 +36,25 @@ class UserProfileMapperTest {
         when(userProfile.getCreatedAt()).thenReturn(create);
         when(userProfile.getLastUpdatedAt()).thenReturn(update);
         UserProfileDto userProfileDto = userProfileMapper.toUserProfileDto(userProfile);
+
+        assertNotNull(userProfileDto);
+        assertEquals("email@domain.com", userProfileDto.getUserId());
+        assertEquals(UserProfileEnum.GUEST, userProfileDto.getProfile());
+        assertEquals(create, userProfileDto.getCreatedAt());
+        assertEquals(update, userProfileDto.getLastUpdatedAt());
+    }
+
+    @Test
+    void testToUserProfileDtoAll() {
+        UserProfile userProfile = mock(UserProfile.class);
+        Timestamp create = new Timestamp(System.currentTimeMillis());
+        Timestamp update = new Timestamp(System.currentTimeMillis());
+
+        when(userProfile.getUserId()).thenReturn("email@domain.com");
+        when(userProfile.getProfile()).thenReturn(UserProfileEnum.GUEST.getValue());
+        when(userProfile.getCreatedAt()).thenReturn(create);
+        when(userProfile.getLastUpdatedAt()).thenReturn(update);
+        UserProfileAllDto userProfileDto = userProfileMapper.toUserProfileAllDto(userProfile);
 
         assertNotNull(userProfileDto);
         assertEquals("email@domain.com", userProfileDto.getUserId());
@@ -103,6 +123,15 @@ class UserProfileMapperTest {
         List<UserProfileDto> listDto = userProfileMapper.toDtoList(list);
         assertNotNull(listDto);
         assertEquals(list.size(), listDto.size());
+    }
 
+    @Test
+    void testToDtoAllList() {
+        UserProfile userProfile = mock(UserProfile.class);
+        List<UserProfile> list = new ArrayList<>();
+        list.add(userProfile);
+        List<UserProfileAllDto> listDto = userProfileMapper.toDtoAllList(list);
+        assertNotNull(listDto);
+        assertEquals(list.size(), listDto.size());
     }
 }
