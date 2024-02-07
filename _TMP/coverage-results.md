@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 93.96%               |
-| :heavy_check_mark: Number of Lines Covered | 1478    |
-| :x: Number of Lines Missed  | 95     |
-| Total Number of Lines   | 1573     |
+| Code Coverage %         | 93.61%               |
+| :heavy_check_mark: Number of Lines Covered | 1934    |
+| :x: Number of Lines Missed  | 132     |
+| Total Number of Lines   | 2066     |
 
 
 ## Details:
@@ -79,11 +79,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityResource.java
+:x: ResourceEntityResource.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -110,6 +110,10 @@
         
 #### Lines Missed:
         
+- Line #39
+```
+        catch ( DatatypeConfigurationException ex ) {
+```
 </details>
 
     
@@ -196,12 +200,16 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceMapperImpl.java
+:x: WorkflowResourceMapperImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
+- Line #38
+```
+        catch ( DatatypeConfigurationException ex ) {
+```
 </details>
 
     
@@ -289,11 +297,11 @@
         
 #### Lines Missed:
         
-- Line #28
+- Line #29
 ```
                 .page(page, size)
 ```
-- Line #29
+- Line #30
 ```
                 .list();
 ```
@@ -303,11 +311,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityRepository.java
+:x: ResourceEntityRepository.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -325,6 +333,16 @@
 
     
 ### it/gov/pagopa/atmlayer/service/model/model
+
+<details>
+    <summary>
+:x: PageInfo.java
+    </summary>
+
+        
+</details>
+
+    
 
 <details>
     <summary>
@@ -458,7 +476,37 @@
 
 <details>
     <summary>
+:x: BpmnFrontEndDTO.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: InfoResponse.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: WorkflowResourceFrontEndDTO.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: ResourceFrontEndDTO.java
     </summary>
 
         
@@ -518,11 +566,11 @@
 
 <details>
     <summary>
-:x: WorkflowResourceServiceImpl.java
+:heavy_check_mark: WorkflowResourceServiceImpl.java
     </summary>
 
         
-#### Lines Missed:
+#### All Lines Covered!
         
 </details>
 

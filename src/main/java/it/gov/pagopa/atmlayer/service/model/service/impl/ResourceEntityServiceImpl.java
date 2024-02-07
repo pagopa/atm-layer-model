@@ -8,7 +8,9 @@ import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceEntityRepository;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityService;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
@@ -166,5 +168,20 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                                 .onItem().transformToUni(optionalResourceUpdated -> Uni.createFrom().item(optionalResource.get())));
                             });
                 }));
+    }
+
+    @Override
+    public Uni<PageInfo<ResourceEntity>> findResourceFiltered(int pageIndex, int pageSize, UUID resourceId, String sha256, NoDeployableResourceType noDeployableResourceType, String fileName, String storageKey, String extension) {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("resourceId", resourceId);
+        filters.put("sha256", sha256);
+        if (noDeployableResourceType!=null) filters.put("noDeployableResourceType", noDeployableResourceType.name());
+        filters.put("fileName", fileName);
+        filters.put("storageKey", storageKey);
+        filters.put("extension", extension);
+        filters.remove(null);
+        filters.values().removeAll(Collections.singleton(null));
+        filters.values().removeAll(Collections.singleton(""));
+        return resourceEntityRepository.findByFilters(filters, pageIndex, pageSize);
     }
 }

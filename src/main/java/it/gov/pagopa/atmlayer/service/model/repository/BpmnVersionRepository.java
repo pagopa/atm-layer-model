@@ -1,28 +1,40 @@
 package it.gov.pagopa.atmlayer.service.model.repository;
 
+import io.quarkus.hibernate.reactive.panache.PanacheQuery;
 import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Parameters;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion, BpmnVersionPK> {
-    public Uni<List<BpmnVersion>> findByFilters(Map<String,Object> params, int pageIndex, int pageSize) {
-        String queryFilters = params.keySet().stream().map(key -> {
-                if (Objects.equals(key, "modelVersion") || Objects.equals(key, "definitionVersionCamunda")) {
-                    return ("b." + key + " = :"+key);
-        } else if (Objects.equals(key, "acquirerId")||Objects.equals(key, "branchId")||Objects.equals(key, "terminalId")){
-                    return ("bc.bpmnBankConfigPK."+key + " = :"+key);
-                }else {
-                    return ("b." + key + " LIKE concat(concat('%', :"+key+"), '%')");}
+    public Uni<PageInfo<BpmnVersion>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
+        String queryFilters = params.keySet().stream().map(key -> switch (key) {
+            case "modelVersion", "definitionVersionCamunda", "bpmnId" -> ("b." + key + " = :" + key);
+            case "acquirerId", "branchId", "terminalId" -> ("bc.bpmnBankConfigPK." + key + " = :" + key);
+            case "fileName" -> ("b.resourceFile." + key + " LIKE concat(concat('%', :" + key + "), '%')");
+            default -> ("b." + key + " LIKE concat(concat('%', :" + key + "), '%')");
         }).collect(Collectors.joining(" and "));
-        return find(("select b from BpmnVersion b").concat(!params.containsKey("acquirerId")?"":" join BpmnBankConfig bc on b.bpmnId = bc.bpmnBankConfigPK.bpmnId and b.modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank()?"":" where " + queryFilters),params).page(Page.of(pageIndex,pageSize)).list();
+        PanacheQuery<BpmnVersion> queryResult = find(("select distinct b from BpmnVersion b").concat(!params.containsKey("acquirerId") ? "" : " join BpmnBankConfig bc on b.bpmnId = bc.bpmnBankConfigPK.bpmnId and b.modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank() ? "" : " where " + queryFilters), params).page(Page.of(pageIndex, pageSize));
+        return queryResult.count()
+                .onItem().transformToUni(count -> {
+                    int totalCount = count.intValue();
+                    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+                    return queryResult.list()
+                            .onItem()
+                            .transform(list -> new PageInfo<BpmnVersion>(pageIndex, pageSize, totalCount, totalPages, list));
+                });
     }
 
     public Uni<BpmnVersion> findBySHA256(String sha256) {

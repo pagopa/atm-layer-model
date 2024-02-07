@@ -20,6 +20,10 @@ export function createBpmn(baseUrl, token, fileBpmn) {
 
     const response = http.post(`${baseUrl}/bpmn`, fd.body(), params);
 
+    // console.log('Response request Resource CREATE:', response.request);
+    // console.log('Response status Resource CREATE:', response.status);
+    // console.log('Response body Resource CREATE:', response.body);
+
     check(response, {
         'response code was 200': (response) => response.status == 200
     });

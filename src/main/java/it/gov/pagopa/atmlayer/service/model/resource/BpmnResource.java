@@ -1,5 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+//import io.opentelemetry.api.trace.Tracer;
+
 import io.opentelemetry.api.trace.Tracer;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Multi;
@@ -15,12 +17,15 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
+import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
@@ -33,7 +38,6 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -52,11 +56,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
@@ -285,37 +285,50 @@ public class BpmnResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/filter")
-    public Uni<List<BpmnDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
-                                              @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
-                                              @QueryParam("pageSize") @DefaultValue("10")
-                                              @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
-                                              @HeaderParam("functionType") String functionType,
-                                              @HeaderParam("modelVersion") String modelVersion,
-                                              @HeaderParam("definitionVersionCamunda") String definitionVersionCamunda,
-                                              @HeaderParam("createdAt") String createdAt,
-                                              @HeaderParam("lastUpdatedAt") String lastUpdatedAt,
-                                              @HeaderParam("bpmnId") String bpmnId,
-                                              @HeaderParam("deploymentId") String deploymentId,
-                                              @HeaderParam("camundaDefinitionId") String camundaDefinitionId,
-                                              @HeaderParam("createdBy") String createdBy,
-                                              @HeaderParam("definitionKey") String definitionKey,
-                                              @HeaderParam("deployedFileName") String deployedFileName,
-                                              @HeaderParam("lastUpdatedBy") String lastUpdatedBy,
-                                              @HeaderParam("resource") String resource,
-                                              @HeaderParam("sha256") String sha256,
-                                              @HeaderParam("status") String status,
-                                              @HeaderParam("acquirerId") String acquirerId,
-                                              @HeaderParam("branchId") String branchId,
-                                              @HeaderParam("terminalId") String terminalId) {
-        return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda, createdAt, lastUpdatedAt,
-                        bpmnId, deploymentId, camundaDefinitionId, createdBy, definitionKey, deployedFileName,
-                        lastUpdatedBy, resource, sha256, status, acquirerId, branchId, terminalId)
+    public Uni<PageInfo<BpmnFrontEndDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                          @QueryParam("pageSize") @DefaultValue("10")
+                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
+                                                          @QueryParam("functionType") String functionType,
+                                                          @QueryParam("modelVersion") String modelVersion,
+                                                          @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
+                                                          @QueryParam("bpmnId") UUID bpmnId,
+                                                          @QueryParam("deploymentId") UUID deploymentId,
+                                                          @QueryParam("camundaDefinitionId") String camundaDefinitionId,
+                                                          @QueryParam("definitionKey") String definitionKey,
+                                                          @QueryParam("deployedFileName") String deployedFileName,
+                                                          @QueryParam("resource") String resource,
+                                                          @QueryParam("sha256") String sha256,
+                                                          @QueryParam("status") StatusEnum status,
+                                                          @QueryParam("acquirerId") String acquirerId,
+                                                          @QueryParam("branchId") String branchId,
+                                                          @QueryParam("terminalId") String terminalId,
+                                                          @QueryParam("fileName") String fileName) {
+        return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda,
+                        bpmnId, deploymentId, camundaDefinitionId, definitionKey, deployedFileName, resource, sha256, status, acquirerId, branchId, terminalId, fileName)
                 .onItem()
-                .transform(Unchecked.function(list -> {
-                    if (list.isEmpty()) {
-                        log.info("No Bpmn files saved in database");
+                .transform(Unchecked.function(pagedList -> {
+                    if (pagedList.getResults().isEmpty()) {
+                        log.info("No Bpmn file meets the applied filters");
                     }
-                    return bpmnVersionMapper.toDTOList(list);
+                    return bpmnVersionMapper.toFrontEndDTOListPaged(pagedList);
+
                 }));
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/associations/{uuid}/version/{version}")
+    public Uni<PageInfo<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
+                                                                  @QueryParam("pageIndex") @DefaultValue("0") @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                                  @QueryParam("pageSize") @DefaultValue("10") @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize) {
+        return bpmnBankConfigService.findByBpmnPKPaged(new BpmnVersionPK(bpmnId, version),pageIndex,pageSize)
+                .onItem()
+                .transformToUni(pagedAssociations -> {
+                    if (pagedAssociations.getResults().isEmpty()) {
+                        log.info("No associations found for BpmnInd= {} and modelVersion= {}", bpmnId, version);
+                    }
+                    return Uni.createFrom().item(bpmnConfigMapper.toDTOListPaged(pagedAssociations));
+                });
     }
 }

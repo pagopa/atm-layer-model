@@ -9,6 +9,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnBankConfigRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -33,8 +34,12 @@ public class BpmnBankConfigService {
         return this.bankConfigRepository.findByAcquirerIdAndFunctionType(acquirerId, functionType);
     }
 
-    public Uni<List<BpmnBankConfig>> findByBpmnVersionPK(BpmnVersionPK bpmnVersionPK){
+    public Uni<List<BpmnBankConfig>> findByBpmnVersionPK(BpmnVersionPK bpmnVersionPK) {
         return this.bankConfigRepository.findByBpmnPK(bpmnVersionPK);
+    }
+
+    public Uni<PageInfo<BpmnBankConfig>> findByBpmnPKPaged(BpmnVersionPK bpmnVersionPK, int pageIndex, int pageSize){
+        return this.bankConfigRepository.findByBpmnPKPaged(bpmnVersionPK,pageIndex,pageSize);
     }
 
     @WithTransaction

@@ -1,6 +1,9 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import io.quarkus.test.junit.QuarkusTest;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnFrontEndDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import jakarta.inject.Inject;
 
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
@@ -25,6 +28,40 @@ class BpmnVersionMapperTest {
         List<BpmnDTO> result = bpmnMapper.toDTOList(bpmnVersionList);
 
         assertEquals(bpmnVersionList.size(), result.size());
+
+    }
+
+    @Test
+    void testToFrontEndDTOList() {
+
+        BpmnVersion bpmnVersion1 = new BpmnVersion();
+        bpmnVersion1.setModelVersion(1L);
+        bpmnVersion1.setResourceFile(new ResourceFile());
+        BpmnVersion bpmnVersion2 = new BpmnVersion();
+        bpmnVersion2.setModelVersion(1L);
+        bpmnVersion2.setResourceFile(new ResourceFile());
+
+        List<BpmnVersion> bpmnVersionList = Arrays.asList(bpmnVersion1, bpmnVersion2);
+        List<BpmnFrontEndDTO> result = bpmnMapper.toFrontEndDTOList(bpmnVersionList);
+
+        assertEquals(bpmnVersionList.size(), result.size());
+
+    }
+
+    @Test
+    void testToFrontEndDTOListPaged() {
+
+        BpmnVersion bpmnVersion1 = new BpmnVersion();
+        bpmnVersion1.setModelVersion(1L);
+        bpmnVersion1.setResourceFile(new ResourceFile());
+        BpmnVersion bpmnVersion2 = new BpmnVersion();
+        bpmnVersion2.setModelVersion(1L);
+        bpmnVersion2.setResourceFile(new ResourceFile());
+        List<BpmnVersion> bpmnVersionList = Arrays.asList(bpmnVersion1, bpmnVersion2);
+        PageInfo<BpmnVersion> pageInfo = new PageInfo<>(0, 1, 2, 2, bpmnVersionList);
+        PageInfo<BpmnFrontEndDTO> result = bpmnMapper.toFrontEndDTOListPaged(pageInfo);
+
+        assertEquals(bpmnVersionList.size(), result.getResults().size());
 
     }
 
