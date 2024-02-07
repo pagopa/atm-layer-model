@@ -1,20 +1,27 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
+import io.opentelemetry.api.trace.Tracer;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
+import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceFileMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.WorkflowResourceMapper;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
+import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -22,9 +29,13 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -41,15 +52,14 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @Tag(name = "Workflow Resource", description = "Workflow Resource Operations")
 @Slf4j
 public class WorkflowResourceResource {
-
     @Inject
     WorkflowResourceService workflowResourceService;
-
     @Inject
     WorkflowResourceMapper workflowResourceMapper;
-
     @Inject
     ResourceFileMapper resourceFileMapper;
+    @Inject
+    Tracer tracer;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -61,6 +71,36 @@ public class WorkflowResourceResource {
                         log.info("No Workflow Resource files saved in database");
                     }
                     return workflowResourceMapper.toDTOList(list);
+                }));
+    }
+
+    @GET
+    @Path("/filter")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<PageInfo<WorkflowResourceFrontEndDTO>> getAllFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+                                                                     @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) Integer page,
+                                                                     @QueryParam("pageSize") @DefaultValue("10")
+                                                                     @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) Integer size,
+                                                                     @QueryParam("status")
+                                                                     @Schema(implementation = String.class, type = SchemaType.STRING, enumeration = {"CREATED", "WAITING_DEPLOY", "UPDATED_BUT_NOT_DEPLOYED", "DEPLOYED", "DEPLOY_ERROR"}) StatusEnum status,
+                                                                     @QueryParam("workflowResourceId") UUID workflowResourceId,
+                                                                     @QueryParam("deployedFileName") String deployedFileName,
+                                                                     @QueryParam("definitionKey") String definitionKey,
+                                                                     @QueryParam("resourceType") DeployableResourceType resourceType,
+                                                                     @QueryParam("sha256") String sha256,
+                                                                     @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
+                                                                     @QueryParam("camundaDefinitionId") String camundaDefinitionId,
+                                                                     @QueryParam("description") String description,
+                                                                     @QueryParam("resource") String resource,
+                                                                     @QueryParam("deploymentId") UUID deploymentId,
+                                                                     @QueryParam("fileName") String fileName) {
+        return this.workflowResourceService.getAllFiltered(page, size, status, workflowResourceId, deployedFileName, definitionKey, resourceType, sha256, definitionVersionCamunda, camundaDefinitionId, description, resource, deploymentId, fileName)
+                .onItem()
+                .transform(Unchecked.function(pagedList -> {
+                    if (pagedList.getResults().isEmpty()) {
+                        log.info("No Workflow Resource file meets the applied filters");
+                    }
+                    return workflowResourceMapper.toFrontEndDTOListPaged(pagedList);
                 }));
     }
 
@@ -79,14 +119,14 @@ public class WorkflowResourceResource {
     }
 
     @POST
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces(MediaType.APPLICATION_JSON)
-  @NonBlocking
-  public Uni<WorkflowResourceDTO> create(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
-    WorkflowResource workflowResource = workflowResourceMapper.toEntityCreation(workflowResourceCreationDto);
-    return this.workflowResourceService.createWorkflowResource(workflowResource, workflowResourceCreationDto.getFile(), workflowResourceCreationDto.getFilename())
-        .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(bpmn)));
-  }
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @NonBlocking
+    public Uni<WorkflowResourceDTO> create(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
+        WorkflowResource workflowResource = workflowResourceMapper.toEntityCreation(workflowResourceCreationDto);
+        return this.workflowResourceService.createWorkflowResource(workflowResource, workflowResourceCreationDto.getFile(), workflowResourceCreationDto.getFilename())
+                .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(bpmn)));
+    }
 
     @POST
     @Path("/deploy/{uuid}")
@@ -104,7 +144,6 @@ public class WorkflowResourceResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{uuid}")
     public Uni<Void> delete(@PathParam("uuid") UUID uuid) {
-
         return this.workflowResourceService.delete(uuid)
                 .onItem().ignore().andSwitchTo(Uni.createFrom().voidItem());
     }
@@ -113,10 +152,9 @@ public class WorkflowResourceResource {
     @Path("/update/{uuid}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") File file,
+    public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") @NotNull(message = "input file is required") File file,
                                            @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
-
-        return workflowResourceService.update(uuid, file,false)
+        return workflowResourceService.update(uuid, file, false)
                 .onItem()
                 .transformToUni(updatedWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(updatedWorkflowResource)));
     }
@@ -129,5 +167,4 @@ public class WorkflowResourceResource {
                 .onItem()
                 .transformToUni(rolledBackWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(rolledBackWorkflowResource)));
     }
-
 }

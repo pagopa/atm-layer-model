@@ -2,13 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.model;
 
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.sql.Timestamp;
@@ -25,7 +19,6 @@ public class WorkflowResourceDTO {
     private UUID workflowResourceId;
     private String deployedFileName;
     private String definitionKey;
-    private String functionType;
     private StatusEnum status;
     private String sha256;
     private Integer definitionVersionCamunda;
