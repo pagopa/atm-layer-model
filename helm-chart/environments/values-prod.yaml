@@ -49,6 +49,7 @@ cdn:
     cdn_base_path: CDN_BASE_PATH
 
 secretProviderClass:
+  enabled: true
   name: atm-layer-model-secrets
   env: prod
 
