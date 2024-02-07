@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -38,6 +39,7 @@ public class BpmnBankConfigService {
         return this.bankConfigRepository.findByBpmnPK(bpmnVersionPK);
     }
 
+    @WithSession
     public Uni<PageInfo<BpmnBankConfig>> findByBpmnPKPaged(BpmnVersionPK bpmnVersionPK, int pageIndex, int pageSize){
         return this.bankConfigRepository.findByBpmnPKPaged(bpmnVersionPK,pageIndex,pageSize);
     }
