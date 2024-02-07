@@ -54,6 +54,7 @@ class UserProfileMapperTest {
         when(userProfileDto.getProfile()).thenReturn(UserProfileEnum.GUEST.getValue());
         when(userProfileDto.getCreatedAt()).thenReturn(create);
         when(userProfileDto.getLastUpdatedAt()).thenReturn(update);
+
         UserProfile userProfile = userProfileMapper.toUserProfile(userProfileDto);
 
         assertNotNull(userProfile);

@@ -11,13 +11,10 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserProfileDto {
+public class UserProfileAllDto {
     @Schema(example = "email@domain.com")
     private String userId;
     private UserProfileEnum profile;
-    private Boolean visible;
-    private Boolean editable;
-    private Boolean admin;
     @Schema(example = "2024-02-07T11:38:58.445+00:00")
     private Timestamp createdAt;
     @Schema(example = "2024-02-07T11:38:58.445+00:00")

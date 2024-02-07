@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfileAllDto;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileDto;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserProfileMapper;
@@ -15,7 +16,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.List;
@@ -36,6 +43,11 @@ public class UserProfileResource {
     @GET
     @Path("/search")
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponseSchema(value = UserProfileDto.class)
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Successfully retrieved"),
+            @APIResponse(responseCode = "404", description = "Not found")
+    })
     public Uni<UserProfileDto> findByUserId(@NotNull @QueryParam("userId") String userId) {
         return this.userProfileService.findByUserId(userId)
                 .onItem()
@@ -47,14 +59,18 @@ public class UserProfileResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<UserProfileDto>> getUsers(){
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Successfully retrieved"),
+            @APIResponse(responseCode = "404", description = "Not found")
+    })
+    public Uni<List<UserProfileAllDto>> getUsers(){
         return this.userProfileService.getUsers()
                 .onItem()
                 .transform(Unchecked.function(list -> {
                     if (list.isEmpty()) {
                         log.info("No User profiles saved in database");
                     }
-                    return userProfileMapper.toDtoList(list);
+                    return userProfileMapper.toDtoAllList(list);
                 }));
     }
 
@@ -62,17 +78,28 @@ public class UserProfileResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NonBlocking
-    public Uni<UserProfileDto> createUser(
-            @RequestBody(required = true) @Valid UserProfileCreationDto user){
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Successfully created"),
+            @APIResponse(responseCode = "400", description = "User already exist")
+    })
+    public Uni<UserProfileAllDto> createUser(
+            @RequestBody(required = true, content = {
+                    @Content(schema = @Schema(implementation = UserProfileCreationDto.class))
+            }) @Valid UserProfileCreationDto user){
         return this.userProfileValidator.validateExistenceProfileType(user.getProfile())
                 .onItem()
                 .transformToUni((x) -> this.userProfileService.createUser(user)
                          .onItem()
-                         .transformToUni(Unchecked.function(u -> Uni.createFrom().item(this.userProfileMapper.toUserProfileDto(u)))));
+                         .transformToUni(Unchecked.function(u -> Uni.createFrom().item(this.userProfileMapper.toUserProfileAllDto(u)))));
     }
 
     @DELETE
     @Path("/search")
+    @Operation()
+    @APIResponses(value = {
+            @APIResponse(responseCode = "204", description = "Successfully deleted"),
+            @APIResponse(responseCode = "404", description = "Not found")
+    })
     public Uni<Void> deleteUser(@NotNull @QueryParam("userId") String userId) {
         return this.userProfileService.deleteUser(userId);
     }
@@ -80,12 +107,16 @@ public class UserProfileResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<UserProfileDto> updateUser(
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Successfully updated"),
+            @APIResponse(responseCode = "404", description = "Not found")
+    })
+    public Uni<UserProfileAllDto> updateUser(
             @RequestBody(required = true) @Valid UserProfileCreationDto user) {
         return this.userProfileValidator.validateExistenceProfileType(user.getProfile())
                 .onItem()
                 .transformToUni((x) -> this.userProfileService.updateUser(user)
                         .onItem()
-                        .transformToUni(Unchecked.function(u -> Uni.createFrom().item(this.userProfileMapper.toUserProfileDto(u)))));
+                        .transformToUni(Unchecked.function(u -> Uni.createFrom().item(this.userProfileMapper.toUserProfileAllDto(u)))));
     }
 }

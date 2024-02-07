@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfileAllDto;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileDto;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfile;
@@ -73,11 +74,11 @@ class UserProfileResourceTest {
         UserProfile userProfile = new UserProfile();
         userProfileList.add(userProfile);
 
-        List<UserProfileDto> userProfileDtoList = new ArrayList<>();
-        UserProfileDto userProfileDto = new UserProfileDto();
+        List<UserProfileAllDto> userProfileDtoList = new ArrayList<>();
+        UserProfileAllDto userProfileDto = new UserProfileAllDto();
         userProfileDtoList.add(userProfileDto);
         when(userProfileService.getUsers()).thenReturn(Uni.createFrom().item(userProfileList));
-        when(userProfileMapper.toDtoList(any(ArrayList.class))).thenReturn(userProfileDtoList);
+        when(userProfileMapper.toDtoAllList(any(ArrayList.class))).thenReturn(userProfileDtoList);
         ArrayList result = given()
                 .when().get("/api/v1/model/users")
                 .then()
@@ -87,13 +88,13 @@ class UserProfileResourceTest {
                 .as(ArrayList.class);
         assertEquals(1, result.size());
         verify(userProfileService, times(1)).getUsers();
-        verify(userProfileMapper, times(1)).toDtoList(userProfileList);
+        verify(userProfileMapper, times(1)).toDtoAllList(userProfileList);
     }
 
     @Test
     void testCreateUser() {
         UserProfile userProfile = new UserProfile();
-        UserProfileDto userProfileDto = new UserProfileDto();
+        UserProfileAllDto userProfileDto = new UserProfileAllDto();
         UserProfileCreationDto userProfileCreationDto = new UserProfileCreationDto();
         userProfileCreationDto.setUserId("email@domain.com");
         userProfileCreationDto.setProfile(1);
@@ -104,18 +105,18 @@ class UserProfileResourceTest {
                 .thenReturn(userProfile);
         when(userProfileService.createUser(any(UserProfileCreationDto.class)))
                 .thenReturn(Uni.createFrom().item(userProfile));
-        when(userProfileMapper.toUserProfileDto(any(UserProfile.class)))
+        when(userProfileMapper.toUserProfileAllDto(any(UserProfile.class)))
                 .thenReturn(userProfileDto);
         when(userProfileValidator.validateExistenceProfileType(1))
                 .thenReturn(Uni.createFrom().voidItem());
 
-        UserProfileDto result = given()
+        UserProfileAllDto result = given()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(userProfileCreationDto)
                 .when().post("/api/v1/model/users")
                 .then()
                 .statusCode(200)
-                .extract().as(UserProfileDto.class);
+                .extract().as(UserProfileAllDto.class);
 
         assertEquals(userProfileDto, result);
 
@@ -124,26 +125,26 @@ class UserProfileResourceTest {
     @Test
     void testUpdateUser() {
         UserProfile userProfile = new UserProfile();
-        UserProfileDto userProfileDto = new UserProfileDto();
+        UserProfileAllDto userProfileDto = new UserProfileAllDto();
         UserProfileCreationDto userProfileCreationDto = new UserProfileCreationDto();
         userProfileCreationDto.setUserId("email@domain.com");
         userProfileCreationDto.setProfile(2);
-        userProfileCreationDto.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+       userProfileCreationDto.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         userProfileCreationDto.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
         when(userProfileService.updateUser(any(UserProfileCreationDto.class)))
                 .thenReturn(Uni.createFrom().item(userProfile));
-        when(userProfileMapper.toUserProfileDto(any(UserProfile.class))).thenReturn(userProfileDto);
+        when(userProfileMapper.toUserProfileAllDto(any(UserProfile.class))).thenReturn(userProfileDto);
         when(userProfileValidator.validateExistenceProfileType(1))
                 .thenReturn(Uni.createFrom().voidItem());
 
-        UserProfileDto result = given()
+        UserProfileAllDto result = given()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(userProfileCreationDto)
                 .when().put("/api/v1/model/users")
                 .then()
                 .statusCode(200)
-                .extract().as(UserProfileDto.class);
+                .extract().as(UserProfileAllDto.class);
 
         assertEquals(userProfileDto, result);
     }

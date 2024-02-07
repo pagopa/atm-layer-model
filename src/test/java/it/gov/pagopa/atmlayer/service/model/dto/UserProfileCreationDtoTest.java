@@ -16,8 +16,8 @@ class UserProfileCreationDtoTest {
         UserProfileCreationDto dto = new UserProfileCreationDto();
         dto.setUserId("email@domain.com");
         dto.setProfile(3);
-        dto.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        dto.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        //dto.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        //dto.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
         assertEquals("email@domain.com", dto.getUserId());
         assertEquals(UserProfileEnum.ADMIN.getValue(), dto.getProfile());
     }

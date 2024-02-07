@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfileAllDto;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfileDto;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfile;
@@ -18,6 +19,13 @@ public abstract class UserProfileMapper {
     @Mapping(source = "userProfile.createdAt", target = "createdAt")
     @Mapping(source = "userProfile.lastUpdatedAt", target = "lastUpdatedAt")
     public abstract UserProfileDto toUserProfileDto(UserProfile userProfile);
+
+    @Mapping(source = "userProfile.userId", target = "userId")
+    @Mapping(expression = "java(getEnumValue(userProfile.getProfile()))", target = "profile")
+    @Mapping(source = "userProfile.createdAt", target = "createdAt")
+    @Mapping(source = "userProfile.lastUpdatedAt", target = "lastUpdatedAt")
+    public abstract UserProfileAllDto toUserProfileAllDto(UserProfile userProfile);
+
     @Mapping(source = "userProfile.userId", target = "userId")
     @Mapping(source = "userProfile.profile", target = "profile")
     @Mapping(source = "userProfile.createdAt", target = "createdAt")
@@ -52,5 +60,9 @@ public abstract class UserProfileMapper {
 
     public List<UserProfileDto> toDtoList(List<UserProfile> list){
         return list.stream().map( x -> this.toUserProfileDto(x)).toList();
+    }
+
+    public List<UserProfileAllDto> toDtoAllList(List<UserProfile> list){
+        return list.stream().map( x -> this.toUserProfileAllDto(x)).toList();
     }
 }
