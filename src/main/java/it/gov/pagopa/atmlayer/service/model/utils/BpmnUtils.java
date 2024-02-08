@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
+import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.dto.BankConfigTripletDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BranchConfigs;
@@ -9,13 +10,17 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DUPLICATE_ASSOCIATION_CONFIGS;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ILLEGAL_CONFIGURATION_TRIPLET;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.NO_BPMN_FOUND_FOR_CONFIGURATION;
 
 @ApplicationScoped
 public class BpmnUtils {
@@ -100,5 +105,17 @@ public class BpmnUtils {
         bpmnBankConfigPK.setBranchId(branchConfig.getBranchId());
         bpmnBankConfigPK.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
         return Optional.of(bpmnBankConfigPK);
+    }
+
+    public static boolean isValidBankConfigTriplet(BankConfigTripletDto bankConfigTripletDto){
+        return !((StringUtils.isEmpty(bankConfigTripletDto.getAcquirerId()) && (!StringUtils.isEmpty(bankConfigTripletDto.getBranchId()) || !StringUtils.isEmpty(bankConfigTripletDto.getTerminalId()))) || StringUtils.isEmpty(bankConfigTripletDto.getBranchId()) && !StringUtils.isEmpty(bankConfigTripletDto.getTerminalId()));
+    }
+
+    public static BpmnBankConfig getSingleConfig(BpmnVersionPK bpmnVersionPK, String functionType, BankConfigTripletDto bankConfigTripletDto){
+        BpmnBankConfig bpmnBankConfig=new BpmnBankConfig();
+        bpmnBankConfig.setBpmnBankConfigPK(new BpmnBankConfigPK(bpmnVersionPK.getBpmnId(),bpmnVersionPK.getModelVersion(),
+                bankConfigTripletDto.getAcquirerId(), bankConfigTripletDto.getBranchId(), bankConfigTripletDto.getTerminalId()));
+        bpmnBankConfig.setFunctionType(functionType);
+        return bpmnBankConfig;
     }
 }

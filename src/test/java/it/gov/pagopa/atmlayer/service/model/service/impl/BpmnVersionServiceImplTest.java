@@ -270,7 +270,7 @@ class BpmnVersionServiceImplTest {
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class,expectedErrorMessageSetDisabled);
         String expectedErrorMessageCheckExistence=String.format("One or some of the referenced BPMN files do not exist: %s",bpmnVersionPK);
-        bpmnVersionServiceImpl.checkBpmnFileExistence(bpmnVersionPK)
+        bpmnVersionServiceImpl.checkBpmnFileExistenceDeployable(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class,expectedErrorMessageCheckExistence);
     }
@@ -289,13 +289,13 @@ class BpmnVersionServiceImplTest {
         when(bpmnVersionRepoMock.findById(bpmnVersionPK1)).thenReturn(Uni.createFrom().item(bpmnVersion1));
         when(bpmnVersionRepoMock.findById(bpmnVersionPK2)).thenReturn(Uni.createFrom().item(bpmnVersion2));
         when(bpmnVersionRepoMock.findById(bpmnVersionPK3)).thenReturn(Uni.createFrom().item(bpmnVersion3));
-        bpmnVersionServiceImpl.checkBpmnFileExistence(bpmnVersionPK1)
+        bpmnVersionServiceImpl.checkBpmnFileExistenceDeployable(bpmnVersionPK1)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted().assertItem(true);
-        bpmnVersionServiceImpl.checkBpmnFileExistence(bpmnVersionPK2)
+        bpmnVersionServiceImpl.checkBpmnFileExistenceDeployable(bpmnVersionPK2)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted().assertItem(true);
-        bpmnVersionServiceImpl.checkBpmnFileExistence(bpmnVersionPK3)
+        bpmnVersionServiceImpl.checkBpmnFileExistenceDeployable(bpmnVersionPK3)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted().assertItem(false);
         verify(bpmnVersionRepoMock, times(3)).findById(any(BpmnVersionPK.class));
