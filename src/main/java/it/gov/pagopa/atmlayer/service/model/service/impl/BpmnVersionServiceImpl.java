@@ -5,6 +5,7 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
+import it.gov.pagopa.atmlayer.service.model.dto.BankConfigTripletDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
@@ -13,6 +14,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
@@ -43,12 +45,14 @@ import java.util.UUID;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_CANNOT_BE_DISABLED_FOR_ASSOCIATIONS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_NOT_DEPLOYED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.NO_BPMN_FOUND_FOR_CONFIGURATION;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ILLEGAL_CONFIGURATION_TRIPLET;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.SHA256_ERROR;
+import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getSingleConfig;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.extractIdValue;
 
 @ApplicationScoped
@@ -183,7 +187,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 );
     }
 
-    public Uni<Boolean> checkBpmnFileExistence(BpmnVersionPK bpmnVersionPK) {
+    public Uni<Boolean> checkBpmnFileExistenceDeployable(BpmnVersionPK bpmnVersionPK) {
         return this.findByPk(bpmnVersionPK)
                 .onItem()
                 .transform(Unchecked.function(optionalBpmn -> {
@@ -263,7 +267,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                                        UUID bpmnId, UUID deploymentId, String camundaDefinitionId, String definitionKey, String deployedFileName,
                                                        String resource, String sha256, StatusEnum status, String acquirerId, String branchId, String terminalId, String fileName) {
         if ((StringUtils.isEmpty(acquirerId) && (!StringUtils.isEmpty(branchId) || !StringUtils.isEmpty(terminalId))) || StringUtils.isEmpty(branchId) && !StringUtils.isEmpty(terminalId)) {
-            return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST, NO_BPMN_FOUND_FOR_CONFIGURATION));
+            return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST, ILLEGAL_CONFIGURATION_TRIPLET));
         }
         Map<String, Object> filters = new HashMap<>();
         filters.put("functionType", functionType);
@@ -287,8 +291,44 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         return bpmnVersionRepository.findByFilters(filters, pageIndex, pageSize);
     }
 
+    @Override
+    public Uni<BpmnBankConfig> addSingleAssociation(BpmnVersionPK bpmnVersionPK, BankConfigTripletDto bankConfigTripletDto) {
+        if(StringUtils.isEmpty(bankConfigTripletDto.getBranchId())){
+            bankConfigTripletDto.setBranchId(BankConfigUtilityValues.NULL_VALUE.getValue());
+        }
+        if (StringUtils.isEmpty(bankConfigTripletDto.getTerminalId())){
+            bankConfigTripletDto.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
+        }
+        return this.findByPk(bpmnVersionPK)
+                .onItem()
+                .transformToUni(Unchecked.function(optionalBpmn -> {
+                    if (optionalBpmn.isEmpty()) {
+                        String errorMessage = String.format(
+                                "The referenced BPMN files does not exist: %s", bpmnVersionPK);
+                        return Uni.createFrom().failure(new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
+                                BPMN_FILE_DOES_NOT_EXIST));
+                    }
+                    BpmnVersion bpmnVersion = optionalBpmn.get();
+                    if (!bpmnVersion.getStatus().equals(StatusEnum.DEPLOYED)){
+                        String errorMessage = String.format("The referenced BPMN file is not deployed: %s", bpmnVersionPK);
+                        return Uni.createFrom().failure(new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, BPMN_FILE_NOT_DEPLOYED));
+                    }
+                    return bpmnBankConfigService.findByConfigurationsAndFunction(bankConfigTripletDto.getAcquirerId(),
+                                    bankConfigTripletDto.getBranchId(), bankConfigTripletDto.getTerminalId(), bpmnVersion.getFunctionType())
+                            .onItem()
+                            .transformToUni(optionalAssociatedBpmn -> {
+                                if (optionalAssociatedBpmn.isPresent()) {
+                                    String errorMessage = String.format("The referenced triplet is already associated to bpmnId: %s , version: %s", optionalAssociatedBpmn.get().getBpmnBankConfigPK().getBpmnId(), optionalAssociatedBpmn.get().getBpmnBankConfigPK().getBpmnModelVersion());
+                                    throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,AppErrorCodeEnum.CONFIGURATION_TRIPLET_ALREADY_ASSOCIATED);
+                                }
+                                BpmnBankConfig bpmnBankConfig=getSingleConfig(bpmnVersionPK,bpmnVersion.getFunctionType(),bankConfigTripletDto);
+                                 return bpmnBankConfigService.save(bpmnBankConfig);
+                            });
+                }));
+    }
+
     public Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK) {
-        return this.checkBpmnFileExistence(bpmnVersionPK)
+        return this.checkBpmnFileExistenceDeployable(bpmnVersionPK)
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (Boolean.FALSE.equals(x)) {

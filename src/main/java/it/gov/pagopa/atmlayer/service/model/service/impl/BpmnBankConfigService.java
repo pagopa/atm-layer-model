@@ -27,6 +27,11 @@ public class BpmnBankConfigService {
     BpmnConfigMapper bpmnConfigMapper;
 
     @WithTransaction
+    public Uni<BpmnBankConfig> save(BpmnBankConfig bpmnBankConfig){
+        return bankConfigRepository.persist(bpmnBankConfig);
+    }
+
+    @WithTransaction
     public Uni<Void> saveList(List<BpmnBankConfig> bpmnBankConfigs) {
         return bankConfigRepository.persist(bpmnBankConfigs);
     }

@@ -8,6 +8,7 @@ import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.dto.BankConfigTripletDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
@@ -59,7 +60,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ILLEGAL_CONFIGURATION_TRIPLET;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
+import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.isValidBankConfigTriplet;
 
 @ApplicationScoped
 @Path("/bpmn")
@@ -330,5 +333,17 @@ public class BpmnResource {
                     }
                     return Uni.createFrom().item(bpmnConfigMapper.toDTOListPaged(pagedAssociations));
                 });
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/associations/{uuid}/version/{version}")
+    public Uni<BpmnBankConfigDTO> addSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
+                                                       @RequestBody(required = true) BankConfigTripletDto bankConfigTripletDto){
+        if (!isValidBankConfigTriplet(bankConfigTripletDto)){
+            return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST, ILLEGAL_CONFIGURATION_TRIPLET));
+        }
+        return bpmnVersionService.addSingleAssociation(new BpmnVersionPK(bpmnId,version),bankConfigTripletDto)
+                .onItem().transformToUni(newBankConfig -> Uni.createFrom().item(bpmnConfigMapper.toDTO(newBankConfig)));
     }
 }
