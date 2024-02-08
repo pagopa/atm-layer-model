@@ -31,10 +31,12 @@ public class BpmnBankConfigService {
         return bankConfigRepository.persist(bpmnBankConfigs);
     }
 
+    @WithSession
     public Uni<List<BpmnBankConfig>> findByAcquirerIdAndFunctionType(String acquirerId, String functionType) {
         return this.bankConfigRepository.findByAcquirerIdAndFunctionType(acquirerId, functionType);
     }
 
+    @WithSession
     public Uni<List<BpmnBankConfig>> findByBpmnVersionPK(BpmnVersionPK bpmnVersionPK) {
         return this.bankConfigRepository.findByBpmnPK(bpmnVersionPK);
     }
@@ -49,6 +51,7 @@ public class BpmnBankConfigService {
         return this.bankConfigRepository.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
     }
 
+    @WithSession
     public Uni<Optional<BpmnBankConfig>> findByConfigurationsAndFunction(String acquirerId, String branchId, String terminalId, String functionType) {
         return this.bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType)
                 .onItem().transformToUni(Unchecked.function(x -> {
@@ -59,6 +62,7 @@ public class BpmnBankConfigService {
                 }));
     }
 
+    @WithSession
     public Uni<List<BpmnBankConfigDTO>> findByAcquirerId(String acquirerId) {
         return bankConfigRepository.findByAcquirerId(acquirerId)
                 .onItem()
