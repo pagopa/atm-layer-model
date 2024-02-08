@@ -171,6 +171,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     }
 
     @Override
+    @WithSession
     public Uni<PageInfo<ResourceEntity>> findResourceFiltered(int pageIndex, int pageSize, UUID resourceId, String sha256, NoDeployableResourceType noDeployableResourceType, String fileName, String storageKey, String extension) {
         Map<String, Object> filters = new HashMap<>();
         filters.put("resourceId", resourceId);
