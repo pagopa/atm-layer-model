@@ -1060,8 +1060,8 @@
 							"    pm.response.to.have.status(400);\r",
 							"});\r",
 							"var data=pm.response.json();\r",
-							"pm.test(\"errorCode is ATMLM_4000043\", function(){\r",
-							"    pm.expect(data.errorCode).to.equal(\"ATMLM_4000043\");\r",
+							"pm.test(\"errorCode is ATMLM_4000047\", function(){\r",
+							"    pm.expect(data.errorCode).to.equal(\"ATMLM_4000047\");\r",
 							"})\r",
 							""
 						],
@@ -4177,8 +4177,8 @@
 							"    pm.response.to.have.status(400);\r",
 							"});\r",
 							"var data=pm.response.json();\r",
-							"pm.test(\"errorCode is ATMLM_4000043\", function(){\r",
-							"    pm.expect(data.errorCode).to.equal(\"ATMLM_4000044\");\r",
+							"pm.test(\"errorCode is ATMLM_4000048\", function(){\r",
+							"    pm.expect(data.errorCode).to.equal(\"ATMLM_4000048\");\r",
 							"})"
 						],
 						"type": "text/javascript"
