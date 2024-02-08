@@ -19,4 +19,5 @@ public class ResourceDTO {
     private String lastUpdatedBy;
     private String cdnUrl;
     private ResourceFileDTO resourceFile;
+    private String description;
 }

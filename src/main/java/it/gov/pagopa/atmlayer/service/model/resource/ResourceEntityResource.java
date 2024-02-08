@@ -55,7 +55,7 @@ public class ResourceEntityResource {
             throws NoSuchAlgorithmException, IOException {
         ResourceEntity resourceEntity = resourceEntityMapper.toEntityCreation(resourceCreationDto);
         return resourceEntityService.createResource(resourceEntity, resourceCreationDto.getFile(),
-                        resourceCreationDto.getFilename(), resourceCreationDto.getPath())
+                        resourceCreationDto.getFilename(), resourceCreationDto.getPath(), resourceCreationDto.getDescription())
                 .onItem()
                 .transformToUni(resource -> Uni.createFrom().item(resourceEntityMapper.toDTO(resource)));
     }
@@ -102,9 +102,9 @@ public class ResourceEntityResource {
     @Path("/filter")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<PageInfo<ResourceFrontEndDTO>> getResourceFiltered(@QueryParam("pageIndex") @DefaultValue("0")
-                                                                      @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
                                                                   @QueryParam("pageSize") @DefaultValue("10")
-                                                                      @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
+                                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
                                                                   @QueryParam("resourceId") UUID resourceId,
                                                                   @QueryParam("sha256") String sha256,
                                                                   @QueryParam("noDeployableResourceType") NoDeployableResourceType noDeployableResourceType,
@@ -122,3 +122,4 @@ public class ResourceEntityResource {
                 }));
     }
 }
+
