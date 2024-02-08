@@ -4106,6 +4106,132 @@
 			]
 		},
 		{
+			"name": "Elimina singola configurazione",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn/associations/:uuid/version/:version?acquirerId={{acquirer_id_1}}&branchId=1&terminalId=1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn",
+						"associations",
+						":uuid",
+						"version",
+						":version"
+					],
+					"query": [
+						{
+							"key": "acquirerId",
+							"value": "{{acquirer_id_1}}"
+						},
+						{
+							"key": "branchId",
+							"value": "1"
+						},
+						{
+							"key": "terminalId",
+							"value": "1"
+						}
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{bpmn_1_id}}"
+						},
+						{
+							"key": "version",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fallisci nell'eliminare associazione inesistente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"var data=pm.response.json();\r",
+							"pm.test(\"errorCode is ATMLM_4000043\", function(){\r",
+							"    pm.expect(data.errorCode).to.equal(\"ATMLM_4000044\");\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn/associations/:uuid/version/:version?acquirerId={{acquirer_id_1}}&branchId=1&terminalId=1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn",
+						"associations",
+						":uuid",
+						"version",
+						":version"
+					],
+					"query": [
+						{
+							"key": "acquirerId",
+							"value": "{{acquirer_id_1}}"
+						},
+						{
+							"key": "branchId",
+							"value": "1"
+						},
+						{
+							"key": "terminalId",
+							"value": "1"
+						}
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{bpmn_1_id}}"
+						},
+						{
+							"key": "version",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Salva Workflow Resource di tipo DMN 1",
 			"event": [
 				{
