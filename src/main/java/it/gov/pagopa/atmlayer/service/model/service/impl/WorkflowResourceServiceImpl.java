@@ -290,6 +290,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     }
 
     @Override
+    @WithSession
     public Uni<List<WorkflowResource>> getAll() {
         return this.workflowResourceRepository.findAll().list();
     }

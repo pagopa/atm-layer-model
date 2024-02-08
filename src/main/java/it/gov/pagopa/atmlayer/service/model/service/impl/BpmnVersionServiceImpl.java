@@ -68,11 +68,13 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     static final DeployableResourceType resourceType = DeployableResourceType.BPMN;
 
     @Override
+    @WithSession
     public Uni<List<BpmnVersion>> getAll() {
         return this.bpmnVersionRepository.findAll().list();
     }
 
     @Override
+    @WithSession
     public Uni<List<BpmnVersion>> findByPKSet(Set<BpmnVersionPK> bpmnVersionPKSet) {
         return this.bpmnVersionRepository.findByIds(bpmnVersionPKSet);
     }
@@ -352,6 +354,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 }));
     }
 
+    @WithSession
     public Uni<BpmnVersion> getLatestVersion(UUID uuid, String functionType) {
         return this.bpmnVersionRepository.findByIdAndFunction(uuid, functionType)
                 .onItem()

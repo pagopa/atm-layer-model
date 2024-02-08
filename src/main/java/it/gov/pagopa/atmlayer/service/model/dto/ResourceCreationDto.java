@@ -37,4 +37,6 @@ public class ResourceCreationDto {
   @Schema(description = "Description of the path parameter: example/path",
       pattern = "(^$)|(^(?!/)[a-zA-Z0-9/]+(?<!/)$)")
   private String path;
+  @FormParam("description")
+  private String description;
 }

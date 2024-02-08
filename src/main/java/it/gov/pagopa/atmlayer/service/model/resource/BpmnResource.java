@@ -319,14 +319,16 @@ public class BpmnResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/associations/{uuid}/version/{version}")
-    public Uni<Collection<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version) {
-        return bpmnBankConfigService.findByBpmnVersionPK(new BpmnVersionPK(bpmnId, version))
+    public Uni<PageInfo<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
+                                                                  @QueryParam("pageIndex") @DefaultValue("0") @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                                  @QueryParam("pageSize") @DefaultValue("10") @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize) {
+        return bpmnBankConfigService.findByBpmnPKPaged(new BpmnVersionPK(bpmnId, version),pageIndex,pageSize)
                 .onItem()
-                .transformToUni(associations -> {
-                    if (associations.isEmpty()) {
+                .transformToUni(pagedAssociations -> {
+                    if (pagedAssociations.getResults().isEmpty()) {
                         log.info("No associations found for BpmnInd= {} and modelVersion= {}", bpmnId, version);
                     }
-                    return Uni.createFrom().item(bpmnConfigMapper.toDTOList(associations));
+                    return Uni.createFrom().item(bpmnConfigMapper.toDTOListPaged(pagedAssociations));
                 });
     }
 }

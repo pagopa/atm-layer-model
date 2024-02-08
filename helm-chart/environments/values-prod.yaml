@@ -31,7 +31,7 @@ database:
 
 tracing:
   enabled: "true"
-  endpointBasePath: "appmesh-jaeger.kube-system.svc.cluster.local:9411"
+  endpointBasePath: "http://jaeger-collector.default.svc.cluster.local:4317"
   enableJDBCMonitoring: "true"
 
 objectStore:
@@ -49,6 +49,7 @@ cdn:
     cdn_base_path: CDN_BASE_PATH
 
 secretProviderClass:
+  enabled: true
   name: atm-layer-model-secrets
   env: prod
 

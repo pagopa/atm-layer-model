@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -9,6 +10,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.BpmnBankConfigRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -29,12 +31,19 @@ public class BpmnBankConfigService {
         return bankConfigRepository.persist(bpmnBankConfigs);
     }
 
+    @WithSession
     public Uni<List<BpmnBankConfig>> findByAcquirerIdAndFunctionType(String acquirerId, String functionType) {
         return this.bankConfigRepository.findByAcquirerIdAndFunctionType(acquirerId, functionType);
     }
 
+    @WithSession
     public Uni<List<BpmnBankConfig>> findByBpmnVersionPK(BpmnVersionPK bpmnVersionPK) {
         return this.bankConfigRepository.findByBpmnPK(bpmnVersionPK);
+    }
+
+    @WithSession
+    public Uni<PageInfo<BpmnBankConfig>> findByBpmnPKPaged(BpmnVersionPK bpmnVersionPK, int pageIndex, int pageSize){
+        return this.bankConfigRepository.findByBpmnPKPaged(bpmnVersionPK,pageIndex,pageSize);
     }
 
     @WithTransaction
@@ -42,6 +51,7 @@ public class BpmnBankConfigService {
         return this.bankConfigRepository.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
     }
 
+    @WithSession
     public Uni<Optional<BpmnBankConfig>> findByConfigurationsAndFunction(String acquirerId, String branchId, String terminalId, String functionType) {
         return this.bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType)
                 .onItem().transformToUni(Unchecked.function(x -> {
@@ -52,6 +62,7 @@ public class BpmnBankConfigService {
                 }));
     }
 
+    @WithSession
     public Uni<List<BpmnBankConfigDTO>> findByAcquirerId(String acquirerId) {
         return bankConfigRepository.findByAcquirerId(acquirerId)
                 .onItem()
