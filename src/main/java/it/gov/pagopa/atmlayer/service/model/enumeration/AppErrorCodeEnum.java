@@ -52,7 +52,10 @@ public enum AppErrorCodeEnum {
     BPMN_ALREADY_DISABLED("ATMLM_4000039", "The referenced BPMN file is already disabled", CANNOT_DISABLE),
     DUPLICATE_ASSOCIATION_CONFIGS("ATMLM_4000040","Cannot save associations: duplicate configurations in input",CANNOT_ASSOCIATE),
     PAGE_SIZE_WRONG_VALUE("ATMLM_4000041", "Page and Size must not be null or empty, and Size greater than zero", INVALID_ARGUMENT),
-    ILLEGALE_CONFIGURATION_TRIPLET("ATMLM_4000042","AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId",INVALID_ARGUMENT);
+    ILLEGALE_CONFIGURATION_TRIPLET("ATMLM_4000042","AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId",INVALID_ARGUMENT),
+    USER_PROFILE_WITH_SAME_ID_ALREADY_EXIST("ATMLM_4000043", "A User Profile with the same id already exists", CONSTRAINT_VIOLATION),
+    NO_USER_PROFILE_FOUND_FOR_ID("ATMLM_4000044", "No User found for id", NOT_EXISTING_USER_ID),
+    NO_USER_PROFILE_FOUND_FOR_PROFILE("ATMLM_4000045", "No User profile found", NOT_EXISTING_USER_PROFILE);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;

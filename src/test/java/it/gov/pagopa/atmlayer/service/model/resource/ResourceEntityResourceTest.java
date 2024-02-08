@@ -46,7 +46,7 @@ class ResourceEntityResourceTest {
     when(resourceEntityMapper.toEntityCreation(any(ResourceCreationDto.class))).thenReturn(
         resourceEntity);
     when(resourceEntityService.createResource(any(ResourceEntity.class), any(File.class),
-        any(String.class), any(String.class)))
+        any(String.class), any(String.class), any(String.class)))
         .thenReturn(Uni.createFrom().item(resourceEntity));
     when(resourceEntityMapper.toDTO(any(ResourceEntity.class))).thenReturn(resourceDTO);
 
@@ -55,7 +55,7 @@ class ResourceEntityResourceTest {
         .multiPart("file", new File("src/test/resources/TestMalformed.bpmn"))
         .formParam("filename", "name.bpmn")
         .formParam("resourceType", "OTHER")
-        .formParam("path", "")
+        .formParam("path", "").formParam("description", "")
         .when().post("/api/v1/model/resources")
         .then()
         .statusCode(200)
