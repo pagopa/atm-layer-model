@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 93.31%               |
-| :heavy_check_mark: Number of Lines Covered | 2035    |
-| :x: Number of Lines Missed  | 146     |
-| Total Number of Lines   | 2181     |
+| Code Coverage %         | 93.25%               |
+| :heavy_check_mark: Number of Lines Covered | 2085    |
+| :x: Number of Lines Missed  | 151     |
+| Total Number of Lines   | 2236     |
 
 
 ## Details:
@@ -1164,6 +1164,16 @@
 <details>
     <summary>
 :x: BpmnAssociationDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: BankConfigDeleteDto.java
     </summary>
 
         
