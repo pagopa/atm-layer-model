@@ -5,6 +5,7 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
@@ -54,6 +55,18 @@ public class BpmnBankConfigService {
     @WithTransaction
     public Uni<Long> deleteByAcquirerIdAndFunctionType(String acquirerId, String functionType) {
         return this.bankConfigRepository.deleteByAcquirerIdAndFunctionType(acquirerId, functionType);
+    }
+
+    @WithTransaction
+    public Uni<Boolean> deleteByBankConfigPK(BpmnBankConfigPK bpmnBankConfigPK){
+        return this.bankConfigRepository.deleteById(bpmnBankConfigPK)
+                .onItem().transformToUni(wasDeleted -> {
+                    if (Boolean.FALSE.equals(wasDeleted)){
+                        String errorMessage=String.format("Could not delete configuration %s: either it does not exist or an error occurred during deletion", bpmnBankConfigPK);
+                        return Uni.createFrom().failure(new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.CONFIGURATION_DOES_NOT_EXIST));
+                    }
+                    return Uni.createFrom().item(true);
+                });
     }
 
     @WithSession

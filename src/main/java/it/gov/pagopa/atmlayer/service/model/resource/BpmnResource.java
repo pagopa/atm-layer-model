@@ -8,6 +8,7 @@ import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.dto.BankConfigDeleteDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BankConfigTripletDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
@@ -35,6 +36,8 @@ import it.gov.pagopa.atmlayer.service.model.validators.BpmnEntityValidator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -346,5 +349,15 @@ public class BpmnResource {
         }
         return bpmnVersionService.addSingleAssociation(new BpmnVersionPK(bpmnId,version),bankConfigTripletDto)
                 .onItem().transformToUni(newBankConfig -> Uni.createFrom().item(bpmnConfigMapper.toDTO(newBankConfig)));
+    }
+
+    @DELETE
+    @Path("/associations/{uuid}/version/{version}")
+    public Uni<Void> deleteSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
+                                             @QueryParam("acquirerId") @NotEmpty String acquirerId,
+                                             @QueryParam("branchId") @NotEmpty String branchId,
+                                             @QueryParam("terminalId") String terminalId){
+        BankConfigDeleteDto bankConfigDeleteDto=new BankConfigDeleteDto(bpmnId, version, acquirerId, branchId, terminalId);
+        return bpmnVersionService.deleteSingleAssociation(bankConfigDeleteDto);
     }
 }

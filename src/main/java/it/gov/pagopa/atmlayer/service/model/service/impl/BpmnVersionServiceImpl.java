@@ -5,11 +5,13 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
+import it.gov.pagopa.atmlayer.service.model.dto.BankConfigDeleteDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BankConfigTripletDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
@@ -325,6 +327,23 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                  return bpmnBankConfigService.save(bpmnBankConfig);
                             });
                 }));
+    }
+
+    @Override
+    public Uni<Void> deleteSingleAssociation(BankConfigDeleteDto bankConfigDeleteDto) {
+        if(StringUtils.isEmpty(bankConfigDeleteDto.getBranchId())){
+            bankConfigDeleteDto.setBranchId(BankConfigUtilityValues.NULL_VALUE.getValue());
+        }
+        if (StringUtils.isEmpty(bankConfigDeleteDto.getTerminalId())){
+            bankConfigDeleteDto.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
+        }
+        BpmnBankConfigPK bpmnBankConfigPK=new BpmnBankConfigPK(bankConfigDeleteDto.getBpmnId(),bankConfigDeleteDto.getBpmnModelVersion(),
+                bankConfigDeleteDto.getAcquirerId(), bankConfigDeleteDto.getBranchId(), bankConfigDeleteDto.getTerminalId());
+        return bpmnBankConfigService.deleteByBankConfigPK(bpmnBankConfigPK)
+                .onItem().transformToUni(deleted -> {
+                    log.info(String.format("Deleted association: %s", bankConfigDeleteDto));
+                    return Uni.createFrom().voidItem();
+                });
     }
 
     public Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK) {

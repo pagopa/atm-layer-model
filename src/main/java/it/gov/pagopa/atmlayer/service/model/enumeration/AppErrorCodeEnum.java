@@ -53,7 +53,8 @@ public enum AppErrorCodeEnum {
     DUPLICATE_ASSOCIATION_CONFIGS("ATMLM_4000040","Cannot save associations: duplicate configurations in input",INVALID_ARGUMENT),
     PAGE_SIZE_WRONG_VALUE("ATMLM_4000041", "Page and Size must not be null or empty, and Size greater than zero", INVALID_ARGUMENT),
     ILLEGAL_CONFIGURATION_TRIPLET("ATMLM_4000042","AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId",INVALID_ARGUMENT),
-    CONFIGURATION_TRIPLET_ALREADY_ASSOCIATED("ATMLM_4000043","The referenced configuration is already associated to a BPMN file", CANNOT_ASSOCIATE);
+    CONFIGURATION_TRIPLET_ALREADY_ASSOCIATED("ATMLM_4000043","The referenced configuration is already associated to a BPMN file", CANNOT_ASSOCIATE),
+    CONFIGURATION_DOES_NOT_EXIST("ATMLM_4000044", "The referenced configuration does not exist", NOT_EXISTING_REFERENCED_ENTITY);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;
