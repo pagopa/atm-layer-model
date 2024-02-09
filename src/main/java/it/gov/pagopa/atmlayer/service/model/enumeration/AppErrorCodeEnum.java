@@ -59,7 +59,7 @@ public enum AppErrorCodeEnum {
     ILLEGAL_CONFIGURATION_TRIPLET("ATMLM_4000046","AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId",INVALID_ARGUMENT),
     CONFIGURATION_TRIPLET_ALREADY_ASSOCIATED("ATMLM_4000047","The referenced configuration is already associated to a BPMN file", CANNOT_ASSOCIATE),
     CONFIGURATION_DOES_NOT_EXIST("ATMLM_4000048", "The referenced configuration does not exist", NOT_EXISTING_REFERENCED_ENTITY),
-    CONFIGURATION_TRIPLET_NOT_ASSOCIATED("ATMLM_4000049","The referenced configuration is already associated to a BPMN file", CANNOT_REPLACE_ASSOCIATION);
+    CONFIGURATION_TRIPLET_NOT_ASSOCIATED("ATMLM_4000049","The referenced configuration has no associations for the referenced funtionType. Create an association before replacing it", CANNOT_REPLACE_ASSOCIATION);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;
