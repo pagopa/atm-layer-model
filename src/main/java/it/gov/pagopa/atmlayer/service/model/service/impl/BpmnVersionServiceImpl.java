@@ -312,7 +312,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         return this.checkBpmnFileExistence(bpmnVersionPK)
                 .onItem().transformToUni(bpmnVersion -> {
                     if (!bpmnVersion.getStatus().equals(StatusEnum.DEPLOYED)) {
-                        String errorMessage = String.format("The referenced BPMN file is not deployed: %s", bpmnVersionPK);
+                        String errorMessage = String.format("Il file di processo non è in stato DEPLOYED: %s", bpmnVersionPK);
                         return Uni.createFrom().failure(new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, BPMN_FILE_NOT_DEPLOYED));
                     }
                     return bpmnBankConfigService.findByConfigurationsAndFunction(bankConfigTripletDto.getAcquirerId(),
@@ -320,7 +320,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                             .onItem()
                             .transformToUni(optionalBankConfig -> {
                                 if (optionalBankConfig.isPresent()) {
-                                    String errorMessage = String.format("The referenced triplet is already associated to bpmnId: %s , version: %s", optionalBankConfig.get().getBpmnBankConfigPK().getBpmnId(), optionalBankConfig.get().getBpmnBankConfigPK().getBpmnModelVersion());
+                                    String errorMessage = String.format("La banca/filiale/terminale indicata è già associata al processo con ID: %s , versione: %s", optionalBankConfig.get().getBpmnBankConfigPK().getBpmnId(), optionalBankConfig.get().getBpmnBankConfigPK().getBpmnModelVersion());
                                     throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.CONFIGURATION_TRIPLET_ALREADY_ASSOCIATED);
                                 }
                                 BpmnBankConfig bpmnBankConfig = getSingleConfig(bpmnVersionPK, bpmnVersion.getFunctionType(), bankConfigTripletDto);
@@ -345,7 +345,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         return this.checkBpmnFileExistence(bpmnVersionPK)
                 .onItem().transformToUni(bpmnVersion -> {
                     if (!bpmnVersion.getStatus().equals(StatusEnum.DEPLOYED)) {
-                        String errorMessage = String.format("The referenced BPMN file is not deployed: %s", bpmnVersionPK);
+                        String errorMessage = String.format("Il file di processo non è in stato DEPLOYED: %s", bpmnVersionPK);
                         return Uni.createFrom().failure(new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, BPMN_FILE_NOT_DEPLOYED));
                     }
                     return bpmnBankConfigService.findByConfigurationsAndFunction(bankConfigTripletDto.getAcquirerId(),
