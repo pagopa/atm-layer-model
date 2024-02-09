@@ -28,7 +28,7 @@ public class BpmnBankConfigService {
     BpmnConfigMapper bpmnConfigMapper;
 
     @WithTransaction
-    public Uni<BpmnBankConfig> save(BpmnBankConfig bpmnBankConfig){
+    public Uni<BpmnBankConfig> save(BpmnBankConfig bpmnBankConfig) {
         return bankConfigRepository.persist(bpmnBankConfig);
     }
 
@@ -48,8 +48,8 @@ public class BpmnBankConfigService {
     }
 
     @WithSession
-    public Uni<PageInfo<BpmnBankConfig>> findByBpmnPKPaged(BpmnVersionPK bpmnVersionPK, int pageIndex, int pageSize){
-        return this.bankConfigRepository.findByBpmnPKPaged(bpmnVersionPK,pageIndex,pageSize);
+    public Uni<PageInfo<BpmnBankConfig>> findByBpmnPKPaged(BpmnVersionPK bpmnVersionPK, int pageIndex, int pageSize) {
+        return this.bankConfigRepository.findByBpmnPKPaged(bpmnVersionPK, pageIndex, pageSize);
     }
 
     @WithTransaction
@@ -58,11 +58,11 @@ public class BpmnBankConfigService {
     }
 
     @WithTransaction
-    public Uni<Boolean> deleteByBankConfigPK(BpmnBankConfigPK bpmnBankConfigPK){
+    public Uni<Boolean> deleteByBankConfigPK(BpmnBankConfigPK bpmnBankConfigPK) {
         return this.bankConfigRepository.deleteById(bpmnBankConfigPK)
                 .onItem().transformToUni(wasDeleted -> {
-                    if (Boolean.FALSE.equals(wasDeleted)){
-                        String errorMessage=String.format("Could not delete configuration %s: either it does not exist or an error occurred during deletion", bpmnBankConfigPK);
+                    if (Boolean.FALSE.equals(wasDeleted)) {
+                        String errorMessage = String.format("Could not delete configuration %s: either it does not exist or an error occurred during deletion", bpmnBankConfigPK);
                         return Uni.createFrom().failure(new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.CONFIGURATION_DOES_NOT_EXIST));
                     }
                     return Uni.createFrom().item(true);

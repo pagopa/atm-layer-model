@@ -1,5 +1,4 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
-
 //import io.opentelemetry.api.trace.Tracer;
 
 import io.opentelemetry.api.trace.Tracer;
@@ -25,9 +24,9 @@ import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnProcessDTO;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
-import it.gov.pagopa.atmlayer.service.model.model.BpmnFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnVersionService;
 import it.gov.pagopa.atmlayer.service.model.service.impl.BpmnBankConfigService;
@@ -37,7 +36,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -60,12 +58,15 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ILLEGAL_CONFIGURATION_TRIPLET;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getAcquirerConfigs;
-import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.isValidBankConfigTriplet;
+import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.validateBankConfigTriplet;
 
 @ApplicationScoped
 @Path("/bpmn")
@@ -292,9 +293,9 @@ public class BpmnResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/filter")
     public Uni<PageInfo<BpmnFrontEndDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
-                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                          @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
                                                           @QueryParam("pageSize") @DefaultValue("10")
-                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
+                                                          @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
                                                           @QueryParam("functionType") String functionType,
                                                           @QueryParam("modelVersion") String modelVersion,
                                                           @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
@@ -318,7 +319,6 @@ public class BpmnResource {
                         log.info("No Bpmn file meets the applied filters");
                     }
                     return bpmnVersionMapper.toFrontEndDTOListPaged(pagedList);
-
                 }));
     }
 
@@ -328,7 +328,7 @@ public class BpmnResource {
     public Uni<PageInfo<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
                                                                   @QueryParam("pageIndex") @DefaultValue("0") @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
                                                                   @QueryParam("pageSize") @DefaultValue("10") @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize) {
-        return bpmnBankConfigService.findByBpmnPKPaged(new BpmnVersionPK(bpmnId, version),pageIndex,pageSize)
+        return bpmnBankConfigService.findByBpmnPKPaged(new BpmnVersionPK(bpmnId, version), pageIndex, pageSize)
                 .onItem()
                 .transformToUni(pagedAssociations -> {
                     if (pagedAssociations.getResults().isEmpty()) {
@@ -343,11 +343,9 @@ public class BpmnResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/associations/{uuid}/version/{version}")
     public Uni<BpmnBankConfigDTO> addSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
-                                                       @RequestBody(required = true) BankConfigTripletDto bankConfigTripletDto){
-        if (!isValidBankConfigTriplet(bankConfigTripletDto)){
-            return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST, ILLEGAL_CONFIGURATION_TRIPLET));
-        }
-        return bpmnVersionService.addSingleAssociation(new BpmnVersionPK(bpmnId,version),bankConfigTripletDto)
+                                                       @RequestBody(required = true) BankConfigTripletDto bankConfigTripletDto) {
+        validateBankConfigTriplet(bankConfigTripletDto);
+        return bpmnVersionService.addSingleAssociation(new BpmnVersionPK(bpmnId, version), bankConfigTripletDto)
                 .onItem().transformToUni(newBankConfig -> Uni.createFrom().item(bpmnConfigMapper.toDTO(newBankConfig)));
     }
 
@@ -356,11 +354,20 @@ public class BpmnResource {
     public Uni<Void> deleteSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
                                              @QueryParam("acquirerId") @NotEmpty String acquirerId,
                                              @QueryParam("branchId") String branchId,
-                                             @QueryParam("terminalId") String terminalId){
-        if (!isValidBankConfigTriplet(new BankConfigTripletDto(acquirerId,branchId,terminalId))){
-            return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST, ILLEGAL_CONFIGURATION_TRIPLET));
-        }
-        BankConfigDeleteDto bankConfigDeleteDto=new BankConfigDeleteDto(bpmnId, version, acquirerId, branchId, terminalId);
+                                             @QueryParam("terminalId") String terminalId) {
+        validateBankConfigTriplet(new BankConfigTripletDto(acquirerId, branchId, terminalId));
+        BankConfigDeleteDto bankConfigDeleteDto = new BankConfigDeleteDto(bpmnId, version, acquirerId, branchId, terminalId);
         return bpmnVersionService.deleteSingleAssociation(bankConfigDeleteDto);
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/associations/{uuid}/version/{version}")
+    public Uni<BpmnBankConfigDTO> replaceSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
+                                                           @RequestBody(required = true) BankConfigTripletDto bankConfigTripletDto) {
+        validateBankConfigTriplet(bankConfigTripletDto);
+        return bpmnVersionService.replaceSingleAssociation(new BpmnVersionPK(bpmnId, version), bankConfigTripletDto)
+                .onItem().transformToUni(newBankConfig -> Uni.createFrom().item(bpmnConfigMapper.toDTO(newBankConfig)));
     }
 }
