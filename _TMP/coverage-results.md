@@ -6,9 +6,9 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 92.51%               |
-| :heavy_check_mark: Number of Lines Covered | 2088    |
-| :x: Number of Lines Missed  | 169     |
+| Code Coverage %         | 93.31%               |
+| :heavy_check_mark: Number of Lines Covered | 2106    |
+| :x: Number of Lines Missed  | 151     |
 | Total Number of Lines   | 2257     |
 
 
@@ -656,10 +656,6 @@
         
 #### Lines Missed:
         
-- Line #354
-```
-                            .transformToUni(optionalBankConfig -> {
-```
 </details>
 
     
