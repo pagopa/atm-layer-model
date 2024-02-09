@@ -338,7 +338,7 @@ public class BpmnResource {
                 });
     }
 
-    @PUT
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/associations/{uuid}/version/{version}")
@@ -355,8 +355,11 @@ public class BpmnResource {
     @Path("/associations/{uuid}/version/{version}")
     public Uni<Void> deleteSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
                                              @QueryParam("acquirerId") @NotEmpty String acquirerId,
-                                             @QueryParam("branchId") @NotEmpty String branchId,
+                                             @QueryParam("branchId") String branchId,
                                              @QueryParam("terminalId") String terminalId){
+        if (!isValidBankConfigTriplet(new BankConfigTripletDto(acquirerId,branchId,terminalId))){
+            return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST, ILLEGAL_CONFIGURATION_TRIPLET));
+        }
         BankConfigDeleteDto bankConfigDeleteDto=new BankConfigDeleteDto(bpmnId, version, acquirerId, branchId, terminalId);
         return bpmnVersionService.deleteSingleAssociation(bankConfigDeleteDto);
     }
