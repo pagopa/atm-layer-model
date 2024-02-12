@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
@@ -25,9 +26,12 @@ import org.jboss.resteasy.reactive.RestMulti;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 @Slf4j
@@ -75,8 +79,21 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
         return this.objectStoreService.generatePresignedUrl(objectKey);
     }
 
-    public RestMulti<Buffer> download(String storageKey) {
-        return this.objectStoreService.download(storageKey);
+
+    public Multi<String> download(String storageKey) {
+        return convertToBase64(this.objectStoreService.download(storageKey));
+    }
+
+    public Multi<String> convertToBase64(RestMulti<Buffer> restMulti) {
+        return restMulti
+                .onItem().transform(buffer -> {
+                    byte[] bytes = buffer.getBytes();
+                    return Base64.getEncoder().encodeToString(bytes);
+                });
+    }
+
+    private String joinBase64Strings(List<String> base64Strings) {
+        return String.join("", base64Strings);
     }
 
     private String calculatePath(BpmnIdDto bpmnVersionPK) {

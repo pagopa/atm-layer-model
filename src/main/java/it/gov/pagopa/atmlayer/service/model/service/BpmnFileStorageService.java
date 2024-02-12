@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service;
 
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
@@ -14,5 +15,5 @@ public interface BpmnFileStorageService {
 
     Uni<URL> generatePresignedUrl(String storageKey);
 
-    RestMulti<Buffer> download(String storageKey);
+    Multi<String> download(String storageKey);
 }

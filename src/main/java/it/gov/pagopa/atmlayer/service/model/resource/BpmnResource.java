@@ -178,8 +178,8 @@ public class BpmnResource {
 
     @GET
     @Path("/download/{uuid}/version/{version}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Multi<Buffer> downloadBpmn(@PathParam("uuid") UUID bpmnId,
+    @Produces(MediaType.APPLICATION_JSON)
+    public Multi<String> downloadBpmn(@PathParam("uuid") UUID bpmnId,
                                       @PathParam("version") Long version) {
         BpmnVersionPK key = BpmnVersionPK.builder()
                 .bpmnId(bpmnId)
