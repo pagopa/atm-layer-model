@@ -185,4 +185,14 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
         filters.values().removeAll(Collections.singleton(""));
         return resourceEntityRepository.findByFilters(filters, pageIndex, pageSize);
     }
+
+    @Override
+    @WithTransaction
+    public Uni<Void> deleteResource(UUID uuid) {
+        return resourceEntityRepository.deleteById(uuid)
+                .onItem().transformToUni(deleted ->
+                        Boolean.FALSE.equals(deleted)? Uni.createFrom().failure(new AtmLayerException(String.format("Could not delete resourcewith Id %s: either it does not exist or an error occurred during deletion", uuid),
+                                Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST)) :
+                                Uni.createFrom().voidItem());
+    }
 }
