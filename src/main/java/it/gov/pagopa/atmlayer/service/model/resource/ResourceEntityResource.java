@@ -121,5 +121,12 @@ public class ResourceEntityResource {
 
                 }));
     }
+
+    @DELETE
+    @Path("/{uuid}")
+    public Uni<Void> deleteResource(@PathParam("uuid") UUID uuid){
+        return resourceEntityService.deleteResource(uuid);
+    }
+
 }
 

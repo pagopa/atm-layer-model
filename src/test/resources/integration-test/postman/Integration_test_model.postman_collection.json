@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "68eb8457-7c26-4a04-8bf8-a73e8e754ea0",
-		"name": "Integration_test_model_completa_9feb",
+		"_postman_id": "36482b9c-5ef7-4a49-80c9-80cddf6a7a87",
+		"name": "Integration_test_model_completa_12feb",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "29456304"
 	},
@@ -12997,6 +12997,88 @@
 						{
 							"key": "version",
 							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Elimina risorsa esistente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources/:uuid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources",
+						":uuid"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{html_1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fallisci nell'eliminare risorsa non esistente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"var data=pm.response.json();\r",
+							"pm.expect(data.errorCode).to.equal(\"ATMLM_4000029\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources/:uuid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources",
+						":uuid"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{html_1_id}}"
 						}
 					]
 				}
