@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 93.28%               |
+| Code Coverage %         | 92.5%               |
 | :heavy_check_mark: Number of Lines Covered | 2110    |
-| :x: Number of Lines Missed  | 152     |
-| Total Number of Lines   | 2262     |
+| :x: Number of Lines Missed  | 171     |
+| Total Number of Lines   | 2281     |
 
 
 ## Details:
@@ -97,6 +97,18 @@
         
 #### Lines Missed:
         
+- Line #215
+```
+                .modelVersion(version)
+```
+- Line #219
+```
+                        Unchecked.function(bpmn -> {
+```
+- Line #225
+```
+                                    resourceFile.getStorageKey())) {
+```
 </details>
 
     
@@ -578,11 +590,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: BpmnFileStorageServiceImpl.java
+:x: BpmnFileStorageServiceImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
