@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 92.5%               |
-| :heavy_check_mark: Number of Lines Covered | 2110    |
-| :x: Number of Lines Missed  | 171     |
-| Total Number of Lines   | 2281     |
+| Code Coverage %         | 92.22%               |
+| :heavy_check_mark: Number of Lines Covered | 2111    |
+| :x: Number of Lines Missed  | 178     |
+| Total Number of Lines   | 2289     |
 
 
 ## Details:
@@ -97,15 +97,15 @@
         
 #### Lines Missed:
         
-- Line #215
+- Line #216
 ```
                 .modelVersion(version)
 ```
-- Line #219
+- Line #220
 ```
                         Unchecked.function(bpmn -> {
 ```
-- Line #225
+- Line #226
 ```
                                     resourceFile.getStorageKey())) {
 ```
@@ -596,6 +596,10 @@
         
 #### Lines Missed:
         
+- Line #93
+```
+                    }
+```
 </details>
 
     
@@ -1176,6 +1180,16 @@
 <details>
     <summary>
 :x: BpmnAssociationDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: FileS3Dto.java
     </summary>
 
         
