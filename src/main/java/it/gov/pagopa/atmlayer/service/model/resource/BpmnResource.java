@@ -12,6 +12,7 @@ import it.gov.pagopa.atmlayer.service.model.dto.BankConfigTripletDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
+import it.gov.pagopa.atmlayer.service.model.dto.FileS3Dto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
@@ -207,9 +208,9 @@ public class BpmnResource {
 
     @GET
     @Path("/downloadFrontEnd/{uuid}/version/{version}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Uni<List<Buffer>> downloadBpmnFrontEnd(@PathParam("uuid") UUID bpmnId,
-                                          @PathParam("version") Long version) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<FileS3Dto> downloadBpmnFrontEnd(@PathParam("uuid") UUID bpmnId,
+                                               @PathParam("version") Long version) {
         BpmnVersionPK key = BpmnVersionPK.builder()
                 .bpmnId(bpmnId)
                 .modelVersion(version)
