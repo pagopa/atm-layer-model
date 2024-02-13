@@ -55,6 +55,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.reactive.RestMulti;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -201,6 +202,34 @@ public class BpmnResource {
                                         AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
                             }
                             return this.bpmnFileStorageService.download(resourceFile.getStorageKey());
+                        }));
+    }
+
+    @GET
+    @Path("/downloadFrontEnd/{uuid}/version/{version}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Uni<List<Buffer>> downloadBpmnFrontEnd(@PathParam("uuid") UUID bpmnId,
+                                          @PathParam("version") Long version) {
+        BpmnVersionPK key = BpmnVersionPK.builder()
+                .bpmnId(bpmnId)
+                .modelVersion(version)
+                .build();
+        return this.bpmnVersionService.findByPk(key)
+                .onItem().transformToUni(
+                        Unchecked.function(bpmn -> {
+                            if (bpmn.isEmpty()) {
+                                throw new AtmLayerException(Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
+                            }
+                            ResourceFile resourceFile = bpmn.get().getResourceFile();
+                            if (Objects.isNull(resourceFile) || StringUtils.isBlank(
+                                    resourceFile.getStorageKey())) {
+                                String errorMessage = String.format(
+                                        "No file associated to BPMN or no storage key found: %s", key);
+                                log.error(errorMessage);
+                                throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR,
+                                        AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
+                            }
+                            return this.bpmnFileStorageService.downloadForFrontEnd(resourceFile.getStorageKey());
                         }));
     }
 
