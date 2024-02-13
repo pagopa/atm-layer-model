@@ -5,6 +5,7 @@ import io.smallrye.mutiny.Uni;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.dto.FileS3Dto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
@@ -25,6 +26,7 @@ import org.jboss.resteasy.reactive.RestMulti;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,9 +82,18 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
         return this.objectStoreService.download(storageKey);
     }
 
-    public Uni<List<Buffer>> downloadForFrontEnd(String storageKey) {
+    public Uni<FileS3Dto> downloadForFrontEnd(String storageKey) {
         Context context = Vertx.currentContext();
-        return this.objectStoreService.download(storageKey).collect().asList()
+        return this.objectStoreService.download(storageKey)
+                .collect().asList()
+                .onItem().transform(buffers -> {
+                    Buffer totalBuffer = Buffer.buffer();
+                    for (Buffer buffer : buffers) {
+                        totalBuffer.appendBuffer(buffer);
+                    }
+                    String encoded = Base64.getEncoder().encodeToString(totalBuffer.getBytes());
+                    return new FileS3Dto(encoded);
+                })
                 .emitOn(command -> context.runOnContext(x -> command.run()));
     }
 

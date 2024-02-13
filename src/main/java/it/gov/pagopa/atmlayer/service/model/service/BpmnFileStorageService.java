@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.dto.FileS3Dto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import org.jboss.resteasy.reactive.RestMulti;
@@ -17,5 +18,5 @@ public interface BpmnFileStorageService {
 
     RestMulti<Buffer> download(String storageKey);
 
-    Uni<List<Buffer>> downloadForFrontEnd(String storageKey);
+    Uni<FileS3Dto> downloadForFrontEnd(String storageKey);
 }
