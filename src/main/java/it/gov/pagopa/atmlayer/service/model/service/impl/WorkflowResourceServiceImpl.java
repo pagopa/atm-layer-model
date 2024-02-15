@@ -330,7 +330,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @WithSession
     public Uni<PageInfo<WorkflowResource>> getAllFiltered(int pageIndex, int pageSize, StatusEnum status, UUID workflowResourceId, String deployedFileName, String definitionKey, DeployableResourceType resourceType, String sha256, String definitionVersionCamunda, String camundaDefinitionId, String description, String resource, UUID deploymentId, String fileName) {
         Map<String, Object> filters = new HashMap<>();
-        if (status != null) filters.put("status", status.name());
+        filters.put("status", status);
         filters.put("workflowResourceId", workflowResourceId);
         filters.put("deployedFileName", deployedFileName);
         filters.put("definitionKey", definitionKey);

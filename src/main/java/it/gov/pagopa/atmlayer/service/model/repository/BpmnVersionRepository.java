@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion, BpmnVersionPK> {
     public Uni<PageInfo<BpmnVersion>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
         String queryFilters = params.keySet().stream().map(key -> switch (key) {
-            case "modelVersion", "definitionVersionCamunda", "bpmnId" -> ("b." + key + " = :" + key);
+            case "modelVersion", "definitionVersionCamunda", "bpmnId", "status" -> ("b." + key + " = :" + key);
             case "acquirerId", "branchId", "terminalId" -> ("bc.bpmnBankConfigPK." + key + " = :" + key);
             case "fileName" -> ("b.resourceFile." + key + " LIKE concat(concat('%', :" + key + "), '%')");
             default -> ("b." + key + " LIKE concat(concat('%', :" + key + "), '%')");
