@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 92.22%               |
-| :heavy_check_mark: Number of Lines Covered | 2111    |
-| :x: Number of Lines Missed  | 178     |
-| Total Number of Lines   | 2289     |
+| Code Coverage %         | 93.17%               |
+| :heavy_check_mark: Number of Lines Covered | 2168    |
+| :x: Number of Lines Missed  | 159     |
+| Total Number of Lines   | 2327     |
 
 
 ## Details:
@@ -97,18 +97,6 @@
         
 #### Lines Missed:
         
-- Line #216
-```
-                .modelVersion(version)
-```
-- Line #220
-```
-                        Unchecked.function(bpmn -> {
-```
-- Line #226
-```
-                                    resourceFile.getStorageKey())) {
-```
 </details>
 
     
@@ -590,16 +578,12 @@
 
 <details>
     <summary>
-:x: BpmnFileStorageServiceImpl.java
+:heavy_check_mark: BpmnFileStorageServiceImpl.java
     </summary>
 
         
-#### Lines Missed:
+#### All Lines Covered!
         
-- Line #93
-```
-                    }
-```
 </details>
 
     
@@ -630,11 +614,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceServiceImpl.java
+:x: WorkflowResourceServiceImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
