@@ -2,8 +2,12 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
@@ -17,6 +21,7 @@ import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceFileRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.WorkflowResourceRepository;
+import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceStorageService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -30,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -103,7 +109,20 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
     }
 
-    public Uni<Boolean> checkWorkflowResourceFileExistence(UUID uuid) {
+    public Uni<WorkflowResource> checkWorkflowResourceExistence(UUID uuid) {
+        return this.findById(uuid)
+                .onItem().transform(
+                        Unchecked.function(workflowResource -> {
+                            if (workflowResource.isEmpty()) {
+                                String errorMessage = String.format(
+                                        "One or some of the referenced Workflow Resource files with id: %s do not exists", uuid);
+                                throw new AtmLayerException(Response.Status.BAD_REQUEST, WORKFLOW_FILE_DOES_NOT_EXIST);
+                            }
+                            return workflowResource.get();
+                        }));
+    }
+
+    public Uni<Boolean> checkWorkflowResourceFileExistenceDeployable(UUID uuid) {
         return this.findById(uuid)
                 .onItem()
                 .transform(Unchecked.function(optionalWorkflowResource -> {
@@ -118,6 +137,18 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                                     .equals(StatusEnum.DEPLOY_ERROR) || workflowResource.getStatus().equals(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
                         })
                 );
+    }
+
+    public Uni<ResourceFile> checkResourceFileExistence(ResourceFile resourceFile, UUID workflowResourceId){
+        if (Objects.isNull(resourceFile) || StringUtils.isBlank(
+                resourceFile.getStorageKey())) {
+            String errorMessage = String.format(
+                    "No file associated to workflow resource or no storage key found: %s", workflowResourceId);
+            log.error(errorMessage);
+            throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR,
+                    AppErrorCodeEnum.WORKFLOW_RESOURCE_INTERNAL_ERROR);
+        }
+        return Uni.createFrom().item(resourceFile);
     }
 
     @WithTransaction
@@ -140,7 +171,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
 
     @Override
     public Uni<WorkflowResource> deploy(UUID id, Optional<WorkflowResource> workflowResource) {
-        return this.checkWorkflowResourceFileExistence(id)
+        return this.checkWorkflowResourceFileExistenceDeployable(id)
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (Boolean.FALSE.equals(x)) {
@@ -381,4 +412,37 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                             .transformToUni(Unchecked.function(file -> update(id, file, true)));
                 }));
     }
+
+    @Override
+    public Multi<Buffer> download(UUID uuid) {
+        return this.checkWorkflowResourceExistence(uuid)
+                .onItem().transformToMulti(workflowResource -> {
+                    ResourceFile resourceFile = workflowResource.getResourceFile();
+                    return checkResourceFileExistence(resourceFile, uuid)
+                            .onItem().transformToMulti(resourceFile1 -> this.workflowResourceStorageService.download(resourceFile1.getStorageKey()));
+                });
+    }
+
+    @Override
+    public Uni<String> downloadForFrontEnd(UUID uuid) {
+        return this.checkWorkflowResourceExistence(uuid)
+                .onItem().transformToUni(workflowResource -> {
+                    ResourceFile resourceFile = workflowResource.getResourceFile();
+                    return checkResourceFileExistence(resourceFile, uuid)
+                            .onItem().transformToUni(resourceFile1 -> {
+                                Context context = Vertx.currentContext();
+                                return this.workflowResourceStorageService.download(resourceFile.getStorageKey())
+                                        .collect().asList()
+                                        .onItem().transform(buffers -> {
+                                            Buffer totalBuffer = Buffer.buffer();
+                                            for (Buffer buffer : buffers) {
+                                                totalBuffer.appendBuffer(buffer);
+                                            }
+                                            return Base64.getEncoder().encodeToString(totalBuffer.getBytes());
+                                        })
+                                        .emitOn(command -> context.runOnContext(x -> command.run()));
+                            });
+                });
+    }
+
 }
