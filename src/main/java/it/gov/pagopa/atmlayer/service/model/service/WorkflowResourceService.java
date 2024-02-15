@@ -1,6 +1,9 @@
 package it.gov.pagopa.atmlayer.service.model.service;
 
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
+import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.dto.FileS3Dto;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
@@ -38,4 +41,8 @@ public interface WorkflowResourceService {
     Uni<WorkflowResource> update(UUID id, File file,boolean isRollback) throws NoSuchAlgorithmException, IOException;
 
     Uni<WorkflowResource> rollback(UUID id);
+
+    Multi<Buffer> download(UUID id);
+
+    Uni<String> downloadForFrontEnd(UUID id);
 }

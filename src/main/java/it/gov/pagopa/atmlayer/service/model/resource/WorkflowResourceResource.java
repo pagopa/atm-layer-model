@@ -2,10 +2,16 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 
 import io.opentelemetry.api.trace.Tracer;
 import io.smallrye.common.annotation.NonBlocking;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.dto.FileS3Dto;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
+import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
@@ -33,6 +39,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -43,8 +50,10 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.WORKFLOW_FILE_DOES_NOT_EXIST;
 
 @ApplicationScoped
@@ -167,4 +176,20 @@ public class WorkflowResourceResource {
                 .onItem()
                 .transformToUni(rolledBackWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(rolledBackWorkflowResource)));
     }
+
+    @GET
+    @Path("/download/{uuid}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Multi<Buffer> download(@PathParam("uuid") UUID uuid) {
+        return this.workflowResourceService.download(uuid);
+    }
+
+    @GET
+    @Path("/downloadFrontEnd/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<FileS3Dto> downloadFrontEnd(@PathParam("uuid") UUID uuid) {
+        return this.workflowResourceService.downloadForFrontEnd(uuid)
+                .onItem().transform(FileS3Dto::new);
+    }
+
 }

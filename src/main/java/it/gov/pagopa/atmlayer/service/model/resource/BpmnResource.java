@@ -200,7 +200,7 @@ public class BpmnResource {
                                         "No file associated to BPMN or no storage key found: %s", key);
                                 log.error(errorMessage);
                                 throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR,
-                                        AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
+                                        AppErrorCodeEnum.BPMN_INTERNAL_ERROR);
                             }
                             return this.bpmnFileStorageService.download(resourceFile.getStorageKey());
                         }));
@@ -228,7 +228,7 @@ public class BpmnResource {
                                         "No file associated to BPMN or no storage key found: %s", key);
                                 log.error(errorMessage);
                                 throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR,
-                                        AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
+                                        AppErrorCodeEnum.BPMN_INTERNAL_ERROR);
                             }
                             return this.bpmnFileStorageService.downloadForFrontEnd(resourceFile.getStorageKey());
                         }));

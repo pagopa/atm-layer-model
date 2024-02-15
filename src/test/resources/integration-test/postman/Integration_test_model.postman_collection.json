@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "36482b9c-5ef7-4a49-80c9-80cddf6a7a87",
-		"name": "Integration_test_model_completa_12feb",
+		"_postman_id": "674f897d-a11f-45e9-abdb-666877d67f18",
+		"name": "Integration_test_model_completa_15feb",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "29456304"
 	},
@@ -12997,6 +12997,151 @@
 						{
 							"key": "version",
 							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download BPMN FrontEnd",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/bpmn/downloadFrontEnd/:uuid/version/:version",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"bpmn",
+						"downloadFrontEnd",
+						":uuid",
+						"version",
+						":version"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{bpmn_1_id}}",
+							"description": "(Required) "
+						},
+						{
+							"key": "version",
+							"value": "1",
+							"description": "(Required) "
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download Workflow Resource",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/octet-stream",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource/download/:uuid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource",
+						"download",
+						":uuid"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{workflow_bpmn_1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download Workflow Resource FrontEnd",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource/downloadFrontEnd/:uuid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource",
+						"downloadFrontEnd",
+						":uuid"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{workflow_bpmn_1_id}}"
 						}
 					]
 				}
