@@ -18,6 +18,7 @@ import java.util.UUID;
 public class ResourceFrontEndDTO {
     private UUID resourceId;
     private String sha256;
+    private Boolean enabled;
     NoDeployableResourceType noDeployableResourceType;
     private Timestamp createdAt;
     private Timestamp lastUpdatedAt;
