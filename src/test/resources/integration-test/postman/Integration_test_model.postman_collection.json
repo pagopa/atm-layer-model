@@ -13149,6 +13149,178 @@
 			"response": []
 		},
 		{
+			"name": "Disabilita risorsa esistente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources/disable/:uuid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources",
+						"disable",
+						":uuid"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{other_1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fallisci nel disabilitare risorsa inesistente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"var data=pm.response.json();\r",
+							"pm.test(\"errorCode is ATMLM_4000029\", function(){\r",
+							"    pm.expect(data.errorCode).to.equal(\"ATMLM_4000029\");\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/resources/disable/:uuid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"resources",
+						"disable",
+						":uuid"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{other_1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Disabilita Workflow Resource esistente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource/disable/:uuid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource",
+						"disable",
+						":uuid"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{dmn_1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fallisci nel disabilitare Workflow Resource inesistente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"var data=pm.response.json();\r",
+							"pm.test(\"errorCode is ATMLM_4000023\", function(){\r",
+							"    pm.expect(data.errorCode).to.equal(\"ATMLM_4000023\");\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/model/workflow-resource/disable/:uuid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"model",
+						"workflow-resource",
+						"disable",
+						":uuid"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "{{dmn_1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Elimina risorsa esistente",
 			"event": [
 				{

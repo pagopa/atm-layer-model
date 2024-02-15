@@ -32,6 +32,8 @@ public interface WorkflowResourceService {
 
     Uni<WorkflowResource> createWorkflowResource(WorkflowResource workflowResource, File file, String filename);
 
+    Uni<Void> disable(UUID uuid);
+
     Uni<Boolean> delete(UUID uuid);
 
     Uni<List<WorkflowResource>> getAll();

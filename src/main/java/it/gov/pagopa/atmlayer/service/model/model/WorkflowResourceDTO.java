@@ -21,6 +21,7 @@ public class WorkflowResourceDTO {
     private String definitionKey;
     private StatusEnum status;
     private String sha256;
+    private Boolean enabled;
     private Integer definitionVersionCamunda;
     private String camundaDefinitionId;
     private String description;

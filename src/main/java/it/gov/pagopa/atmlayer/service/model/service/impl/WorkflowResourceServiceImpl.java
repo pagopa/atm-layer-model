@@ -12,11 +12,14 @@ import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedDMNDecisionDefinitionDto;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceFileRepository;
@@ -46,6 +49,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOYED_FILE_WAS_NOT_RETRIEVED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
@@ -115,8 +119,8 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         Unchecked.function(workflowResource -> {
                             if (workflowResource.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced Workflow Resource files with id: %s do not exists", uuid);
-                                throw new AtmLayerException(Response.Status.BAD_REQUEST, WORKFLOW_FILE_DOES_NOT_EXIST);
+                                        "The referenced Workflow Resource with id: %s does not exist", uuid);
+                                throw new AtmLayerException(errorMessage,Response.Status.BAD_REQUEST, WORKFLOW_FILE_DOES_NOT_EXIST);
                             }
                             return workflowResource.get();
                         }));
@@ -139,7 +143,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 );
     }
 
-    public Uni<ResourceFile> checkResourceFileExistence(ResourceFile resourceFile, UUID workflowResourceId){
+    public Uni<ResourceFile> checkResourceFileExistence(ResourceFile resourceFile, UUID workflowResourceId) {
         if (Objects.isNull(resourceFile) || StringUtils.isBlank(
                 resourceFile.getStorageKey())) {
             String errorMessage = String.format(
@@ -302,6 +306,24 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 }));
     }
 
+    @Override
+    public Uni<Void> disable(UUID uuid) {
+        return this.setDisabledWorkflowResourceAttributes(uuid)
+                        .onItem()
+                        .transformToUni(disabledWorkflowResource -> Uni.createFrom().voidItem());
+    }
+
+    @WithTransaction
+    public Uni<WorkflowResource> setDisabledWorkflowResourceAttributes(UUID uuid) {
+        return this.checkWorkflowResourceExistence(uuid)
+                .onItem().transformToUni(workflowResource -> {
+                    workflowResource.setEnabled(false);
+                    String disabledSha = workflowResource.getSha256().concat(UtilityValues.DISABLED_FLAG.getValue()).concat(workflowResource.getWorkflowResourceId().toString());
+                    workflowResource.setSha256(disabledSha);
+                    return this.workflowResourceRepository.persist(workflowResource);
+                });
+    }
+
     @WithTransaction
     @Override
     public Uni<Boolean> delete(UUID uuid) {
@@ -444,5 +466,4 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                             });
                 });
     }
-
 }

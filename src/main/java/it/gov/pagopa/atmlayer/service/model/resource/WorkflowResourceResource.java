@@ -148,6 +148,12 @@ public class WorkflowResourceResource {
                 .onItem().transformToUni(resourceDeployed -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(resourceDeployed)));
     }
 
+    @POST
+    @Path("/disable/{uuid}")
+    public Uni<Void> disable(@PathParam("uuid") UUID uuid) {
+        return this.workflowResourceService.disable(uuid);
+    }
+
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

@@ -7,8 +7,10 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
+import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceEntityRepository;
@@ -33,7 +35,6 @@ import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculate
 @ApplicationScoped
 @Slf4j
 public class ResourceEntityServiceImpl implements ResourceEntityService {
-
     @Inject
     ResourceEntityStorageService resourceEntityStorageService;
     @Inject
@@ -69,6 +70,18 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     public Uni<Optional<ResourceEntity>> findByUUID(UUID uuid) {
         return resourceEntityRepository.findById(uuid)
                 .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
+    }
+
+    public Uni<ResourceEntity> checkResourceEntityExistence(UUID uuid) {
+        return this.findByUUID(uuid)
+                .onItem()
+                .transform(Unchecked.function(optionalResource -> {
+                    if (optionalResource.isEmpty()) {
+                        String errorMessage = String.format("Resource with Id %s does not exist", uuid);
+                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST);
+                    }
+                    return optionalResource.get();
+                }));
     }
 
     @Override
@@ -176,7 +189,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
         Map<String, Object> filters = new HashMap<>();
         filters.put("resourceId", resourceId);
         filters.put("sha256", sha256);
-        if (noDeployableResourceType!=null) filters.put("noDeployableResourceType", noDeployableResourceType.name());
+        if (noDeployableResourceType != null) filters.put("noDeployableResourceType", noDeployableResourceType.name());
         filters.put("fileName", fileName);
         filters.put("storageKey", storageKey);
         filters.put("extension", extension);
@@ -187,11 +200,29 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     }
 
     @Override
+    public Uni<Void> disable(UUID uuid) {
+        return this.setDisabledResourceEntityAttributes(uuid)
+                .onItem()
+                .transformToUni(disabledResourceEntity -> Uni.createFrom().voidItem());
+    }
+
+    @WithTransaction
+    public Uni<ResourceEntity> setDisabledResourceEntityAttributes(UUID uuid) {
+        return this.checkResourceEntityExistence(uuid)
+                .onItem().transformToUni(resourceEntity -> {
+                    resourceEntity.setEnabled(false);
+                    String disabledSha = resourceEntity.getSha256().concat(UtilityValues.DISABLED_FLAG.getValue()).concat(resourceEntity.getResourceId().toString());
+                    resourceEntity.setSha256(disabledSha);
+                    return this.resourceEntityRepository.persist(resourceEntity);
+                });
+    }
+
+    @Override
     @WithTransaction
     public Uni<Void> deleteResource(UUID uuid) {
         return resourceEntityRepository.deleteById(uuid)
                 .onItem().transformToUni(deleted ->
-                        Boolean.FALSE.equals(deleted)? Uni.createFrom().failure(new AtmLayerException(String.format("Could not delete resourcewith Id %s: either it does not exist or an error occurred during deletion", uuid),
+                        Boolean.FALSE.equals(deleted) ? Uni.createFrom().failure(new AtmLayerException(String.format("Could not delete resourcewith Id %s: either it does not exist or an error occurred during deletion", uuid),
                                 Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST)) :
                                 Uni.createFrom().voidItem());
     }

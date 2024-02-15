@@ -122,6 +122,12 @@ public class ResourceEntityResource {
                 }));
     }
 
+    @POST
+    @Path("/disable/{uuid}")
+    public Uni<Void> disable(@PathParam("uuid") UUID uuid) {
+        return this.resourceEntityService.disable(uuid);
+    }
+
     @DELETE
     @Path("/{uuid}")
     public Uni<Void> deleteResource(@PathParam("uuid") UUID uuid){
