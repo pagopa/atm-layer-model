@@ -25,6 +25,7 @@ public abstract class WorkflowResourceMapper {
     public WorkflowResource toEntityCreation(WorkflowResourceCreationDto workflowCreationDto) throws NoSuchAlgorithmException, IOException {
         WorkflowResource workflowResource = new WorkflowResource();
         workflowResource.setStatus(StatusEnum.CREATED);
+        workflowResource.setDescription(workflowCreationDto.getDescription());
         workflowResource.setSha256(FileUtilities.calculateSha256(workflowCreationDto.getFile()));
         workflowResource.setDeployedFileName(workflowCreationDto.getFilename().concat(".").concat(workflowCreationDto.getResourceType().toString()));
         workflowResource.setResourceType(workflowCreationDto.getResourceType());
