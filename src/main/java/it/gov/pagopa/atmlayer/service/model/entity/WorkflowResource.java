@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @Table(name = "workflow_resource")
+@Where(clause = "enabled = true")
 public class WorkflowResource extends PanacheEntityBase implements Serializable {
     @Column(name = "workflow_resource_id", nullable = false, updatable = false)
     @GeneratedValue(generator = "UUID")
@@ -38,6 +40,8 @@ public class WorkflowResource extends PanacheEntityBase implements Serializable 
     private StatusEnum status;
     @Column(name = "sha256", unique = true)
     private String sha256;
+    @Column(name = "enabled", columnDefinition = "boolean default true")
+    private Boolean enabled;
     @Column(name = "definition_version_camunda")
     private Integer definitionVersionCamunda;
     @Column(name = "camunda_definition_id")

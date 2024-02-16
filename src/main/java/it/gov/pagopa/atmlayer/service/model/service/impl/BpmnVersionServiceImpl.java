@@ -296,7 +296,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         filters.put("deployedFileName", deployedFileName);
         filters.put("resource", resource);
         filters.put("sha256", sha256);
-        if (status != null) filters.put("status", status.name());
+        filters.put("status", status);
         filters.put("acquirerId", acquirerId);
         filters.put("branchId", branchId);
         filters.put("terminalId", terminalId);

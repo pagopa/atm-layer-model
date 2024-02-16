@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 93.31%               |
-| :heavy_check_mark: Number of Lines Covered | 2106    |
-| :x: Number of Lines Missed  | 151     |
-| Total Number of Lines   | 2257     |
+| Code Coverage %         | 93.35%               |
+| :heavy_check_mark: Number of Lines Covered | 2203    |
+| :x: Number of Lines Missed  | 157     |
+| Total Number of Lines   | 2360     |
 
 
 ## Details:
@@ -614,11 +614,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceServiceImpl.java
+:x: WorkflowResourceServiceImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -1164,6 +1164,16 @@
 <details>
     <summary>
 :x: BpmnAssociationDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: FileS3Dto.java
     </summary>
 
         

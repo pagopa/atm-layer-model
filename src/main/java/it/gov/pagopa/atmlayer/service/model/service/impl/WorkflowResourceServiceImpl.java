@@ -2,21 +2,29 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedDMNDecisionDefinitionDto;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceFileRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.WorkflowResourceRepository;
+import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceStorageService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -30,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,6 +49,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOYED_FILE_WAS_NOT_RETRIEVED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
@@ -103,7 +113,20 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
     }
 
-    public Uni<Boolean> checkWorkflowResourceFileExistence(UUID uuid) {
+    public Uni<WorkflowResource> checkWorkflowResourceExistence(UUID uuid) {
+        return this.findById(uuid)
+                .onItem().transform(
+                        Unchecked.function(workflowResource -> {
+                            if (workflowResource.isEmpty()) {
+                                String errorMessage = String.format(
+                                        "The referenced Workflow Resource with id: %s does not exist", uuid);
+                                throw new AtmLayerException(errorMessage,Response.Status.BAD_REQUEST, WORKFLOW_FILE_DOES_NOT_EXIST);
+                            }
+                            return workflowResource.get();
+                        }));
+    }
+
+    public Uni<Boolean> checkWorkflowResourceFileExistenceDeployable(UUID uuid) {
         return this.findById(uuid)
                 .onItem()
                 .transform(Unchecked.function(optionalWorkflowResource -> {
@@ -118,6 +141,18 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                                     .equals(StatusEnum.DEPLOY_ERROR) || workflowResource.getStatus().equals(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
                         })
                 );
+    }
+
+    public Uni<ResourceFile> checkResourceFileExistence(ResourceFile resourceFile, UUID workflowResourceId) {
+        if (Objects.isNull(resourceFile) || StringUtils.isBlank(
+                resourceFile.getStorageKey())) {
+            String errorMessage = String.format(
+                    "No file associated to workflow resource or no storage key found: %s", workflowResourceId);
+            log.error(errorMessage);
+            throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR,
+                    AppErrorCodeEnum.WORKFLOW_RESOURCE_INTERNAL_ERROR);
+        }
+        return Uni.createFrom().item(resourceFile);
     }
 
     @WithTransaction
@@ -140,7 +175,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
 
     @Override
     public Uni<WorkflowResource> deploy(UUID id, Optional<WorkflowResource> workflowResource) {
-        return this.checkWorkflowResourceFileExistence(id)
+        return this.checkWorkflowResourceFileExistenceDeployable(id)
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (Boolean.FALSE.equals(x)) {
@@ -271,6 +306,24 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 }));
     }
 
+    @Override
+    public Uni<Void> disable(UUID uuid) {
+        return this.setDisabledWorkflowResourceAttributes(uuid)
+                        .onItem()
+                        .transformToUni(disabledWorkflowResource -> Uni.createFrom().voidItem());
+    }
+
+    @WithTransaction
+    public Uni<WorkflowResource> setDisabledWorkflowResourceAttributes(UUID uuid) {
+        return this.checkWorkflowResourceExistence(uuid)
+                .onItem().transformToUni(workflowResource -> {
+                    workflowResource.setEnabled(false);
+                    String disabledSha = workflowResource.getSha256().concat(UtilityValues.DISABLED_FLAG.getValue()).concat(workflowResource.getWorkflowResourceId().toString());
+                    workflowResource.setSha256(disabledSha);
+                    return this.workflowResourceRepository.persist(workflowResource);
+                });
+    }
+
     @WithTransaction
     @Override
     public Uni<Boolean> delete(UUID uuid) {
@@ -299,7 +352,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @WithSession
     public Uni<PageInfo<WorkflowResource>> getAllFiltered(int pageIndex, int pageSize, StatusEnum status, UUID workflowResourceId, String deployedFileName, String definitionKey, DeployableResourceType resourceType, String sha256, String definitionVersionCamunda, String camundaDefinitionId, String description, String resource, UUID deploymentId, String fileName) {
         Map<String, Object> filters = new HashMap<>();
-        if (status != null) filters.put("status", status.name());
+        filters.put("status", status);
         filters.put("workflowResourceId", workflowResourceId);
         filters.put("deployedFileName", deployedFileName);
         filters.put("definitionKey", definitionKey);
@@ -380,5 +433,37 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                             .onItem()
                             .transformToUni(Unchecked.function(file -> update(id, file, true)));
                 }));
+    }
+
+    @Override
+    public Multi<Buffer> download(UUID uuid) {
+        return this.checkWorkflowResourceExistence(uuid)
+                .onItem().transformToMulti(workflowResource -> {
+                    ResourceFile resourceFile = workflowResource.getResourceFile();
+                    return checkResourceFileExistence(resourceFile, uuid)
+                            .onItem().transformToMulti(resourceFile1 -> this.workflowResourceStorageService.download(resourceFile1.getStorageKey()));
+                });
+    }
+
+    @Override
+    public Uni<String> downloadForFrontEnd(UUID uuid) {
+        return this.checkWorkflowResourceExistence(uuid)
+                .onItem().transformToUni(workflowResource -> {
+                    ResourceFile resourceFile = workflowResource.getResourceFile();
+                    return checkResourceFileExistence(resourceFile, uuid)
+                            .onItem().transformToUni(resourceFile1 -> {
+                                Context context = Vertx.currentContext();
+                                return this.workflowResourceStorageService.download(resourceFile.getStorageKey())
+                                        .collect().asList()
+                                        .onItem().transform(buffers -> {
+                                            Buffer totalBuffer = Buffer.buffer();
+                                            for (Buffer buffer : buffers) {
+                                                totalBuffer.appendBuffer(buffer);
+                                            }
+                                            return Base64.getEncoder().encodeToString(totalBuffer.getBytes());
+                                        })
+                                        .emitOn(command -> context.runOnContext(x -> command.run()));
+                            });
+                });
     }
 }

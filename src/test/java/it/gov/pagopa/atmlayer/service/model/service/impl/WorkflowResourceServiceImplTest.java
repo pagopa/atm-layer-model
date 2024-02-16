@@ -75,23 +75,23 @@ class WorkflowResourceServiceImplTest {
         undeployableWorkflowResource.setWorkflowResourceId(undeployableId);
         when(workflowResourceRepository.findById(deployableId)).thenReturn(Uni.createFrom().item(deployableWorkflowResource));
         when(workflowResourceRepository.findById(undeployableId)).thenReturn(Uni.createFrom().item(undeployableWorkflowResource));
-        workflowResourceService.checkWorkflowResourceFileExistence(deployableId)
+        workflowResourceService.checkWorkflowResourceFileExistenceDeployable(deployableId)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(true);
-        workflowResourceService.checkWorkflowResourceFileExistence(undeployableId)
+        workflowResourceService.checkWorkflowResourceFileExistenceDeployable(undeployableId)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(false);
         deployableWorkflowResource.setStatus(StatusEnum.DEPLOY_ERROR);
         when(workflowResourceRepository.findById(deployableId)).thenReturn(Uni.createFrom().item(deployableWorkflowResource));
-        workflowResourceService.checkWorkflowResourceFileExistence(deployableId)
+        workflowResourceService.checkWorkflowResourceFileExistenceDeployable(deployableId)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(true);
         deployableWorkflowResource.setStatus(StatusEnum.CREATED);
         when(workflowResourceRepository.findById(deployableId)).thenReturn(Uni.createFrom().item(deployableWorkflowResource));
-        workflowResourceService.checkWorkflowResourceFileExistence(deployableId)
+        workflowResourceService.checkWorkflowResourceFileExistenceDeployable(deployableId)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(true);

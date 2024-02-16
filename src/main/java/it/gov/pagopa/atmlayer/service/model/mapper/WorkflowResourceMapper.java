@@ -28,6 +28,7 @@ public abstract class WorkflowResourceMapper {
         workflowResource.setSha256(FileUtilities.calculateSha256(workflowCreationDto.getFile()));
         workflowResource.setDeployedFileName(workflowCreationDto.getFilename().concat(".").concat(workflowCreationDto.getResourceType().toString()));
         workflowResource.setResourceType(workflowCreationDto.getResourceType());
+        workflowResource.setEnabled(true);
         return workflowResource;
     }
 
