@@ -23,10 +23,10 @@ public class ResourceEntityRepository implements PanacheRepositoryBase<ResourceE
     public Uni<PageInfo<ResourceEntity>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
         String queryFilters = params.keySet().stream().map(key -> switch (key) {
             case "resourceId" -> ("r." + key + " = :" + key);
-            case "storageKey", "extension" -> ("r.resourceFile." + key +" LIKE concat(concat('%', :" + key + "), '%')");
-            default -> ("r." + key + " LIKE concat(concat('%', :" + key + "), '%')");
+            case "storageKey", "extension" -> ("lower(r.resourceFile." + key +") LIKE lower(concat(concat(:" + key + "), '%'))");
+            default -> ("lower(r." + key + ") LIKE lower(concat(concat(:" + key + "), '%'))");
         }).collect(Collectors.joining(" and "));
-        PanacheQuery<ResourceEntity> queryResult = find(("select r from ResourceEntity r").concat(queryFilters.isBlank() ? "" : " where " + queryFilters), params).page(Page.of(pageIndex, pageSize));
+        PanacheQuery<ResourceEntity> queryResult = find(("select r from ResourceEntity r").concat(queryFilters.isBlank() ? "" : " where " + queryFilters).concat(" order by r.lastUpdatedAt DESC"), params).page(Page.of(pageIndex, pageSize));
         return queryResult.count()
                 .onItem().transformToUni(count -> {
                     int totalCount = count.intValue();
