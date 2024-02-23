@@ -132,12 +132,12 @@ public class BpmnResource {
             @PathParam("functionType") String functionType,
             @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto) {
         List<BpmnBankConfig> configs = getAcquirerConfigs(bpmnAssociationDto, acquirerId,
-                functionType);
+                functionType.toUpperCase());
         Set<BpmnVersionPK> bpmnIds = BpmnUtils.extractBpmnUUIDFromAssociations(configs);
-        return bpmnEntityValidator.validateExistenceStatusAndFunctionType(bpmnIds, functionType)
+        return bpmnEntityValidator.validateExistenceStatusAndFunctionType(bpmnIds, functionType.toUpperCase())
                 .onItem()
                 .transformToUni(
-                        x -> this.bpmnVersionService.putAssociations(acquirerId, functionType, configs))
+                        x -> this.bpmnVersionService.putAssociations(acquirerId, functionType.toUpperCase(), configs))
                 .onItem()
                 .transformToUni(list -> Uni.createFrom().item(this.bpmnConfigMapper.toDTOList(list)));
     }
@@ -302,6 +302,7 @@ public class BpmnResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/upgrade")
     public Uni<BpmnDTO> upgradeBPMN(@Valid BpmnUpgradeDto bpmnUpgradeDto) {
+        bpmnUpgradeDto.setFunctionType(bpmnUpgradeDto.getFunctionType().toUpperCase());
         return bpmnVersionService.upgrade(bpmnUpgradeDto);
     }
 
