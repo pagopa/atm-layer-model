@@ -116,14 +116,14 @@ public class WorkflowResourceResource {
     @GET
     @Path("/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResourceDTO> getById(@PathParam("uuid") UUID id) {
+    public Uni<WorkflowResourceFrontEndDTO> getById(@PathParam("uuid") UUID id) {
         return this.workflowResourceService.findById(id)
                 .onItem()
                 .transform(Unchecked.function(x -> {
                     if (x.isEmpty()) {
                         throw new AtmLayerException(Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
-                    return workflowResourceMapper.toDTO(x.get());
+                    return workflowResourceMapper.toFrontEndDTO(x.get());
                 }));
     }
 
@@ -131,20 +131,20 @@ public class WorkflowResourceResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @NonBlocking
-    public Uni<WorkflowResourceDTO> create(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
+    public Uni<WorkflowResourceFrontEndDTO> create(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
         WorkflowResource workflowResource = workflowResourceMapper.toEntityCreation(workflowResourceCreationDto);
         return this.workflowResourceService.createWorkflowResource(workflowResource, workflowResourceCreationDto.getFile(), workflowResourceCreationDto.getFilename())
-                .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(bpmn)));
+                .onItem().transformToUni(bpmn -> Uni.createFrom().item(this.workflowResourceMapper.toFrontEndDTO(bpmn)));
     }
 
     @POST
     @Path("/deploy/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResourceDTO> deploy(@PathParam("uuid") UUID uuid) {
+    public Uni<WorkflowResourceFrontEndDTO> deploy(@PathParam("uuid") UUID uuid) {
         return this.workflowResourceService.findById(uuid)
                 .onItem()
                 .transformToUni(resource -> this.workflowResourceService.deploy(uuid, resource))
-                .onItem().transformToUni(resourceDeployed -> Uni.createFrom().item(this.workflowResourceMapper.toDTO(resourceDeployed)));
+                .onItem().transformToUni(resourceDeployed -> Uni.createFrom().item(this.workflowResourceMapper.toFrontEndDTO(resourceDeployed)));
     }
 
     @POST
@@ -166,20 +166,20 @@ public class WorkflowResourceResource {
     @Path("/update/{uuid}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") @NotNull(message = "input file is required") File file,
+    public Uni<WorkflowResourceFrontEndDTO> update(@RequestBody(required = true) @FormParam("file") @NotNull(message = "input file is required") File file,
                                            @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
         return workflowResourceService.update(uuid, file, false)
                 .onItem()
-                .transformToUni(updatedWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(updatedWorkflowResource)));
+                .transformToUni(updatedWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toFrontEndDTO(updatedWorkflowResource)));
     }
 
     @PUT
     @Path("/rollback/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<WorkflowResourceDTO> rollback(@PathParam("uuid") UUID uuid) {
+    public Uni<WorkflowResourceFrontEndDTO> rollback(@PathParam("uuid") UUID uuid) {
         return workflowResourceService.rollback(uuid)
                 .onItem()
-                .transformToUni(rolledBackWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toDTO(rolledBackWorkflowResource)));
+                .transformToUni(rolledBackWorkflowResource -> Uni.createFrom().item(workflowResourceMapper.toFrontEndDTO(rolledBackWorkflowResource)));
     }
 
     @GET
