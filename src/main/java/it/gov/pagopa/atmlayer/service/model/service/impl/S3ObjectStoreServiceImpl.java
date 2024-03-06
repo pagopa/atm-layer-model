@@ -94,26 +94,26 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
 
     public Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) {
         if (StringUtils.isBlank(filename)) {
-            String errorMessage = String.format("S3 File Upload - invalid filename %s", filename);
+            String errorMessage = String.format("Aggiornamento file S3: nome file %s non valido", filename);
             log.error(errorMessage);
             throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
         }
 
         if (StringUtils.isBlank(path)) {
-            String errorMessage = String.format("S3 File Upload - invalid path %s", path);
+            String errorMessage = String.format("Aggiornamento file S3: percorso %s non valido", path);
             log.error(errorMessage);
             throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
         }
 
         if (Objects.isNull(file)) {
-            String errorMessage = String.format("S3 File Upload - invalid NULL file %s", filename);
+            String errorMessage = String.format("Aggiornamento file S3: file NULL %s non valido", filename);
             log.error(errorMessage);
             throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
         }
         PutObjectRequest putObjectRequest = fileStorageS3Utils.buildPutRequest(filename, getMimetype(fileType, filename), path);
         return Uni.createFrom().future(() -> s3.putObject(putObjectRequest, AsyncRequestBody.fromFile(file)))
                 .onFailure().transform(error -> {
-                    String errorMessage = "Error in uploading file to S3";
+                    String errorMessage = "Errore nel caricamento del file su S3";
                     log.error(errorMessage, error);
                     return new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
                 })
@@ -121,7 +121,6 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
                     log.info("success uploading from s3");
                     return Uni.createFrom().item(ObjectStorePutResponse.builder().storageKey(putObjectRequest.key()).build());
                 });
-
     }
 
     private String getMimetype(S3ResourceTypeEnum fileType, String filename) {
@@ -129,8 +128,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
             return fileType.getMimetype() == null ? URLConnection.guessContentTypeFromName(filename) : fileType.getMimetype();
 
         } catch (Exception e) {
-            throw new AtmLayerException("Error identifying file content-Type", Response.Status.BAD_REQUEST, AppErrorCodeEnum.FILE_NOT_SUPPORTED);
+            throw new AtmLayerException("Errore nell'identificazione del tipo di contenuto del file", Response.Status.BAD_REQUEST, AppErrorCodeEnum.FILE_NOT_SUPPORTED);
         }
-
     }
 }

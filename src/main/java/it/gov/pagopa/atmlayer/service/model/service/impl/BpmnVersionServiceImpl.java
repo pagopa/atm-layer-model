@@ -92,7 +92,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         return this.findBySHA256(bpmnVersion.getSha256())
                 .onItem().transform(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException("A BPMN file with the same content already exists", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
+                        throw new AtmLayerException("Esiste già un file BPMN con lo stesso contenuto", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
                     }
                     return x;
                 }))
@@ -110,11 +110,11 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (x.isEmpty()) {
-                        throw new AtmLayerException(String.format("BPMN with id %s does not exist", bpmnVersionPK), Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
+                        throw new AtmLayerException(String.format("BPMN con Id %s non esiste", bpmnVersionPK), Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
                     }
                     if (!StatusEnum.isEditable(x.get().getStatus())) {
-                        throw new AtmLayerException(String.format("BPMN with id %s is in status %s and cannot be " +
-                                "deleted. Only BPMN files in status %s can be deleted", bpmnVersionPK.toString(), x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
+                        throw new AtmLayerException(String.format("BPMN con Id %s è nello stato %s e non può essere " +
+                                "cancellato. È possibile eliminare solo i file BPMN con stato %s", bpmnVersionPK.toString(), x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
                     }
                     return Uni.createFrom().item(x.get());
                 })).onItem().transformToUni(y -> this.bpmnVersionRepository.deleteById(bpmnVersionPK));
@@ -158,7 +158,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .transformToUni(Unchecked.function(optionalBpmn -> {
                             if (optionalBpmn.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "The referenced BPMN key does not exist: %s", key);
+                                        "La chiave BPMN a cui si fa riferimento non esiste: %s", key);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         BPMN_FILE_DOES_NOT_EXIST);
                             }
@@ -176,7 +176,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .transformToUni(Unchecked.function(optionalBpmn -> {
                             if (optionalBpmn.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "The referenced BPMN key does not exist: %s", bpmnVersionPK);
+                                        "La chiave BPMN a cui si fa riferimento non esiste: %s", bpmnVersionPK);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         BPMN_FILE_DOES_NOT_EXIST);
                             }
@@ -195,7 +195,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .transformToUni(Unchecked.function(optionalBpmn -> {
                     if (optionalBpmn.isEmpty()) {
                         String errorMessage = String.format(
-                                "The referenced BPMN files does not exist: %s", bpmnVersionPK);
+                                "La chiave BPMN a cui si fa riferimento non esiste: %s", bpmnVersionPK);
                         return Uni.createFrom().failure(new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 BPMN_FILE_DOES_NOT_EXIST));
                     }
@@ -209,7 +209,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .transform(Unchecked.function(optionalBpmn -> {
                             if (optionalBpmn.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced BPMN files do not exist: %s", bpmnVersionPK);
+                                        "Uno o alcuni dei file BPMN a cui si fa riferimento non esistono: %s", bpmnVersionPK);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         BPMN_FILE_DOES_NOT_EXIST);
                             }
@@ -227,7 +227,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .onItem().transformToUni(element -> this.bpmnFileStorageService.uploadFile(bpmnVersion, file, filename)
                         .onFailure().recoverWithUni(failure -> {
                             log.error(failure.getMessage());
-                            return Uni.createFrom().failure(new AtmLayerException("Failed to save BPMN in Object Store. BPMN creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
+                            return Uni.createFrom().failure(new AtmLayerException("Impossibile salvare BPMN nell'Object Store. Creazione BPMN interrotta", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                         })
                         .onItem().transformToUni(resourceFile -> {
                             element.setResourceFile(resourceFile);
@@ -243,13 +243,13 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         return findByDefinitionKey(definitionKey)
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException("A BPMN with the same definitionKey already exists", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
+                        throw new AtmLayerException("Esiste già un BPMN con la stessa chiave di definizione", Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
                     }
                     return saveAndUpload(bpmnVersion, file, filename)
                             .onItem().transformToUni(bpmn -> this.findByPk(new BpmnVersionPK(bpmn.getBpmnId(), bpmn.getModelVersion()))
                                     .onItem().transformToUni(optionalBpmn -> {
                                         if (optionalBpmn.isEmpty()) {
-                                            return Uni.createFrom().failure(new AtmLayerException("Sync problem on bpmn creation", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
+                                            return Uni.createFrom().failure(new AtmLayerException("Problema di sincronizzazione durante la creazione del BPMN", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
                                         }
                                         return Uni.createFrom().item(optionalBpmn.get());
                                     }));
@@ -262,13 +262,13 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .onItem()
                 .transformToUni(referencedBpmn -> {
                     if (referencedBpmn.isEmpty()) {
-                        throw new AtmLayerException(String.format("BPMN with id %s does not exist", bpmnVersionPK), Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
+                        throw new AtmLayerException(String.format("BPMN con Id %s non esiste", bpmnVersionPK), Response.Status.NOT_FOUND, BPMN_FILE_DOES_NOT_EXIST);
                     }
                     return bpmnBankConfigService.findByBpmnVersionPK(bpmnVersionPK)
                             .onItem()
                             .transformToUni(associations -> {
                                 if (!associations.isEmpty()) {
-                                    throw new AtmLayerException("The referenced BPMN cannot be disabled because it is associated", Response.Status.BAD_REQUEST, BPMN_CANNOT_BE_DISABLED_FOR_ASSOCIATIONS);
+                                    throw new AtmLayerException("Il BPMN di riferimento non può essere disabilitato perchè è associato", Response.Status.BAD_REQUEST, BPMN_CANNOT_BE_DISABLED_FOR_ASSOCIATIONS);
                                 }
                                 return setDisabledBpmnAttributes(bpmnVersionPK)
                                         .onItem()
@@ -283,7 +283,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                                        UUID bpmnId, UUID deploymentId, String camundaDefinitionId, String definitionKey, String deployedFileName,
                                                        String resource, String sha256, StatusEnum status, String acquirerId, String branchId, String terminalId, String fileName) {
         if ((StringUtils.isEmpty(acquirerId) && (!StringUtils.isEmpty(branchId) || !StringUtils.isEmpty(terminalId))) || StringUtils.isEmpty(branchId) && !StringUtils.isEmpty(terminalId)) {
-            return Uni.createFrom().failure(new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST, ILLEGAL_CONFIGURATION_TRIPLET));
+            return Uni.createFrom().failure(new AtmLayerException("AcquirerId deve essere specificato per BranchId, e BranchId deve essere specificato per TerminalId", Response.Status.BAD_REQUEST, ILLEGAL_CONFIGURATION_TRIPLET));
         }
         Map<String, Object> filters = new HashMap<>();
         filters.put("functionType", functionType);
@@ -353,7 +353,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                             .onItem()
                             .transformToUni(optionalBankConfig -> {
                                 if (optionalBankConfig.isEmpty()) {
-                                    String errorMessage = String.format("AcquirerId:%s BranchId:%s TerminalId:%s has no associations with funtionType %s. Create a new association instead", bankConfigTripletDto.getAcquirerId(), bankConfigTripletDto.getBranchId(), bankConfigTripletDto.getTerminalId(), bpmnVersion.getFunctionType());
+                                    String errorMessage = String.format("AcquirerId:%s BranchId:%s TerminalId:%s non ha associazioni con tipo funzione %s. Crea invece una nuova associazione", bankConfigTripletDto.getAcquirerId(), bankConfigTripletDto.getBranchId(), bankConfigTripletDto.getTerminalId(), bpmnVersion.getFunctionType());
                                     return Uni.createFrom().failure(new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, CONFIGURATION_TRIPLET_NOT_ASSOCIATED));
                                 }
                                 BpmnBankConfig oldBpmnBankConfig = optionalBankConfig.get();
@@ -371,7 +371,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (Boolean.FALSE.equals(x)) {
-                        String errorMessage = "The referenced BPMN file can not be deployed";
+                        String errorMessage = "Il file BPMN di riferimento non può essere rilasciato";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED);
                     }
@@ -381,7 +381,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .transformToUni(bpmnWaiting -> {
                     ResourceFile resourceFile = bpmnWaiting.getResourceFile();
                     if (Objects.isNull(resourceFile) || StringUtils.isBlank(resourceFile.getStorageKey())) {
-                        String errorMessage = String.format("No file associated to BPMN or no storage key found: %s", new BpmnVersionPK(bpmnWaiting.getBpmnId(), bpmnWaiting.getModelVersion()));
+                        String errorMessage = String.format("Nessun file associato a BPMN o nessuna chiave di archiviazione trovata: %s", new BpmnVersionPK(bpmnWaiting.getBpmnId(), bpmnWaiting.getModelVersion()));
                         log.error(errorMessage);
                         return Uni.createFrom().failure
                                 (new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_DEPLOYED));
@@ -390,14 +390,14 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                             .onFailure().recoverWithUni(failure -> {
                                 log.error(failure.getMessage());
                                 return this.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOY_ERROR)
-                                        .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Fail to generate presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                                        .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Errore nel rilascio del BPMN. Impossibile generare presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
                             });
                 })
                 .onItem().transformToUni(presignedUrl -> processClient.deploy(presignedUrl.toString(), DeployableResourceType.BPMN.name())
                         .onFailure().recoverWithUni(failure -> {
                             log.error(failure.getMessage());
                             return this.setBpmnVersionStatus(bpmnVersionPK, StatusEnum.DEPLOY_ERROR)
-                                    .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Error in BPMN deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                                    .onItem().transformToUni(x -> Uni.createFrom().failure(new AtmLayerException("Errore nel rilascio del BPMN. La comunicazione con Process Service non è riuscita", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
                         })
                         .onItem()
                         .transformToUni(response -> this.setDeployInfo(bpmnVersionPK, response)));
@@ -410,7 +410,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .transformToUni(Unchecked.function(optionalBpmn -> {
                     if (optionalBpmn.isEmpty()) {
                         String errorMessage = String.format(
-                                "One or some of the referenced BPMN files do not exists: %s", key);
+                                "Uno o alcuni dei file BPMN a cui si fa riferimento non esistono: %s", key);
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 BPMN_FILE_DOES_NOT_EXIST);
                     }
@@ -419,7 +419,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     Optional<DeployedBPMNProcessDefinitionDto> optionalDeployedProcessInfo = deployedProcessDefinitions.values()
                             .stream().findFirst();
                     if (optionalDeployedProcessInfo.isEmpty()) {
-                        throw new AtmLayerException("Empty process infos from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
+                        throw new AtmLayerException("Informazioni sul processo vuote dal payload di rilascio", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
                     }
                     DeployedBPMNProcessDefinitionDto deployedProcessInfo = optionalDeployedProcessInfo.get();
                     bpmnVersion.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
@@ -441,7 +441,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .onFailure().recoverWithUni(failure -> {
                     log.error(failure.getMessage());
                     return Uni.createFrom().failure(new AtmLayerException(
-                            "NO BPMN with given ID and functionType exists",
+                            "Non esiste alcun BPMN con l'Id e il tipo di funzione specificati",
                             Response.Status.BAD_REQUEST, BPMN_FILE_DOES_NOT_EXIST));
                 });
     }
@@ -453,7 +453,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 .onItem()
                 .transform(Unchecked.function(latestBPMN -> {
                     if (!extractIdValue(bpmnUpgradeDto.getFile(), resourceType).equals(latestBPMN.getDefinitionKey())) {
-                        String errorMessage = "Definition keys differ, BPMN upgrade refused";
+                        String errorMessage = "Le chiavi di definizione differiscono, aggiornamento BPMN rifiutato";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 AppErrorCodeEnum.BPMN_FILE_CANNOT_BE_UPGRADED);
                     }
@@ -466,7 +466,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                         return bpmnVersionMapper.toEntityUpgrade(bpmnUpgradeDto, latestVersion + 1, definitionKey);
                     } catch (Exception e) {
                         log.error(e.getMessage());
-                        throw new AtmLayerException("Generic error calculating SHA256", Response.Status.INTERNAL_SERVER_ERROR, SHA256_ERROR);
+                        throw new AtmLayerException("Errore generico calcolando SHA256", Response.Status.INTERNAL_SERVER_ERROR, SHA256_ERROR);
                     }
                 })).onItem()
                 .transformToUni(bpmnVersion -> saveAndUpload(bpmnVersion, bpmnUpgradeDto.getFile(),

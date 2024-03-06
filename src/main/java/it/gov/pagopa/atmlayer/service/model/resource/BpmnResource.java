@@ -197,7 +197,7 @@ public class BpmnResource {
                             if (Objects.isNull(resourceFile) || StringUtils.isBlank(
                                     resourceFile.getStorageKey())) {
                                 String errorMessage = String.format(
-                                        "No file associated to BPMN or no storage key found: %s", key);
+                                        "Nessun file associato a BPMN o nessuna chiave di archiviazione trovata: %s", key);
                                 log.error(errorMessage);
                                 throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR,
                                         AppErrorCodeEnum.BPMN_INTERNAL_ERROR);
@@ -225,7 +225,7 @@ public class BpmnResource {
                             if (Objects.isNull(resourceFile) || StringUtils.isBlank(
                                     resourceFile.getStorageKey())) {
                                 String errorMessage = String.format(
-                                        "No file associated to BPMN or no storage key found: %s", key);
+                                        "Nessun file associato a BPMN o nessuna chiave di archiviazione trovata: %s", key);
                                 log.error(errorMessage);
                                 throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR,
                                         AppErrorCodeEnum.BPMN_INTERNAL_ERROR);
@@ -276,7 +276,7 @@ public class BpmnResource {
                                                         .transformToUni(bpmn3 -> Uni.createFrom()
                                                                 .item(this.bpmnVersionMapper.toDTO(bpmn3.get())));
                                             }
-                                            throw new AtmLayerException("No runnable BPMN found for selection",
+                                            throw new AtmLayerException("Nessun BPMN eseguibile trovato per la selezione",
                                                     Response.Status.BAD_REQUEST,
                                                     AppErrorCodeEnum.NO_BPMN_FOUND_FOR_CONFIGURATION);
                                         }));

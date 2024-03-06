@@ -7,7 +7,6 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
-import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
@@ -77,7 +76,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                 .onItem()
                 .transform(Unchecked.function(optionalResource -> {
                     if (optionalResource.isEmpty()) {
-                        String errorMessage = String.format("Resource with Id %s does not exist", uuid);
+                        String errorMessage = String.format("La risorsa con Id %s non esiste", uuid);
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST);
                     }
                     return optionalResource.get();
@@ -103,7 +102,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                 .onFailure().recoverWithUni(failure -> {
                     log.error(failure.getMessage());
                     return Uni.createFrom().failure(new AtmLayerException(
-                            "Failed to save Resource Entity in Object Store. Resource creation aborted",
+                            "Impossibile salvare l'entità risorsa nell'Object Store. Creazione della risorsa interrotta",
                             Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                 });
     }
@@ -114,7 +113,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
         return findBySHA256(resourceEntity.getSha256())
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException("A resource with the same content already exists",
+                        throw new AtmLayerException("Esiste già una risorsa con lo stesso contenuto",
                                 Response.Status.BAD_REQUEST,
                                 RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
                     }
@@ -122,7 +121,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                             .onItem()
                             .transformToUni(Unchecked.function(resource -> {
                                 if (resource.isPresent()) {
-                                    throw new AtmLayerException(String.format("Cannot upload %s: resource with same file name and path already exists",
+                                    throw new AtmLayerException(String.format("Impossibile caricare %s: la risorsa con lo stesso nome file e percorso esiste già",
                                             resourceEntity.getStorageKey()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
                                 }
 //                                if (!isExtensionValid(file, filename)) {
@@ -134,7 +133,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                                 .onItem().transformToUni(optionalResource -> {
                                                     if (optionalResource.isEmpty()) {
                                                         return Uni.createFrom().failure(
-                                                                new AtmLayerException("Sync problem on resource creation",
+                                                                new AtmLayerException("Problema di sincronizzazione sulla creazione della risorsa",
                                                                         Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
                                                     }
                                                     return Uni.createFrom().item(optionalResource.get());
@@ -150,13 +149,13 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                 .onItem()
                 .transformToUni(Unchecked.function(optionalResource -> {
                     if (optionalResource.isEmpty()) {
-                        String errorMessage = String.format("Resource with Id %s does not exist: cannot update", uuid);
+                        String errorMessage = String.format("La risorsa con Id %s non esiste: impossibile aggiornarla", uuid);
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST);
                     }
                     ResourceEntity resourceEntity = optionalResource.get();
                     String newFileSha256 = calculateSha256(file);
                     if (Objects.equals(resourceEntity.getSha256(), newFileSha256)) {
-                        throw new AtmLayerException("Resource is already present", Response.Status.BAD_REQUEST, RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
+                        throw new AtmLayerException("La risorsa è già presente", Response.Status.BAD_REQUEST, RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
                     }
                     String fileNameDb = resourceEntity.getFileName();
                     String extensionDb = FilenameUtils.getExtension(fileNameDb);
@@ -222,7 +221,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     public Uni<Void> deleteResource(UUID uuid) {
         return resourceEntityRepository.deleteById(uuid)
                 .onItem().transformToUni(deleted ->
-                        Boolean.FALSE.equals(deleted) ? Uni.createFrom().failure(new AtmLayerException(String.format("Could not delete resourcewith Id %s: either it does not exist or an error occurred during deletion", uuid),
+                        Boolean.FALSE.equals(deleted) ? Uni.createFrom().failure(new AtmLayerException(String.format("Impossibile eliminare la risorsa con Id %s: non esiste oppure si è verificato un errore durante la cancellazione", uuid),
                                 Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST)) :
                                 Uni.createFrom().voidItem());
     }

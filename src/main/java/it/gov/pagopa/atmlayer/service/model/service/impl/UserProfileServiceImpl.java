@@ -39,7 +39,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         return this.userProfileRepository.findUserId(localUserProfile.getUserId())
                 .onItem().transformToUni(Unchecked.function(x -> {
                             if(x != null){
-                                throw new AtmLayerException("A user with the same id already exists",
+                                throw new AtmLayerException("Esiste già un utente con lo stesso Id",
                                         Response.Status.BAD_REQUEST,
                                         USER_PROFILE_WITH_SAME_ID_ALREADY_EXIST);
                             }
@@ -54,7 +54,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         return this.userProfileRepository.findUserId(userId)
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if(x == null){
-                        throw new AtmLayerException(String.format("A user with the id %s not exists", userId),
+                        throw new AtmLayerException(String.format("Un utente con l'Id %s non esiste", userId),
                                 Response.Status.NOT_FOUND,
                                 NO_USER_PROFILE_FOUND_FOR_ID);
                     }

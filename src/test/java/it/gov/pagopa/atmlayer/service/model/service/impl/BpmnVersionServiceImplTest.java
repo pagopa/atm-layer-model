@@ -322,10 +322,10 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setSha256("sha256");
         File file = new File("testFile");
         ResourceFile resourceFile = new ResourceFile();
-        when(bpmnFileStorageServiceMock.uploadFile(any(BpmnVersion.class), any(File.class), any(String.class))).thenThrow(new AtmLayerException("S3 File Upload - invalid filename", Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name()));
+        when(bpmnFileStorageServiceMock.uploadFile(any(BpmnVersion.class), any(File.class), any(String.class))).thenThrow(new AtmLayerException("Caricamento file S3: filename non valido", Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name()));
         bpmnVersionServiceImpl.saveAndUpload(bpmnVersion, file, "filename")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "S3 File Upload - invalid filename");
+                .assertFailedWith(AtmLayerException.class, "Caricamento file S3: filename non valido");
         verify(bpmnFileStorageServiceMock, times(1)).uploadFile(bpmnVersion, file, "filename");
     }
 
