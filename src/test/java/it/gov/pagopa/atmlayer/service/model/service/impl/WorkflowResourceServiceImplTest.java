@@ -113,7 +113,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(undeployableWorkflowResource));
         workflowResourceService.deploy(UUID.randomUUID(), Optional.of(new WorkflowResource()))
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "The referenced Workflow Resource file can not be deployed");
+                .assertFailedWith(AtmLayerException.class, "Il file di risorsa aggiuntiva per processo a cui si fa riferimento non può essere rilasciato");
     }
 
     @Test
@@ -123,7 +123,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(deployableWorkflowResource));
         workflowResourceService.deploy(UUID.randomUUID(), Optional.empty())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Workflow Resource not found");
+                .assertFailedWith(AtmLayerException.class, "Risorsa aggiuntiva per processo non trovata");
     }
 
     @Test
@@ -137,7 +137,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.persist(any(WorkflowResource.class))).thenReturn(Uni.createFrom().item(waitingdWorkflowResource));
         workflowResourceService.deploy(expectedId, Optional.of(new WorkflowResource()))
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, ("No file associated to Workflow Resource or no storage key found: ").concat(expectedId.toString()));
+                .assertFailedWith(AtmLayerException.class, ("Nessun file associato alla risorsa aggiuntiva per processo o nessuna chiave di archiviazione trovata: ").concat(expectedId.toString()));
     }
     @Test
     void deployResourceWithBlanckStorageKey() {
@@ -152,7 +152,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.persist(any(WorkflowResource.class))).thenReturn(Uni.createFrom().item(waitingdWorkflowResource));
         workflowResourceService.deploy(expectedId, Optional.of(new WorkflowResource()))
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, ("No file associated to Workflow Resource or no storage key found: ").concat(expectedId.toString()));
+                .assertFailedWith(AtmLayerException.class, ("Nessun file associato alla risorsa aggiuntiva per processo o nessuna chiave di archiviazione trovata: ").concat(expectedId.toString()));
     }
 
     @Test
@@ -168,7 +168,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.persist(any(WorkflowResource.class))).thenReturn(Uni.createFrom().item(waitingdWorkflowResource));
         workflowResourceService.deploy(expectedId, Optional.of(new WorkflowResource()))
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, ("No file associated to Workflow Resource or no storage key found: ").concat(expectedId.toString()));
+                .assertFailedWith(AtmLayerException.class, ("Nessun file associato alla risorsa aggiuntiva per processo o nessuna chiave di archiviazione trovata: ").concat(expectedId.toString()));
     }
 
     @Test
@@ -183,7 +183,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.persist(any(WorkflowResource.class))).thenReturn(Uni.createFrom().item(waitingdWorkflowResource));
         workflowResourceService.deploy(expectedId, Optional.of(new WorkflowResource()))
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, ("No file associated to Workflow Resource or no storage key found: ").concat(expectedId.toString()));
+                .assertFailedWith(AtmLayerException.class, ("Nessun file associato alla risorsa aggiuntiva per processo o nessuna chiave di archiviazione trovata: ").concat(expectedId.toString()));
     }
 
 
@@ -203,7 +203,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceStorageService.generatePresignedUrl(any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
         workflowResourceService.deploy(expectedId, Optional.of(new WorkflowResource()))
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Error in Workflow Resource deploy. Fail to generate presigned URL");
+                .assertFailedWith(AtmLayerException.class, "Errore nel rilascio della risorsa aggiuntiva per processo. Impossibile generare presigned URL");
     }
 
     @Test
@@ -223,7 +223,7 @@ class WorkflowResourceServiceImplTest {
         when(processClient.deploy(any(String.class), any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
         workflowResourceService.deploy(expectedId, Optional.of(deployableWorkflowResource))
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Error in Workflow Resource deploy. Communication with Process Service failed");
+                .assertFailedWith(AtmLayerException.class, "Errore nel rilascio della risorsa aggiuntiva per processo. La comunicazione con Process Service non è riuscita");
     }
 
     @Test
@@ -232,7 +232,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
         workflowResourceService.setDeployInfo(expectedId, new DeployResponseDto())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, ("One or some of the referenced Workflow Resource files do not exists: ").concat(expectedId.toString()));
+                .assertFailedWith(AtmLayerException.class, ("Uno o alcuni dei file delle risorse aggiuntive per processo a cui si fa riferimento non esistono: ").concat(expectedId.toString()));
     }
 
     @Test
@@ -245,7 +245,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
         workflowResourceService.setDeployInfo(expectedId, deployResponseDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, ("Empty Process Definitions from deploy payload"));
+                .assertFailedWith(AtmLayerException.class, ("Definizioni di processo vuote dal payload di rilascio"));
     }
 
     @Test
@@ -258,7 +258,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
         workflowResourceService.setDeployInfo(expectedId, deployResponseDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, ("Empty Decision Definitions from deploy payload"));
+                .assertFailedWith(AtmLayerException.class, ("Definizioni decisionali vuote dal payload di rilascio"));
     }
 
     @Test
@@ -269,7 +269,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceStorageService.uploadFile(any(WorkflowResource.class), any(File.class), any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
         workflowResourceService.saveAndUpload(new WorkflowResource(), new File("testFile.bpmn"), "filename")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Failed to save Workflow Resource in Object Store. Workflow Resource creation aborted");
+                .assertFailedWith(AtmLayerException.class, "Impossibile salvare la risorsa aggiuntiva per processo nell'Object Store. Creazione della risorsa aggiuntiva per processo interrotta");
     }
 
     @Test
@@ -284,7 +284,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
         workflowResourceService.createWorkflowResource(workflowResource, file, "filename")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Sync problem on Workflow Resource creation");
+                .assertFailedWith(AtmLayerException.class, "Problema si sincronizzazione durante la creazione della risorsa aggiuntiva per processo");
     }
 
     @Test
@@ -305,7 +305,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
         workflowResourceService.delete(expectedId)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, ("Workflow Resource with id ").concat(expectedId.toString()).concat(" does not exists"));
+                .assertFailedWith(AtmLayerException.class, ("Risorsa aggiuntiva per processo con Id ").concat(expectedId.toString()).concat(" non esiste"));
     }
 
     @Test
@@ -354,7 +354,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
         workflowResourceService.rollback(UUID.randomUUID())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"The referenced workflow resource does not exist");
+                .assertFailedWith(AtmLayerException.class,"La risorsa aggiuntiva per processo a cui si fa riferimento non esiste");
     }
 
     @Test
@@ -364,7 +364,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
         workflowResourceService.rollback(UUID.randomUUID())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"Cannot rollback: the referenced resource is the latest version deployed");
+                .assertFailedWith(AtmLayerException.class,"Impossibile ripristinare: la risorsa a cui si fa riferimento è l'ultima versione rilasciata");
     }
 
     @Test
@@ -374,7 +374,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
         workflowResourceService.rollback(UUID.randomUUID())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"CamundaDefinitionId of the referenced resource is null: cannot rollback");
+                .assertFailedWith(AtmLayerException.class,"CamundaDefinitionId della risorsa a cui si fa riferimento è NULL: impossibile ripristinare");
     }
 
     @Test
@@ -386,7 +386,7 @@ class WorkflowResourceServiceImplTest {
         when(processClient.getDeployedResource(any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
         workflowResourceService.rollback(UUID.randomUUID())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"Error retrieving workflow resource from Process");
+                .assertFailedWith(AtmLayerException.class,"Errore durante il recupero della risorsa aggiuntiva per processo dal Process");
     }
 
 }
