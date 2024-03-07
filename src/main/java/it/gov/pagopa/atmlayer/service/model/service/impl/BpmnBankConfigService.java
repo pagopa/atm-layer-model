@@ -62,7 +62,7 @@ public class BpmnBankConfigService {
         return this.bankConfigRepository.deleteById(bpmnBankConfigPK)
                 .onItem().transformToUni(wasDeleted -> {
                     if (Boolean.FALSE.equals(wasDeleted)) {
-                        String errorMessage = String.format("Could not delete configuration %s: either it does not exist or an error occurred during deletion", bpmnBankConfigPK);
+                        String errorMessage = String.format("Impossibile cancellare la configurazione %s: non esiste oppure si è verificato un errore durante la cancellazione", bpmnBankConfigPK);
                         return Uni.createFrom().failure(new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.CONFIGURATION_DOES_NOT_EXIST));
                     }
                     return Uni.createFrom().item(true);
@@ -74,7 +74,7 @@ public class BpmnBankConfigService {
         return this.bankConfigRepository.findByConfigAndFunctionType(acquirerId, branchId, terminalId, functionType)
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.size() > 1) {
-                        throw new AtmLayerException("Multiple BPMN found for a single configuration.", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.ATMLM_500);
+                        throw new AtmLayerException("Sono stati trovati più BPMN per una singola configurazione", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.ATMLM_500);
                     }
                     return Uni.createFrom().item(x.isEmpty() ? Optional.empty() : Optional.ofNullable(x.get(0)));
                 }));
@@ -86,7 +86,7 @@ public class BpmnBankConfigService {
                 .onItem()
                 .transformToUni(Unchecked.function(configs -> {
                     if (configs.isEmpty()) {
-                        throw new AtmLayerException("No BPMN configurations found for this bank", Response.Status.NOT_FOUND, AppErrorCodeEnum.NO_CONFIGURATION_FOR_ACQUIRER);
+                        throw new AtmLayerException("Nessuna configurazione BPMN trovata per questa banca", Response.Status.NOT_FOUND, AppErrorCodeEnum.NO_CONFIGURATION_FOR_ACQUIRER);
                     } else {
                         return Uni.createFrom().item(
                                 configs.stream()

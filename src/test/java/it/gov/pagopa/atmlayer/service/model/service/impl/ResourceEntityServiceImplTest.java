@@ -50,7 +50,7 @@ class ResourceEntityServiceImplTest {
         when(resourceEntityStorageService.saveFile(any(ResourceEntity.class), any(File.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
         resourceEntityService.upload(new ResourceEntity(), file, "filename", "path")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Failed to save Resource Entity in Object Store. Resource creation aborted");
+                .assertFailedWith(AtmLayerException.class, "Impossibile salvare l'entità risorsa nell'Object Store. Creazione della risorsa interrotta");
     }
 
     @Test
@@ -63,7 +63,7 @@ class ResourceEntityServiceImplTest {
         when(resourceFileService.findByStorageKey(any(String.class))).thenReturn(Uni.createFrom().item(Optional.of(resourceFile)));
         resourceEntityService.createResource(resourceEntity, file, "filename", "path", "description")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Cannot upload storageKey: resource with same file name and path already exists");
+                .assertFailedWith(AtmLayerException.class, "Impossibile caricare storageKey: la risorsa con lo stesso nome file e percorso esiste già");
     }
 
     @Test
@@ -79,6 +79,6 @@ class ResourceEntityServiceImplTest {
         when(resourceEntityRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
         resourceEntityService.createResource(resourceEntity, file, "filename.xml", "path", "description")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Sync problem on resource creation");
+                .assertFailedWith(AtmLayerException.class, "Problema di sincronizzazione sulla creazione della risorsa");
     }
 }

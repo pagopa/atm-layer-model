@@ -20,7 +20,7 @@ public class ObjectStoreStrategy {
     public ObjectStoreService getType(ObjectStoreStrategyEnum objectStoreStrategyEnum) {
         ObjectStoreService objectStoreService = selectObjectStoreByType.getOrDefault(objectStoreStrategyEnum, null);
         if (Objects.isNull(objectStoreService)) {
-            throw new AtmLayerException(String.format("Object Store Service not Found : %s", objectStoreStrategyEnum.name()), Response.Status.INTERNAL_SERVER_ERROR, "INTERNAL");
+            throw new AtmLayerException(String.format("Object Store Service non trovato : %s", objectStoreStrategyEnum.name()), Response.Status.INTERNAL_SERVER_ERROR, "INTERNAL");
         }
         log.info("objectStoreService: {}", objectStoreService);
         return objectStoreService;

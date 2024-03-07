@@ -82,7 +82,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
                 .onItem().transformToUni(x -> this.resourceFileService.findByStorageKey(storageKey))
                 .onItem().transformToUni(Unchecked.function(y -> {
                     if (y.isEmpty()) {
-                        throw new AtmLayerException("The storage key is not referenced", Response.Status.NOT_FOUND, AppErrorCodeEnum.RESOURCE_FILE_DOES_NOT_EXIST);
+                        throw new AtmLayerException("Non viene fatto riferimento alla chiave di archiviazione", Response.Status.NOT_FOUND, AppErrorCodeEnum.RESOURCE_FILE_DOES_NOT_EXIST);
                     }
                     return Uni.createFrom().item(y.get());
                 }));

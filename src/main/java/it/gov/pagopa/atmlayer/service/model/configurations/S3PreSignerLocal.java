@@ -27,7 +27,7 @@ public class S3PreSignerLocal {
     private AwsCredentialsProvider getAwsCredentialProvider() {
         ObjectStoreProperties.Bucket bucketProps = objectStoreProperties.bucket();
         if (bucketProps.accessKey().isEmpty() || bucketProps.secretKey().isEmpty()) {
-            throw new AtmLayerException("No AWS credentials provided for local configuration", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.ATMLM_500);
+            throw new AtmLayerException("Nessuna credenziale AWS fornita per la configurazione locale", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.ATMLM_500);
         }
         AwsBasicCredentials awsBasicCredentials;
         awsBasicCredentials = AwsBasicCredentials.create(bucketProps.accessKey().get(), bucketProps.secretKey().get());
@@ -39,7 +39,7 @@ public class S3PreSignerLocal {
         log.info("Loading local AWS Presigner");
         ObjectStoreProperties.Bucket bucketProps = objectStoreProperties.bucket();
         if (bucketProps.endpointOverride().isEmpty()) {
-            throw new AtmLayerException("No AWS endpoint provided for local configuration", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.MISSING_AWS_ENDPOINT);
+            throw new AtmLayerException("Nessun endpoint AWS fornito per la configurazione locale", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.MISSING_AWS_ENDPOINT);
         }
 
         return S3Presigner.builder()
@@ -54,7 +54,7 @@ public class S3PreSignerLocal {
         log.info("Loading local AWS S3AsyncClient");
         ObjectStoreProperties.Bucket bucketProps = objectStoreProperties.bucket();
         if (bucketProps.endpointOverride().isEmpty()) {
-            throw new AtmLayerException("No AWS endpoint provided for local configuration", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.MISSING_AWS_ENDPOINT);
+            throw new AtmLayerException("Nessun endpoint AWS fornito per la configurazione locale", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.MISSING_AWS_ENDPOINT);
         }
         return S3AsyncClient.builder()
                 .region(Region.of(objectStoreProperties.bucket().region()))

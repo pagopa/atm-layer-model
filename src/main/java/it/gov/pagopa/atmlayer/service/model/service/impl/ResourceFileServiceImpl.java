@@ -47,7 +47,7 @@ public class ResourceFileServiceImpl implements ResourceFileService {
                 .onItem().transformToUni(resourceFile -> Uni.createFrom().item(Optional.ofNullable(resourceFile)))
                 .onItem().transformToUni(Unchecked.function(optionalResourceFile -> {
                     if (optionalResourceFile.isEmpty()) {
-                        throw new AtmLayerException("The referenced resource does not exist: cannot retrieve storage key", Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST);
+                        throw new AtmLayerException("La risorsa di riferimento non esiste: impossibile recuperare la chiave di archiviazione", Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST);
                     }
                     return Uni.createFrom().item(optionalResourceFile.get().getStorageKey());
                 }));

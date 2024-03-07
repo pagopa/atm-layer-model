@@ -33,17 +33,17 @@ public class BpmnEntityValidator {
                     Set<BpmnVersionPK> extractedKeys = list.stream().map(x -> new BpmnVersionPK(x.getBpmnId(), x.getModelVersion())).collect(Collectors.toSet());
                     Set<BpmnVersion> notDeployedBpmnFiles = list.stream().filter(bpmnVersion -> !bpmnVersion.getStatus().equals(StatusEnum.DEPLOYED)).collect(Collectors.toSet());
                     if (!CollectionUtils.isNullOrEmpty(notDeployedBpmnFiles)) {
-                        String errorMessage = String.format("One or some of the referenced BPMN files are not deployed: %s", notDeployedBpmnFiles.stream().map(x -> new BpmnVersionPK(x.getBpmnId(), x.getModelVersion())).collect(Collectors.toSet()));
+                        String errorMessage = String.format("Uno o alcuni dei file BPMN a cui si fa riferimento non sono rilascati: %s", notDeployedBpmnFiles.stream().map(x -> new BpmnVersionPK(x.getBpmnId(), x.getModelVersion())).collect(Collectors.toSet()));
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_NOT_DEPLOYED);
                     }
                     Set<BpmnVersion> notValidFunctionTypeBpmnFiles = list.stream().filter(bpmnVersion -> !bpmnVersion.getFunctionType().equals(functionType)).collect(Collectors.toSet());
                     if (!CollectionUtils.isNullOrEmpty(notValidFunctionTypeBpmnFiles)) {
-                        String errorMessage = String.format("One or some of the referenced BPMN do not have functionType %s: %s", functionType, notValidFunctionTypeBpmnFiles.stream().map(x -> new BpmnVersionPK(x.getBpmnId(), x.getModelVersion())).collect(Collectors.toSet()));
+                        String errorMessage = String.format("Uno o alcuni dei file BPMN a cui si fa riferimento non hanno tipo di funzione %s: %s", functionType, notValidFunctionTypeBpmnFiles.stream().map(x -> new BpmnVersionPK(x.getBpmnId(), x.getModelVersion())).collect(Collectors.toSet()));
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FUNCTION_TYPE_DIFFERENT_FROM_REQUESTED);
                     }
                     Set<BpmnVersionPK> missingBpmn = ids.stream().filter(e -> !extractedKeys.contains(e)).collect(Collectors.toSet());
                     if (!CollectionUtils.isNullOrEmpty(missingBpmn)) {
-                        String errorMessage = String.format("One or some of the referenced BPMN files do not exists: %s", missingBpmn);
+                        String errorMessage = String.format("Uno o alcuni dei file BPMN a cui si fa riferimento non esistono: %s", missingBpmn);
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST);
                     }
 

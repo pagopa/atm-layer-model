@@ -44,7 +44,7 @@ public class BpmnUtils {
         bpmnBankConfigs.add(bpmnBankConfigAcquirerDefault);
         getBranchConfig(bpmnAssociationDto, acquirerId, functionType, bpmnBankConfigs);
         if (checkBankConfigsDuplicates(bpmnBankConfigs)) {
-            throw new AtmLayerException("Duplicate triplets in input body", Response.Status.BAD_REQUEST, DUPLICATE_ASSOCIATION_CONFIGS);
+            throw new AtmLayerException("Triplette duplicate nel corpo di input", Response.Status.BAD_REQUEST, DUPLICATE_ASSOCIATION_CONFIGS);
         }
         return bpmnBankConfigs;
     }
@@ -111,7 +111,7 @@ public class BpmnUtils {
 
     public static BankConfigTripletDto validateBankConfigTriplet(BankConfigTripletDto bankConfigTripletDto) {
         if ((StringUtils.isEmpty(bankConfigTripletDto.getAcquirerId()) && (!StringUtils.isEmpty(bankConfigTripletDto.getBranchId()) || !StringUtils.isEmpty(bankConfigTripletDto.getTerminalId()))) || StringUtils.isEmpty(bankConfigTripletDto.getBranchId()) && !StringUtils.isEmpty(bankConfigTripletDto.getTerminalId())) {
-            throw new AtmLayerException("AcquirerId must be specified for BranchId, and BranchId must be specified for TerminalId", Response.Status.BAD_REQUEST, ILLEGAL_CONFIGURATION_TRIPLET);
+            throw new AtmLayerException("AcquirerId deve essere specificato per BranchId, e BranchId deve essere specificato per TerminalId", Response.Status.BAD_REQUEST, ILLEGAL_CONFIGURATION_TRIPLET);
         }
         if (StringUtils.isEmpty(bankConfigTripletDto.getBranchId())) {
             bankConfigTripletDto.setBranchId(BankConfigUtilityValues.NULL_VALUE.getValue());
