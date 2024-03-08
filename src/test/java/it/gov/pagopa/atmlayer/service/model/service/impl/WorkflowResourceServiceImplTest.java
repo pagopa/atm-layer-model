@@ -325,7 +325,7 @@ class WorkflowResourceServiceImplTest {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
         workflowResourceService.update(UUID.randomUUID(), file,false)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "The referenced Workflow Resource file does not exist");
+                .assertFailedWith(AtmLayerException.class, "La risorsa aggiuntiva di processo indicata non esiste");
     }
 
     @Test
