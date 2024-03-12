@@ -1,10 +1,14 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
 @AllArgsConstructor
+@Getter
+@Setter
 public class BankConfigTripletDto {
     private String acquirerId;
     private String branchId;

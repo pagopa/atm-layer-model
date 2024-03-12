@@ -35,7 +35,7 @@ public class FileUtilities {
                 return extractIdValueFromJson(file, resourceTypeEnum);
             }
             default ->
-                    throw new AtmLayerException("File not supported", Response.Status.NOT_ACCEPTABLE, CANNOT_EXTRACT_FILE_DEFINITION_KEY);
+                    throw new AtmLayerException("File non supportato", Response.Status.NOT_ACCEPTABLE, CANNOT_EXTRACT_FILE_DEFINITION_KEY);
         }
     }
 
@@ -56,7 +56,7 @@ public class FileUtilities {
         }
         String definitionKey = definitionsElement.getAttribute(resourceTypeEnum.getAttribute());
         if (definitionKey.isBlank()) {
-            throw new AtmLayerException("Failed to find definition key file", Response.Status.NOT_ACCEPTABLE, BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY);
+            throw new AtmLayerException("Fallito a trovare il file della chiave di definizione", Response.Status.NOT_ACCEPTABLE, BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY);
         }
         return definitionKey;
     }

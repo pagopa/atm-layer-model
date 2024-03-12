@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 93.31%               |
-| :heavy_check_mark: Number of Lines Covered | 2035    |
-| :x: Number of Lines Missed  | 146     |
-| Total Number of Lines   | 2181     |
+| Code Coverage %         | 93.36%               |
+| :heavy_check_mark: Number of Lines Covered | 2209    |
+| :x: Number of Lines Missed  | 157     |
+| Total Number of Lines   | 2366     |
 
 
 ## Details:
@@ -614,11 +614,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceServiceImpl.java
+:x: WorkflowResourceServiceImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -692,7 +692,7 @@
         
 #### Lines Missed:
         
-- Line #131
+- Line #130
 ```
         } catch (Exception e) {
 ```
@@ -1164,6 +1164,26 @@
 <details>
     <summary>
 :x: BpmnAssociationDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: FileS3Dto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: BankConfigDeleteDto.java
     </summary>
 
         

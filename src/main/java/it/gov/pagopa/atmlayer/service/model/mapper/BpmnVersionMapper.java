@@ -27,7 +27,8 @@ public abstract class BpmnVersionMapper {
 
     public BpmnVersion toEntityCreation(BpmnCreationDto bpmnCreationDto) throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = new BpmnVersion();
-        bpmnVersion.setFunctionType(bpmnCreationDto.getFunctionType());
+        bpmnVersion.setDescription(bpmnCreationDto.getDescription());
+        bpmnVersion.setFunctionType(bpmnCreationDto.getFunctionType().toUpperCase());
         bpmnVersion.setStatus(StatusEnum.CREATED);
         bpmnVersion.setSha256(FileUtilities.calculateSha256(bpmnCreationDto.getFile()));
         bpmnVersion.setDeployedFileName(bpmnCreationDto.getFilename().concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension()));
@@ -68,7 +69,8 @@ public abstract class BpmnVersionMapper {
 
     public BpmnVersion toEntityUpgrade(BpmnUpgradeDto bpmnUpgradeDto, Long version, String definitionKey) throws NoSuchAlgorithmException, IOException {
         BpmnVersion bpmnVersion = new BpmnVersion();
-        bpmnVersion.setFunctionType(bpmnUpgradeDto.getFunctionType());
+        bpmnVersion.setFunctionType(bpmnUpgradeDto.getFunctionType().toUpperCase());
+        bpmnVersion.setDescription(bpmnUpgradeDto.getDescription());
         bpmnVersion.setStatus(StatusEnum.CREATED);
         bpmnVersion.setSha256(FileUtilities.calculateSha256(bpmnUpgradeDto.getFile()));
         bpmnVersion.setDeployedFileName(bpmnUpgradeDto.getFilename().concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension()));

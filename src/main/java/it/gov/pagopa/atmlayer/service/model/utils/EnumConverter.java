@@ -15,7 +15,7 @@ public class EnumConverter {
         try{
             return S3ResourceTypeEnum.valueOf(String.valueOf(specificEnum));
         } catch (Exception e) {
-            throw new AtmLayerException("Resource Type not allowed", Response.Status.NOT_ACCEPTABLE, AppErrorCodeEnum.ATMLM_500);
+            throw new AtmLayerException("Tipo di risorsa non consentito", Response.Status.NOT_ACCEPTABLE, AppErrorCodeEnum.ATMLM_500);
         }
     }
 }

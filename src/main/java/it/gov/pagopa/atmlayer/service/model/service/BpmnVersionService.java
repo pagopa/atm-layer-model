@@ -1,6 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.model.dto.BankConfigDeleteDto;
+import it.gov.pagopa.atmlayer.service.model.dto.BankConfigTripletDto;
 import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
@@ -47,4 +49,10 @@ public interface BpmnVersionService {
     Uni<PageInfo<BpmnVersion>> findBpmnFiltered(int pageIndex, int pageSize, String functionType, String modelVersion, String definitionVersionCamunda,
                                                 UUID bpmnId, UUID deploymentId, String camundaDefinitionId, String definitionKey, String deployedFileName,
                                                 String resource, String sha256, StatusEnum status, String acquirerId, String branchId, String terminalId, String filename);
+
+    Uni<BpmnBankConfig> addSingleAssociation(BpmnVersionPK bpmnVersionPK, BankConfigTripletDto bankConfigTripletDto);
+
+    Uni<Void> deleteSingleAssociation(BankConfigDeleteDto bankConfigDeleteDto);
+
+    Uni<BpmnBankConfig> replaceSingleAssociation(BpmnVersionPK bpmnVersionPK, BankConfigTripletDto bankConfigTripletDto);
 }

@@ -32,4 +32,8 @@ public interface ResourceEntityService {
     Uni<List<ResourceEntity>> getAll();
 
     Uni<PageInfo<ResourceEntity>> findResourceFiltered(int pageIndex, int pageSize, UUID resourceId, String sha256, NoDeployableResourceType noDeployableResourceType, String fileName, String storageKey, String extension);
+
+    Uni<Void> disable(UUID uuid);
+
+    Uni<Void> deleteResource(UUID resourceId);
 }

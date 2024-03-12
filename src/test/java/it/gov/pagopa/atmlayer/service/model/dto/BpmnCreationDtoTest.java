@@ -24,13 +24,15 @@ class BpmnCreationDtoTest {
         Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toFile());
     actualBpmnCreationDto.setFilename("foo.txt");
     actualBpmnCreationDto.setFunctionType("MENU");
+    actualBpmnCreationDto.setDescription("description");
     String actualToStringResult = actualBpmnCreationDto.toString();
     assertEquals("foo.txt", actualBpmnCreationDto.getFilename());
     assertEquals("MENU", actualBpmnCreationDto.getFunctionType());
+    assertEquals("description",actualBpmnCreationDto.getDescription());
     assertEquals(
         String.join("", "BpmnCreationDto(file=",
             Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toString(),
-            ", filename=foo.txt, functionType=MENU)"),
+            ", filename=foo.txt, functionType=MENU, description=description)"),
         actualToStringResult);
   }
 

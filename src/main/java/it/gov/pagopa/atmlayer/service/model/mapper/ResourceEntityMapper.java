@@ -32,6 +32,7 @@ public abstract class ResourceEntityMapper {
                 resourceCreationDto.getResourceType(),resourceCreationDto.getPath(),resourceCreationDto.getFilename()
         ));
         resourceEntity.setDescription(resourceCreationDto.getDescription());
+        resourceEntity.setEnabled(true);
         return resourceEntity;
     }
 

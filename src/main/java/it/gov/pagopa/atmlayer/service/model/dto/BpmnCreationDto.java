@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.FormParam;
@@ -26,4 +27,8 @@ public class BpmnCreationDto {
     @FormParam("functionType")
     @NotNull(message = "field is required")
     private String functionType;
+
+    @FormParam("description")
+    @Nullable
+    private String description;
 }

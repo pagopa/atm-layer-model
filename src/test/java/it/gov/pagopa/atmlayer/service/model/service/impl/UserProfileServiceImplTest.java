@@ -48,7 +48,7 @@ class UserProfileServiceImplTest {
         when(userProfileService.findByUserId(any(String.class))).thenReturn(Uni.createFrom().item(userProfile));
         userProfileService.createUser(userProfileDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "A user with the same id already exists");
+                .assertFailedWith(AtmLayerException.class, "Esiste già un utente con lo stesso Id");
     }
 
     @Test
@@ -59,6 +59,6 @@ class UserProfileServiceImplTest {
         when(userProfileRepository.findUserId(any(String.class))).thenReturn(Uni.createFrom().nullItem());
         userProfileService.deleteUser(userId)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "A user with the id email@domain.com not exists");
+                .assertFailedWith(AtmLayerException.class, "Un utente con l'Id email@domain.com non esiste");
     }
 }
