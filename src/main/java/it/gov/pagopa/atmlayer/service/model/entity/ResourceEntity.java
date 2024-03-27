@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -21,12 +22,15 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @Table(name = "resource_entity")
+@Where(clause = "enabled = true")
 public class ResourceEntity extends PanacheEntityBase implements Serializable {
     @Column(name = "resource_id", nullable = false, updatable = false)
     @Id
     private UUID resourceId;
     @Column(name = "sha256", unique = true)
     private String sha256;
+    @Column(name = "enabled", columnDefinition = "boolean default true")
+    private Boolean enabled;
     @Column(name = "resource_type")
     @Enumerated(EnumType.STRING)
     NoDeployableResourceType noDeployableResourceType;
@@ -49,6 +53,8 @@ public class ResourceEntity extends PanacheEntityBase implements Serializable {
     @Transient
     @Getter(AccessLevel.NONE)
     private String cdnUrl;
+    @Column(name = "description")
+    private String description;
 
     @PrePersist
     public void generateUUID() {

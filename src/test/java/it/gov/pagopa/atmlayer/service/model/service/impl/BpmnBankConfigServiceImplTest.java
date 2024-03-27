@@ -93,7 +93,7 @@ class BpmnBankConfigServiceImplTest {
         when(bankConfigRepository.findByConfigAndFunctionType(any(String.class), any(String.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().item(expectedList));
         bankConfigService.findByConfigurationsAndFunction("acq", "branch", "terminal", "function")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Multiple BPMN found for a single configuration.");
+                .assertFailedWith(AtmLayerException.class, "Sono stati trovati più BPMN per una singola configurazione");
     }
 
     @Test
@@ -123,7 +123,7 @@ class BpmnBankConfigServiceImplTest {
         when(bankConfigRepository.findByAcquirerId(any(String.class))).thenReturn(Uni.createFrom().item(expectedList));
         bankConfigService.findByAcquirerId("acquirer")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"No BPMN configurations found for this bank");
+                .assertFailedWith(AtmLayerException.class,"Nessuna configurazione BPMN trovata per questa banca");
     }
 
 

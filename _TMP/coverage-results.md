@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 97.36%               |
-| :heavy_check_mark: Number of Lines Covered | 1622    |
-| :x: Number of Lines Missed  | 44     |
-| Total Number of Lines   | 1666     |
+| Code Coverage %         | 93.36%               |
+| :heavy_check_mark: Number of Lines Covered | 2209    |
+| :x: Number of Lines Missed  | 157     |
+| Total Number of Lines   | 2366     |
 
 
 ## Details:
@@ -79,11 +79,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityResource.java
+:x: ResourceEntityResource.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -100,6 +100,18 @@
 </details>
 
     
+
+<details>
+    <summary>
+:heavy_check_mark: UserProfileResource.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
 ### it/gov/pagopa/atmlayer/service/model/mapper
 
 <details>
@@ -109,6 +121,22 @@
 
         
 #### Lines Missed:
+        
+- Line #39
+```
+        catch ( DatatypeConfigurationException ex ) {
+```
+</details>
+
+    
+
+<details>
+    <summary>
+:heavy_check_mark: UserProfileMapper.java
+    </summary>
+
+        
+#### All Lines Covered!
         
 </details>
 
@@ -138,7 +166,19 @@
 
 <details>
     <summary>
-:x: BpmnVersionMapper.java
+:heavy_check_mark: BpmnVersionMapper.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: UserProfileMapperImpl.java
     </summary>
 
         
@@ -162,11 +202,11 @@
 
 <details>
     <summary>
-:x: WorkflowResourceMapper.java
+:heavy_check_mark: WorkflowResourceMapper.java
     </summary>
 
         
-#### Lines Missed:
+#### All Lines Covered!
         
 </details>
 
@@ -196,12 +236,16 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceMapperImpl.java
+:x: WorkflowResourceMapperImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
+- Line #38
+```
+        catch ( DatatypeConfigurationException ex ) {
+```
 </details>
 
     
@@ -259,6 +303,18 @@
 
 <details>
     <summary>
+:x: UserProfileRepository.java
+    </summary>
+
+        
+#### Lines Missed:
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: BpmnBankConfigRepository.java
     </summary>
 
@@ -303,11 +359,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityRepository.java
+:x: ResourceEntityRepository.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -495,6 +551,16 @@
 </details>
 
     
+
+<details>
+    <summary>
+:x: ResourceFrontEndDTO.java
+    </summary>
+
+        
+</details>
+
+    
 ### it/gov/pagopa/atmlayer/service/model/exception
 
 <details>
@@ -548,11 +614,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: WorkflowResourceServiceImpl.java
+:x: WorkflowResourceServiceImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -565,6 +631,18 @@
 
         
 #### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: UserProfileServiceImpl.java
+    </summary>
+
+        
+#### Lines Missed:
         
 </details>
 
@@ -614,7 +692,7 @@
         
 #### Lines Missed:
         
-- Line #131
+- Line #130
 ```
         } catch (Exception e) {
 ```
@@ -771,6 +849,18 @@
 
 <details>
     <summary>
+:heavy_check_mark: UserProfileEnum.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :heavy_check_mark: NoDeployableResourceType.java
     </summary>
 
@@ -913,6 +1003,16 @@
 
 <details>
     <summary>
+:x: UserProfile.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: WorkflowResource.java
     </summary>
 
@@ -943,6 +1043,18 @@
 
     
 ### it/gov/pagopa/atmlayer/service/model/validators
+
+<details>
+    <summary>
+:heavy_check_mark: UserProfileValidator.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
 
 <details>
     <summary>
@@ -990,6 +1102,16 @@
 <details>
     <summary>
 :x: BpmnUpgradeDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: UserProfileAllDto.java
     </summary>
 
         
@@ -1051,6 +1173,26 @@
 
 <details>
     <summary>
+:x: FileS3Dto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: BankConfigDeleteDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: ResourceCreationDto.java
     </summary>
 
@@ -1081,7 +1223,27 @@
 
 <details>
     <summary>
+:x: UserProfileDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: WorkflowResourceCreationDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: UserProfileCreationDto.java
     </summary>
 
         
@@ -1163,6 +1325,16 @@
 <details>
     <summary>
 :x: ResourceEntityService.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: UserProfileService.java
     </summary>
 
         

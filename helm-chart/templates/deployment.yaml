@@ -9,7 +9,7 @@ metadata:
     {{- toYaml .Values.deployment.annotations | nindent 4 }}
 
 spec:
-  {{- if .Values.autoscaling.disabled -}}
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
@@ -23,12 +23,14 @@ spec:
     spec:
       serviceAccountName: {{ include "atm-layer-model.serviceAccountName" . }}
       volumes:
+      {{- if .Values.secretProviderClass.enabled }}
       - name: secrets-store-inline
         csi:
           driver: secrets-store.csi.k8s.io
           readOnly: true 
           volumeAttributes:
             secretProviderClass: {{ .Values.secretProviderClass.name }}
+      {{- end }}
       containers:
         - name: {{ .Values.deployment.name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -80,18 +82,12 @@ spec:
                   name: {{ .Values.cdn.credentialsSecretName }}
                   key: {{ .Values.cdn.credentialsSecretKeys.cdn_base_path }}
           volumeMounts:
+          {{- if .Values.secretProviderClass.enabled }}
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"
             readOnly: true
-          {{- if .Values.autoscaling.enabled }}
-          resources:
-            limits:
-              cpu: {{ .Values.autoscaling.cpuLimits }}
-              memory: {{ .Values.autoscaling.memoryLimits }}
-            requests:
-              cpu: {{ .Values.autoscaling.cpuRequest }}
-              memory: {{ .Values.autoscaling.memoryRequests }}
           {{- end }}
-
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
   strategy:
     type: Recreate

@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.FormParam;
@@ -19,11 +20,15 @@ public class BpmnCreationDto {
     private File file;
 
     @FormParam("filename")
-    @NotNull(message = "filename  is required")
+    @NotNull(message = "field is required")
     @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "deve essere della forma ${regexp} e non contenere l'estensione del file")
     private String filename;
 
     @FormParam("functionType")
-    @NotNull(message = "function type is required")
+    @NotNull(message = "field is required")
     private String functionType;
+
+    @FormParam("description")
+    @Nullable
+    private String description;
 }

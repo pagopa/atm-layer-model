@@ -2,9 +2,11 @@ package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnBankConfigDTO;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import org.mapstruct.*;
 
 import java.util.Collection;
+import java.util.List;
 
 @Mapper(componentModel = "cdi", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface BpmnConfigMapper {
@@ -26,4 +28,12 @@ public interface BpmnConfigMapper {
 
     @IterableMapping(qualifiedByName = "toBpmnBankConfigDTO")
     Collection<BpmnBankConfigDTO> toDTOList(Collection<BpmnBankConfig> bpmnBankConfig);
+
+    @IterableMapping(qualifiedByName = "toBpmnBankConfigDTO")
+    @Named("toBpmnBankConfigDTOList")
+    List<BpmnBankConfigDTO> toDTOonlyList(List<BpmnBankConfig> bpmnBankConfig);
+
+    @Mapping(source = "results", target = "results", qualifiedByName = "toBpmnBankConfigDTOList")
+    PageInfo<BpmnBankConfigDTO> toDTOListPaged(PageInfo<BpmnBankConfig> pagedBankConfig);
+
 }

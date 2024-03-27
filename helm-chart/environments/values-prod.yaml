@@ -29,11 +29,6 @@ database:
     username: USERNAME_DB
     password: PASSWORD_DB
 
-tracing:
-  enabled: "true"
-  endpointBasePath: "appmesh-jaeger.kube-system.svc.cluster.local:9411"
-  enableJDBCMonitoring: "true"
-
 objectStore:
   region: eu-south-1
   type: AWS_S3

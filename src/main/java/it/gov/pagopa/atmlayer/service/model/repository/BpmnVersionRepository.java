@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
 public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion, BpmnVersionPK> {
     public Uni<PageInfo<BpmnVersion>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
         String queryFilters = params.keySet().stream().map(key -> switch (key) {
-            case "modelVersion", "definitionVersionCamunda", "bpmnId" -> ("b." + key + " = :" + key);
-            case "acquirerId", "branchId", "terminalId" -> ("bc.bpmnBankConfigPK." + key + " = :" + key);
-            case "fileName" -> ("b.resourceFile." + key + " LIKE concat(concat('%', :" + key + "), '%')");
-            default -> ("b." + key + " LIKE concat(concat('%', :" + key + "), '%')");
+            case "modelVersion", "definitionVersionCamunda", "bpmnId", "status" -> ("b." + key + " = :" + key);
+            case "acquirerId", "branchId", "terminalId" -> ("lower(bc.bpmnBankConfigPK." + key + ") = lower(:" + key + ")");
+            case "fileName" -> ("lower(b.resourceFile." + key + ") LIKE lower(concat(concat(:" + key + "), '%'))");
+            default -> ("lower(b." + key + ") LIKE lower(concat(concat(:" + key + "), '%'))");
         }).collect(Collectors.joining(" and "));
-        PanacheQuery<BpmnVersion> queryResult = find(("select distinct b from BpmnVersion b").concat(!params.containsKey("acquirerId") ? "" : " join BpmnBankConfig bc on b.bpmnId = bc.bpmnBankConfigPK.bpmnId and b.modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank() ? "" : " where " + queryFilters), params).page(Page.of(pageIndex, pageSize));
+        PanacheQuery<BpmnVersion> queryResult = find(("select distinct b from BpmnVersion b").concat(!params.containsKey("acquirerId") ? "" : " join BpmnBankConfig bc on b.bpmnId = bc.bpmnBankConfigPK.bpmnId and b.modelVersion = bc.bpmnBankConfigPK.bpmnModelVersion").concat(queryFilters.isBlank() ? "" : " where " + queryFilters).concat(" order by b.lastUpdatedAt DESC"), params).page(Page.of(pageIndex, pageSize));
         return queryResult.count()
                 .onItem().transformToUni(count -> {
                     int totalCount = count.intValue();

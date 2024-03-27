@@ -24,6 +24,6 @@ class EnumConverterTest {
   void testInvalidEnumConversion() {
     ObjectStoreStrategyEnum invalidEnum = ObjectStoreStrategyEnum.AWS_S3;
     AtmLayerException exception = Assertions.assertThrows(AtmLayerException.class, () -> EnumConverter.convertEnum(invalidEnum));
-    Assertions.assertEquals("Resource Type not allowed", exception.getMessage());
+    Assertions.assertEquals("Tipo di risorsa non consentito", exception.getMessage());
   }
 }

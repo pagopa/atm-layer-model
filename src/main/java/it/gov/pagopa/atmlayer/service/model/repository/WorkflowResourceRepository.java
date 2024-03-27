@@ -32,11 +32,11 @@ public class WorkflowResourceRepository implements PanacheRepositoryBase<Workflo
 
     public Uni<PageInfo<WorkflowResource>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
         String queryFilters = params.keySet().stream().map(key -> switch (key) {
-            case "fileName" -> ("b.resourceFile." + key + " LIKE concat(concat('%', :" + key + "), '%')");
-            case "definitionVersionCamunda", "workflowResourceId", "deploymentId" -> ("b." + key + " = :" + key);
-            default -> ("b." + key + " LIKE concat(concat('%', :" + key + "), '%')");
+            case "fileName" -> ("lower(b.resourceFile." + key + ") LIKE lower(concat(concat(:" + key + "), '%'))");
+            case "definitionVersionCamunda", "workflowResourceId", "deploymentId", "status" -> ("b." + key + " = :" + key);
+            default -> ("lower(b." + key + ") LIKE lower(concat(concat(:" + key + "), '%'))");
         }).collect(Collectors.joining(" and "));
-        PanacheQuery<WorkflowResource> queryResult = find(("select b from WorkflowResource b").concat(queryFilters.isBlank() ? "" : " where " + queryFilters), params).page(Page.of(pageIndex, pageSize));
+        PanacheQuery<WorkflowResource> queryResult = find(("select b from WorkflowResource b").concat(queryFilters.isBlank() ? "" : " where " + queryFilters).concat(" order by b.lastUpdatedAt DESC"), params).page(Page.of(pageIndex, pageSize));
         return queryResult.count()
                 .onItem().transformToUni(count -> {
                     int totalCount = count.intValue();

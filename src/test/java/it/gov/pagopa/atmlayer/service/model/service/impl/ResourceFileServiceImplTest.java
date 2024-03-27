@@ -78,7 +78,7 @@ class ResourceFileServiceImplTest {
         when(resourceFileRepository.findByResourceId(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
         resourceFileService.getStorageKey(resourceEntity)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "The referenced resource does not exist: cannot retrieve storage key");
+                .assertFailedWith(AtmLayerException.class, "La risorsa di riferimento non esiste: impossibile recuperare la chiave di archiviazione");
     }
 }
 

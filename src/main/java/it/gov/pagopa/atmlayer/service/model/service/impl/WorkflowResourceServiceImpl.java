@@ -2,21 +2,29 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployResponseDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedBPMNProcessDefinitionDto;
 import it.gov.pagopa.atmlayer.service.model.dto.DeployedDMNDecisionDefinitionDto;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceFileRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.WorkflowResourceRepository;
+import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceStorageService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -30,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,6 +49,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOYED_FILE_WAS_NOT_RETRIEVED;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DEPLOY_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
@@ -73,7 +83,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         return this.findBySHA256(workflowResource.getSha256())
                 .onItem().transform(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException("A Workflow Resource file with the same content already exists", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
+                        throw new AtmLayerException("Esiste già un file di risorsa aggiuntiva per processo con lo stesso contenuto", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
                     }
                     return x;
                 }))
@@ -103,13 +113,26 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .onItem().transformToUni(x -> Uni.createFrom().item(Optional.ofNullable(x)));
     }
 
-    public Uni<Boolean> checkWorkflowResourceFileExistence(UUID uuid) {
+    public Uni<WorkflowResource> checkWorkflowResourceExistence(UUID uuid) {
+        return this.findById(uuid)
+                .onItem().transform(
+                        Unchecked.function(workflowResource -> {
+                            if (workflowResource.isEmpty()) {
+                                String errorMessage = String.format(
+                                        "La risorsa aggiuntiva per processo a cui si fa riferimento con Id %s non esiste", uuid);
+                                throw new AtmLayerException(errorMessage,Response.Status.BAD_REQUEST, WORKFLOW_FILE_DOES_NOT_EXIST);
+                            }
+                            return workflowResource.get();
+                        }));
+    }
+
+    public Uni<Boolean> checkWorkflowResourceFileExistenceDeployable(UUID uuid) {
         return this.findById(uuid)
                 .onItem()
                 .transform(Unchecked.function(optionalWorkflowResource -> {
                             if (optionalWorkflowResource.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced Workflow Resource files with id: %s do not exists", uuid);
+                                        "Una o alcune risorse aggiuntive per processo a cui si fa riferimento con Id %s non esiste", uuid);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         WORKFLOW_FILE_DOES_NOT_EXIST);
                             }
@@ -120,6 +143,18 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 );
     }
 
+    public Uni<ResourceFile> checkResourceFileExistence(ResourceFile resourceFile, UUID workflowResourceId) {
+        if (Objects.isNull(resourceFile) || StringUtils.isBlank(
+                resourceFile.getStorageKey())) {
+            String errorMessage = String.format(
+                    "Nessun file associato alla risorsa aggiuntiva per processo o nessuna chiave di archiviazione trovata: %s", workflowResourceId);
+            log.error(errorMessage);
+            throw new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR,
+                    AppErrorCodeEnum.WORKFLOW_RESOURCE_INTERNAL_ERROR);
+        }
+        return Uni.createFrom().item(resourceFile);
+    }
+
     @WithTransaction
     public Uni<WorkflowResource> setWorkflowResourceStatus(UUID uuid, StatusEnum status) {
         return this.findById(uuid)
@@ -127,7 +162,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .transformToUni(Unchecked.function(optionalWorkflowResource -> {
                             if (optionalWorkflowResource.isEmpty()) {
                                 String errorMessage = String.format(
-                                        "One or some of the referenced Workflow Resource files do not exists: %s", uuid);
+                                        "Uno o alcuni dei file di risorse aggiuntive per processo a cui si fa riferimento non esistono: %s", uuid);
                                 throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                         WORKFLOW_FILE_DOES_NOT_EXIST);
                             }
@@ -140,16 +175,16 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
 
     @Override
     public Uni<WorkflowResource> deploy(UUID id, Optional<WorkflowResource> workflowResource) {
-        return this.checkWorkflowResourceFileExistence(id)
+        return this.checkWorkflowResourceFileExistenceDeployable(id)
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (Boolean.FALSE.equals(x)) {
-                        String errorMessage = "The referenced Workflow Resource file can not be deployed";
+                        String errorMessage = "Il file di risorsa aggiuntiva per processo a cui si fa riferimento non può essere rilasciato";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 AppErrorCodeEnum.WORKFLOW_RESOURCE_FILE_CANNOT_BE_DEPLOYED);
                     }
                     if (workflowResource.isEmpty()) {
-                        throw new AtmLayerException("Workflow Resource not found", Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                        throw new AtmLayerException("Risorsa aggiuntiva per processo non trovata", Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
                     WorkflowResource resource = workflowResource.get();
                     DeployableResourceType resourceType = resource.getResourceType();
@@ -158,7 +193,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                             .transformToUni(workflowWaiting -> {
                                 ResourceFile resourceFile = workflowWaiting.getResourceFile();
                                 if (Objects.isNull(resourceFile) || StringUtils.isBlank(resourceFile.getStorageKey())) {
-                                    String errorMessage = String.format("No file associated to Workflow Resource or no storage key found: %s", id);
+                                    String errorMessage = String.format("Nessun file associato alla risorsa aggiuntiva per processo o nessuna chiave di archiviazione trovata: %s", id);
                                     log.error(errorMessage);
                                     return Uni.createFrom().failure
                                             (new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS));
@@ -169,7 +204,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                                             log.error(failure.getMessage());
                                             return this.setWorkflowResourceStatus(id, StatusEnum.DEPLOY_ERROR)
                                                     .onItem()
-                                                    .transformToUni(y -> Uni.createFrom().failure(new AtmLayerException("Error in Workflow Resource deploy. Fail to generate presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                                                    .transformToUni(y -> Uni.createFrom().failure(new AtmLayerException("Errore nel rilascio della risorsa aggiuntiva per processo. Impossibile generare presigned URL", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
                                         });
                             })
                             .onItem()
@@ -180,7 +215,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                                         return this.setWorkflowResourceStatus(id, StatusEnum.DEPLOY_ERROR)
                                                 .onItem()
                                                 .transformToUni(y -> Uni.createFrom()
-                                                        .failure(new AtmLayerException("Error in Workflow Resource deploy. Communication with Process Service failed", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
+                                                        .failure(new AtmLayerException("Errore nel rilascio della risorsa aggiuntiva per processo. La comunicazione con Process Service non è riuscita", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500)));
                                     }))
                             .onItem()
                             .transformToUni(response -> this.setDeployInfo(id, response));
@@ -194,7 +229,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .transformToUni(Unchecked.function(optionalWorkflowResource -> {
                     if (optionalWorkflowResource.isEmpty()) {
                         String errorMessage = String.format(
-                                "One or some of the referenced Workflow Resource files do not exists: %s", uuid);
+                                "Uno o alcuni dei file delle risorse aggiuntive per processo a cui si fa riferimento non esistono: %s", uuid);
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
@@ -204,7 +239,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         Optional<DeployedBPMNProcessDefinitionDto> optionalDeployedProcessDefinition = deployedProcessDefinitions.values()
                                 .stream().findFirst();
                         if (optionalDeployedProcessDefinition.isEmpty()) {
-                            throw new AtmLayerException("Empty Process Definitions from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
+                            throw new AtmLayerException("Definizioni di processo vuote dal payload di rilascio", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
                         }
                         DeployedBPMNProcessDefinitionDto deployedProcessInfo = optionalDeployedProcessDefinition.get();
                         workflowResource.setDefinitionVersionCamunda(deployedProcessInfo.getVersion());
@@ -218,7 +253,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                         Optional<DeployedDMNDecisionDefinitionDto> optionalDeployedDecisionDefinition = deployedDecisionDefinitions.values()
                                 .stream().findFirst();
                         if (optionalDeployedDecisionDefinition.isEmpty()) {
-                            throw new AtmLayerException("Empty Decision Definitions from deploy payload", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
+                            throw new AtmLayerException("Definizioni decisionali vuote dal payload di rilascio", Response.Status.INTERNAL_SERVER_ERROR, DEPLOY_ERROR);
                         }
                         DeployedDMNDecisionDefinitionDto deployedDecisionDefinition = optionalDeployedDecisionDefinition.get();
                         workflowResource.setDefinitionVersionCamunda(deployedDecisionDefinition.getVersion());
@@ -242,7 +277,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .onItem().transformToUni(element -> this.workflowResourceStorageService.uploadFile(workflowResource, file, filename)
                         .onFailure().recoverWithUni(failure -> {
                             log.error(failure.getMessage());
-                            return Uni.createFrom().failure(new AtmLayerException("Failed to save Workflow Resource in Object Store. Workflow Resource creation aborted", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
+                            return Uni.createFrom().failure(new AtmLayerException("Impossibile salvare la risorsa aggiuntiva per processo nell'Object Store. Creazione della risorsa aggiuntiva per processo interrotta", Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_SAVE_FILE_ERROR));
                         })
                         .onItem().transformToUni(putObjectResponse -> {
                             log.info("Completed Workflow Resource Creation");
@@ -258,17 +293,35 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         return findByDefinitionKey(definitionKey)
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException("A Workflow Resource with the same definitionKey already exists", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
+                        throw new AtmLayerException("Esiste già una risorsa aggiuntiva per processo con la stessa chiave di definizione", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CAMUNDA_DEFINITION_KEY_ALREADY_EXISTS);
                     }
                     return saveAndUpload(workflowResource, file, filename)
                             .onItem().transformToUni(workflow -> this.findById(workflow.getWorkflowResourceId())
                                     .onItem().transformToUni(optionalWorkflow -> {
                                         if (optionalWorkflow.isEmpty()) {
-                                            return Uni.createFrom().failure(new AtmLayerException("Sync problem on Workflow Resource creation", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
+                                            return Uni.createFrom().failure(new AtmLayerException("Problema si sincronizzazione durante la creazione della risorsa aggiuntiva per processo", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500));
                                         }
                                         return Uni.createFrom().item(optionalWorkflow.get());
                                     }));
                 }));
+    }
+
+    @Override
+    public Uni<Void> disable(UUID uuid) {
+        return this.setDisabledWorkflowResourceAttributes(uuid)
+                        .onItem()
+                        .transformToUni(disabledWorkflowResource -> Uni.createFrom().voidItem());
+    }
+
+    @WithTransaction
+    public Uni<WorkflowResource> setDisabledWorkflowResourceAttributes(UUID uuid) {
+        return this.checkWorkflowResourceExistence(uuid)
+                .onItem().transformToUni(workflowResource -> {
+                    workflowResource.setEnabled(false);
+                    String disabledSha = workflowResource.getSha256().concat(UtilityValues.DISABLED_FLAG.getValue()).concat(workflowResource.getWorkflowResourceId().toString());
+                    workflowResource.setSha256(disabledSha);
+                    return this.workflowResourceRepository.persist(workflowResource);
+                });
     }
 
     @WithTransaction
@@ -279,17 +332,18 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (x.isEmpty()) {
-                        throw new AtmLayerException(String.format("Workflow Resource with id %s does not exists", uuid), Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                        throw new AtmLayerException(String.format("Risorsa aggiuntiva per processo con Id %s non esiste", uuid), Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
                     if (!StatusEnum.isEditable(x.get().getStatus())) {
-                        throw new AtmLayerException(String.format("Workflow Resource with id %s is in status %s and cannot be " +
-                                "deleted. Only Workflow Resource files in status %s can be deleted", uuid, x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS);
+                        throw new AtmLayerException(String.format("Risorsa aggiuntiva per processo con Id %s è in status %s e non può essere " +
+                                "cancellata. Solamente i file delle risorse aggiuntive per processo con status %s possono essere cancellate", uuid, x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.WORKFLOW_RESOURCE_CANNOT_BE_DELETED_FOR_STATUS);
                     }
                     return Uni.createFrom().item(x.get());
                 })).onItem().transformToUni(y -> this.workflowResourceRepository.deleteById(uuid));
     }
 
     @Override
+    @WithSession
     public Uni<List<WorkflowResource>> getAll() {
         return this.workflowResourceRepository.findAll().list();
     }
@@ -298,7 +352,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
     @WithSession
     public Uni<PageInfo<WorkflowResource>> getAllFiltered(int pageIndex, int pageSize, StatusEnum status, UUID workflowResourceId, String deployedFileName, String definitionKey, DeployableResourceType resourceType, String sha256, String definitionVersionCamunda, String camundaDefinitionId, String description, String resource, UUID deploymentId, String fileName) {
         Map<String, Object> filters = new HashMap<>();
-        if (status != null) filters.put("status", status.name());
+        filters.put("status", status);
         filters.put("workflowResourceId", workflowResourceId);
         filters.put("deployedFileName", deployedFileName);
         filters.put("definitionKey", definitionKey);
@@ -333,11 +387,11 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     log.info("storage key {}", storageKey);
                     String shaUpdateFile = calculateSha256(file);
                     if (workflowFound.getSha256().equals(shaUpdateFile)) {
-                        throw new AtmLayerException("Workflow Resource already present", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
+                        throw new AtmLayerException("Risorsa aggiuntiva per processo già presente", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
                     }
                     workflowFound.setSha256(shaUpdateFile);
                     if (!workflowFound.getDefinitionKey().equals(definitionKey)) {
-                        throw new AtmLayerException(String.format("The definition key in your Workflow Resource: %s does not match the Workflow Resource you are trying to update", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
+                        throw new AtmLayerException(String.format("La chiave di definizione nella tua risorsa aggiuntiva per processo: %s non corrisponde alla risorsa aggiuntiva per processo che stai tentando di aggiornare", definitionKey), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_UPDATED);
                     }
                     if (!isRollback && workflowFound.getStatus().equals(StatusEnum.DEPLOYED)) {
                         workflowFound.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
@@ -362,22 +416,54 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                 .onItem()
                 .transformToUni(Unchecked.function(workflow -> {
                     if (workflow.isEmpty()) {
-                        throw new AtmLayerException("The referenced workflow resource does not exist", Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
+                        throw new AtmLayerException("La risorsa aggiuntiva per processo a cui si fa riferimento non esiste", Response.Status.NOT_FOUND, WORKFLOW_FILE_DOES_NOT_EXIST);
                     }
                     WorkflowResource workflowResourceToRollBack = workflow.get();
                     if (workflowResourceToRollBack.getStatus().getValue().equals(StatusEnum.DEPLOYED.getValue())) {
-                        throw new AtmLayerException("Cannot rollback: the referenced resource is the latest version deployed", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_ROLLED_BACK);
+                        throw new AtmLayerException("Impossibile ripristinare: la risorsa a cui si fa riferimento è l'ultima versione rilasciata", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_CANNOT_BE_ROLLED_BACK);
                     }
                     UUID deploymentId = workflowResourceToRollBack.getDeploymentId();
                     if (deploymentId == null) {
-                        throw new AtmLayerException("CamundaDefinitionId of the referenced resource is null: cannot rollback", Response.Status.NOT_FOUND, WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK);
+                        throw new AtmLayerException("CamundaDefinitionId della risorsa a cui si fa riferimento è NULL: impossibile ripristinare", Response.Status.NOT_FOUND, WORKFLOW_RESOURCE_NOT_DEPLOYED_CANNOT_ROLLBACK);
                     }
                     return processClient.getDeployedResource(deploymentId.toString())
                             .onFailure()
                             .recoverWithUni(exception ->
-                                    Uni.createFrom().failure(new AtmLayerException("Error retrieving workflow resource from Process", Response.Status.INTERNAL_SERVER_ERROR, DEPLOYED_FILE_WAS_NOT_RETRIEVED)))
+                                    Uni.createFrom().failure(new AtmLayerException("Errore durante il recupero della risorsa aggiuntiva per processo dal Process", Response.Status.INTERNAL_SERVER_ERROR, DEPLOYED_FILE_WAS_NOT_RETRIEVED)))
                             .onItem()
                             .transformToUni(Unchecked.function(file -> update(id, file, true)));
                 }));
+    }
+
+    @Override
+    public Multi<Buffer> download(UUID uuid) {
+        return this.checkWorkflowResourceExistence(uuid)
+                .onItem().transformToMulti(workflowResource -> {
+                    ResourceFile resourceFile = workflowResource.getResourceFile();
+                    return checkResourceFileExistence(resourceFile, uuid)
+                            .onItem().transformToMulti(resourceFile1 -> this.workflowResourceStorageService.download(resourceFile1.getStorageKey()));
+                });
+    }
+
+    @Override
+    public Uni<String> downloadForFrontEnd(UUID uuid) {
+        return this.checkWorkflowResourceExistence(uuid)
+                .onItem().transformToUni(workflowResource -> {
+                    ResourceFile resourceFile = workflowResource.getResourceFile();
+                    return checkResourceFileExistence(resourceFile, uuid)
+                            .onItem().transformToUni(resourceFile1 -> {
+                                Context context = Vertx.currentContext();
+                                return this.workflowResourceStorageService.download(resourceFile.getStorageKey())
+                                        .collect().asList()
+                                        .onItem().transform(buffers -> {
+                                            Buffer totalBuffer = Buffer.buffer();
+                                            for (Buffer buffer : buffers) {
+                                                totalBuffer.appendBuffer(buffer);
+                                            }
+                                            return Base64.getEncoder().encodeToString(totalBuffer.getBytes());
+                                        })
+                                        .emitOn(command -> context.runOnContext(x -> command.run()));
+                            });
+                });
     }
 }

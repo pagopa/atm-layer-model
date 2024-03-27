@@ -68,7 +68,7 @@ class BpmnEntityValidatorTest {
         List<BpmnVersion> bpmnVersions = List.of(bpmnVersion);
         Set<BpmnVersionPK> ids = Collections.singleton(new BpmnVersionPK(bpmnVersion.getBpmnId(), bpmnVersion.getModelVersion()));
         when(bpmnVersionService.findByPKSet(ids)).thenReturn(Uni.createFrom().item(bpmnVersions));
-        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"One or some of the referenced BPMN files are not deployed: [BpmnVersionPK(bpmnId=" + uuid + ", modelVersion=1)]");
+        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"Uno o alcuni dei file BPMN a cui si fa riferimento non sono rilascati: [BpmnVersionPK(bpmnId=" + uuid + ", modelVersion=1)]");
     }
 
     @Test
@@ -82,7 +82,7 @@ class BpmnEntityValidatorTest {
         List<BpmnVersion> bpmnVersions = List.of(bpmnVersion);
         Set<BpmnVersionPK> ids = Collections.singleton(new BpmnVersionPK(UUID.randomUUID(), 2L));
         when(bpmnVersionService.findByPKSet(ids)).thenReturn(Uni.createFrom().item(bpmnVersions));
-        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"One or some of the referenced BPMN do not have functionType validFunctionType: [BpmnVersionPK(bpmnId=" + uuid +", modelVersion=1)]");
+        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"Uno o alcuni dei file BPMN a cui si fa riferimento non hanno tipo di funzione validFunctionType: [BpmnVersionPK(bpmnId=" + uuid +", modelVersion=1)]");
     }
 
     @Test
@@ -92,7 +92,7 @@ class BpmnEntityValidatorTest {
         List<BpmnVersion> bpmnVersions = List.of(bpmnVersion);
         Set<BpmnVersionPK> ids = Collections.singleton(new BpmnVersionPK(bpmnVersion.getBpmnId(), bpmnVersion.getModelVersion()));
         when(bpmnVersionService.findByPKSet(ids)).thenReturn(Uni.createFrom().item(bpmnVersions));
-        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"One or some of the referenced BPMN files are not deployed: [BpmnVersionPK(bpmnId=null, modelVersion=1)]");
+        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"Uno o alcuni dei file BPMN a cui si fa riferimento non sono rilascati: [BpmnVersionPK(bpmnId=null, modelVersion=1)]");
         verify(bpmnVersionService, times(1)).findByPKSet(ids);
     }
 
@@ -107,6 +107,6 @@ class BpmnEntityValidatorTest {
         List<BpmnVersion> bpmnVersions = List.of(bpmnVersion);
         Set<BpmnVersionPK> ids = Collections.singleton(new BpmnVersionPK(bpmnVersion.getBpmnId(), bpmnVersion.getModelVersion()));
         when(bpmnVersionService.findByPKSet(ids)).thenReturn(Uni.createFrom().item(bpmnVersions));
-        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"One or some of the referenced BPMN do not have functionType validFunctionType: [BpmnVersionPK(bpmnId=" + uuid +", modelVersion=1)]");
+        bpmnEntityValidator.validateExistenceStatusAndFunctionType(ids, "validFunctionType").subscribe().withSubscriber(UniAssertSubscriber.create()).assertFailedWith(AtmLayerException.class,"Uno o alcuni dei file BPMN a cui si fa riferimento non hanno tipo di funzione validFunctionType: [BpmnVersionPK(bpmnId=" + uuid +", modelVersion=1)]");
     }
 }

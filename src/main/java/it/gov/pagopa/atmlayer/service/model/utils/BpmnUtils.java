@@ -11,11 +11,13 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DUPLICATE_ASSOCIATION_CONFIGS;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ILLEGAL_CONFIGURATION_TRIPLET;
 
 @ApplicationScoped
 public class BpmnUtils {
@@ -37,7 +39,7 @@ public class BpmnUtils {
         bpmnBankConfigs.add(bpmnBankConfigAcquirerDefault);
         getBranchConfig(bpmnAssociationDto, acquirerId, functionType, bpmnBankConfigs);
         if (checkBankConfigsDuplicates(bpmnBankConfigs)) {
-            throw new AtmLayerException("Duplicate triplets in input body", Response.Status.BAD_REQUEST, DUPLICATE_ASSOCIATION_CONFIGS);
+            throw new AtmLayerException("Triplette duplicate nel corpo di input", Response.Status.BAD_REQUEST, DUPLICATE_ASSOCIATION_CONFIGS);
         }
         return bpmnBankConfigs;
     }
@@ -100,5 +102,26 @@ public class BpmnUtils {
         bpmnBankConfigPK.setBranchId(branchConfig.getBranchId());
         bpmnBankConfigPK.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
         return Optional.of(bpmnBankConfigPK);
+    }
+
+    public static BankConfigTripletDto validateBankConfigTriplet(BankConfigTripletDto bankConfigTripletDto) {
+        if ((StringUtils.isEmpty(bankConfigTripletDto.getAcquirerId()) && (!StringUtils.isEmpty(bankConfigTripletDto.getBranchId()) || !StringUtils.isEmpty(bankConfigTripletDto.getTerminalId()))) || StringUtils.isEmpty(bankConfigTripletDto.getBranchId()) && !StringUtils.isEmpty(bankConfigTripletDto.getTerminalId())) {
+            throw new AtmLayerException("AcquirerId deve essere specificato per BranchId, e BranchId deve essere specificato per TerminalId", Response.Status.BAD_REQUEST, ILLEGAL_CONFIGURATION_TRIPLET);
+        }
+        if (StringUtils.isEmpty(bankConfigTripletDto.getBranchId())) {
+            bankConfigTripletDto.setBranchId(BankConfigUtilityValues.NULL_VALUE.getValue());
+        }
+        if (StringUtils.isEmpty(bankConfigTripletDto.getTerminalId())) {
+            bankConfigTripletDto.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
+        }
+        return bankConfigTripletDto;
+    }
+
+    public static BpmnBankConfig getSingleConfig(BpmnVersionPK bpmnVersionPK, String functionType, BankConfigTripletDto bankConfigTripletDto) {
+        BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
+        bpmnBankConfig.setBpmnBankConfigPK(new BpmnBankConfigPK(bpmnVersionPK.getBpmnId(), bpmnVersionPK.getModelVersion(),
+                bankConfigTripletDto.getAcquirerId(), bankConfigTripletDto.getBranchId(), bankConfigTripletDto.getTerminalId()));
+        bpmnBankConfig.setFunctionType(functionType);
+        return bpmnBankConfig;
     }
 }

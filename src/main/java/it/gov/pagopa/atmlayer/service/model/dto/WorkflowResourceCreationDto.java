@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.FormParam;
@@ -27,4 +28,8 @@ public class WorkflowResourceCreationDto {
     @FormParam("resourceType")
     @NotNull(message = "resource type is required")
     private DeployableResourceType resourceType;
+
+    @FormParam("description")
+    @Nullable
+    private String description;
 }
