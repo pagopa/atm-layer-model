@@ -435,7 +435,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @WithSession
     public Uni<BpmnVersion> getLatestVersion(UUID uuid, String functionType) {
-        return this.bpmnVersionRepository.findByIdAndFunction(uuid, functionType)
+        return this.bpmnVersionRepository.findAllByIdAndFunction(uuid, functionType)
                 .onItem()
                 .transform(list -> list.get(0))
                 .onFailure().recoverWithUni(failure -> {
