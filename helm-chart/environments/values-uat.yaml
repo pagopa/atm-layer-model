@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 2
+replicaCount: 4
 
 image:
   repository: 00000000000.dkr.ecr.eu-south-1.amazonaws.com/xxxxxxx
@@ -24,6 +24,7 @@ database:
   type: postgresql
   url: postgresql://pagopa-uat-atm-layer-rds.cluster-csdbokdg0q4t.eu-south-1.rds.amazonaws.com:5432/pagopadb?search_path=atm_layer_model_schema
   db_name: pagopadb
+  credentialsSecretEnabled: true
   credentialsSecretName: "pagopa-uat-atm-layer-model-database"
   credentialsSecretKeys:
     username: USERNAME_DB
@@ -44,6 +45,7 @@ objectStore:
 
 cdn:
   offset_path: RESOURCE/
+  credentialsSecretEnabled: true
   credentialsSecretName: "pagopa-uat-atm-layer-model-cdn-base-path"
   credentialsSecretKeys:
     cdn_base_path: CDN_BASE_PATH
@@ -120,15 +122,15 @@ resources:
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 600m
-    memory: 600Mi
-  requests:
-    cpu: 300m
-    memory: 300Mi
+  # limits:
+  #   cpu: 600m
+  #   memory: 600Mi
+  # requests:
+  #   cpu: 300m
+  #   memory: 300Mi
 
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 2
   maxReplicas: 4
   targetCPUUtilizationPercentage: 80

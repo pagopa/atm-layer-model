@@ -44,6 +44,7 @@ spec:
               value: "{{ .Values.database.type }}"
             - name: MODEL_DB_URL
               value: "{{ .Values.database.url }}"
+            {{- if .Values.database.credentialsSecretEnabled }}
             - name: MODEL_DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -54,6 +55,7 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.database.credentialsSecretName }}
                   key: {{ .Values.database.credentialsSecretKeys.password }}
+            {{- end }}
             - name: MODEL_OBJECT_STORE_REGION
               value: "{{ .Values.objectStore.region }}"
             - name: MODEL_OBJECT_STORE_TYPE
@@ -78,11 +80,13 @@ spec:
               value: "{{ .Values.tracing.enableJDBCMonitoring }}"
             - name: ALLOWED_CROSS_ORIGINS
               value: "{{ .Values.allowedCrossOrigins }}"
+            {{- if .Values.cdn.credentialsSecretEnabled }}
             - name: CDN_BASE_PATH
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.cdn.credentialsSecretName }}
                   key: {{ .Values.cdn.credentialsSecretKeys.cdn_base_path }}
+            {{- end }}
           volumeMounts:
           {{- if .Values.secretProviderClass.enabled }}
           - name: secrets-store-inline
