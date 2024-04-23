@@ -20,4 +20,11 @@ public interface ProcessClient {
     @Path("/api/v1/processes/deploy/{id}/data")
     @Produces(MediaType.APPLICATION_XML)
     Uni<File> getDeployedResource(@PathParam("id") String id);
+
+    @DELETE
+    @Path("/api/v1/processes/undeploy/{id}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    Uni<Void> undeploy(@PathParam("id") String id);
+
 }

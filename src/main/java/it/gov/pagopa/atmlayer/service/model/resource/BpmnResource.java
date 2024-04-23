@@ -178,6 +178,15 @@ public class BpmnResource {
                 .transformToUni(bpmn -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn)));
     }
 
+    @POST
+    @Path("/undeploy/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Void> deployBPMN(@PathParam("uuid") UUID uuid) {
+        return this.bpmnVersionService.undeploy(uuid)
+                .onItem()
+                .transformToUni(bpmn -> Uni.createFrom().voidItem());
+    }
+
     @GET
     @Path("/download/{uuid}/version/{version}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
