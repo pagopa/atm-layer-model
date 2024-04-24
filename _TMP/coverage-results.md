@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 92.89%               |
+| Code Coverage %         | 92.15%               |
 | :heavy_check_mark: Number of Lines Covered | 2220    |
-| :x: Number of Lines Missed  | 170     |
-| Total Number of Lines   | 2390     |
+| :x: Number of Lines Missed  | 189     |
+| Total Number of Lines   | 2409     |
 
 
 ## Details:
@@ -656,7 +656,11 @@
         
 #### Lines Missed:
         
-- Line #414
+- Line #281
+```
+                                                        .recoverWithUni(failure -> {
+```
+- Line #422
 ```
                 .transformToUni(exists -> {
 ```
