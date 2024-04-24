@@ -94,6 +94,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     }
                     return Uni.createFrom().item(x.get());
                 })).onItem().transformToUni(y -> {
+                    //todo fare la find per recuperare il deploymentId
                     processClient.undeploy(bpmnVersionPK.getBpmnId().toString());
                     return this.bpmnVersionRepository.deleteById(bpmnVersionPK);
                 });
@@ -275,7 +276,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                                         .onItem()
                                         .transformToUni(disabledShaBpmn -> {
                                             if (StatusEnum.DEPLOYED.equals(bpmnVersion.getStatus())) {
-                                                return processClient.undeploy(bpmnVersionPK.getBpmnId().toString())
+                                                return processClient.undeploy(bpmnVersion.getDeploymentId().toString())
                                                         .onFailure()
                                                         .recoverWithUni(failure -> {
                                                             log.error(failure.getMessage());

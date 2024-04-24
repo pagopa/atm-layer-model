@@ -181,7 +181,8 @@ public class BpmnResource {
     @POST
     @Path("/undeploy/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Void> deployBPMN(@PathParam("uuid") UUID uuid) {
+    public Uni<Void> undeployBPMN(@PathParam("uuid") UUID uuid) {
+        //todo fare la find per recuperare il deploymentId
         return this.bpmnVersionService.undeploy(uuid)
                 .onItem()
                 .transformToUni(bpmn -> Uni.createFrom().voidItem());
