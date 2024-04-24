@@ -23,7 +23,6 @@ public interface ProcessClient {
 
     @POST
     @Path("/api/v1/processes/undeploy/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
     Uni<Void> undeploy(@PathParam("id") String id);
 
 }
