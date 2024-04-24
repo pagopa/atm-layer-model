@@ -69,7 +69,7 @@
             "uuid": "3cecc92b-7c8a-4a79-b223-18edb185df16",
             "type": "http",
             "documentation": "",
-            "method": "delete",
+            "method": "post",
             "endpoint": "api/v1/processes/undeploy/*",
             "responses": [
                 {
