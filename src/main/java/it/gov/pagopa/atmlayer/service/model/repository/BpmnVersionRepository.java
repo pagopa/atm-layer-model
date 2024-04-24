@@ -68,6 +68,16 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
                                 .getResultList());
     }
 
+    public Uni<List<BpmnVersion>> findAllById(UUID uuid) {
+        String sql = "SELECT * FROM bpmn_version WHERE bpmn_id = :bpmnId order by model_version DESC";
+        return Panache.getSession()
+                .onItem()
+                .transformToUni(session ->
+                        session.createNativeQuery(sql, BpmnVersion.class)
+                                .setParameter("bpmnId", uuid)
+                                .getResultList());
+    }
+
     public Uni<BpmnVersion> findByDefinitionKey(String definitionKey) {
         return find("select b from BpmnVersion b where b.definitionKey = :definitionKey", Parameters.with("definitionKey", definitionKey)).firstResult();
     }

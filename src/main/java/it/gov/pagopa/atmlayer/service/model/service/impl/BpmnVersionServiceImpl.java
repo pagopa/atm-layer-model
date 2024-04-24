@@ -92,12 +92,15 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                         throw new AtmLayerException(String.format("BPMN con Id %s è nello stato %s e non può essere " +
                                 "cancellato. È possibile eliminare solo i file BPMN con stato %s", bpmnVersionPK.toString(), x.get().getStatus(), StatusEnum.getUpdatableAndDeletableStatuses()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.BPMN_CANNOT_BE_DELETED_FOR_STATUS);
                     }
+                    if (StatusEnum.DEPLOYED.equals(x.get().getStatus())) {
+                        return processClient.undeploy(x.get().getDeploymentId().toString())
+                                .onFailure()
+                                .recoverWithUni(failure -> {
+                                    throw new AtmLayerException("Errore nel undeploy del BPMN. Impossibile undeployare il BPMN", Response.Status.INTERNAL_SERVER_ERROR, BPMN_FILE_CANNOT_BE_UNDEPLOYED);
+                                });
+                    }
                     return Uni.createFrom().item(x.get());
-                })).onItem().transformToUni(y -> {
-                    //todo fare la find per recuperare il deploymentId
-                    processClient.undeploy(bpmnVersionPK.getBpmnId().toString());
-                    return this.bpmnVersionRepository.deleteById(bpmnVersionPK);
-                });
+                })).onItem().transformToUni(y -> this.bpmnVersionRepository.deleteById(bpmnVersionPK));
     }
 
     @Override
@@ -417,21 +420,16 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     }
 
     public Uni<Void> undeploy(UUID uuid) {
-        return checkBpmnFileExistenceUndeployable(uuid)
+        return bpmnVersionRepository.findAllById(uuid)
                 .onItem()
                 .transformToUni(exists -> {
-                    if (!exists) {
+                    if (exists.isEmpty()) {
                         String errorMessage = "Il file BPMN di riferimento non può essere undeployed";
                         throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
                                 BPMN_FILE_CANNOT_BE_UNDEPLOYED);
                     }
-                    return processClient.undeploy(uuid.toString());
+                    return processClient.undeploy(exists.get(0).getDeploymentId().toString());
                 });
-    }
-
-    private Uni<Boolean> checkBpmnFileExistenceUndeployable(UUID uuid) {
-        //todo  Implementare la logica per controllare se il BPMN può essere undeployed
-        return Uni.createFrom().item(Boolean.TRUE);
     }
 
 
