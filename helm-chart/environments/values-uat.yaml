@@ -82,7 +82,7 @@ deployment:
   name: pagopa-uat-atm-layer-model
   annotations:
     reloader.stakater.com/auto: "true"
-    secret.reloader.stakater.com/reload: pagopa-uat-atm-layer-model-database, , pagopa-uat-atm-layer-model-cdn-base-path
+    secret.reloader.stakater.com/reload: pagopa-uat-atm-layer-model-database, pagopa-uat-atm-layer-model-cdn-base-path
 
 service:
   name: pagopa-uat-atm-layer-model
