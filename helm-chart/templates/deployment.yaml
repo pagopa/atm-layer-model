@@ -78,8 +78,6 @@ spec:
               value: "{{ .Values.tracing.endpointBasePath }}"
             - name: TRACING_ENABLE_JDBC_MONITORING
               value: "{{ .Values.tracing.enableJDBCMonitoring }}"
-            - name: ALLOWED_CROSS_ORIGINS
-              value: "{{ .Values.allowedCrossOrigins }}"
             {{- if .Values.cdn.credentialsSecretEnabled }}
             - name: CDN_BASE_PATH
               valueFrom:

@@ -10,8 +10,7 @@ import java.io.IOException;
 
 @Provider
 public class CorsFilter implements ContainerResponseFilter {
-    @ConfigProperty(name = "app.allowed.origins")
-    String allowedOrigins;
+
     @Override
     public void filter(final ContainerRequestContext requestContext,
                        final ContainerResponseContext cres) throws IOException {

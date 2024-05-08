@@ -18,7 +18,6 @@ fullnameOverride: ""
 
 modelProcessBasePath: http://pagopa-uat-atm-layer-wf-process.pagopa.svc.cluster.local:8080
 
-allowedCrossOrigins: "*"
 
 database:
   type: postgresql
