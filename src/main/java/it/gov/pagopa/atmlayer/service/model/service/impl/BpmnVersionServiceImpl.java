@@ -72,16 +72,12 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     }
                     return x;
                 }))
-                .onItem().transformToUni(t -> {
-                    log.info("Persisting bpmn {} to database", bpmnVersion.getDeployedFileName());
-                    return this.bpmnVersionRepository.persist(bpmnVersion);
-                });
+                .onItem().transformToUni(t -> this.bpmnVersionRepository.persist(bpmnVersion));
     }
 
     @WithTransaction
     @Override
     public Uni<Boolean> delete(BpmnVersionPK bpmnVersionPK) {
-        log.info("Deleting BPMN with id {}", bpmnVersionPK.toString());
         return this.findByPk(bpmnVersionPK)
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
