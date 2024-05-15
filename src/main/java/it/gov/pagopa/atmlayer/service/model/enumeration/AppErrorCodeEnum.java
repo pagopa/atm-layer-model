@@ -60,7 +60,9 @@ public enum AppErrorCodeEnum {
     CONFIGURATION_TRIPLET_NOT_ASSOCIATED("ATMLM_4000049", "La banca/filiale/terminale indicata non ha associazioni per il tipo di funzione indicato. Creare un'associazione prima di sostituirla", CANNOT_REPLACE_ASSOCIATION),
     WORKFLOW_RESOURCE_INTERNAL_ERROR("ATMLM_4000050", "Nessun file associato alla risorsa aggiuntiva di processo o nessuna storageKey trovata", INTERNAL),
     BPMN_INTERNAL_ERROR("ATMLM_4000051", "Nessun file associato a BPMN o nessuna storageKey trovata", INTERNAL),
-    BPMN_FILE_CANNOT_BE_UNDEPLOYED("ATMLM_4000052", "La risorsa di processo indicata non può essere rilasciata", INTERNAL) ;
+    BPMN_FILE_CANNOT_BE_UNDEPLOYED("ATMLM_4000052", "La risorsa di processo indicata non può essere rilasciata", INTERNAL),
+    USER_WITH_SAME_ID_ALREADY_EXIST("ATMLM_4000053", "Un profilo utente con lo stesso id esiste già", CONSTRAINT_VIOLATION),
+    NO_USER_FOUND_FOR_ID("ATMLM_4000054", "Nessun utente trovato per l'id selezionato", NOT_EXISTING_USER_ID);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;
