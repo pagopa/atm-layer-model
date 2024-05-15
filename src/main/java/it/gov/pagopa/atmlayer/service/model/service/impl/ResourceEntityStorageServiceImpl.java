@@ -69,7 +69,6 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     @Override
     public Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath) {
         String finalPath = calculateCompletePath(resourceEntity.getNoDeployableResourceType(),relativePath);
-        log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
         return uploadFile(file, resourceEntity, fileNameWithExtension, finalPath, true);
     }
 

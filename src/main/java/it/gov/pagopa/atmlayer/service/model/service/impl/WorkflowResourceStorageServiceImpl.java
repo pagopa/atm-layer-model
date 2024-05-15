@@ -76,7 +76,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         S3ResourceTypeEnum resourceType = convertEnum(workflowResource.getResourceType());
         String path = FilenameUtils.getFullPath(storageKey);
         Context context = Vertx.currentContext();
-        log.info("Requesting to write file {} in Object Store at path  {}", CommonUtils.getFilenameWithExtensionFromStorageKey(storageKey), path);
+        log.info("Requesting to update file in Object Store");
         return objectStoreService.uploadFile(file, CommonUtils.getPathWithoutFilename(path), resourceType, CommonUtils.getFilenameWithExtensionFromStorageKey(storageKey))
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem().transformToUni(x -> this.resourceFileService.findByStorageKey(storageKey))
@@ -90,7 +90,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
 
     private Uni<ResourceFile> doUploadFile(WorkflowResource workflowResource, File file, String path, String filename, String extension, S3ResourceTypeEnum resourceType) {
         Context context = Vertx.currentContext();
-        log.info("Requesting to write file {} in Object Store at path  {}", CommonUtils.getFilenameWithExtension(filename, extension), path);
+        log.info("Requesting to write file in Object Store");
         return objectStoreService.uploadFile(file, path, resourceType, CommonUtils.getFilenameWithExtension(filename, extension))
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem()

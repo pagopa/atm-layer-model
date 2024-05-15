@@ -65,7 +65,7 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
         BpmnIdDto bpmnVersionPK = new BpmnIdDto(bpmnVersion.getBpmnId(), bpmnVersion.getModelVersion());
         String path = calculatePath(bpmnVersionPK);
         String completeName = filename.concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension());
-        log.info("Requesting to write file {} in Object Store at path  {}", file.getName(), path);
+        log.info("Requesting to upload file in Object Store");
         Context context = Vertx.currentContext();
         return objectStoreService.uploadFile(file, path, S3ResourceTypeEnum.BPMN, completeName)
                 .emitOn(command -> context.runOnContext(x -> command.run()))
