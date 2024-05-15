@@ -14,6 +14,8 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 @ApplicationScoped
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -35,6 +37,21 @@ public class UserServiceImpl implements UserService {
                     }
                     return userRepository.persist(user);
                 }));
+    }
+
+    @Override
+    @WithTransaction
+    public Uni<Boolean> deleteUser(String userId) {
+        log.info("Deleting user with userId : {}", userId);
+        return this.findById(userId)
+                .onItem()
+                .transformToUni(x -> this.userRepository.deleteById(userId));
+    }
+
+    @Override
+    @WithSession
+    public Uni<List<User>> getAllUsers() {
+        return this.userRepository.findAll().list();
     }
 
     @Override
