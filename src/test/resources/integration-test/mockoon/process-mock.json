@@ -66,6 +66,40 @@
             "responseMode": null
         },
         {
+            "uuid": "3cecc92b-7c8a-4a79-b223-18edb185df16",
+            "type": "http",
+            "documentation": "",
+            "method": "post",
+            "endpoint": "api/v1/processes/undeploy/*",
+            "responses": [
+                {
+                    "uuid": "76af7fb4-389f-447a-93ba-2a1a14c1ffe5",
+                    "body": "{}",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id"
+                }
+            ],
+            "enabled": true,
+            "responseMode": null
+        },
+        {
             "uuid": "fc77258a-82d3-4f52-87ee-edede962e596",
             "type": "http",
             "documentation": "",

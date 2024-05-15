@@ -5,18 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>it.gov.pagopa</groupId>
     <artifactId>atm-layer-model</artifactId>
-    <version>1.9.0</version>
+    <version>1.6.0-dev.18</version>
     <name>atm-layer-model</name>
     <properties>
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <jacoco.version>0.8.11</jacoco.version>
-        <lombok.version>1.18.30</lombok.version>
+        <lombok.version>1.18.26</lombok.version>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.8.4</quarkus.platform.version>
+        <quarkus.platform.version>3.2.5.Final</quarkus.platform.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <quarkus.openapi.generator.version>2.2.10</quarkus.openapi.generator.version>
         <quarkus-amazon-services.version>2.4.5</quarkus-amazon-services.version>

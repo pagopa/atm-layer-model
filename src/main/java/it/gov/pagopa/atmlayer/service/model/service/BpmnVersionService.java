@@ -38,6 +38,8 @@ public interface BpmnVersionService {
 
     Uni<BpmnVersion> deploy(BpmnVersionPK bpmnVersionPK);
 
+    Uni<Void> undeploy( UUID uuid);
+
     Uni<BpmnVersion> saveAndUpload(BpmnVersion bpmnVersion, File file, String filename);
 
     Uni<BpmnDTO> upgrade(BpmnUpgradeDto bpmnUpgradeDto);

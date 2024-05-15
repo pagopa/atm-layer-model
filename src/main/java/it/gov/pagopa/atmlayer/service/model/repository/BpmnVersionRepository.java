@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.repository;
 
+import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.hibernate.reactive.panache.PanacheQuery;
 import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
@@ -54,6 +55,27 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
         return find(
                 "select b from BpmnVersion b where b.bpmnId = :bpmnId and b.functionType = :functionType order by b.modelVersion DESC",
                 Parameters.with("bpmnId", uuid).and("functionType", functionType)).list();
+    }
+
+    public Uni<List<BpmnVersion>> findAllByIdAndFunction(UUID uuid, String functionType) {
+        String sql = "SELECT * FROM bpmn_version WHERE bpmn_id = :bpmnId AND function_type = :functionType order by model_version DESC";
+        return Panache.getSession()
+                .onItem()
+                .transformToUni(session ->
+                        session.createNativeQuery(sql, BpmnVersion.class)
+                                .setParameter("bpmnId", uuid)
+                                .setParameter("functionType", functionType)
+                                .getResultList());
+    }
+
+    public Uni<List<BpmnVersion>> findAllById(UUID uuid) {
+        String sql = "SELECT * FROM bpmn_version WHERE bpmn_id = :bpmnId order by model_version DESC";
+        return Panache.getSession()
+                .onItem()
+                .transformToUni(session ->
+                        session.createNativeQuery(sql, BpmnVersion.class)
+                                .setParameter("bpmnId", uuid)
+                                .getResultList());
     }
 
     public Uni<BpmnVersion> findByDefinitionKey(String definitionKey) {

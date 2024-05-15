@@ -18,12 +18,12 @@ fullnameOverride: ""
 
 modelProcessBasePath: http://pagopa-dev-atm-layer-wf-process.pagopa.svc.cluster.local:8080
 
-allowedCrossOrigins: "*"
 
 database:
   type: postgresql
   url: postgresql://pagopa-dev-atm-layer-rds.cluster-cyezwzpjc2tj.eu-south-1.rds.amazonaws.com:5431/pagopadb?search_path=atm_layer_model_schema
   db_name: pagopadb
+  credentialsSecretEnabled: true
   credentialsSecretName: "pagopa-dev-atm-layer-model-database"
   credentialsSecretKeys:
     username: USERNAME_DB
@@ -44,6 +44,7 @@ objectStore:
 
 cdn:
   offset_path: RESOURCE/
+  credentialsSecretEnabled: true
   credentialsSecretName: "pagopa-dev-atm-layer-model-cdn-base-path"
   credentialsSecretKeys:
     cdn_base_path: CDN_BASE_PATH

@@ -581,21 +581,21 @@ class BpmnVersionServiceImplTest {
         List<BpmnVersion> bpmnList = new ArrayList<BpmnVersion>();
         bpmnList.add(bpmnVersion1);
         bpmnList.add(bpmnVersion2);
-        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionRepoMock.findAllByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
         bpmnVersionServiceImpl.getLatestVersion(uuid, "MENU")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted().assertItem(bpmnVersion1);
-        verify(bpmnVersionRepoMock, times(1)).findByIdAndFunction(uuid, "MENU");
+        verify(bpmnVersionRepoMock, times(1)).findAllByIdAndFunction(uuid, "MENU");
     }
 
     @Test
     void testGetLatestVersionFailure() {
         UUID uuid = UUID.randomUUID();
-        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().nullItem());
+        when(bpmnVersionRepoMock.findAllByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().nullItem());
         bpmnVersionServiceImpl.getLatestVersion(uuid, "MENU")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "Non esiste alcun BPMN con l'Id e il tipo di funzione specificati");
-        verify(bpmnVersionRepoMock, times(1)).findByIdAndFunction(uuid, "MENU");
+        verify(bpmnVersionRepoMock, times(1)).findAllByIdAndFunction(uuid, "MENU");
     }
 
     @Test
@@ -618,7 +618,7 @@ class BpmnVersionServiceImplTest {
         ResourceFile resourceFile = new ResourceFile();
         BpmnDTO bpmnDTO = new BpmnDTO();
         bpmnDTO.setDeployedFileName("deployed file");
-        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionRepoMock.findAllByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
         when(bpmnVersionMapperMock.toEntityUpgrade(any(BpmnUpgradeDto.class), any(Long.class), any(String.class))).thenReturn(bpmnVersion2);
         when(bpmnVersionRepoMock.findBySHA256(any(String.class))).thenReturn(Uni.createFrom().nullItem());
         when(bpmnVersionRepoMock.persist(any(BpmnVersion.class))).thenReturn(Uni.createFrom().item(bpmnVersion2));
@@ -642,11 +642,11 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setSha256("sha256");
         List<BpmnVersion> bpmnList = new ArrayList<BpmnVersion>();
         bpmnList.add(bpmnVersion);
-        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionRepoMock.findAllByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
         bpmnVersionServiceImpl.upgrade(bpmnUpgradeDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "Le chiavi di definizione differiscono, aggiornamento BPMN rifiutato");
-        verify(bpmnVersionRepoMock, times(1)).findByIdAndFunction(bpmnUpgradeDto.getUuid(), "MENU");
+        verify(bpmnVersionRepoMock, times(1)).findAllByIdAndFunction(bpmnUpgradeDto.getUuid(), "MENU");
         verify(bpmnVersionMapperMock, never()).toEntityUpgrade(any(BpmnUpgradeDto.class), any(Long.class), any(String.class));
         verify(bpmnVersionMapperMock, never()).toDTO(any(BpmnVersion.class));
     }
@@ -663,12 +663,12 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setSha256("sha256");
         List<BpmnVersion> bpmnList = new ArrayList<BpmnVersion>();
         bpmnList.add(bpmnVersion);
-        when(bpmnVersionRepoMock.findByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
+        when(bpmnVersionRepoMock.findAllByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
         when(bpmnVersionMapperMock.toEntityUpgrade(any(BpmnUpgradeDto.class), any(Long.class), any(String.class))).thenThrow(new RuntimeException());
         bpmnVersionServiceImpl.upgrade(bpmnUpgradeDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "Errore generico calcolando SHA256");
-        verify(bpmnVersionRepoMock, times(1)).findByIdAndFunction(bpmnUpgradeDto.getUuid(), "MENU");
+        verify(bpmnVersionRepoMock, times(1)).findAllByIdAndFunction(bpmnUpgradeDto.getUuid(), "MENU");
         verify(bpmnVersionMapperMock, times(1)).toEntityUpgrade(any(BpmnUpgradeDto.class), any(Long.class), any(String.class));
         verify(bpmnVersionMapperMock, never()).toDTO(any(BpmnVersion.class));
     }

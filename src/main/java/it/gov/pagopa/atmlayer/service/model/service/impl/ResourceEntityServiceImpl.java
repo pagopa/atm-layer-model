@@ -53,7 +53,6 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     @Override
     @WithTransaction
     public Uni<ResourceEntity> save(ResourceEntity resourceEntity) {
-        log.info("Persisting resource {} to database", resourceEntity.getFileName());
         return resourceEntityRepository.persist(resourceEntity);
     }
 
