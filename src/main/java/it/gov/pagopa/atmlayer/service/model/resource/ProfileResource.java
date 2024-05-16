@@ -8,10 +8,7 @@ import it.gov.pagopa.atmlayer.service.model.service.ProfileService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
@@ -26,10 +23,34 @@ public class ProfileResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<ProfileDTO> createProfile(ProfileCreationDto profile) {
+    public Uni<ProfileDTO> createProfile(@Valid ProfileCreationDto profile) {
         return this.profileService.createProfile(profile)
                 .onItem()
                 .transform(savedProfile -> profileMapper.toDto(savedProfile));
+    }
+
+    @GET
+    @Path("/{profileId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<ProfileDTO> retrieveProfile(@PathParam("profileId") int profileId) {
+        return this.profileService.retrieveProfile(profileId)
+                .onItem()
+                .transform(retrievedProfile -> profileMapper.toDto(retrievedProfile));
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<ProfileDTO> updateProfile(@Valid ProfileCreationDto profile) {
+        return this.profileService.updateProfile(profile)
+                .onItem()
+                .transform(updatedProfile -> profileMapper.toDto(updatedProfile));
+    }
+
+    @DELETE
+    @Path("/{profileId}")
+    public Uni<Void> deleteProfile(@PathParam("profileId") int profileId) {
+        return this.profileService.deleteProfile(profileId);
     }
 }
 
