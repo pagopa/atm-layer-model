@@ -20,14 +20,18 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Table(name = "profile")
 public class Profile {
+
+    @Id
+    @Column(name = "profile_id")
+    private int profileId;
+
     @Column(name = "description")
     private String description;
-    @Id
-    @Column(name = "profileId")
-    private int profileId;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private Timestamp createdAt;
+
     @UpdateTimestamp
     @Column(name = "last_updated_at")
     private Timestamp lastUpdatedAt;

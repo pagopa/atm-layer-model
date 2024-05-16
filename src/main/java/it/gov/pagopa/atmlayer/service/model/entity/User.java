@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.entity;
 
+import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
@@ -19,13 +21,16 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
-public class User {
+public class User extends PanacheEntityBase implements Serializable {
+
     @Id
     @Column(name = "user_id")
     private String userId;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private Timestamp createdAt;
+
     @UpdateTimestamp
     @Column(name = "last_updated_at")
     private Timestamp lastUpdatedAt;
