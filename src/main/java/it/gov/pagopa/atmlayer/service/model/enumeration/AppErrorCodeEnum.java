@@ -63,9 +63,10 @@ public enum AppErrorCodeEnum {
     BPMN_FILE_CANNOT_BE_UNDEPLOYED("ATMLM_4000052", "La risorsa di processo indicata non può essere rilasciata", INTERNAL),
     USER_WITH_SAME_ID_ALREADY_EXIST("ATMLM_4000053", "Un utente con lo stesso id esiste già", CONSTRAINT_VIOLATION),
     USER_PROFILE_ALREADY_EXIST("ATMLM_4000054", "Esiste già un utente associato a quel profilo", CONSTRAINT_VIOLATION),
-    NO_USER_FOUND_FOR_ID("ATMLM_4000055", "Nessun utente trovato per l'id selezionato", NOT_EXISTING_USER_ID),
-    PROFILE_ALREADY_EXIST("ATMLM_4000056", "Esiste già un profilo con lo stesso id", CONSTRAINT_VIOLATION),
-    PROFILE_NOT_FOUND("ATMLM_4000057", "Non esiste un profilo con l'id indicato", CONSTRAINT_VIOLATION);
+    NO_USER_PROFILE_FOUND("ATMLM_4000055", "Nessun user profile trovato", CONSTRAINT_VIOLATION),
+    NO_USER_FOUND_FOR_ID("ATMLM_4000056", "Nessun utente trovato per l'id selezionato", NOT_EXISTING_USER_ID),
+    PROFILE_ALREADY_EXIST("ATMLM_4000057", "Esiste già un profilo con lo stesso id", CONSTRAINT_VIOLATION),
+    PROFILE_NOT_FOUND("ATMLM_4000058", "Non esiste un profilo con l'id indicato", CONSTRAINT_VIOLATION);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;

@@ -15,6 +15,8 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
+
 @ApplicationScoped
 public class ProfileServiceImpl implements ProfileService {
 
@@ -81,5 +83,11 @@ public class ProfileServiceImpl implements ProfileService {
         return checkProfileId(profileId)
                 .onItem()
                 .transformToUni(profileToDelete -> this.profileRepository.delete(profileToDelete));
+    }
+
+    @Override
+    @WithSession
+    public Uni<List<Profile>> getAll() {
+        return this.profileRepository.findAll().list();
     }
 }

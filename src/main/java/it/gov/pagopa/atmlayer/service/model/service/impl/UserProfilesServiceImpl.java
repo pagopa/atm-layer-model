@@ -1,8 +1,10 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
+import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.repository.UserProfilesRepository;
@@ -11,6 +13,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Optional;
 
 @ApplicationScoped
 @Slf4j
@@ -32,5 +36,13 @@ public class UserProfilesServiceImpl implements UserProfilesService {
                     }
                     return userProfilesRepository.persist(userProfiles);
                 });
+    }
+
+    @Override
+    @WithSession
+    public Uni<Optional<UserProfiles>> findById(UserProfilesPK userProfilesPK) {
+        return userProfilesRepository.findById(userProfilesPK)
+                .onItem()
+                .transformToUni(userProfile -> Uni.createFrom().item(Optional.ofNullable(userProfile)));
     }
 }
