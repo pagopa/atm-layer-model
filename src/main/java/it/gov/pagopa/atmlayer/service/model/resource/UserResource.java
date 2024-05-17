@@ -49,6 +49,15 @@ public class UserResource {
     }
 
     @GET
+    @Path("/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<UserDTO> getById(@PathParam("userId") String userId) {
+        return this.userService.findById(userId)
+                .onItem()
+                .transform(foundUser -> userMapper.toDTO(foundUser));
+    }
+
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<List<UserDTO>> getAll() {
         return this.userService.getAllUsers()
