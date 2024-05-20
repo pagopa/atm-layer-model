@@ -28,6 +28,9 @@
         <easy.random.version>5.0.0</easy.random.version>
         <commons-io.version>2.15.0</commons-io.version>
         <quarkus-tika.version>2.0.3</quarkus-tika.version>
+        <sonarsource.scanner.version>3.11.0.3922</sonarsource.scanner.version>
+
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -217,6 +220,12 @@
             <artifactId>easy-random-core</artifactId>
             <version>${easy.random.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>${sonarsource.scanner.version}</version>
         </dependency>
 
     </dependencies>
