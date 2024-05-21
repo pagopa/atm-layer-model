@@ -3,8 +3,11 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.UserDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
+/*import it.gov.pagopa.atmlayer.service.model.mapper.UserWithProfilesMapper;
+import it.gov.pagopa.atmlayer.service.model.mapper.UserWithProfilesMapperQualifier;*/
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -23,6 +26,10 @@ public class UserResource {
 
     @Inject
     UserMapper userMapper;
+
+    /* @Inject
+    @UserWithProfilesMapperQualifier
+    UserWithProfilesMapper userWithProfilesMapper; */
 
     @Inject
     UserService userService;
@@ -51,15 +58,15 @@ public class UserResource {
     @GET
     @Path("/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<UserDTO> getById(@PathParam("userId") String userId) {
+    public Uni<UserWithProfilesDTO> getByIdWithProfiles(@PathParam("userId") String userId) {
         return this.userService.findById(userId)
                 .onItem()
-                .transform(foundUser -> userMapper.toDTO(foundUser));
+                .transform(foundUser -> userMapper.toProfilesDTO(foundUser));
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<UserDTO>> getAll() {
+    public Uni<List<UserWithProfilesDTO>> getAll() {
         return this.userService.getAllUsers()
                 .onItem()
                 .transform(Unchecked.function(list -> {

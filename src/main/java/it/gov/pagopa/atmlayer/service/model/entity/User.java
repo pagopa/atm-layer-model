@@ -35,6 +35,6 @@ public class User extends PanacheEntityBase implements Serializable {
     private Timestamp lastUpdatedAt;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", orphanRemoval = true, fetch = FetchType.EAGER)
     private List<UserProfiles> userProfiles;
 }

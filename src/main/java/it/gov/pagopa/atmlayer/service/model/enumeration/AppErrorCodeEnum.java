@@ -66,7 +66,9 @@ public enum AppErrorCodeEnum {
     NO_USER_PROFILE_FOUND("ATMLM_4000055", "Nessun user profile trovato", CONSTRAINT_VIOLATION),
     NO_USER_FOUND_FOR_ID("ATMLM_4000056", "Nessun utente trovato per l'id selezionato", NOT_EXISTING_USER_ID),
     PROFILE_ALREADY_EXIST("ATMLM_4000057", "Esiste già un profilo con lo stesso id", CONSTRAINT_VIOLATION),
-    PROFILE_NOT_FOUND("ATMLM_4000058", "Non esiste un profilo con l'id indicato", CONSTRAINT_VIOLATION);
+    PROFILE_NOT_FOUND("ATMLM_4000058", "Non esiste un profilo con l'id indicato", CONSTRAINT_VIOLATION),
+    PROFILE_OR_USER_NOT_FOUND("ATMLM_4000059","Utente o profilo non trovato", CONSTRAINT_VIOLATION),
+    NO_ASSOCIATION_FOUND("ATMLM_4000060","Nessuna associazione trovata", CONSTRAINT_VIOLATION);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;

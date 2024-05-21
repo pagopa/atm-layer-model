@@ -3,11 +3,14 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.repository.ProfileRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserProfilesRepository;
+import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -23,6 +26,36 @@ public class UserProfilesServiceImpl implements UserProfilesService {
 
     @Inject
     UserProfilesRepository userProfilesRepository;
+
+    @Inject
+    ProfileRepository profileRepository;
+
+    @Inject
+    UserRepository userRepository;
+
+    @WithSession
+    public Uni<Void> checkProfile(int profileId) {
+        return this.profileRepository.findById(profileId)
+                .onItem()
+                .transformToUni(Unchecked.function(profileFound -> {
+                    if (profileFound == null) {
+                        throw new AtmLayerException(String.format("Non esiste un profilo con id %S", profileId), Response.Status.BAD_REQUEST, AppErrorCodeEnum.PROFILE_NOT_FOUND);
+                    }
+                    return Uni.createFrom().voidItem();
+                }));
+    }
+
+    @WithSession
+    public Uni<Void> checkUser(String userId) {
+        return this.userRepository.findById(userId)
+                .onItem()
+                .transformToUni(Unchecked.function(userFound -> {
+                    if (userFound == null) {
+                        throw new AtmLayerException(String.format("Non esiste un utente con id %S", userId), Response.Status.BAD_REQUEST, AppErrorCodeEnum.NO_USER_FOUND_FOR_ID);
+                    }
+                    return Uni.createFrom().voidItem();
+                }));
+    }
 
     @Override
     public Uni<List<UserProfiles>> insertUserProfiles(List<UserProfiles> userProfilesList) {
@@ -45,7 +78,12 @@ public class UserProfilesServiceImpl implements UserProfilesService {
                         log.error("UserProfile for userId {} and profileId {} already exists", userProfiles.getUserProfilesPK().getUserId(), userProfiles.getUserProfilesPK().getProfileId());
                         throw new AtmLayerException(Response.Status.BAD_REQUEST, AppErrorCodeEnum.USER_PROFILE_ALREADY_EXIST);
                     }
-                    return userProfilesRepository.persist(userProfiles);
+                    return checkProfile(userProfiles.getUserProfilesPK().getProfileId())
+                            .onItem()
+                            .transformToUni(isProfileVoid ->
+                                    checkUser(userProfiles.getUserProfilesPK().getUserId())
+                                            .onItem()
+                                            .transformToUni(isUserVoid -> userProfilesRepository.persist(userProfiles)));
                 });
     }
 
@@ -55,5 +93,20 @@ public class UserProfilesServiceImpl implements UserProfilesService {
         return userProfilesRepository.findById(userProfilesPK)
                 .onItem()
                 .transformToUni(userProfile -> Uni.createFrom().item(Optional.ofNullable(userProfile)));
+    }
+
+    @Override
+    @WithTransaction
+    public Uni<Void> deleteUserProfiles(UserProfilesPK userProfilesIDs) {
+        return this.userProfilesRepository.findById(userProfilesIDs)
+                .onItem()
+                .transformToUni(existingUserProfile -> {
+                    if (existingUserProfile == null) {
+                        log.error("UserProfile for userId {} and profileId {} doesn't exist", userProfilesIDs.getUserId(), userProfilesIDs.getProfileId());
+                        throw new AtmLayerException(Response.Status.BAD_REQUEST, AppErrorCodeEnum.NO_ASSOCIATION_FOUND);
+                    }
+                    log.info("associazione trovata {}", existingUserProfile);
+                    return userProfilesRepository.delete(existingUserProfile);
+                });
     }
 }

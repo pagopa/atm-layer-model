@@ -12,4 +12,6 @@ public interface UserProfilesService {
     Uni<List<UserProfiles>> insertUserProfiles(List<UserProfiles> userProfilesList);
 
     Uni<Optional<UserProfiles>> findById(UserProfilesPK userProfilesPK);
+
+    Uni<Void> deleteUserProfiles(UserProfilesPK userProfilesIDs);
 }

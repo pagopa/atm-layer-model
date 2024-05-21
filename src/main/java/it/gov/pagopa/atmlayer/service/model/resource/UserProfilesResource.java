@@ -62,4 +62,17 @@ public class UserProfilesResource {
                     return userProfilesMapper.toDTO(x.get());
                 }));
     }
+
+    @DELETE
+    @Path("/userId/{userId}/profileId/{profileId}")
+    public Uni<Void> deleteUserProfiles(
+            @PathParam("userId") String userId,
+            @PathParam("profileId") int profileId
+    ) {
+        UserProfilesPK userProfilesPK = new UserProfilesPK(userId, profileId);
+        return this.userProfilesService.deleteUserProfiles(userProfilesPK);
+    }
+
+
+
 }
