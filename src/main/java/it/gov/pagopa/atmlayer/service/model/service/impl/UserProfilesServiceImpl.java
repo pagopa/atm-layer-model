@@ -14,6 +14,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -24,12 +25,22 @@ public class UserProfilesServiceImpl implements UserProfilesService {
     UserProfilesRepository userProfilesRepository;
 
     @Override
-    @WithTransaction
-    public Uni<UserProfiles> insertUserProfiles(UserProfiles userProfiles) {
-        log.info("Inserting userProfiles with userId : {} and profileId : {}", userProfiles.getUserProfilesPK().getUserId(), userProfiles.getUserProfilesPK().getProfileId());
-        return this.userProfilesRepository.findById(userProfiles.getUserProfilesPK())
+    public Uni<List<UserProfiles>> insertUserProfiles(List<UserProfiles> userProfilesList) {
+        List<Uni<UserProfiles>> insertUnis = userProfilesList.stream()
+                .map(this::insertSingleUserProfile)
+                .toList();
+
+        return Uni.join().all(insertUnis)
+                .usingConcurrencyOf(1)
+                .andCollectFailures()
                 .onItem()
-                .transformToUni(existingUserProfile -> {
+                .transform(list -> list);
+    }
+
+    @WithTransaction
+    protected Uni<UserProfiles> insertSingleUserProfile(UserProfiles userProfiles) {
+        return this.userProfilesRepository.findById(userProfiles.getUserProfilesPK())
+                .onItem().transformToUni(existingUserProfile -> {
                     if (existingUserProfile != null) {
                         log.error("UserProfile for userId {} and profileId {} already exists", userProfiles.getUserProfilesPK().getUserId(), userProfiles.getUserProfilesPK().getProfileId());
                         throw new AtmLayerException(Response.Status.BAD_REQUEST, AppErrorCodeEnum.USER_PROFILE_ALREADY_EXIST);

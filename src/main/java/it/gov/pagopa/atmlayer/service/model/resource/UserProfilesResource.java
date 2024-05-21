@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import java.util.List;
+
 @ApplicationScoped
 @Path("/user_profiles")
 @Tag(name = "User Profiles")
@@ -36,11 +38,13 @@ public class UserProfilesResource {
     @Path("/insert")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<UserProfilesDTO> insert(@RequestBody(required = true) @Valid UserProfilesInsertionDTO userProfilesInsertionDTO) {
-        UserProfiles userProfiles = userProfilesMapper.toEntityInsertion(userProfilesInsertionDTO);
-        return this.userProfilesService.insertUserProfiles(userProfiles)
+    public Uni<List<UserProfilesDTO>> insert(@RequestBody(required = true) @Valid UserProfilesInsertionDTO userProfilesInsertionDTO) {
+        List<UserProfiles> userProfilesList = userProfilesMapper.toEntityInsertion(userProfilesInsertionDTO);
+        return this.userProfilesService.insertUserProfiles(userProfilesList)
                 .onItem()
-                .transformToUni(insertedUserProfile -> Uni.createFrom().item(userProfilesMapper.toDTO(insertedUserProfile)));
+                .transform(insertedUserProfiles -> insertedUserProfiles.stream()
+                        .map(userProfilesMapper::toDTO)
+                        .toList());
     }
 
     @GET
