@@ -21,6 +21,11 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 
 @ApplicationScoped
 public class BpmnUtils {
+
+    private BpmnUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Set<BpmnVersionPK> extractBpmnUUIDFromAssociations(List<BpmnBankConfig> associations) {
         return associations.stream().map(association -> BpmnVersionPK.builder()
                 .bpmnId(association.getBpmnBankConfigPK().getBpmnId())

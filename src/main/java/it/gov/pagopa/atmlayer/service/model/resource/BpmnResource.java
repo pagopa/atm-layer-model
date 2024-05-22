@@ -1,5 +1,4 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
-//import io.opentelemetry.api.trace.Tracer;
 
 import io.opentelemetry.api.trace.Tracer;
 import io.smallrye.common.annotation.NonBlocking;
@@ -56,7 +55,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.jboss.resteasy.reactive.RestMulti;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -75,20 +73,27 @@ import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.validateBankC
 @Tag(name = "BPMN", description = "BPMN operations")
 @Slf4j
 public class BpmnResource {
+
+    private final BpmnVersionService bpmnVersionService;
+    private final BpmnBankConfigService bpmnBankConfigService;
+    private final BpmnEntityValidator bpmnEntityValidator;
+    private final BpmnFileStorageService bpmnFileStorageService;
+    private final BpmnVersionMapper bpmnVersionMapper;
+    private final BpmnConfigMapper bpmnConfigMapper;
+    private final Tracer tracer;
+
     @Inject
-    BpmnVersionService bpmnVersionService;
-    @Inject
-    BpmnBankConfigService bpmnBankConfigService;
-    @Inject
-    BpmnEntityValidator bpmnEntityValidator;
-    @Inject
-    BpmnFileStorageService bpmnFileStorageService;
-    @Inject
-    BpmnVersionMapper bpmnVersionMapper;
-    @Inject
-    BpmnConfigMapper bpmnConfigMapper;
-    @Inject
-    Tracer tracer;
+    public BpmnResource(BpmnVersionService bpmnVersionService, BpmnBankConfigService bpmnBankConfigService,
+                        BpmnEntityValidator bpmnEntityValidator, BpmnFileStorageService bpmnFileStorageService,
+                        BpmnVersionMapper bpmnVersionMapper, BpmnConfigMapper bpmnConfigMapper, Tracer tracer){
+        this.bpmnVersionService = bpmnVersionService;
+        this.bpmnBankConfigService = bpmnBankConfigService;
+        this.bpmnEntityValidator = bpmnEntityValidator;
+        this.bpmnFileStorageService = bpmnFileStorageService;
+        this.bpmnVersionMapper = bpmnVersionMapper;
+        this.bpmnConfigMapper = bpmnConfigMapper;
+        this.tracer = tracer;
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -182,7 +187,6 @@ public class BpmnResource {
     @Path("/undeploy/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Void> undeployBPMN(@PathParam("uuid") UUID uuid) {
-        //todo fare la find per recuperare il deploymentId
         return this.bpmnVersionService.undeploy(uuid)
                 .onItem()
                 .transformToUni(bpmn -> Uni.createFrom().voidItem());

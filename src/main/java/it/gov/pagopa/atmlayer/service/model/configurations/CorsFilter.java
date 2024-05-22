@@ -4,7 +4,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
 

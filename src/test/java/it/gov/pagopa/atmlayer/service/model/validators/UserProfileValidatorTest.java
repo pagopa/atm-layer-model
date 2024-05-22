@@ -29,6 +29,6 @@ class UserProfileValidatorTest {
         assertDoesNotThrow(() -> resultOperator.await().indefinitely());
         Uni<Void> resultAdmin = validator.validateExistenceProfileType(UserProfileEnum.OPERATOR.getValue());
         assertDoesNotThrow(() -> resultAdmin.await().indefinitely());
-        Throwable exception = assertThrowsExactly(AtmLayerException.class, () -> validator.validateExistenceProfileType(4));
+        assertThrowsExactly(AtmLayerException.class, () -> validator.validateExistenceProfileType(4));
     }
 }

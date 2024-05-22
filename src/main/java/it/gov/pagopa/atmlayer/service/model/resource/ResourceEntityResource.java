@@ -39,12 +39,16 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @Tag(name = "RESOURCES", description = "RESOURCES operations")
 @Slf4j
 public class ResourceEntityResource {
+
+    private final ResourceEntityMapper resourceEntityMapper;
+    private final ResourceEntityService resourceEntityService;
+
     @Inject
-    ResourceEntityMapper resourceEntityMapper;
-    @Inject
-    ResourceFileMapper resourceFileMapper;
-    @Inject
-    ResourceEntityService resourceEntityService;
+    public ResourceEntityResource(ResourceEntityMapper resourceEntityMapper, ResourceFileMapper resourceFileMapper,
+                                  ResourceEntityService resourceEntityService){
+        this.resourceEntityMapper = resourceEntityMapper;
+        this.resourceEntityService = resourceEntityService;
+    }
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)

@@ -22,10 +22,14 @@ import static java.lang.String.valueOf;
 
 @ApplicationScoped
 public class ResourceFileServiceImpl implements ResourceFileService {
+    private final ResourceFileRepository resourceFileRepository;
+    private final ObjectStoreProperties objectStoreProperties;
+
     @Inject
-    ResourceFileRepository resourceFileRepository;
-    @Inject
-    ObjectStoreProperties objectStoreProperties;
+    public ResourceFileServiceImpl(ResourceFileRepository resourceFileRepository, ObjectStoreProperties objectStoreProperties){
+        this.resourceFileRepository = resourceFileRepository;
+        this.objectStoreProperties = objectStoreProperties;
+    }
 
     @Override
     @WithTransaction

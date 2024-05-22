@@ -61,14 +61,17 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @Tag(name = "Workflow Resource", description = "Workflow Resource Operations")
 @Slf4j
 public class WorkflowResourceResource {
+    private final WorkflowResourceService workflowResourceService;
+    private final WorkflowResourceMapper workflowResourceMapper;
+    private final Tracer tracer;
+
     @Inject
-    WorkflowResourceService workflowResourceService;
-    @Inject
-    WorkflowResourceMapper workflowResourceMapper;
-    @Inject
-    ResourceFileMapper resourceFileMapper;
-    @Inject
-    Tracer tracer;
+    public WorkflowResourceResource(WorkflowResourceService workflowResourceService, WorkflowResourceMapper workflowResourceMapper,
+                            Tracer tracer){
+        this.workflowResourceService = workflowResourceService;
+        this.workflowResourceMapper = workflowResourceMapper;
+        this.tracer = tracer;
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

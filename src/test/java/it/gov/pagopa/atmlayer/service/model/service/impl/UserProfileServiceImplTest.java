@@ -54,8 +54,6 @@ class UserProfileServiceImplTest {
     @Test
     void testDeleteUserNotExist() {
         String userId = "email@domain.com";
-        UserProfile userProfile = new UserProfile();
-
         when(userProfileRepository.findUserId(any(String.class))).thenReturn(Uni.createFrom().nullItem());
         userProfileService.deleteUser(userId)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())

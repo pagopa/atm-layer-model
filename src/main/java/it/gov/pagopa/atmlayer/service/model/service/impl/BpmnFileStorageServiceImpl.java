@@ -36,17 +36,18 @@ import java.util.Optional;
 @Slf4j
 public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
     private static final String BPMN_TEMPLATE_PATH_DEFAULT = "BPMN/files/UUID/${uuid}/VERSION/${version}";
-    @Inject
-    ObjectStoreStrategy objectStoreStrategy;
-    private ObjectStoreService objectStoreService;
-    @Inject
-    ObjectStoreProperties objectStoreProperties;
-    @Inject
-    ResourceFileService resourceFileService;
+    private final ObjectStoreStrategy objectStoreStrategy;
+    private final ObjectStoreService objectStoreService;
+    private final ObjectStoreProperties objectStoreProperties;
+    private final ResourceFileService resourceFileService;
 
-    public BpmnFileStorageServiceImpl(ObjectStoreStrategy objectStoreStrategy, ObjectStoreProperties objectStoreProperties) {
+    @Inject
+    public BpmnFileStorageServiceImpl(ObjectStoreStrategy objectStoreStrategy, ObjectStoreProperties objectStoreProperties,
+                                      ResourceFileService resourceFileService) {
         this.objectStoreStrategy = objectStoreStrategy;
         this.objectStoreService = objectStoreStrategy.getType(ObjectStoreStrategyEnum.fromValue(objectStoreProperties.type()));
+        this.objectStoreProperties = objectStoreProperties;
+        this.resourceFileService = resourceFileService;
     }
 
     @WithTransaction

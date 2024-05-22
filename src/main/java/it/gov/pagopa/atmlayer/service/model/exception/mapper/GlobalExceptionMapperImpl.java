@@ -25,8 +25,12 @@ import java.util.Set;
 @Slf4j
 public class GlobalExceptionMapperImpl {
 
+    private final ConstraintViolationMappingUtils constraintViolationMappingUtils;
+
     @Inject
-    ConstraintViolationMappingUtils constraintViolationMappingUtils;
+    public GlobalExceptionMapperImpl(ConstraintViolationMappingUtils constraintViolationMappingUtils){
+        this.constraintViolationMappingUtils = constraintViolationMappingUtils;
+    }
 
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionMapperImpl.class);
 
