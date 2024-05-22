@@ -7,6 +7,10 @@ import java.nio.file.Paths;
 
 public class CommonUtils {
 
+    private CommonUtils(){
+        throw new IllegalStateException("Utility class");
+    }
+
     public static String getPathWithoutFilename(String path) {
         return path.substring(0, path.length() - 1);
     }

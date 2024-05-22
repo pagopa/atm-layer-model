@@ -24,11 +24,15 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @ApplicationScoped
 @Slf4j
 public class UserProfileServiceImpl implements UserProfileService {
-    @Inject
-    UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
+
+    private final UserProfileMapper userProfileMapper;
 
     @Inject
-    UserProfileMapper userProfileMapper;
+    public UserProfileServiceImpl(UserProfileRepository userProfileRepository, UserProfileMapper userProfileMapper){
+        this.userProfileRepository = userProfileRepository;
+        this.userProfileMapper = userProfileMapper;
+    }
 
     @Override
     @WithSession

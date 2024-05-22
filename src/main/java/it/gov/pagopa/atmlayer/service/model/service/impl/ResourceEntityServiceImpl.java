@@ -123,10 +123,6 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                     throw new AtmLayerException(String.format("Impossibile caricare %s: la risorsa con lo stesso nome file e percorso esiste già",
                                             resourceEntity.getStorageKey()), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
                                 }
-//                                if (!isExtensionValid(file, filename)) {
-//                                    throw new AtmLayerException(String.format("Cannot upload file: the extension %s doesn't match with the provided filename %s",
-//                                            getExtension(file), filename), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
-//                                }
                                 return saveAndUpload(resourceEntity, file, filename, path)
                                         .onItem().transformToUni(bpmn -> this.findByUUID(resourceEntity.getResourceId())
                                                 .onItem().transformToUni(optionalResource -> {
@@ -156,12 +152,6 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     if (Objects.equals(resourceEntity.getSha256(), newFileSha256)) {
                         throw new AtmLayerException("La risorsa è già presente", Response.Status.BAD_REQUEST, RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
                     }
-                    String fileNameDb = resourceEntity.getFileName();
-                    String extensionDb = FilenameUtils.getExtension(fileNameDb);
-//                    if (!Objects.equals(extensionDb, getExtension(file))) {
-//                        throw new AtmLayerException(String.format("Cannot upload file: the extension %s doesn't match with the file you are trying to update: %s",
-//                                getExtension(file), fileNameDb), Response.Status.BAD_REQUEST, AppErrorCodeEnum.RESOURCE_WITH_SAME_NAME_AND_PATH_ALREADY_SAVED);
-//                    }
                     resourceEntity.setSha256(newFileSha256);
                     Date date = new Date();
                     resourceEntity.setLastUpdatedAt(new Timestamp(date.getTime()));

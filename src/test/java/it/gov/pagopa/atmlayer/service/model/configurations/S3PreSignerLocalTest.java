@@ -28,8 +28,7 @@ class S3PreSignerLocalTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        s3PreSignerLocal = new S3PreSignerLocal();
-        s3PreSignerLocal.objectStoreProperties = objectStoreProperties;
+        s3PreSignerLocal = new S3PreSignerLocal(objectStoreProperties);
     }
 
     @Test

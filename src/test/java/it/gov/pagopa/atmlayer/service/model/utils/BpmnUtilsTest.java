@@ -1,5 +1,14 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
+import io.quarkus.test.junit.QuarkusTest;
+import it.gov.pagopa.atmlayer.service.model.dto.BranchConfigs;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
+import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
+import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,22 +18,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import io.quarkus.test.junit.QuarkusTest;
-import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
-import it.gov.pagopa.atmlayer.service.model.dto.BranchConfigs;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
-import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
-import java.util.Optional;
-import java.util.UUID;
-import org.junit.jupiter.api.Test;
-
 @QuarkusTest
 class BpmnUtilsTest {
 
   @Test
   void testGetBpmnBankConfigPK() {
 
-    BpmnAssociationDto bpmnAssociationDto = new BpmnAssociationDto();
     String acquirerId = "ACQ123";
     BranchConfigs branchConfig = mock(BranchConfigs.class);
 
@@ -47,8 +46,7 @@ class BpmnUtilsTest {
   }
 
   @Test
-  public void testGetBpmnBankConfigPKWhenTemplateIdIsNull() {
-    BpmnAssociationDto bpmnAssociationDto = new BpmnAssociationDto();
+  void testGetBpmnBankConfigPKWhenTemplateIdIsNull() {
     String acquirerId = "ACQ123";
     BranchConfigs branchConfig = mock(BranchConfigs.class);
 
@@ -64,8 +62,7 @@ class BpmnUtilsTest {
   }
 
   @Test
-  public void testGetBpmnBankConfigPKWhenVersionIsNull() {
-    BpmnAssociationDto bpmnAssociationDto = new BpmnAssociationDto();
+  void testGetBpmnBankConfigPKWhenVersionIsNull() {
     String acquirerId = "ACQ123";
     BranchConfigs branchConfig = mock(BranchConfigs.class);
 
