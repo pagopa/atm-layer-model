@@ -243,30 +243,6 @@ class BpmnResourceTest {
         assertEquals(version, result.getModelVersion());
     }
 
-//    @Test
-//    void downloadBpmn() {
-//        UUID bpmnId=UUID.randomUUID();
-//        Long version=1L;
-//        BpmnVersionPK expectedKey=new BpmnVersionPK(bpmnId,version);
-//        BpmnVersion expectedBpmn=(new BpmnVersion());
-//        expectedBpmn.setResourceFile(getResourceFileInstance());
-//        //set storage key in resource file: that is the input
-//        BpmnDTO expectedDto=new BpmnDTO();
-//        expectedDto.setBpmnId(bpmnId);
-//        expectedDto.setModelVersion(version);
-//        when(bpmnVersionService.findByPk(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(Optional.of(expectedBpmn)));
-//        when(bpmnFileStorageService.download(any(String.class))).thenReturn((RestMulti<Buffer>) buffer("downloaded"));
-//
-//        given()
-//                .pathParam("uuid",bpmnId)
-//                .pathParam("version",version)
-//                .when().post("/api/v1/model/bpmn/deploy/{uuid}/version/{version}")
-//                .then()
-//                .statusCode(200);
-//        verify(bpmnVersionService,times(1)).findByPk(expectedKey);
-//        verify(bpmnFileStorageService,times(1)).download("storageKey");
-//    }
-
     @Test
     void testDownloadBpmnNullResourceFile() {
         UUID bpmnId = UUID.randomUUID();
@@ -439,7 +415,6 @@ class BpmnResourceTest {
 
     @Test
     void testUpgradeBPMN() {
-        BpmnUpgradeDto expectedUpmnUpgradeDto = new BpmnUpgradeDto();
         when(bpmnVersionService.upgrade(any(BpmnUpgradeDto.class))).thenReturn(Uni.createFrom().item(new BpmnDTO()));
         given()
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -497,23 +472,4 @@ class BpmnResourceTest {
         return bpmnBankConfigPK;
     }
 
-    private static BpmnBankConfigPK getBpmnBankConfigPKTwoValueInstance() {
-        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
-        bpmnBankConfigPK.setBpmnId(UUID.randomUUID());
-        bpmnBankConfigPK.setBpmnModelVersion(1L);
-        bpmnBankConfigPK.setAcquirerId("acquirer1");
-        bpmnBankConfigPK.setBranchId("branch1");
-        bpmnBankConfigPK.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
-        return bpmnBankConfigPK;
-    }
-
-    private static BpmnBankConfigPK getBpmnBankConfigPKOneValueInstance() {
-        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
-        bpmnBankConfigPK.setBpmnId(UUID.randomUUID());
-        bpmnBankConfigPK.setBpmnModelVersion(1L);
-        bpmnBankConfigPK.setAcquirerId("acquirer1");
-        bpmnBankConfigPK.setBranchId(BankConfigUtilityValues.NULL_VALUE.getValue());
-        bpmnBankConfigPK.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
-        return bpmnBankConfigPK;
-    }
 }

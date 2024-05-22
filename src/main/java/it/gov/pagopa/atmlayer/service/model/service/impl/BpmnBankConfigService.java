@@ -22,10 +22,14 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class BpmnBankConfigService {
+    private final BpmnBankConfigRepository bankConfigRepository;
+    private final BpmnConfigMapper bpmnConfigMapper;
+
     @Inject
-    protected BpmnBankConfigRepository bankConfigRepository;
-    @Inject
-    BpmnConfigMapper bpmnConfigMapper;
+    public BpmnBankConfigService(BpmnBankConfigRepository bankConfigRepository, BpmnConfigMapper bpmnConfigMapper){
+        this.bankConfigRepository = bankConfigRepository;
+        this.bpmnConfigMapper = bpmnConfigMapper;
+    }
 
     @WithTransaction
     public Uni<BpmnBankConfig> save(BpmnBankConfig bpmnBankConfig) {

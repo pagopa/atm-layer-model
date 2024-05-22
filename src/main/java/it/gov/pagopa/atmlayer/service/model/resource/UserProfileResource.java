@@ -33,12 +33,18 @@ import java.util.List;
 @Slf4j
 public class UserProfileResource {
 
+
+    private final UserProfileService userProfileService;
+    private final UserProfileMapper userProfileMapper;
+    private final UserProfileValidator userProfileValidator;
+
     @Inject
-    UserProfileService userProfileService;
-    @Inject
-    UserProfileMapper userProfileMapper;
-    @Inject
-    UserProfileValidator userProfileValidator;
+    public UserProfileResource(UserProfileService userProfileService, UserProfileMapper userProfileMapper,
+                               UserProfileValidator userProfileValidator){
+        this.userProfileService = userProfileService;
+        this.userProfileMapper = userProfileMapper;
+        this.userProfileValidator = userProfileValidator;
+    }
 
     @GET
     @Path("/search")
@@ -88,7 +94,7 @@ public class UserProfileResource {
             }) @Valid UserProfileCreationDto user){
         return this.userProfileValidator.validateExistenceProfileType(user.getProfile())
                 .onItem()
-                .transformToUni((x) -> this.userProfileService.createUser(user)
+                .transformToUni(x -> this.userProfileService.createUser(user)
                          .onItem()
                          .transformToUni(Unchecked.function(u -> Uni.createFrom().item(this.userProfileMapper.toUserProfileAllDto(u)))));
     }
@@ -115,7 +121,7 @@ public class UserProfileResource {
             @RequestBody(required = true) @Valid UserProfileCreationDto user) {
         return this.userProfileValidator.validateExistenceProfileType(user.getProfile())
                 .onItem()
-                .transformToUni((x) -> this.userProfileService.updateUser(user)
+                .transformToUni(x -> this.userProfileService.updateUser(user)
                         .onItem()
                         .transformToUni(Unchecked.function(u -> Uni.createFrom().item(this.userProfileMapper.toUserProfileAllDto(u)))));
     }

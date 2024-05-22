@@ -22,7 +22,7 @@ import org.w3c.dom.Element;
 public class FileUtilitiesTest {
 
   @Test
-  public void testExtractIdValueFromXMLBlankDefinitionKey() {
+  void testExtractIdValueFromXMLBlankDefinitionKey() {
     File file = new File("src/test/resources/TestMalformed.bpmn");
     DeployableResourceType resourceType = DeployableResourceType.BPMN;
     Element element = mock(Element.class);
@@ -32,7 +32,7 @@ public class FileUtilitiesTest {
   }
 
   @Test
-  public void testCalculateSha256HashLength() throws IOException, NoSuchAlgorithmException {
+  void testCalculateSha256HashLength() throws IOException, NoSuchAlgorithmException {
     File tempFile = createTempFileWithRandomContent();
     String hash = FileUtilities.calculateSha256(tempFile);
     assertEquals(64, hash.length());
@@ -48,7 +48,7 @@ public class FileUtilitiesTest {
   }
 
   @Test
-  public void testExtractIdValueFromJSONBlankDefinitionKey() {
+  void testExtractIdValueFromJSONBlankDefinitionKey() {
     File file = new File("src/test/resources/TestMalformed.form");
     DeployableResourceType resourceType = DeployableResourceType.FORM;
     Element element = mock(Element.class);

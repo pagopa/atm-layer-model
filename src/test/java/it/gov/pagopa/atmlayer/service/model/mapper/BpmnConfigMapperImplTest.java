@@ -177,7 +177,7 @@ class BpmnConfigMapperImplTest {
 
 
     @Test
-    public void testBpmnBankConfigBpmnBankConfigPKAcquirerId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testBpmnBankConfigBpmnBankConfigPKAcquirerId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKAcquirerId", BpmnBankConfig.class);
         privateMethod.setAccessible(true);
@@ -188,7 +188,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void testBpmnBankConfigBpmnBankConfigPKBpmnId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testBpmnBankConfigBpmnBankConfigPKBpmnId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKBpmnId", BpmnBankConfig.class);
         privateMethod.setAccessible(true);
@@ -199,7 +199,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void testBpmnBankConfigBpmnBankConfigPKBpmnModelVersion() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testBpmnBankConfigBpmnBankConfigPKBpmnModelVersion() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKBpmnModelVersion", BpmnBankConfig.class);
         privateMethod.setAccessible(true);
@@ -210,7 +210,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void testBpmnBankConfigBpmnBankConfigPKBranchId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testBpmnBankConfigBpmnBankConfigPKBranchId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKBranchId", BpmnBankConfig.class);
         privateMethod.setAccessible(true);
@@ -221,7 +221,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void testBpmnBankConfigBpmnBankConfigPKTerminalId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testBpmnBankConfigBpmnBankConfigPKTerminalId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKTerminalId", BpmnBankConfig.class);
         privateMethod.setAccessible(true);

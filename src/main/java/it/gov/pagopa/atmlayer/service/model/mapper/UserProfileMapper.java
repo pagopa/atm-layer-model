@@ -59,10 +59,10 @@ public abstract class UserProfileMapper {
     }
 
     public List<UserProfileDto> toDtoList(List<UserProfile> list){
-        return list.stream().map( x -> this.toUserProfileDto(x)).toList();
+        return list.stream().map(this::toUserProfileDto).toList();
     }
 
     public List<UserProfileAllDto> toDtoAllList(List<UserProfile> list){
-        return list.stream().map( x -> this.toUserProfileAllDto(x)).toList();
+        return list.stream().map(this::toUserProfileAllDto).toList();
     }
 }
