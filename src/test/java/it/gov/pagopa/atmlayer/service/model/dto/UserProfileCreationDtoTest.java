@@ -4,9 +4,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.enumeration.UserProfileEnum;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Timestamp;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
 class UserProfileCreationDtoTest {
@@ -16,8 +14,6 @@ class UserProfileCreationDtoTest {
         UserProfileCreationDto dto = new UserProfileCreationDto();
         dto.setUserId("email@domain.com");
         dto.setProfile(3);
-        //dto.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        //dto.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
         assertEquals("email@domain.com", dto.getUserId());
         assertEquals(UserProfileEnum.ADMIN.getValue(), dto.getProfile());
     }

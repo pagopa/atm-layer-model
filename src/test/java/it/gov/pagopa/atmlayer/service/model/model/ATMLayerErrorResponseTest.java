@@ -40,7 +40,6 @@ class ATMLayerErrorResponseTest {
         .message("Invalid input data")
         .build();
 
-    ObjectMapper objectMapper = new ObjectMapper();
     try {
       String json = objectMapper.writeValueAsString(errorResponse);
       assertTrue(json.contains("\"type\":\"Validation Error\""));

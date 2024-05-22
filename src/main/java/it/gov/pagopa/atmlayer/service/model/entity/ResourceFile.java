@@ -32,24 +32,18 @@ public class ResourceFile extends PanacheEntityBase implements Serializable {
     private S3ResourceTypeEnum resourceType;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "bpmn_id", referencedColumnName = "bpmn_id"),
-            @JoinColumn(name = "bpmn_model_version", referencedColumnName = "model_version")
-    })
+    @JoinColumn(name = "bpmn_id", referencedColumnName = "bpmn_id")
+    @JoinColumn(name = "bpmn_model_version", referencedColumnName = "model_version")
     @JsonIgnore
     private BpmnVersion bpmn;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "workflow_resource_id", referencedColumnName = "workflow_resource_id")
-    })
+    @JoinColumn(name = "workflow_resource_id", referencedColumnName = "workflow_resource_id")
     @JsonIgnore
     private WorkflowResource workflowResource;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "resource_id", referencedColumnName = "resource_id")
-    })
+    @JoinColumn(name = "resource_id", referencedColumnName = "resource_id")
     @JsonIgnore
     private ResourceEntity resourceEntity;
 

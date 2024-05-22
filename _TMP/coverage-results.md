@@ -1,15 +1,15 @@
 
 # Coverage Report: JaCoCo
 
-* IntegrationTest (QuarkusTest)
+* S3PreSignerLocalTest (QuarkusTest)
       
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 91.82%               |
-| :heavy_check_mark: Number of Lines Covered | 2212    |
+| Code Coverage %         | 91.93%               |
+| :heavy_check_mark: Number of Lines Covered | 2245    |
 | :x: Number of Lines Missed  | 197     |
-| Total Number of Lines   | 2409     |
+| Total Number of Lines   | 2442     |
 
 
 ## Details:
@@ -377,15 +377,15 @@
         
 #### Lines Missed:
         
-- Line #75
+- Line #78
 ```
                 .transformToUni(session ->
 ```
-- Line #77
+- Line #80
 ```
-                                .setParameter("bpmnId", uuid)
+                                .setParameter(BPMN_ID, uuid)
 ```
-- Line #78
+- Line #81
 ```
                                 .getResultList());
 ```
@@ -672,11 +672,15 @@
 ```
                                 .recoverWithUni(failure -> {
 ```
-- Line #280
+- Line #158
+```
+                .transformToUni(bpmnVersion -> {
+```
+- Line #255
 ```
                                                         .recoverWithUni(failure -> {
 ```
-- Line #421
+- Line #396
 ```
                 .transformToUni(exists -> {
 ```
@@ -716,7 +720,7 @@
         
 #### Lines Missed:
         
-- Line #130
+- Line #134
 ```
         } catch (Exception e) {
 ```

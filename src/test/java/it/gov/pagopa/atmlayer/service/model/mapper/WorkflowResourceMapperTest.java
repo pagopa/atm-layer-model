@@ -1,18 +1,16 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.dto.WorkflowResourceCreationDto;
-import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
-import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,9 +18,12 @@ import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @QuarkusTest
 class WorkflowResourceMapperTest {

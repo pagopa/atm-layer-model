@@ -17,8 +17,8 @@ class UserProfileEnumTest {
 
     @Test
     void testValueOf() {
-        assertEquals(UserProfileEnum.valueOf(1), UserProfileEnum.GUEST);
-        assertEquals(UserProfileEnum.valueOf(2), UserProfileEnum.OPERATOR);
-        assertEquals(UserProfileEnum.valueOf(3), UserProfileEnum.ADMIN);
+        assertEquals(UserProfileEnum.GUEST, UserProfileEnum.valueOf(1));
+        assertEquals(UserProfileEnum.OPERATOR, UserProfileEnum.valueOf(2));
+        assertEquals(UserProfileEnum.ADMIN, UserProfileEnum.valueOf(3));
     }
 }

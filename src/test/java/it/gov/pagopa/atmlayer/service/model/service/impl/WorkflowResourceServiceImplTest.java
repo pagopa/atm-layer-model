@@ -329,7 +329,7 @@ class WorkflowResourceServiceImplTest {
     }
 
     @Test
-    void testRollbackOK() throws NoSuchAlgorithmException, IOException {
+    void testRollbackOK() {
         File expectedFile = new File("src/test/resources/Test.bpmn");
         WorkflowResource expectedWorkflowResource=new WorkflowResource();
         expectedWorkflowResource.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);

@@ -21,8 +21,12 @@ import java.net.URI;
 @Slf4j
 public class S3PreSignerLocal {
 
+    private final ObjectStoreProperties objectStoreProperties;
+
     @Inject
-    ObjectStoreProperties objectStoreProperties;
+    public S3PreSignerLocal(ObjectStoreProperties objectStoreProperties){
+        this.objectStoreProperties = objectStoreProperties;
+    }
 
     private AwsCredentialsProvider getAwsCredentialProvider() {
         ObjectStoreProperties.Bucket bucketProps = objectStoreProperties.bucket();
