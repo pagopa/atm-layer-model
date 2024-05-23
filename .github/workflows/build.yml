@@ -116,4 +116,5 @@ jobs:
         run: |
           mvn sonar:sonar -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=pagopa_atm-layer-model \
           -Dsonar.organization=pagopa -Dsonar.java.binaries=src/main \
-          -Dsonar.coverage.jacoco.xmlReportPaths=../atm-layer-model/target/jacoco-report/jacoco.xml -Pcoverage
+          -Dsonar.coverage.jacoco.xmlReportPaths=../atm-layer-model/target/jacoco-report/jacoco.xml -Pcoverage \
+          -Dsonar.exclusions=src/main/java/it/gov/pagopa/atmlayer/service/model/docker/Dockerfile.native
