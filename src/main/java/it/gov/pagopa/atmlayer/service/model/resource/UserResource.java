@@ -27,10 +27,6 @@ public class UserResource {
     @Inject
     UserMapper userMapper;
 
-    /* @Inject
-    @UserWithProfilesMapperQualifier
-    UserWithProfilesMapper userWithProfilesMapper; */
-
     @Inject
     UserService userService;
 
