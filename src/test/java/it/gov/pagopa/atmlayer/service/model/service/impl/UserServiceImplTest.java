@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.service.impl;
 
+import io.quarkus.hibernate.reactive.panache.PanacheQuery;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
@@ -11,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -64,6 +68,54 @@ class UserServiceImplTest {
     }
 
     @Test
+    void testFindById() {
+        String userId = "existentId";
+        User user = new User();
+        user.setUserId(userId);
+
+        when(userRepository.findById(userId)).thenReturn(Uni.createFrom().item(user));
+
+        userService.findById(userId)
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted()
+                .assertItem(user);
+
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void testFindByIdExceptionCase() {
+        String userId = "nonExistentId";
+
+        when(userRepository.findById(userId)).thenReturn(Uni.createFrom().nullItem());
+
+        userService.findById(userId)
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertFailed()
+                .assertFailedWith(AtmLayerException.class, "Nessun utente trovato per l'id selezionato");
+    }
+
+    @Test
+    void testGetAllUsers() {
+        List<User> userList = new ArrayList<>();
+        User user = new User();
+        userList.add(user);
+
+        PanacheQuery<User> panacheQuery = mock(PanacheQuery.class);
+
+        when(userRepository.findAll()).thenReturn(panacheQuery);
+        when(panacheQuery.list()).thenReturn(Uni.createFrom().item(userList));
+
+        Uni<List<User>> result = userService.getAllUsers();
+
+        result.subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted()
+                .assertItem(userList);
+    }
+
+    @Test
     void testDeleteOK() {
         String userId = "testUserId";
         User user = new User();
@@ -76,4 +128,5 @@ class UserServiceImplTest {
                 .assertCompleted()
                 .assertItem(true);
     }
+
 }

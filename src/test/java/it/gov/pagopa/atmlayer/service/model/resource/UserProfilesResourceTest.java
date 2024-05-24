@@ -1,0 +1,87 @@
+package it.gov.pagopa.atmlayer.service.model.resource;
+
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesInsertionDTO;
+import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
+import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
+import it.gov.pagopa.atmlayer.service.model.mapper.UserProfilesMapper;
+import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.*;
+
+@QuarkusTest
+class UserProfilesResourceTest {
+
+    @InjectMock
+    UserProfilesMapper userProfilesMapper;
+
+    @InjectMock
+    UserProfilesService userProfilesService;
+
+    @Test
+    void testInsert() {
+        List<UserProfiles> userProfilesList = new ArrayList<>();
+        UserProfiles userProfiles = new UserProfiles();
+        userProfilesList.add(userProfiles);
+        UserProfilesDTO userProfilesDTO = new UserProfilesDTO();
+        List<UserProfilesDTO> userProfilesDTOList = new ArrayList<>();
+        userProfilesDTOList.add(userProfilesDTO);
+        String myJson = """
+                {
+                    "userId": "1",
+                    "profileIds": [1, 2, 3]
+                }
+                """;
+
+        when(userProfilesMapper.toEntityInsertion(any(UserProfilesInsertionDTO.class))).thenReturn(userProfilesList);
+        when(userProfilesService.insertUserProfiles(anyList())).thenReturn(Uni.createFrom().item(userProfilesList));
+        when(userProfilesMapper.toDTO(any(UserProfiles.class))).thenReturn(userProfilesDTO);
+
+        List<UserProfilesDTO> result = given()
+                .contentType(ContentType.JSON)
+                .body(myJson)
+                .when()
+                .post("/api/v1/model/user_profiles/insert")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        assertEquals(userProfilesDTOList, result);
+    }
+
+    @Test
+    void testDelete() {
+        String userId = "1";
+        int profileId = 1;
+
+        when(userProfilesService.deleteUserProfiles(any(UserProfilesPK.class))).thenReturn(Uni.createFrom().voidItem());
+
+        given()
+                .pathParam("userId", userId)
+                .pathParam("profileId", profileId)
+                .when()
+                .delete("/api/v1/model/user_profiles/userId/{userId}/profileId/{profileId}")
+                .then()
+                .statusCode(204);
+
+        verify(userProfilesService, times(1)).deleteUserProfiles(any(UserProfilesPK.class));
+    }
+
+}
