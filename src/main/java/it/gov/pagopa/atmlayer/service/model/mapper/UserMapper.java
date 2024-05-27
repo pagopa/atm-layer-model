@@ -1,6 +1,5 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
-import it.gov.pagopa.atmlayer.service.model.dto.UserDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
@@ -18,8 +17,6 @@ import java.util.stream.Collectors;
 public abstract class UserMapper {
     @Inject
     ProfileMapper profileMapper;
-
-    public abstract UserDTO toDTO(User user);
 
     public User toEntityInsertion(String userId) {
         User user = new User();

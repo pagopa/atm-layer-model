@@ -3,7 +3,6 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atmlayer.service.model.dto.UserDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;

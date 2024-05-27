@@ -12,7 +12,6 @@ import it.gov.pagopa.atmlayer.service.model.repository.ProfileRepository;
 import it.gov.pagopa.atmlayer.service.model.service.ProfileService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
@@ -53,8 +52,9 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @WithTransaction
     public Uni<Profile> createProfile(ProfileCreationDto profileDto) {
+
         Profile newProfile = this.profileMapper.toEntity(profileDto);
-        return checkUnique(profileDto.getProfileId())
+        return checkUnique(newProfile.getProfileId())
                 .onItem()
                 .transformToUni(isUnique -> this.profileRepository.persist(newProfile));
     }

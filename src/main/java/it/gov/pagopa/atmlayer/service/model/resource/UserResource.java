@@ -2,12 +2,9 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
-import it.gov.pagopa.atmlayer.service.model.dto.UserDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
-/*import it.gov.pagopa.atmlayer.service.model.mapper.UserWithProfilesMapper;
-import it.gov.pagopa.atmlayer.service.model.mapper.UserWithProfilesMapperQualifier;*/
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -33,11 +30,11 @@ public class UserResource {
     @POST
     @Path("/insert/userId/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<UserDTO> insert(@PathParam("userId") String userId) {
+    public Uni<UserWithProfilesDTO> insert(@PathParam("userId") String userId) {
         User user = userMapper.toEntityInsertion(userId);
         return this.userService.insertUser(user)
                 .onItem()
-                .transformToUni(insertedUser -> Uni.createFrom().item(this.userMapper.toDTO(insertedUser)));
+                .transformToUni(insertedUser -> Uni.createFrom().item(this.userMapper.toProfilesDTO(insertedUser)));
     }
 
     @DELETE

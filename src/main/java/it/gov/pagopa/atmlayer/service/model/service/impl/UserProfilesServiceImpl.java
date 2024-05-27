@@ -18,7 +18,6 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Optional;
 
 @ApplicationScoped
 @Slf4j
@@ -89,10 +88,11 @@ public class UserProfilesServiceImpl implements UserProfilesService {
 
     @Override
     @WithSession
-    public Uni<Optional<UserProfiles>> findById(UserProfilesPK userProfilesPK) {
+    public Uni<UserProfiles> findById(String userId, int profileId) {
+        UserProfilesPK userProfilesPK = new UserProfilesPK(userId, profileId);
         return userProfilesRepository.findById(userProfilesPK)
                 .onItem()
-                .transformToUni(userProfile -> Uni.createFrom().item(Optional.ofNullable(userProfile)));
+                .transformToUni(userProfile -> Uni.createFrom().item(userProfile));
     }
 
     @Override

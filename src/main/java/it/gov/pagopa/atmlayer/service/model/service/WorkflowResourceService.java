@@ -3,7 +3,6 @@ package it.gov.pagopa.atmlayer.service.model.service;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
-import it.gov.pagopa.atmlayer.service.model.dto.FileS3Dto;
 import it.gov.pagopa.atmlayer.service.model.entity.WorkflowResource;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
