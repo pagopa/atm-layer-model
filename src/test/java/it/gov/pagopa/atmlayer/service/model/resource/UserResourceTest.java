@@ -30,19 +30,19 @@ class UserResourceTest {
     void testInsert() {
         String userId = "testUserId";
         User user = new User();
-        UserDTO userDTO = new UserDTO();
+        UserWithProfilesDTO userDTO = new UserWithProfilesDTO();
 
         when(userMapper.toEntityInsertion(userId)).thenReturn(user);
         when(userService.insertUser(user)).thenReturn(Uni.createFrom().item(user));
-        when(userMapper.toDTO(user)).thenReturn(userDTO);
+        when(userMapper.toProfilesDTO(user)).thenReturn(userDTO);
 
-        UserDTO result = given()
+        UserWithProfilesDTO result = given()
                 .contentType(MediaType.APPLICATION_JSON)
                 .pathParam("userId", userId)
                 .when().post("api/v1/model/user/insert/userId/{userId}")
                 .then()
                 .statusCode(200)
-                .extract().as(UserDTO.class);
+                .extract().as(UserWithProfilesDTO.class);
 
         assertEquals(userDTO, result);
     }

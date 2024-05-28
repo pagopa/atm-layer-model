@@ -4,7 +4,6 @@ import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesInsertionDTO;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -65,6 +63,30 @@ class UserProfilesResourceTest {
 
         assertEquals(userProfilesDTOList, result);
     }
+
+    @Test
+    void testGetById() {
+        String userId = "1";
+        int profileId = 1;
+        UserProfiles userProfiles = new UserProfiles();
+
+        when(userProfilesService.findById(userId, profileId)).thenReturn(
+                Uni.createFrom().item(userProfiles));
+        UserProfilesDTO dto = new UserProfilesDTO();
+        when(userProfilesMapper.toDTO(userProfiles)).thenReturn(dto);
+
+        given()
+                .pathParam("userId", userId)
+                .pathParam("profileId", profileId)
+                .when()
+                .get("/api/v1/model/user_profiles/userId/{userId}/profileId/{profileId}")
+                .then()
+                .statusCode(200);
+
+        verify(userProfilesService, times(1)).findById(userId, profileId);
+        verify(userProfilesMapper, times(1)).toDTO(userProfiles);
+    }
+
 
     @Test
     void testDelete() {
