@@ -16,7 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.List;
 
 @ApplicationScoped
-@Path("/user")
+@Path("/users")
 @Tag(name = "User")
 @Slf4j
 public class UserResource {
