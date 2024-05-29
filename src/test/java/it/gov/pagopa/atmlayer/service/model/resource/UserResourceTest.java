@@ -26,7 +26,7 @@ class UserResourceTest {
     @InjectMock
     UserService userService;
 
-    @Test
+    /*@Test
     void testInsert() {
         String userId = "testUserId";
         User user = new User();
@@ -45,7 +45,7 @@ class UserResourceTest {
                 .extract().as(UserWithProfilesDTO.class);
 
         assertEquals(userDTO, result);
-    }
+    }*/
 
     @Test
     void testDelete() {

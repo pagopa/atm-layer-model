@@ -13,10 +13,11 @@ import java.util.List;
 @Builder
 @ToString
 @EqualsAndHashCode
-
 public class UserWithProfilesDTO {
     private String userId;
+    private String name;
+    private String surname;
+    private List<ProfileDTO> profiles;
     private Timestamp createdAt;
     private Timestamp lastUpdatedAt;
-    private List<ProfileDTO> profiles;
 }
