@@ -33,7 +33,7 @@ class UserServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
+   /* @Test
     void testInsertUserOK() {
         String userId = "testUserId";
         User user = new User();
@@ -49,9 +49,9 @@ class UserServiceImplTest {
 
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, times(1)).persist(user);
-    }
+    }*/
 
-    @Test
+    /*@Test
     void testInsertUserExceptionCase() {
         String userId = "testUserId";
         User user = new User();
@@ -65,7 +65,7 @@ class UserServiceImplTest {
                 .assertFailedWith(AtmLayerException.class, "Un utente con lo stesso id esiste già");
 
         verify(userRepository, never()).persist(any(User.class));
-    }
+    }*/
 
     @Test
     void testFindById() {

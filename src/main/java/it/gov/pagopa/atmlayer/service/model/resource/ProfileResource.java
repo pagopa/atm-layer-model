@@ -67,7 +67,7 @@ public class ProfileResource {
                     if (list.isEmpty()) {
                         log.info("No Profiles saved in database");
                     }
-                    return  profileMapper.toDTOList(list);
+                    return profileMapper.toDTOList(list);
                 }));
     }
 }

@@ -4,9 +4,11 @@ import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,11 +25,15 @@ public class UserServiceImpl implements UserService {
     @Inject
     UserRepository userRepository;
 
+    @Inject
+    UserMapper userMapper;
+
     @Override
     @WithTransaction
-    public Uni<User> insertUser(User user) {
-        String userId = user.getUserId();
+    public Uni<User> insertUser(UserInsertionDTO userInsertionDTO) {
+        String userId = userInsertionDTO.getUserId();
         log.info("Inserting user with userId : {}", userId);
+        User user = userMapper.toEntityInsertion(userInsertionDTO);
         return this.userRepository.findById(user.getUserId())
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {

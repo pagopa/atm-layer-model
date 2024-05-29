@@ -26,6 +26,16 @@ public class User extends PanacheEntityBase implements Serializable {
     @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "surname")
+    private String surname;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<UserProfiles> userProfiles;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private Timestamp createdAt;
@@ -33,8 +43,4 @@ public class User extends PanacheEntityBase implements Serializable {
     @UpdateTimestamp
     @Column(name = "last_updated_at")
     private Timestamp lastUpdatedAt;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<UserProfiles> userProfiles;
 }
