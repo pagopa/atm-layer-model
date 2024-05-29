@@ -4,8 +4,10 @@ import io.quarkus.hibernate.reactive.panache.PanacheQuery;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
+import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,9 @@ class UserServiceImplTest {
     @Mock
     UserRepository userRepository;
 
+    @Mock
+    UserMapper userMapper;
+
     @InjectMocks
     UserServiceImpl userService;
 
@@ -33,39 +38,52 @@ class UserServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
-   /* @Test
+    @Test
     void testInsertUserOK() {
-        String userId = "testUserId";
         User user = new User();
-        user.setUserId(userId);
+        user.setUserId("prova@test.com");
+        String userId = user.getUserId();
+        UserInsertionDTO userInsertionDTO = new UserInsertionDTO();
+        userInsertionDTO.setUserId("prova@test.com");
+        userInsertionDTO.setName("prova");
+        userInsertionDTO.setSurname("test");
 
-        when(userRepository.findById(userId)).thenReturn(Uni.createFrom().nullItem());
+        when(userMapper.toEntityInsertion(any(UserInsertionDTO.class))).thenReturn(user);
+        when(userRepository.findById(user.getUserId())).thenReturn(Uni.createFrom().nullItem());
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
 
-        userService.insertUser(user)
+        userService.insertUser(userInsertionDTO)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(user);
 
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, times(1)).persist(user);
-    }*/
+    }
 
-    /*@Test
+    @Test
     void testInsertUserExceptionCase() {
-        String userId = "testUserId";
+
+        UserInsertionDTO userInsertionDTO = new UserInsertionDTO();
+        userInsertionDTO.setUserId("prova@test.com");
+        userInsertionDTO.setName("prova");
+        userInsertionDTO.setSurname("test");
         User user = new User();
-        user.setUserId(userId);
+        user.setUserId(userInsertionDTO.getUserId());
+        user.setName(userInsertionDTO.getName());
+        user.setSurname(userInsertionDTO.getSurname());
 
-        when(userRepository.findById(any(String.class))).thenReturn(Uni.createFrom().item(new User()));
+        when(userMapper.toEntityInsertion(any(UserInsertionDTO.class))).thenReturn(user);
+        when(userRepository.findById("prova@test.com")).thenReturn(Uni.createFrom().item(user));
+        when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
 
-        userService.insertUser(user)
+        userService.insertUser(userInsertionDTO)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailed()
                 .assertFailedWith(AtmLayerException.class, "Un utente con lo stesso id esiste già");
 
         verify(userRepository, never()).persist(any(User.class));
-    }*/
+    }
 
     @Test
     void testFindById() {
