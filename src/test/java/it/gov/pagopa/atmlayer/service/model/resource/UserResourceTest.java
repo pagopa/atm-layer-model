@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
@@ -26,26 +27,29 @@ class UserResourceTest {
     @InjectMock
     UserService userService;
 
-    /*@Test
+    @Test
     void testInsert() {
-        String userId = "testUserId";
         User user = new User();
         UserWithProfilesDTO userDTO = new UserWithProfilesDTO();
+        UserInsertionDTO userInsertionDTO = new UserInsertionDTO();
+        userInsertionDTO.setUserId("prova@test.com");
+        userInsertionDTO.setName("prova");
+        userInsertionDTO.setSurname("test");
 
-        when(userMapper.toEntityInsertion(userId)).thenReturn(user);
-        when(userService.insertUser(user)).thenReturn(Uni.createFrom().item(user));
+        when(userMapper.toEntityInsertion(userInsertionDTO)).thenReturn(user);
+        when(userService.insertUser(userInsertionDTO)).thenReturn(Uni.createFrom().item(user));
         when(userMapper.toProfilesDTO(user)).thenReturn(userDTO);
 
         UserWithProfilesDTO result = given()
                 .contentType(MediaType.APPLICATION_JSON)
-                .pathParam("userId", userId)
-                .when().post("api/v1/model/user/insert/userId/{userId}")
+                .body(userInsertionDTO)
+                .when().post("api/v1/model/user/insert")
                 .then()
                 .statusCode(200)
                 .extract().as(UserWithProfilesDTO.class);
 
         assertEquals(userDTO, result);
-    }*/
+    }
 
     @Test
     void testDelete() {
@@ -83,6 +87,27 @@ class UserResourceTest {
                 .as(ArrayList.class);
 
         assertEquals(1, result.size());
+        verify(userService, times(1)).getAllUsers();
+        verify(userMapper, times(1)).toDTOList(users);
+    }
+
+    @Test
+    void testGetAllEmpty() {
+        List<User> users = new ArrayList<>();
+        List<UserWithProfilesDTO> dtoList = new ArrayList<>();
+
+        when(userService.getAllUsers()).thenReturn(Uni.createFrom().item(users));
+        when(userMapper.toDTOList(any(List.class))).thenReturn(dtoList);
+
+        ArrayList result = given()
+                .when().get("/api/v1/model/user")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(ArrayList.class);
+
+        assertEquals(0, result.size());
         verify(userService, times(1)).getAllUsers();
         verify(userMapper, times(1)).toDTOList(users);
     }
