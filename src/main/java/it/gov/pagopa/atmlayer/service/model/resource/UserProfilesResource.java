@@ -3,7 +3,6 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesInsertionDTO;
-import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserProfilesMapper;
 import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
@@ -35,12 +34,19 @@ public class UserProfilesResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<List<UserProfilesDTO>> insert(@RequestBody(required = true) @Valid UserProfilesInsertionDTO userProfilesInsertionDTO) {
-        List<UserProfiles> userProfilesList = userProfilesMapper.toEntityInsertion(userProfilesInsertionDTO);
-        return this.userProfilesService.insertUserProfiles(userProfilesList)
+        return this.userProfilesService.insertUserProfiles(userProfilesInsertionDTO)
                 .onItem()
-                .transform(insertedUserProfiles -> insertedUserProfiles.stream()
-                        .map(userProfilesMapper::toDTO)
-                        .toList());
+                .transform(insertedUserProfiles -> userProfilesMapper.toDtoList(insertedUserProfiles));
+    }
+
+    @PUT
+    @Path("/update")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<List<UserProfilesDTO>> update(@RequestBody(required = true) @Valid UserProfilesInsertionDTO userProfilesInsertionDTO) {
+        return this.userProfilesService.updateUserProfiles(userProfilesInsertionDTO)
+                .onItem()
+                .transform(updatedUserProfiles -> userProfilesMapper.toDtoList(updatedUserProfiles));
     }
 
     @GET
@@ -62,7 +68,6 @@ public class UserProfilesResource {
         UserProfilesPK userProfilesPK = new UserProfilesPK(userId, profileId);
         return this.userProfilesService.deleteUserProfiles(userProfilesPK);
     }
-
 
 
 }

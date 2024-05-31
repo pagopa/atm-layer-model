@@ -4,10 +4,12 @@ import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.model.mapper.UserProfilesMapper;
 import it.gov.pagopa.atmlayer.service.model.repository.ProfileRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserProfilesRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
@@ -30,6 +32,9 @@ public class UserProfilesServiceImpl implements UserProfilesService {
     ProfileRepository profileRepository;
 
     @Inject
+    UserProfilesMapper userProfilesMapper;
+
+    @Inject
     UserRepository userRepository;
 
     @WithSession
@@ -45,6 +50,17 @@ public class UserProfilesServiceImpl implements UserProfilesService {
     }
 
     @WithSession
+    public Uni<List<Void>> checkProfileList(List<Integer> listInt) {
+        List<Uni<Void>> checks = listInt.stream()
+                .map(this::checkProfile)
+                .toList();
+
+        return Uni.join().all(checks)
+                .usingConcurrencyOf(1)
+                .andFailFast();
+    }
+
+    @WithSession
     public Uni<Void> checkUser(String userId) {
         return this.userRepository.findById(userId)
                 .onItem()
@@ -57,16 +73,15 @@ public class UserProfilesServiceImpl implements UserProfilesService {
     }
 
     @Override
-    public Uni<List<UserProfiles>> insertUserProfiles(List<UserProfiles> userProfilesList) {
+    public Uni<List<UserProfiles>> insertUserProfiles(UserProfilesInsertionDTO userProfilesInsertionDTO) {
+        List<UserProfiles> userProfilesList = userProfilesMapper.toEntityInsertion(userProfilesInsertionDTO);
         List<Uni<UserProfiles>> insertUnis = userProfilesList.stream()
                 .map(this::insertSingleUserProfile)
                 .toList();
 
         return Uni.join().all(insertUnis)
                 .usingConcurrencyOf(1)
-                .andCollectFailures()
-                .onItem()
-                .transform(list -> list);
+                .andFailFast();
     }
 
     @WithTransaction
@@ -108,5 +123,31 @@ public class UserProfilesServiceImpl implements UserProfilesService {
                     log.info("associazione trovata {}", existingUserProfile);
                     return userProfilesRepository.delete(existingUserProfile);
                 });
+    }
+
+    @WithTransaction
+    public Uni<List<UserProfiles>> updateUserProfiles(UserProfilesInsertionDTO userProfilesInsertionDTO) {
+        List<UserProfiles> userProfilesToUpdate = userProfilesMapper.toEntityInsertion(userProfilesInsertionDTO);
+
+        return this.checkUser(userProfilesInsertionDTO.getUserId())
+                .onItem()
+                .transformToUni(checkedUser -> checkProfileList(userProfilesInsertionDTO.getProfileIds())
+                        .onItem()
+                        .transformToUni(checkedProfiles -> this.userProfilesRepository.findByUserId(userProfilesInsertionDTO.getUserId())
+                                .onItem()
+                                .transformToUni(userProfilesSaved -> {
+                                    List<Integer> userProfilesSavedIds = userProfilesSaved.stream().map(x -> x.getUserProfilesPK().getProfileId()).toList();
+                                    List<Integer> userProfilesToUpdateIds = userProfilesToUpdate.stream().map(y -> y.getUserProfilesPK().getProfileId()).toList();
+                                    List<UserProfiles> userProfilesToDelete = userProfilesSaved.stream().filter(w -> !userProfilesToUpdateIds.contains(w.getUserProfilesPK().getProfileId())).toList();
+                                    List<UserProfiles> userProfilesToAdd = userProfilesToUpdate.stream().filter(j -> !userProfilesSavedIds.contains(j.getUserProfilesPK().getProfileId())).toList();
+                                    return userProfilesRepository.deleteUserProfiles(userProfilesToDelete.stream().map(UserProfiles::getUserProfilesPK).toList())
+                                            .onItem()
+                                            .transformToUni(deletedRows -> userProfilesRepository.persist(userProfilesToAdd))
+                                            .onItem()
+                                            .transformToUni(persistedRows -> userProfilesRepository.findByUserId(userProfilesInsertionDTO.getUserId()));
+                                })
+                        )
+                );
+
     }
 }
