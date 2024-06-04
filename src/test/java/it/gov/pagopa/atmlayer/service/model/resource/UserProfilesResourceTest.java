@@ -78,6 +78,52 @@ class UserProfilesResourceTest {
     }
 
     @Test
+    void testUpdate() {
+        UserProfiles userProfiles = new UserProfiles();
+        userProfiles.setUserProfilesPK(new UserProfilesPK("1", 1));
+        userProfiles.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        userProfiles.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+        List<UserProfiles> userProfilesList = new ArrayList<>();
+        userProfilesList.add(userProfiles);
+
+        UserProfilesDTO userProfilesDTO = UserProfilesDTO.builder()
+                .userId("1")
+                .profileId(1)
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .lastUpdatedAt(new Timestamp(System.currentTimeMillis()))
+                .build();
+
+        List<UserProfilesDTO> userProfilesDTOList = new ArrayList<>();
+        userProfilesDTOList.add(userProfilesDTO);
+
+        String myJson = """
+                {
+                    "userId": "1",
+                    "profileIds": [1, 2, 3]
+                }
+                """;
+
+        when(userProfilesService.updateUserProfiles(any(UserProfilesInsertionDTO.class)))
+                .thenReturn(Uni.createFrom().item(userProfilesList));
+        when(userProfilesMapper.toDtoList(userProfilesList))
+                .thenReturn(userProfilesDTOList);
+
+        List<UserProfilesDTO> result = given()
+                .contentType(ContentType.JSON)
+                .body(myJson)
+                .when()
+                .put("/api/v1/model/user_profiles/update")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        assertEquals(userProfilesDTOList, result);
+    }
+
+    @Test
     void testGetById() {
         String userId = "1";
         int profileId = 1;
