@@ -112,7 +112,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
         return findBySHA256(resourceEntity.getSha256())
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException("Esiste già una risorsa con lo stesso contenuto",
+                        throw new AtmLayerException(String.format("Esiste già una risorsa con lo stesso contenuto: %s", x.get().getResourceFile().getStorageKey().substring(15)),
                                 Response.Status.BAD_REQUEST,
                                 RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
                     }
