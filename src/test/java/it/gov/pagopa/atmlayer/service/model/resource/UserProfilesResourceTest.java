@@ -13,13 +13,13 @@ import it.gov.pagopa.atmlayer.service.model.mapper.UserProfilesMapper;
 import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
@@ -33,12 +33,24 @@ class UserProfilesResourceTest {
 
     @Test
     void testInsert() {
-        List<UserProfiles> userProfilesList = new ArrayList<>();
         UserProfiles userProfiles = new UserProfiles();
+        userProfiles.setUserProfilesPK(new UserProfilesPK("1", 1));
+        userProfiles.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        userProfiles.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+        List<UserProfiles> userProfilesList = new ArrayList<>();
         userProfilesList.add(userProfiles);
-        UserProfilesDTO userProfilesDTO = new UserProfilesDTO();
+
+        UserProfilesDTO userProfilesDTO = UserProfilesDTO.builder()
+                .userId("1")
+                .profileId(1)
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .lastUpdatedAt(new Timestamp(System.currentTimeMillis()))
+                .build();
+
         List<UserProfilesDTO> userProfilesDTOList = new ArrayList<>();
         userProfilesDTOList.add(userProfilesDTO);
+
         String myJson = """
                 {
                     "userId": "1",
@@ -46,15 +58,62 @@ class UserProfilesResourceTest {
                 }
                 """;
 
-        when(userProfilesMapper.toEntityInsertion(any(UserProfilesInsertionDTO.class))).thenReturn(userProfilesList);
-        when(userProfilesService.insertUserProfiles(anyList())).thenReturn(Uni.createFrom().item(userProfilesList));
-        when(userProfilesMapper.toDTO(any(UserProfiles.class))).thenReturn(userProfilesDTO);
+        when(userProfilesService.insertUserProfiles(any(UserProfilesInsertionDTO.class)))
+                .thenReturn(Uni.createFrom().item(userProfilesList));
+        when(userProfilesMapper.toDtoList(userProfilesList))
+                .thenReturn(userProfilesDTOList);
 
         List<UserProfilesDTO> result = given()
                 .contentType(ContentType.JSON)
                 .body(myJson)
                 .when()
                 .post("/api/v1/model/user_profiles/insert")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        assertEquals(userProfilesDTOList, result);
+    }
+
+    @Test
+    void testUpdate() {
+        UserProfiles userProfiles = new UserProfiles();
+        userProfiles.setUserProfilesPK(new UserProfilesPK("1", 1));
+        userProfiles.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        userProfiles.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+        List<UserProfiles> userProfilesList = new ArrayList<>();
+        userProfilesList.add(userProfiles);
+
+        UserProfilesDTO userProfilesDTO = UserProfilesDTO.builder()
+                .userId("1")
+                .profileId(1)
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .lastUpdatedAt(new Timestamp(System.currentTimeMillis()))
+                .build();
+
+        List<UserProfilesDTO> userProfilesDTOList = new ArrayList<>();
+        userProfilesDTOList.add(userProfilesDTO);
+
+        String myJson = """
+                {
+                    "userId": "1",
+                    "profileIds": [1, 2, 3]
+                }
+                """;
+
+        when(userProfilesService.updateUserProfiles(any(UserProfilesInsertionDTO.class)))
+                .thenReturn(Uni.createFrom().item(userProfilesList));
+        when(userProfilesMapper.toDtoList(userProfilesList))
+                .thenReturn(userProfilesDTOList);
+
+        List<UserProfilesDTO> result = given()
+                .contentType(ContentType.JSON)
+                .body(myJson)
+                .when()
+                .put("/api/v1/model/user_profiles/update")
                 .then()
                 .statusCode(200)
                 .extract()
