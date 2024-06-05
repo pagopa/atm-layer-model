@@ -16,6 +16,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @ApplicationScoped
@@ -42,6 +43,29 @@ public class UserServiceImpl implements UserService {
                         throw new AtmLayerException(Response.Status.BAD_REQUEST, AppErrorCodeEnum.USER_WITH_SAME_ID_ALREADY_EXIST);
                     }
                     return userRepository.persist(user);
+                }));
+    }
+
+    @Override
+    @WithTransaction
+    public Uni<User> updateUser(UserInsertionDTO userInsertionDTO) {
+        String userId = userInsertionDTO.getUserId();
+        log.info("Updating user with userId : {}", userId);
+        return this.findById(userInsertionDTO.getUserId())
+                .onItem()
+                .transformToUni(Unchecked.function(userFound -> {
+                    if (userInsertionDTO.getName().isBlank() && userInsertionDTO.getSurname().isBlank()) {
+                        throw new AtmLayerException(Response.Status.BAD_REQUEST, AppErrorCodeEnum.ALL_FIELDS_ARE_BLANK);
+                    } else if (userInsertionDTO.getSurname().isBlank()) {
+                        userFound.setName(userInsertionDTO.getName());
+                    } else if (userInsertionDTO.getName().isBlank()) {
+                        userFound.setSurname(userInsertionDTO.getSurname());
+                    } else {
+                        userFound.setName(userInsertionDTO.getName());
+                        userFound.setSurname(userInsertionDTO.getSurname());
+                    }
+                    userFound.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
+                    return userRepository.persist(userFound);
                 }));
     }
 

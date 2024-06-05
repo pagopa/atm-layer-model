@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -17,8 +18,8 @@ public class UserInsertionDTO {
     @Email(message = "must be an email address in the correct format")
     @Schema(required = true, example = "email@domain.com")
     private String userId;
-    @NotBlank
+    @NotNull
     private String name;
-    @NotBlank
+    @NotNull
     private String surname;
 }

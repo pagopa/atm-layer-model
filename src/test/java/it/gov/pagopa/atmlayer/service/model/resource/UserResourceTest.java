@@ -43,12 +43,39 @@ class UserResourceTest {
         UserWithProfilesDTO result = given()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(userInsertionDTO)
-                .when().post("api/v1/model/user/insert")
+                .when()
+                .post("api/v1/model/user/insert")
                 .then()
                 .statusCode(200)
-                .extract().as(UserWithProfilesDTO.class);
+                .extract()
+                .as(UserWithProfilesDTO.class);
 
         assertEquals(userDTO, result);
+    }
+
+    @Test
+    void testUpdate() {
+        User user = new User();
+        UserWithProfilesDTO userWithProfilesDTO = new UserWithProfilesDTO();
+        UserInsertionDTO userInsertionDTO = new UserInsertionDTO();
+        userInsertionDTO.setUserId("Paolo@Rossi.com");
+        userInsertionDTO.setName("Paolo");
+        userInsertionDTO.setSurname("Rossi");
+
+        when(userService.updateUser(any(UserInsertionDTO.class))).thenReturn(Uni.createFrom().item(user));
+        when(userMapper.toProfilesDTO(user)).thenReturn(userWithProfilesDTO);
+
+        UserWithProfilesDTO result = given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(userInsertionDTO)
+                .when()
+                .put("api/v1/model/user/update")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(UserWithProfilesDTO.class);
+
+        assertEquals(userWithProfilesDTO, result);
     }
 
     @Test
