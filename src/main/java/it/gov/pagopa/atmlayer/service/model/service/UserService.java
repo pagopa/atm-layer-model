@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface UserService {
 
-    public Uni<User> insertUser(UserInsertionDTO userInsertionDTO);
+    Uni<User> insertUser(UserInsertionDTO userInsertionDTO);
+
+    Uni<User> updateUser(UserInsertionDTO userInsertionDTO);
 
     Uni<Boolean> deleteUser(String userId);
 

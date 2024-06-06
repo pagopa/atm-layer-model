@@ -39,6 +39,17 @@ public class UserResource {
                 .transformToUni(insertedUser -> Uni.createFrom().item(this.userMapper.toProfilesDTO(insertedUser)));
     }
 
+    @PUT
+    @Path("/update")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<UserWithProfilesDTO> update(@RequestBody(required = true) @Valid UserInsertionDTO userInsertionDTO) {
+        return this.userService.updateUser(userInsertionDTO)
+                .onItem()
+                .transformToUni(updatedUser -> Uni.createFrom().item(userMapper.toProfilesDTO(updatedUser)));
+    }
+
+
     @DELETE
     @Path("/delete/userId/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
