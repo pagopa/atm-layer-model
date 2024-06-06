@@ -4,13 +4,18 @@ import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
+import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
+import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
+import it.gov.pagopa.atmlayer.service.model.model.ProfileDTO;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,12 +48,10 @@ class UserResourceTest {
         UserWithProfilesDTO result = given()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(userInsertionDTO)
-                .when()
-                .post("api/v1/model/user/insert")
+                .when().post("api/v1/model/user/insert")
                 .then()
                 .statusCode(200)
-                .extract()
-                .as(UserWithProfilesDTO.class);
+                .extract().as(UserWithProfilesDTO.class);
 
         assertEquals(userDTO, result);
     }
@@ -74,6 +77,55 @@ class UserResourceTest {
                 .statusCode(200)
                 .extract()
                 .as(UserWithProfilesDTO.class);
+
+        assertEquals(userWithProfilesDTO, result);
+    }
+
+    @Test
+    void testInsertWithProfiles() {
+        UserInsertionWithProfilesDTO userInsertionWithProfilesDTO = new UserInsertionWithProfilesDTO();
+        List<Integer> profilesId = new ArrayList<>();
+        userInsertionWithProfilesDTO.setUserId("prova@test.com");
+        userInsertionWithProfilesDTO.setName("prova");
+        userInsertionWithProfilesDTO.setSurname("test");
+        profilesId.add(1);
+        userInsertionWithProfilesDTO.setProfileIds(profilesId);
+
+        UserWithProfilesDTO userWithProfilesDTO = new UserWithProfilesDTO();
+
+        ProfileDTO profileDTO = new ProfileDTO();
+        profileDTO.setProfileId(1);
+        profileDTO.setDescription("prova");
+
+        List<ProfileDTO> profileDTOList = new ArrayList<>();
+        profileDTOList.add(profileDTO);
+
+        userWithProfilesDTO.setUserId(userInsertionWithProfilesDTO.getUserId());
+        userWithProfilesDTO.setName(userInsertionWithProfilesDTO.getName());
+        userWithProfilesDTO.setSurname(userInsertionWithProfilesDTO.getSurname());
+        userWithProfilesDTO.setProfiles(profileDTOList);
+
+        UserProfiles userProfiles = new UserProfiles();
+        userProfiles.setUserProfilesPK(new UserProfilesPK("1", 1));
+        userProfiles.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        userProfiles.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+        List<UserProfiles> userProfilesList = new ArrayList<>();
+        userProfilesList.add(userProfiles);
+
+        User user = new User();
+
+        when(userService.insertUserWithProfiles(userInsertionWithProfilesDTO)).thenReturn(Uni.createFrom().item(userProfilesList));
+        when(userService.findUser(any(String.class))).thenReturn(Uni.createFrom().item(user));
+        when(userMapper.toProfilesDTO(any(User.class))).thenReturn(userWithProfilesDTO);
+
+        UserWithProfilesDTO result = given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(userInsertionWithProfilesDTO)
+                .when().post("api/v1/model/user/insert-with-profiles")
+                .then()
+                .statusCode(200)
+                .extract().as(UserWithProfilesDTO.class);
 
         assertEquals(userWithProfilesDTO, result);
     }

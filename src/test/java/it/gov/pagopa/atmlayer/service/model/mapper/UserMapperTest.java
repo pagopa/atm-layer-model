@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @QuarkusTest
-public class UserMapperTest {
+class UserMapperTest {
+
     @Inject
     UserMapper mapper;
 

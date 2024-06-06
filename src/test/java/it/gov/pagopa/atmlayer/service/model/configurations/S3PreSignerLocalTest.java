@@ -12,18 +12,16 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
 class S3PreSignerLocalTest {
 
     @Mock
-    private ObjectStoreProperties objectStoreProperties;
+    ObjectStoreProperties objectStoreProperties;
 
-    private S3PreSignerLocal s3PreSignerLocal;
+    S3PreSignerLocal s3PreSignerLocal;
 
     @BeforeEach
     void setUp() {
@@ -66,37 +64,37 @@ class S3PreSignerLocalTest {
         assertNotNull(s3Presigner);
     }
 
-  @Test
-  void testS3AsyncClientWithMissingEndpoint() {
-    when(objectStoreProperties.bucket()).thenReturn(new ObjectStoreProperties.Bucket() {
-      @Override
-      public String name() {
-        return "test-bucket";
-      }
+    @Test
+    void testS3AsyncClientWithMissingEndpoint() {
+        when(objectStoreProperties.bucket()).thenReturn(new ObjectStoreProperties.Bucket() {
+            @Override
+            public String name() {
+                return "test-bucket";
+            }
 
-      @Override
-      public Optional<String> endpointOverride() {
-        return Optional.empty();
-      }
+            @Override
+            public Optional<String> endpointOverride() {
+                return Optional.empty();
+            }
 
-      @Override
-      public String region() {
-        return "us-east-1";
-      }
+            @Override
+            public String region() {
+                return "us-east-1";
+            }
 
-      @Override
-      public Optional<String> secretKey() {
-        return Optional.of("your-secret-key");
-      }
+            @Override
+            public Optional<String> secretKey() {
+                return Optional.of("your-secret-key");
+            }
 
-      @Override
-      public Optional<String> accessKey() {
-        return Optional.of("your-access-key");
-      }
-    });
+            @Override
+            public Optional<String> accessKey() {
+                return Optional.of("your-access-key");
+            }
+        });
 
-    assertThrows(RuntimeException.class, () -> s3PreSignerLocal.s3AsyncClient());
-  }
+        assertThrows(RuntimeException.class, () -> s3PreSignerLocal.s3AsyncClient());
+    }
 
     @Test
     void testLocalPreSignerWithMissingEndpoint() {
@@ -197,67 +195,67 @@ class S3PreSignerLocalTest {
         assertThrows(AtmLayerException.class, () -> s3PreSignerLocal.s3AsyncClient());
     }
 
-  @Test
-  void testS3AsyncClientWithMissingAccessKey() {
-    when(objectStoreProperties.bucket()).thenReturn(new ObjectStoreProperties.Bucket() {
-      @Override
-      public String name() {
-        return "test-bucket";
-      }
+    @Test
+    void testS3AsyncClientWithMissingAccessKey() {
+        when(objectStoreProperties.bucket()).thenReturn(new ObjectStoreProperties.Bucket() {
+            @Override
+            public String name() {
+                return "test-bucket";
+            }
 
-      @Override
-      public Optional<String> endpointOverride() {
-        return Optional.of("http://localhost:9000");
-      }
+            @Override
+            public Optional<String> endpointOverride() {
+                return Optional.of("http://localhost:9000");
+            }
 
-      @Override
-      public String region() {
-        return "us-east-1";
-      }
+            @Override
+            public String region() {
+                return "us-east-1";
+            }
 
-      @Override
-      public Optional<String> secretKey() {
-        return Optional.of("your-secret-key");
-      }
+            @Override
+            public Optional<String> secretKey() {
+                return Optional.of("your-secret-key");
+            }
 
-      @Override
-      public Optional<String> accessKey() {
-        return Optional.empty();
-      }
-    });
+            @Override
+            public Optional<String> accessKey() {
+                return Optional.empty();
+            }
+        });
 
-    assertThrows(AtmLayerException.class, () -> s3PreSignerLocal.s3AsyncClient());
-  }
+        assertThrows(AtmLayerException.class, () -> s3PreSignerLocal.s3AsyncClient());
+    }
 
-  @Test
-  void testS3AsyncClientWithMissingAccessKeyAndSecretKey() {
-    when(objectStoreProperties.bucket()).thenReturn(new ObjectStoreProperties.Bucket() {
-      @Override
-      public String name() {
-        return "test-bucket";
-      }
+    @Test
+    void testS3AsyncClientWithMissingAccessKeyAndSecretKey() {
+        when(objectStoreProperties.bucket()).thenReturn(new ObjectStoreProperties.Bucket() {
+            @Override
+            public String name() {
+                return "test-bucket";
+            }
 
-      @Override
-      public Optional<String> endpointOverride() {
-        return Optional.of("http://localhost:9000");
-      }
+            @Override
+            public Optional<String> endpointOverride() {
+                return Optional.of("http://localhost:9000");
+            }
 
-      @Override
-      public String region() {
-        return "us-east-1";
-      }
+            @Override
+            public String region() {
+                return "us-east-1";
+            }
 
-      @Override
-      public Optional<String> secretKey() {
-        return Optional.empty();
-      }
+            @Override
+            public Optional<String> secretKey() {
+                return Optional.empty();
+            }
 
-      @Override
-      public Optional<String> accessKey() {
-        return Optional.empty();
-      }
-    });
+            @Override
+            public Optional<String> accessKey() {
+                return Optional.empty();
+            }
+        });
 
-    assertThrows(AtmLayerException.class, () -> s3PreSignerLocal.s3AsyncClient());
-  }
+        assertThrows(AtmLayerException.class, () -> s3PreSignerLocal.s3AsyncClient());
+    }
 }

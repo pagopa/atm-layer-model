@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
@@ -47,6 +48,19 @@ public class UserResource {
         return this.userService.updateUser(userInsertionDTO)
                 .onItem()
                 .transformToUni(updatedUser -> Uni.createFrom().item(userMapper.toProfilesDTO(updatedUser)));
+    }
+
+
+    @POST
+    @Path("/insert-with-profiles")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<UserWithProfilesDTO> insertWithProfiles(@RequestBody(required = true) @Valid UserInsertionWithProfilesDTO userInsertionWithProfilesDTO) {
+        return this.userService.insertUserWithProfiles(userInsertionWithProfilesDTO)
+                .onItem()
+                .transformToUni(insertedProfiles -> userService.findUser(userInsertionWithProfilesDTO.getUserId()))
+                .onItem()
+                .transformToUni(insertedUser -> Uni.createFrom().item(this.userMapper.toProfilesDTO(insertedUser)));
     }
 
 

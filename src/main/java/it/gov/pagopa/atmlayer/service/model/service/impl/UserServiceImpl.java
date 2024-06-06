@@ -5,11 +5,15 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
+import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
+import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -29,6 +33,9 @@ public class UserServiceImpl implements UserService {
     @Inject
     UserMapper userMapper;
 
+    @Inject
+    UserProfilesService userProfilesService;
+
     @Override
     @WithTransaction
     public Uni<User> insertUser(UserInsertionDTO userInsertionDTO) {
@@ -44,6 +51,22 @@ public class UserServiceImpl implements UserService {
                     }
                     return userRepository.persist(user);
                 }));
+    }
+
+    @Override
+    @WithSession
+    public Uni<User> findUser (String userId) {
+       return this.userRepository.findById(userId);
+    }
+
+    @Override
+    @WithTransaction
+    public Uni<List<UserProfiles>> insertUserWithProfiles(UserInsertionWithProfilesDTO userInsertionWithProfilesDTO) {
+        UserInsertionDTO userInsertionDTO = new UserInsertionDTO(userInsertionWithProfilesDTO.getUserId(), userInsertionWithProfilesDTO.getName(), userInsertionWithProfilesDTO.getSurname());
+        UserProfilesInsertionDTO userProfilesInsertionDTO = new UserProfilesInsertionDTO(userInsertionWithProfilesDTO.getUserId(), userInsertionWithProfilesDTO.getProfileIds());
+        return insertUser(userInsertionDTO)
+                .onItem()
+                .transformToUni(createdUser -> userProfilesService.insertUserProfiles(userProfilesInsertionDTO));
     }
 
     @Override
