@@ -106,25 +106,4 @@ class UserProfilesMapperTest {
         assertEquals(expectedUserProfilesDTO, actualUserProfilesDTO);
     }
 
-    private String userProfilesUserProfilesPKUserId(UserProfiles userProfiles) {
-        if (userProfiles == null) {
-            return null;
-        }
-        UserProfilesPK userProfilesPK = userProfiles.getUserProfilesPK();
-        if (userProfilesPK == null) {
-            return null;
-        }
-        return userProfilesPK.getUserId();
-    }
-
-    private int userProfilesUserProfilesPKProfileId(UserProfiles userProfiles) {
-        if (userProfiles == null) {
-            return 0;
-        }
-        UserProfilesPK userProfilesPK = userProfiles.getUserProfilesPK();
-        if (userProfilesPK == null) {
-            return 0;
-        }
-        return userProfilesPK.getProfileId();
-    }
 }

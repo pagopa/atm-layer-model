@@ -23,14 +23,13 @@ class BpmnVersionMapperImplTest {
     }
 
     @Test
-    void toEntityTest_null(){
-        BpmnDTO input = null;
-        BpmnVersion resource = bpmnVersionMapper.toEntity(input);
+    void toEntityTest_null() {
+        BpmnVersion resource = bpmnVersionMapper.toEntity(null);
         assertNull(resource);
     }
 
     @Test
-    void toEntityTest(){
+    void toEntityTest() {
         BpmnDTO input = new BpmnDTO();
         BpmnVersion resource = bpmnVersionMapper.toEntity(input);
 
@@ -56,14 +55,13 @@ class BpmnVersionMapperImplTest {
 
 
     @Test
-    void resourceFileDTOToResourceFileTest_null(){
-        ResourceFileDTO input = null;
-        ResourceFile resource = bpmnVersionMapper.resourceFileDTOToResourceFile(input);
+    void resourceFileDTOToResourceFileTest_null() {
+        ResourceFile resource = bpmnVersionMapper.resourceFileDTOToResourceFile(null);
         assertNull(resource);
     }
 
     @Test
-    void resourceFileDTOToResourceFileTest(){
+    void resourceFileDTOToResourceFileTest() {
         ResourceFileDTO input = new ResourceFileDTO();
         ResourceFile resource = bpmnVersionMapper.resourceFileDTOToResourceFile(input);
 
@@ -80,14 +78,13 @@ class BpmnVersionMapperImplTest {
     }
 
     @Test
-    void toDtoCreationTest_null(){
-        BpmnVersion input = null;
-        BpmnCreationDto resource = bpmnVersionMapper.toDtoCreation(input);
+    void toDtoCreationTest_null() {
+        BpmnCreationDto resource = bpmnVersionMapper.toDtoCreation(null);
         assertNull(resource);
     }
 
     @Test
-    void toDtoCreationTest(){
+    void toDtoCreationTest() {
         BpmnVersion input = new BpmnVersion();
         BpmnCreationDto resource = bpmnVersionMapper.toDtoCreation(input);
 
@@ -96,20 +93,18 @@ class BpmnVersionMapperImplTest {
     }
 
     @Test
-    void toProcessDTOTest_null(){
-        BpmnDTO input = null;
-        BpmnProcessDTO resource = bpmnVersionMapper.toProcessDTO(input);
+    void toProcessDTOTest_null() {
+        BpmnProcessDTO resource = bpmnVersionMapper.toProcessDTO(null);
         assertNull(resource);
     }
 
     @Test
-    void toProcessDTOTest(){
+    void toProcessDTOTest() {
         BpmnDTO input = new BpmnDTO();
         BpmnProcessDTO resource = bpmnVersionMapper.toProcessDTO(input);
 
         assertNotNull(resource);
         assertEquals(input.getCamundaDefinitionId(), resource.getCamundaDefinitionId());
     }
-
 
 }

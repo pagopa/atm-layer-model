@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
-public class ProfileResourceTest {
+class ProfileResourceTest {
 
     @InjectMock
     ProfileService profileService;

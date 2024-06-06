@@ -14,13 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
-public class ProfileServiceImplTest {
+class ProfileServiceImplTest {
     @Mock
     ProfileRepository profileRepository;
     @Mock
@@ -61,7 +62,7 @@ public class ProfileServiceImplTest {
 
         service.createProfile(profileCreationDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"Esiste già un profilo con id 1");
+                .assertFailedWith(AtmLayerException.class, "Esiste già un profilo con id 1");
 
         verify(profileMapper).toEntity(profileCreationDto);
         verify(profileRepository).findById(1);
@@ -83,7 +84,7 @@ public class ProfileServiceImplTest {
 
         service.retrieveProfile(1)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"Non esiste un profilo con id 1");
+                .assertFailedWith(AtmLayerException.class, "Non esiste un profilo con id 1");
     }
 
     @Test
@@ -109,7 +110,7 @@ public class ProfileServiceImplTest {
 
         service.updateProfile(profileCreationDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"Non esiste un profilo con id 1");
+                .assertFailedWith(AtmLayerException.class, "Non esiste un profilo con id 1");
     }
 
     @Test
@@ -132,7 +133,7 @@ public class ProfileServiceImplTest {
 
         service.deleteProfile(1)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"Non esiste un profilo con id 1");
+                .assertFailedWith(AtmLayerException.class, "Non esiste un profilo con id 1");
     }
 
     @Test

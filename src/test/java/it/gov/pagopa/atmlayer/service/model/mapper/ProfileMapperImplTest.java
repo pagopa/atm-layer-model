@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 @QuarkusTest
-public class ProfileMapperImplTest {
+class ProfileMapperImplTest {
 
     @Inject
     ProfileMapper mapper;

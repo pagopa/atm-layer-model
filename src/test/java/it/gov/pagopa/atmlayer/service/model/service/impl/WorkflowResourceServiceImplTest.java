@@ -30,10 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 class WorkflowResourceServiceImplTest {
@@ -139,6 +136,7 @@ class WorkflowResourceServiceImplTest {
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, ("Nessun file associato alla risorsa aggiuntiva per processo o nessuna chiave di archiviazione trovata: ").concat(expectedId.toString()));
     }
+
     @Test
     void deployResourceWithBlanckStorageKey() {
         UUID expectedId = UUID.randomUUID();
@@ -185,7 +183,6 @@ class WorkflowResourceServiceImplTest {
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, ("Nessun file associato alla risorsa aggiuntiva per processo o nessuna chiave di archiviazione trovata: ").concat(expectedId.toString()));
     }
-
 
 
     @Test
@@ -323,70 +320,70 @@ class WorkflowResourceServiceImplTest {
     void updateResourceDoesNotExist() throws NoSuchAlgorithmException, IOException {
         File file = new File("src/test/resources/Test.bpmn");
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
-        workflowResourceService.update(UUID.randomUUID(), file,false)
+        workflowResourceService.update(UUID.randomUUID(), file, false)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "La risorsa aggiuntiva di processo indicata non esiste");
     }
 
     @Test
-    void testRollbackOK() throws NoSuchAlgorithmException, IOException {
+    void testRollbackOK() {
         File expectedFile = new File("src/test/resources/Test.bpmn");
-        WorkflowResource expectedWorkflowResource=new WorkflowResource();
+        WorkflowResource expectedWorkflowResource = new WorkflowResource();
         expectedWorkflowResource.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
         expectedWorkflowResource.setDeploymentId(UUID.randomUUID());
         expectedWorkflowResource.setResourceType(DeployableResourceType.BPMN);
         expectedWorkflowResource.setSha256("sha256");
-        ResourceFile resourceFile=new ResourceFile();
+        ResourceFile resourceFile = new ResourceFile();
         resourceFile.setStorageKey("storageKey");
         expectedWorkflowResource.setResourceFile(resourceFile);
         expectedWorkflowResource.setDefinitionKey("demo11_06");
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
         when(processClient.getDeployedResource(any(String.class))).thenReturn(Uni.createFrom().item(expectedFile));
         when(workflowResourceRepository.persist(any(WorkflowResource.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
-        when(workflowResourceStorageService.updateFile(any(WorkflowResource.class),any(File.class))).thenReturn(Uni.createFrom().item(new ResourceFile()));
+        when(workflowResourceStorageService.updateFile(any(WorkflowResource.class), any(File.class))).thenReturn(Uni.createFrom().item(new ResourceFile()));
         workflowResourceService.rollback(UUID.randomUUID())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted();
     }
 
     @Test
-    void testRollbackResourceDoesNotExist(){
+    void testRollbackResourceDoesNotExist() {
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
         workflowResourceService.rollback(UUID.randomUUID())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"La risorsa aggiuntiva per processo a cui si fa riferimento non esiste");
+                .assertFailedWith(AtmLayerException.class, "La risorsa aggiuntiva per processo a cui si fa riferimento non esiste");
     }
 
     @Test
-    void testRollbackResourceDeployed(){
-        WorkflowResource expectedWorkflowResource=new WorkflowResource();
+    void testRollbackResourceDeployed() {
+        WorkflowResource expectedWorkflowResource = new WorkflowResource();
         expectedWorkflowResource.setStatus(StatusEnum.DEPLOYED);
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
         workflowResourceService.rollback(UUID.randomUUID())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"Impossibile ripristinare: la risorsa a cui si fa riferimento è l'ultima versione rilasciata");
+                .assertFailedWith(AtmLayerException.class, "Impossibile ripristinare: la risorsa a cui si fa riferimento è l'ultima versione rilasciata");
     }
 
     @Test
-    void testRollbackNeverDeployed(){
-        WorkflowResource expectedWorkflowResource=new WorkflowResource();
+    void testRollbackNeverDeployed() {
+        WorkflowResource expectedWorkflowResource = new WorkflowResource();
         expectedWorkflowResource.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
         workflowResourceService.rollback(UUID.randomUUID())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"CamundaDefinitionId della risorsa a cui si fa riferimento è NULL: impossibile ripristinare");
+                .assertFailedWith(AtmLayerException.class, "CamundaDefinitionId della risorsa a cui si fa riferimento è NULL: impossibile ripristinare");
     }
 
     @Test
-    void testRollbackProcessFailure(){
-        WorkflowResource expectedWorkflowResource=new WorkflowResource();
+    void testRollbackProcessFailure() {
+        WorkflowResource expectedWorkflowResource = new WorkflowResource();
         expectedWorkflowResource.setStatus(StatusEnum.UPDATED_BUT_NOT_DEPLOYED);
         expectedWorkflowResource.setDeploymentId(UUID.randomUUID());
         when(workflowResourceRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(expectedWorkflowResource));
         when(processClient.getDeployedResource(any(String.class))).thenReturn(Uni.createFrom().failure(new RuntimeException()));
         workflowResourceService.rollback(UUID.randomUUID())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"Errore durante il recupero della risorsa aggiuntiva per processo dal Process");
+                .assertFailedWith(AtmLayerException.class, "Errore durante il recupero della risorsa aggiuntiva per processo dal Process");
     }
 
 }

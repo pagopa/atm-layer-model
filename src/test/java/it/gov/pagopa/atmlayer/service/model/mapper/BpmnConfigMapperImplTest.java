@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @QuarkusTest
 class BpmnConfigMapperImplTest {
 
-    public BpmnConfigMapperImpl bpmnConfigMapperImpl;
+    BpmnConfigMapperImpl bpmnConfigMapperImpl;
 
     @BeforeEach
     public void setUp() {
@@ -24,14 +24,13 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    void toDTOTest_null(){
-        BpmnBankConfig resourceFile = null;
-        BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(resourceFile);
+    void toDTOTest_null() {
+        BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(null);
         assertNull(resource);
     }
 
     @Test
-    void toDTOTest(){
+    void toDTOTest() {
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setBpmnId(UUID.randomUUID());
@@ -53,14 +52,13 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    void bpmnBankConfigDTOToBpmnBankConfigPKTest_null(){
-        BpmnBankConfigDTO bankConfigDTO = null;
-        BpmnBankConfigPK resource = bpmnConfigMapperImpl.bpmnBankConfigDTOToBpmnBankConfigPK(bankConfigDTO);
+    void bpmnBankConfigDTOToBpmnBankConfigPKTest_null() {
+        BpmnBankConfigPK resource = bpmnConfigMapperImpl.bpmnBankConfigDTOToBpmnBankConfigPK(null);
         assertNull(resource);
     }
 
     @Test
-    void bpmnBankConfigDTOToBpmnBankConfigPKTest(){
+    void bpmnBankConfigDTOToBpmnBankConfigPKTest() {
         BpmnBankConfigDTO bankConfigDTO = new BpmnBankConfigDTO();
         BpmnBankConfigPK resource = bpmnConfigMapperImpl.bpmnBankConfigDTOToBpmnBankConfigPK(bankConfigDTO);
 
@@ -74,14 +72,13 @@ class BpmnConfigMapperImplTest {
 
 
     @Test
-    void toEntity_null(){
-        BpmnBankConfigDTO bankConfigDTO = null;
-        BpmnBankConfig resource = bpmnConfigMapperImpl.toEntity(bankConfigDTO);
+    void toEntity_null() {
+        BpmnBankConfig resource = bpmnConfigMapperImpl.toEntity(null);
         assertNull(resource);
     }
 
     @Test
-    void toEntity(){
+    void toEntity() {
         BpmnBankConfigDTO bankConfigDTO = new BpmnBankConfigDTO();
         BpmnBankConfig resource = bpmnConfigMapperImpl.toEntity(bankConfigDTO);
 
@@ -95,7 +92,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    void bpmnBankConfigBpmnBankConfigPKBpmnIdTest_null_BpmnBankConfigPK(){
+    void bpmnBankConfigBpmnBankConfigPKBpmnIdTest_null_BpmnBankConfigPK() {
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         bpmnBankConfig.setBpmnBankConfigPK(null);
         BpmnBankConfigDTO resource = bpmnConfigMapperImpl.toDTO(bpmnBankConfig);
@@ -103,7 +100,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    void bpmnBankConfigBpmnBankConfigPKBpmnIdTest_null_BpmnId(){
+    void bpmnBankConfigBpmnBankConfigPKBpmnIdTest_null_BpmnId() {
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setBpmnId(null);
@@ -114,7 +111,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    void bpmnBankConfigBpmnBankConfigPKBpmnIdTest(){
+    void bpmnBankConfigBpmnBankConfigPKBpmnIdTest() {
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setBpmnId(UUID.randomUUID());
@@ -128,7 +125,7 @@ class BpmnConfigMapperImplTest {
 
 
     @Test
-    void bpmnBankConfigBpmnBankConfigPKBpmnModelVersionTest(){
+    void bpmnBankConfigBpmnBankConfigPKBpmnModelVersionTest() {
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setBpmnModelVersion(1L);
@@ -141,7 +138,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    void bpmnBankConfigBpmnBankConfigPKAcquirerIdTest(){
+    void bpmnBankConfigBpmnBankConfigPKAcquirerIdTest() {
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setAcquirerId("id");
@@ -154,7 +151,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    void bpmnBankConfigBpmnBankConfigPKBranchIdTest_null_BranchId(){
+    void bpmnBankConfigBpmnBankConfigPKBranchIdTest_null_BranchId() {
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setBranchId(null);
@@ -165,7 +162,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    void bpmnBankConfigBpmnBankConfigPKTerminalId_null_TerminalId(){
+    void bpmnBankConfigBpmnBankConfigPKTerminalId_null_TerminalId() {
         BpmnBankConfig bpmnBankConfig = new BpmnBankConfig();
         BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
         bpmnBankConfigPK.setTerminalId(null);
@@ -177,7 +174,7 @@ class BpmnConfigMapperImplTest {
 
 
     @Test
-    public void testBpmnBankConfigBpmnBankConfigPKAcquirerId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testBpmnBankConfigBpmnBankConfigPKAcquirerId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKAcquirerId", BpmnBankConfig.class);
         privateMethod.setAccessible(true);
@@ -188,7 +185,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void testBpmnBankConfigBpmnBankConfigPKBpmnId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testBpmnBankConfigBpmnBankConfigPKBpmnId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKBpmnId", BpmnBankConfig.class);
         privateMethod.setAccessible(true);
@@ -199,7 +196,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void testBpmnBankConfigBpmnBankConfigPKBpmnModelVersion() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testBpmnBankConfigBpmnBankConfigPKBpmnModelVersion() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKBpmnModelVersion", BpmnBankConfig.class);
         privateMethod.setAccessible(true);
@@ -210,7 +207,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void testBpmnBankConfigBpmnBankConfigPKBranchId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testBpmnBankConfigBpmnBankConfigPKBranchId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKBranchId", BpmnBankConfig.class);
         privateMethod.setAccessible(true);
@@ -221,7 +218,7 @@ class BpmnConfigMapperImplTest {
     }
 
     @Test
-    public void testBpmnBankConfigBpmnBankConfigPKTerminalId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void testBpmnBankConfigBpmnBankConfigPKTerminalId() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Method privateMethod = BpmnConfigMapperImpl.class.getDeclaredMethod("bpmnBankConfigBpmnBankConfigPKTerminalId", BpmnBankConfig.class);
         privateMethod.setAccessible(true);

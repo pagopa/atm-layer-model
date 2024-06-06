@@ -29,20 +29,12 @@ class ResourceEntityServiceImplTest {
     @Mock
     ResourceFileServiceImpl resourceFileService;
     @InjectMocks
-    private ResourceEntityServiceImpl resourceEntityService;
+    ResourceEntityServiceImpl resourceEntityService;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-//    @Test
-//    public void getAll(){
-//        ResourceEntity resourceEntity=new ResourceEntity();
-//        when(resourceEntityRepository.findAll()).thenReturn((PanacheQuery<ResourceEntity>)resourceEntity);
-//        resourceEntityService.getAll()
-//                .subscribe().withSubscriber(UniAssertSubscriber.create())
-//                .assertCompleted();
-//    }
 
     @Test
     void uploadFailure() {

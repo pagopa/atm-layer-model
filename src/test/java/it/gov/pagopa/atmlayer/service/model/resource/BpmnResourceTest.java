@@ -3,16 +3,8 @@ package it.gov.pagopa.atmlayer.service.model.resource;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atmlayer.service.model.dto.BpmnAssociationDto;
-import it.gov.pagopa.atmlayer.service.model.dto.BpmnCreationDto;
-import it.gov.pagopa.atmlayer.service.model.dto.BpmnUpgradeDto;
-import it.gov.pagopa.atmlayer.service.model.dto.BranchConfigs;
-import it.gov.pagopa.atmlayer.service.model.dto.TerminalConfigs;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfigPK;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
-import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
+import it.gov.pagopa.atmlayer.service.model.dto.*;
+import it.gov.pagopa.atmlayer.service.model.entity.*;
 import it.gov.pagopa.atmlayer.service.model.enumeration.BankConfigUtilityValues;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnConfigMapper;
@@ -31,21 +23,14 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 class BpmnResourceTest {
@@ -131,7 +116,7 @@ class BpmnResourceTest {
         bpmnVersion.setModelVersion(version);
         BpmnDTO bpmnDTO = new BpmnDTO();
         bpmnDTO.setDeployedFileName("testDTO");
-        when(bpmnVersionService.findByPk(new BpmnVersionPK(uuid, version))).thenReturn(Uni.createFrom().item(Optional.ofNullable(bpmnVersion)));
+        when(bpmnVersionService.findByPk(new BpmnVersionPK(uuid, version))).thenReturn(Uni.createFrom().item(Optional.of(bpmnVersion)));
         when(bpmnVersionMapper.toDTO(bpmnVersion)).thenReturn(bpmnDTO);
         given()
                 .pathParam("bpmnId", uuid)
@@ -151,7 +136,7 @@ class BpmnResourceTest {
         bpmnVersion.setModelVersion(version);
         BpmnDTO bpmnDTO = new BpmnDTO();
         bpmnDTO.setDeployedFileName("testDTO");
-        when(bpmnVersionService.findByPk(new BpmnVersionPK(uuid, version))).thenReturn(Uni.createFrom().item(Optional.ofNullable(null)));
+        when(bpmnVersionService.findByPk(new BpmnVersionPK(uuid, version))).thenReturn(Uni.createFrom().item(Optional.empty()));
         when(bpmnVersionMapper.toDTO(bpmnVersion)).thenReturn(bpmnDTO);
         given()
                 .pathParam("bpmnId", uuid)
@@ -243,30 +228,6 @@ class BpmnResourceTest {
         assertEquals(version, result.getModelVersion());
     }
 
-//    @Test
-//    void downloadBpmn() {
-//        UUID bpmnId=UUID.randomUUID();
-//        Long version=1L;
-//        BpmnVersionPK expectedKey=new BpmnVersionPK(bpmnId,version);
-//        BpmnVersion expectedBpmn=(new BpmnVersion());
-//        expectedBpmn.setResourceFile(getResourceFileInstance());
-//        //set storage key in resource file: that is the input
-//        BpmnDTO expectedDto=new BpmnDTO();
-//        expectedDto.setBpmnId(bpmnId);
-//        expectedDto.setModelVersion(version);
-//        when(bpmnVersionService.findByPk(any(BpmnVersionPK.class))).thenReturn(Uni.createFrom().item(Optional.of(expectedBpmn)));
-//        when(bpmnFileStorageService.download(any(String.class))).thenReturn((RestMulti<Buffer>) buffer("downloaded"));
-//
-//        given()
-//                .pathParam("uuid",bpmnId)
-//                .pathParam("version",version)
-//                .when().post("/api/v1/model/bpmn/deploy/{uuid}/version/{version}")
-//                .then()
-//                .statusCode(200);
-//        verify(bpmnVersionService,times(1)).findByPk(expectedKey);
-//        verify(bpmnFileStorageService,times(1)).download("storageKey");
-//    }
-
     @Test
     void testDownloadBpmnNullResourceFile() {
         UUID bpmnId = UUID.randomUUID();
@@ -351,7 +312,7 @@ class BpmnResourceTest {
                 .statusCode(200);
         verify(bpmnBankConfigService, times(1)).findByConfigurationsAndFunction("ACQ", "BRANCH", "TERMINAL", "MENU");
         verify(bpmnVersionService, times(1)).findByPk(expectedBpmnVersionPK);
-        BpmnProcessDTO bpmnProcessDTO=new BpmnProcessDTO();
+        BpmnProcessDTO bpmnProcessDTO = new BpmnProcessDTO();
         when(bpmnVersionMapper.toProcessDTO(any(BpmnDTO.class))).thenReturn(bpmnProcessDTO);
         given()
                 .pathParam("functionType", "MENU")
@@ -439,7 +400,6 @@ class BpmnResourceTest {
 
     @Test
     void testUpgradeBPMN() {
-        BpmnUpgradeDto expectedUpmnUpgradeDto = new BpmnUpgradeDto();
         when(bpmnVersionService.upgrade(any(BpmnUpgradeDto.class))).thenReturn(Uni.createFrom().item(new BpmnDTO()));
         given()
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -497,23 +457,4 @@ class BpmnResourceTest {
         return bpmnBankConfigPK;
     }
 
-    private static BpmnBankConfigPK getBpmnBankConfigPKTwoValueInstance() {
-        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
-        bpmnBankConfigPK.setBpmnId(UUID.randomUUID());
-        bpmnBankConfigPK.setBpmnModelVersion(1L);
-        bpmnBankConfigPK.setAcquirerId("acquirer1");
-        bpmnBankConfigPK.setBranchId("branch1");
-        bpmnBankConfigPK.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
-        return bpmnBankConfigPK;
-    }
-
-    private static BpmnBankConfigPK getBpmnBankConfigPKOneValueInstance() {
-        BpmnBankConfigPK bpmnBankConfigPK = new BpmnBankConfigPK();
-        bpmnBankConfigPK.setBpmnId(UUID.randomUUID());
-        bpmnBankConfigPK.setBpmnModelVersion(1L);
-        bpmnBankConfigPK.setAcquirerId("acquirer1");
-        bpmnBankConfigPK.setBranchId(BankConfigUtilityValues.NULL_VALUE.getValue());
-        bpmnBankConfigPK.setTerminalId(BankConfigUtilityValues.NULL_VALUE.getValue());
-        return bpmnBankConfigPK;
-    }
 }
