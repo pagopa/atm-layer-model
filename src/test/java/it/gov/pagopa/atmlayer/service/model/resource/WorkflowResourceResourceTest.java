@@ -87,6 +87,29 @@ class WorkflowResourceResourceTest {
     assertEquals(workflowResourceDTO, result);
   }
 
+  @Test
+  void testRollback() {
+    UUID uuid = UUID.randomUUID();
+    WorkflowResource rolledBackWorkflowResource = new WorkflowResource();
+    WorkflowResourceDTO expectedDto = new WorkflowResourceDTO();
+    expectedDto.setWorkflowResourceId(uuid);
+
+    when(workflowResourceService.rollback(any(UUID.class))).thenReturn(Uni.createFrom().item(rolledBackWorkflowResource));
+    when(workflowResourceMapper.toDTO(any(WorkflowResource.class))).thenReturn(expectedDto);
+
+    WorkflowResourceDTO result = given()
+            .contentType(ContentType.JSON)
+            .pathParam("uuid", uuid)
+            .when().put("/api/v1/model/workflow-resource/rollback/{uuid}")
+            .then()
+            .statusCode(200)
+            .extract().as(WorkflowResourceDTO.class);
+
+    verify(workflowResourceService, times(1)).rollback(uuid);
+    verify(workflowResourceMapper, times(1)).toDTO(rolledBackWorkflowResource);
+
+    assertEquals(uuid, result.getWorkflowResourceId());
+  }
 
   @Test
   void testDelete(){
