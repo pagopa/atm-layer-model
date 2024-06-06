@@ -16,6 +16,7 @@ import it.gov.pagopa.atmlayer.service.model.mapper.UserProfilesMapper;
 import it.gov.pagopa.atmlayer.service.model.repository.UserProfilesRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,8 +27,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -135,9 +134,9 @@ class UserServiceImplTest {
                 .assertCompleted()
                 .getItem();
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(userProfiles, result.get(0));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(userProfiles, result.get(0));
 
         verify(userMapper, times(1)).toEntityInsertion(any(UserInsertionDTO.class));
         verify(userRepository, times(1)).findById(user.getUserId());
@@ -182,7 +181,7 @@ class UserServiceImplTest {
         when(userRepository.findById(any(String.class))).thenReturn(Uni.createFrom().item(user));
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
 
-        userService.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
+        userServiceImpl.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(user);
 
@@ -202,7 +201,7 @@ class UserServiceImplTest {
         when(userRepository.findById(any(String.class))).thenReturn(Uni.createFrom().item(user));
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
 
-        userService.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
+        userServiceImpl.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(user);
 
@@ -222,7 +221,7 @@ class UserServiceImplTest {
         when(userRepository.findById(any(String.class))).thenReturn(Uni.createFrom().item(user));
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
 
-        userService.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
+        userServiceImpl.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(user);
 
@@ -238,7 +237,7 @@ class UserServiceImplTest {
 
         when(userRepository.findById(any(String.class))).thenReturn(Uni.createFrom().item(new User()));
 
-        userService.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
+        userServiceImpl.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailed()
                 .assertFailedWith(AtmLayerException.class, "Tutti i campi sono vuoti");
 
