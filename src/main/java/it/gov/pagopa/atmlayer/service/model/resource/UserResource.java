@@ -40,6 +40,17 @@ public class UserResource {
                 .transformToUni(insertedUser -> Uni.createFrom().item(this.userMapper.toProfilesDTO(insertedUser)));
     }
 
+    @POST
+    @Path("/first-access/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<UserWithProfilesDTO> firstAccess(@PathParam("userId") String userId) {
+        return this.userService.checkFirstAccess(userId)
+                .onItem()
+                .transformToUni(insertedProfiles -> userService.findUser(userId))
+                .onItem()
+                .transformToUni(user -> Uni.createFrom().item(this.userMapper.toProfilesDTO(user)));
+    }
+
     @PUT
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)

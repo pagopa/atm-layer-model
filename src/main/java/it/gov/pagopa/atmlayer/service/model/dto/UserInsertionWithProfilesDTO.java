@@ -22,9 +22,7 @@ public class UserInsertionWithProfilesDTO {
     @Email(message = "must be an email address in the correct format")
     @Schema(required = true, example = "email@domain.com")
     private String userId;
-    @NotBlank
     private String name;
-    @NotBlank
     private String surname;
     @NotNull
     @Size(min = 1)

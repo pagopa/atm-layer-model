@@ -21,6 +21,7 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -108,6 +109,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Uni<Long> countUsers() {
+        return this.userRepository.count();
+    }
+
+    @Override
     @WithSession
     public Uni<User> findById(String userId) {
         return this.userRepository.findById(userId)
@@ -118,5 +124,27 @@ public class UserServiceImpl implements UserService {
                 })
                 .onItem()
                 .transformToUni(Unchecked.function(x -> Uni.createFrom().item(x)));
+    }
+
+    @Override
+    @WithTransaction
+    public Uni<Void> checkFirstAccess(String userId) {
+
+        return countUsers()
+                .onItem()
+                .transformToUni(count -> {
+                    if (count == 0) {
+                        UserInsertionWithProfilesDTO userInsertionWithProfilesDTO = new UserInsertionWithProfilesDTO();
+                        List<Integer> profile = new ArrayList<>();
+                        profile.add(5);
+                        userInsertionWithProfilesDTO.setUserId(userId);
+                        userInsertionWithProfilesDTO.setProfileIds(profile);
+                        return insertUserWithProfiles(userInsertionWithProfilesDTO)
+                                .onItem()
+                                .transformToUni(list -> Uni.createFrom().voidItem());
+
+                    }
+                    return Uni.createFrom().voidItem();
+                });
     }
 }

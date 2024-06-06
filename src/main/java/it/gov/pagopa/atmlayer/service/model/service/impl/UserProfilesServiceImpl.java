@@ -14,11 +14,13 @@ import it.gov.pagopa.atmlayer.service.model.repository.ProfileRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserProfilesRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
+import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped

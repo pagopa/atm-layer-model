@@ -18,8 +18,6 @@ public class UserInsertionDTO {
     @Email(message = "must be an email address in the correct format")
     @Schema(required = true, example = "email@domain.com")
     private String userId;
-    @NotNull
     private String name;
-    @NotNull
     private String surname;
 }

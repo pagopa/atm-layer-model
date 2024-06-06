@@ -23,4 +23,8 @@ public interface UserService {
     Uni<User> findById(String userId);
 
     Uni<List<User>> getAllUsers();
+
+    Uni<Long> countUsers();
+
+    Uni<Void> checkFirstAccess(String userId);
 }
