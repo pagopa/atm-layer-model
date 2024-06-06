@@ -5,19 +5,29 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
+import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
+import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
+import it.gov.pagopa.atmlayer.service.model.mapper.UserProfilesMapper;
+import it.gov.pagopa.atmlayer.service.model.repository.UserProfilesRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
+import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -30,12 +40,51 @@ class UserServiceImplTest {
     @Mock
     UserMapper userMapper;
 
+    @Mock
+    UserProfilesService userProfilesService;
+
+    @Mock
+    UserProfilesMapper userProfilesMapper;
+
+    @Mock
+    UserProfilesRepository userProfilesRepository;
+
     @InjectMocks
-    UserServiceImpl userService;
+    UserServiceImpl userServiceImpl;
+
+    private User user;
+    private UserProfiles userProfiles;
+    private List<UserProfiles> userProfilesList;
+    private UserInsertionDTO userInsertionDTO;
+    private UserInsertionWithProfilesDTO userInsertionWithProfilesDTO;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
+        user = new User();
+        userProfiles = new UserProfiles();
+        userProfiles.setUserProfilesPK(new UserProfilesPK("prova@test.com", 1));
+        userProfiles.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        userProfiles.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+        userProfilesList = new ArrayList<>();
+        userProfilesList.add(userProfiles);
+
+        user.setUserId("prova@test.com");
+        user.setName("prova");
+        user.setSurname("test");
+        user.setUserProfiles(userProfilesList);
+
+        userInsertionDTO = new UserInsertionDTO();
+        userInsertionDTO.setUserId("prova@test.com");
+        userInsertionDTO.setName("prova");
+        userInsertionDTO.setSurname("test");
+
+        userInsertionWithProfilesDTO = new UserInsertionWithProfilesDTO();
+        userInsertionWithProfilesDTO.setUserId("prova@test.com");
+        userInsertionWithProfilesDTO.setName("prova");
+        userInsertionWithProfilesDTO.setSurname("test");
+        userInsertionWithProfilesDTO.setProfileIds(List.of(1));
     }
 
     @Test
@@ -52,13 +101,48 @@ class UserServiceImplTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Uni.createFrom().nullItem());
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
 
-        userService.insertUser(userInsertionDTO)
+        userServiceImpl.insertUser(userInsertionDTO)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(user);
 
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, times(1)).persist(user);
+    }
+
+    @Test
+    void findUserTest() {
+        userServiceImpl.findUser(user.getUserId())
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted()
+                .getItem();
+
+        verify(userRepository, times(1)).findById(user.getUserId());
+    }
+
+    @Test
+    void insertUserWithProfilesTest() {
+        when(userMapper.toEntityInsertion(any(UserInsertionDTO.class))).thenReturn(user);
+        when(userRepository.findById(user.getUserId())).thenReturn(Uni.createFrom().nullItem());
+        when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
+        when(userProfilesMapper.toEntityInsertion(any(UserProfilesInsertionDTO.class))).thenReturn(userProfilesList);
+        when(userProfilesRepository.findById(any(UserProfilesPK.class))).thenReturn(Uni.createFrom().nullItem());
+        when(userProfilesRepository.persist(any(UserProfiles.class))).thenReturn(Uni.createFrom().item(userProfiles));
+        when(userProfilesService.insertUserProfiles(any(UserProfilesInsertionDTO.class))).thenReturn(Uni.createFrom().item(userProfilesList));
+
+        List<UserProfiles> result = userServiceImpl.insertUserWithProfiles(userInsertionWithProfilesDTO)
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted()
+                .getItem();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(userProfiles, result.get(0));
+
+        verify(userMapper, times(1)).toEntityInsertion(any(UserInsertionDTO.class));
+        verify(userRepository, times(1)).findById(user.getUserId());
+        verify(userRepository, times(1)).persist(any(User.class));
+        verify(userProfilesService, times(1)).insertUserProfiles(any(UserProfilesInsertionDTO.class));
     }
 
     @Test
@@ -77,7 +161,7 @@ class UserServiceImplTest {
         when(userRepository.findById("prova@test.com")).thenReturn(Uni.createFrom().item(user));
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
 
-        userService.insertUser(userInsertionDTO)
+        userServiceImpl.insertUser(userInsertionDTO)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailed()
                 .assertFailedWith(AtmLayerException.class, "Un utente con lo stesso id esiste già");
@@ -169,7 +253,7 @@ class UserServiceImplTest {
 
         when(userRepository.findById(userId)).thenReturn(Uni.createFrom().item(user));
 
-        userService.findById(userId)
+        userServiceImpl.findById(userId)
                 .subscribe()
                 .withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
@@ -184,7 +268,7 @@ class UserServiceImplTest {
 
         when(userRepository.findById(userId)).thenReturn(Uni.createFrom().nullItem());
 
-        userService.findById(userId)
+        userServiceImpl.findById(userId)
                 .subscribe()
                 .withSubscriber(UniAssertSubscriber.create())
                 .assertFailed()
@@ -202,7 +286,7 @@ class UserServiceImplTest {
         when(userRepository.findAll()).thenReturn(panacheQuery);
         when(panacheQuery.list()).thenReturn(Uni.createFrom().item(userList));
 
-        Uni<List<User>> result = userService.getAllUsers();
+        Uni<List<User>> result = userServiceImpl.getAllUsers();
 
         result.subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
@@ -217,7 +301,7 @@ class UserServiceImplTest {
         when(userRepository.findById(userId)).thenReturn(Uni.createFrom().item(user));
         when(userRepository.deleteById(userId)).thenReturn(Uni.createFrom().item(true));
 
-        userService.deleteUser(userId)
+        userServiceImpl.deleteUser(userId)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(true);
