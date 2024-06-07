@@ -57,6 +57,32 @@ class UserResourceTest {
     }
 
     @Test
+    void testFirstAccess() {
+        String userId = "testUserId";
+        User user = new User();
+        UserWithProfilesDTO userWithProfilesDTO = new UserWithProfilesDTO();
+
+        when(userService.checkFirstAccess(userId)).thenReturn(Uni.createFrom().voidItem());
+        when(userService.findUser(userId)).thenReturn(Uni.createFrom().item(user));
+        when(userMapper.toProfilesDTO(user)).thenReturn(userWithProfilesDTO);
+
+        UserWithProfilesDTO result = given()
+                .pathParam("userId", userId)
+                .when()
+                .post("/api/v1/model/users/first-access/{userId}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(UserWithProfilesDTO.class);
+
+        assertEquals(userWithProfilesDTO, result);
+        verify(userService, times(1)).checkFirstAccess(userId);
+        verify(userService, times(1)).findUser(userId);
+        verify(userMapper, times(1)).toProfilesDTO(user);
+    }
+
+
+    @Test
     void testUpdate() {
         User user = new User();
         UserWithProfilesDTO userWithProfilesDTO = new UserWithProfilesDTO();

@@ -306,4 +306,47 @@ class UserServiceImplTest {
                 .assertItem(true);
     }
 
+    @Test
+    void testCheckFirstAccessWhenNoUsers() {
+        String userId = "testUserId";
+        long userCount = 0;
+
+        when(userRepository.count()).thenReturn(Uni.createFrom().item(userCount));
+        when(userProfilesService.insertUserProfiles(any(UserProfilesInsertionDTO.class)))
+                .thenReturn(Uni.createFrom().item(new ArrayList<>()));
+
+        User mockedUser = new User();
+        mockedUser.setUserId(userId);
+        when(userMapper.toEntityInsertion(any(UserInsertionDTO.class))).thenReturn(mockedUser);
+
+        when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(mockedUser));
+
+        userServiceImpl.checkFirstAccess(userId)
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted()
+                .assertItem(null);
+
+        verify(userRepository, times(1)).count();
+        verify(userProfilesService, times(1)).insertUserProfiles(any(UserProfilesInsertionDTO.class));
+        verify(userRepository, times(1)).persist(any(User.class));
+    }
+
+
+    @Test
+    void testCheckFirstAccessWhenUsersExist() {
+        String userId = "testUserId";
+        long userCount = 5;
+
+        when(userRepository.count()).thenReturn(Uni.createFrom().item(userCount));
+
+        userServiceImpl.checkFirstAccess(userId)
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted()
+                .assertItem(null);
+
+        verify(userRepository, times(1)).count();
+        verify(userProfilesService, never()).insertUserProfiles(any(UserProfilesInsertionDTO.class));
+    }
+
 }
