@@ -42,12 +42,6 @@ class UserServiceImplTest {
     @Mock
     UserProfilesService userProfilesService;
 
-    @Mock
-    UserProfilesMapper userProfilesMapper;
-
-    @Mock
-    UserProfilesRepository userProfilesRepository;
-
     @InjectMocks
     UserServiceImpl userServiceImpl;
 
@@ -120,28 +114,33 @@ class UserServiceImplTest {
     }
 
     @Test
-    void insertUserWithProfilesTest() {
-        when(userMapper.toEntityInsertion(any(UserInsertionDTO.class))).thenReturn(user);
+    void insertUserWithProfilesTestWithInitialUserNotFound() {
+        when(userMapper.toEntityInsertionWithProfiles(any(UserInsertionWithProfilesDTO.class))).thenReturn(user);
         when(userRepository.findById(user.getUserId())).thenReturn(Uni.createFrom().nullItem());
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
-        when(userProfilesMapper.toEntityInsertion(any(UserProfilesInsertionDTO.class))).thenReturn(userProfilesList);
-        when(userProfilesRepository.findById(any(UserProfilesPK.class))).thenReturn(Uni.createFrom().nullItem());
-        when(userProfilesRepository.persist(any(UserProfiles.class))).thenReturn(Uni.createFrom().item(userProfiles));
-        when(userProfilesService.insertUserProfiles(any(UserProfilesInsertionDTO.class))).thenReturn(Uni.createFrom().item(userProfilesList));
 
-        List<UserProfiles> result = userServiceImpl.insertUserWithProfiles(userInsertionWithProfilesDTO)
+        User result = userServiceImpl.insertUserWithProfiles(userInsertionWithProfilesDTO)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .getItem();
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(userProfiles, result.get(0));
+        Assertions.assertEquals(user, result);
 
-        verify(userMapper, times(1)).toEntityInsertion(any(UserInsertionDTO.class));
+        verify(userMapper, times(1)).toEntityInsertionWithProfiles(any(UserInsertionWithProfilesDTO.class));
         verify(userRepository, times(1)).findById(user.getUserId());
         verify(userRepository, times(1)).persist(any(User.class));
-        verify(userProfilesService, times(1)).insertUserProfiles(any(UserProfilesInsertionDTO.class));
+    }
+
+    @Test
+    void insertUserWithProfilesTestWithInitialUserFound() {
+        when(userMapper.toEntityInsertionWithProfiles(any(UserInsertionWithProfilesDTO.class))).thenReturn(user);
+        when(userRepository.findById(user.getUserId())).thenReturn(Uni.createFrom().item(user));
+        when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
+
+        userServiceImpl.insertUserWithProfiles(userInsertionWithProfilesDTO)
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class, "Un utente con lo stesso id esiste già");
     }
 
     @Test
@@ -308,26 +307,30 @@ class UserServiceImplTest {
 
     @Test
     void testCheckFirstAccessWhenNoUsers() {
-        String userId = "testUserId";
         long userCount = 0;
 
-        when(userRepository.count()).thenReturn(Uni.createFrom().item(userCount));
-        when(userProfilesService.insertUserProfiles(any(UserProfilesInsertionDTO.class)))
-                .thenReturn(Uni.createFrom().item(new ArrayList<>()));
-
         User mockedUser = new User();
-        mockedUser.setUserId(userId);
-        when(userMapper.toEntityInsertion(any(UserInsertionDTO.class))).thenReturn(mockedUser);
+        mockedUser.setUserId("test@test.com");
 
+        UserInsertionWithProfilesDTO userInsertionWithProfilesDTO = new UserInsertionWithProfilesDTO();
+        userInsertionWithProfilesDTO.setUserId("test@test.com");
+        List<Integer> profileIds = new ArrayList<>();
+        profileIds.add(5);
+        userInsertionWithProfilesDTO.setProfileIds(profileIds);
+
+        when(userRepository.count()).thenReturn(Uni.createFrom().item(userCount));
+        when(userMapper.toEntityInsertionWithProfiles(any(UserInsertionWithProfilesDTO.class))).thenReturn(mockedUser);
+        when(userRepository.findById(anyString())).thenReturn(Uni.createFrom().nullItem());
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(mockedUser));
 
-        userServiceImpl.checkFirstAccess(userId)
+        userServiceImpl.checkFirstAccess(mockedUser.getUserId())
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(null);
 
         verify(userRepository, times(1)).count();
-        verify(userProfilesService, times(1)).insertUserProfiles(any(UserProfilesInsertionDTO.class));
+        verify(userMapper, times(1)).toEntityInsertionWithProfiles(any(UserInsertionWithProfilesDTO.class));
+        verify(userRepository, times(1)).findById(anyString());
         verify(userRepository, times(1)).persist(any(User.class));
     }
 

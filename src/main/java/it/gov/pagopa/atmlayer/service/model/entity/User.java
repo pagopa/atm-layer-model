@@ -33,7 +33,7 @@ public class User extends PanacheEntityBase implements Serializable {
     private String surname;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserProfiles> userProfiles;
 
     @CreationTimestamp

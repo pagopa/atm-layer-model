@@ -109,41 +109,31 @@ class UserResourceTest {
 
     @Test
     void testInsertWithProfiles() {
-        UserInsertionWithProfilesDTO userInsertionWithProfilesDTO = new UserInsertionWithProfilesDTO();
-        List<Integer> profilesId = new ArrayList<>();
-        userInsertionWithProfilesDTO.setUserId("prova@test.com");
-        userInsertionWithProfilesDTO.setName("prova");
-        userInsertionWithProfilesDTO.setSurname("test");
-        profilesId.add(1);
-        userInsertionWithProfilesDTO.setProfileIds(profilesId);
-
-        UserWithProfilesDTO userWithProfilesDTO = new UserWithProfilesDTO();
-
-        ProfileDTO profileDTO = new ProfileDTO();
-        profileDTO.setProfileId(1);
-        profileDTO.setDescription("prova");
-
-        List<ProfileDTO> profileDTOList = new ArrayList<>();
-        profileDTOList.add(profileDTO);
-
-        userWithProfilesDTO.setUserId(userInsertionWithProfilesDTO.getUserId());
-        userWithProfilesDTO.setName(userInsertionWithProfilesDTO.getName());
-        userWithProfilesDTO.setSurname(userInsertionWithProfilesDTO.getSurname());
-        userWithProfilesDTO.setProfiles(profileDTOList);
-
+        User user = new User();
         UserProfiles userProfiles = new UserProfiles();
-        userProfiles.setUserProfilesPK(new UserProfilesPK("1", 1));
+        userProfiles.setUserProfilesPK(new UserProfilesPK("prova@test.com", 1));
         userProfiles.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         userProfiles.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
         List<UserProfiles> userProfilesList = new ArrayList<>();
         userProfilesList.add(userProfiles);
 
-        User user = new User();
+        user.setUserId("prova@test.com");
+        user.setName("prova");
+        user.setSurname("test");
+        user.setUserProfiles(userProfilesList);
 
-        when(userService.insertUserWithProfiles(userInsertionWithProfilesDTO)).thenReturn(Uni.createFrom().item(userProfilesList));
-        when(userService.findUser(any(String.class))).thenReturn(Uni.createFrom().item(user));
-        when(userMapper.toProfilesDTO(any(User.class))).thenReturn(userWithProfilesDTO);
+        UserInsertionWithProfilesDTO userInsertionWithProfilesDTO = new UserInsertionWithProfilesDTO();
+        userInsertionWithProfilesDTO.setUserId("prova@test.com");
+        userInsertionWithProfilesDTO.setName("prova");
+        userInsertionWithProfilesDTO.setSurname("test");
+        userInsertionWithProfilesDTO.setProfileIds(List.of(1));
+
+        UserWithProfilesDTO userWithProfilesDTO = new UserWithProfilesDTO();
+
+        when(userMapper.toEntityInsertionWithProfiles(userInsertionWithProfilesDTO)).thenReturn(user);
+        when(userService.findUser(userInsertionWithProfilesDTO.getUserId())).thenReturn(Uni.createFrom().item(user));
+        when(userMapper.toProfilesDTO(user)).thenReturn(userWithProfilesDTO);
 
         UserWithProfilesDTO result = given()
                 .contentType(MediaType.APPLICATION_JSON)

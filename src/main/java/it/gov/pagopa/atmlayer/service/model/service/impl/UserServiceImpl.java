@@ -6,9 +6,7 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
-import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
-import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
@@ -33,9 +31,6 @@ public class UserServiceImpl implements UserService {
 
     @Inject
     UserMapper userMapper;
-
-    @Inject
-    UserProfilesService userProfilesService;
 
     @Override
     @WithTransaction
@@ -62,12 +57,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @WithTransaction
-    public Uni<List<UserProfiles>> insertUserWithProfiles(UserInsertionWithProfilesDTO userInsertionWithProfilesDTO) {
-        UserInsertionDTO userInsertionDTO = new UserInsertionDTO(userInsertionWithProfilesDTO.getUserId(), userInsertionWithProfilesDTO.getName(), userInsertionWithProfilesDTO.getSurname());
-        UserProfilesInsertionDTO userProfilesInsertionDTO = new UserProfilesInsertionDTO(userInsertionWithProfilesDTO.getUserId(), userInsertionWithProfilesDTO.getProfileIds());
-        return insertUser(userInsertionDTO)
+    public Uni<User> insertUserWithProfiles(UserInsertionWithProfilesDTO userInsertionWithProfilesDTO) {
+        User user = userMapper.toEntityInsertionWithProfiles(userInsertionWithProfilesDTO);
+        return this.userRepository.findById(user.getUserId())
                 .onItem()
-                .transformToUni(createdUser -> userProfilesService.insertUserProfiles(userProfilesInsertionDTO));
+                .transformToUni(Unchecked.function(x -> {
+                    if (x != null) {
+                        log.error("userId {} already exists", user.getUserId());
+                        throw new AtmLayerException(Response.Status.BAD_REQUEST, AppErrorCodeEnum.USER_WITH_SAME_ID_ALREADY_EXIST);
+                    }
+                    return userRepository.persist(user);
+                }));
     }
 
     @Override

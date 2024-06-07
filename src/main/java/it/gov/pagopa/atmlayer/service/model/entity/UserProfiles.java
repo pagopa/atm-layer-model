@@ -35,4 +35,7 @@ public class UserProfiles extends PanacheEntityBase implements Serializable {
     @UpdateTimestamp
     @Column(name = "last_updated_at")
     private Timestamp lastUpdatedAt;
+    public UserProfiles(UserProfilesPK userProfilesPK) {
+        this.userProfilesPK = userProfilesPK;
+    };
 }
