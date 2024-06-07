@@ -48,7 +48,7 @@ class UserResourceTest {
         UserWithProfilesDTO result = given()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(userInsertionDTO)
-                .when().post("api/v1/model/user/insert")
+                .when().post("api/v1/model/users/insert")
                 .then()
                 .statusCode(200)
                 .extract().as(UserWithProfilesDTO.class);
@@ -72,7 +72,7 @@ class UserResourceTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(userInsertionDTO)
                 .when()
-                .put("api/v1/model/user/update")
+                .put("api/v1/model/users/update")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -122,7 +122,7 @@ class UserResourceTest {
         UserWithProfilesDTO result = given()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(userInsertionWithProfilesDTO)
-                .when().post("api/v1/model/user/insert-with-profiles")
+                .when().post("api/v1/model/users/insert-with-profiles")
                 .then()
                 .statusCode(200)
                 .extract().as(UserWithProfilesDTO.class);
@@ -138,7 +138,7 @@ class UserResourceTest {
 
         given()
                 .pathParam("userId", userId)
-                .when().delete("/api/v1/model/user/delete/userId/{userId}")
+                .when().delete("/api/v1/model/users/delete/userId/{userId}")
                 .then()
                 .statusCode(204);
 
@@ -158,7 +158,7 @@ class UserResourceTest {
         when(userMapper.toDTOList(any(List.class))).thenReturn(dtoList);
 
         ArrayList result = given()
-                .when().get("/api/v1/model/user")
+                .when().get("/api/v1/model/users")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -179,7 +179,7 @@ class UserResourceTest {
         when(userMapper.toDTOList(any(List.class))).thenReturn(dtoList);
 
         ArrayList result = given()
-                .when().get("/api/v1/model/user")
+                .when().get("/api/v1/model/users")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -203,7 +203,7 @@ class UserResourceTest {
         UserWithProfilesDTO result = given()
                 .pathParam("userId", userId)
                 .when()
-                .get("/api/v1/model/user/{userId}")
+                .get("/api/v1/model/users/{userId}")
                 .then()
                 .statusCode(200)
                 .extract()
