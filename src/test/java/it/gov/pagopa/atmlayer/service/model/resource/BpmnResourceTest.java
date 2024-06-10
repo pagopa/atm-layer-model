@@ -229,6 +229,24 @@ class BpmnResourceTest {
     }
 
     @Test
+    void testUndeployBPMN() {
+        UUID bpmnId = UUID.randomUUID();
+
+        when(bpmnVersionService.undeploy(any(UUID.class)))
+                .thenReturn(Uni.createFrom().voidItem());
+
+        given()
+                .pathParam("uuid", bpmnId)
+                .when()
+                .post("/api/v1/model/bpmn/undeploy/{uuid}")
+                .then()
+                .statusCode(204);
+
+        verify(bpmnVersionService, times(1)).undeploy(bpmnId);
+    }
+
+
+    @Test
     void testDownloadBpmnNullResourceFile() {
         UUID bpmnId = UUID.randomUUID();
         Long version = 1L;

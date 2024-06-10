@@ -22,6 +22,7 @@ import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -34,6 +35,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -55,6 +57,59 @@ class BpmnVersionServiceImplTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testUndeployWithNonExistingUUID() {
+        UUID uuid = UUID.randomUUID();
+
+        when(bpmnVersionRepoMock.findAllById(uuid)).thenReturn(Uni.createFrom().item(List.of()));
+
+        AtmLayerException thrown = assertThrows(AtmLayerException.class, () -> {
+            bpmnVersionServiceImpl.undeploy(uuid).await().indefinitely();
+        });
+
+        assertEquals("Il file BPMN di riferimento non può essere undeployed", thrown.getMessage());
+        verify(bpmnVersionRepoMock, times(1)).findAllById(uuid);
+        verify(processClientMock, never()).undeploy(any(String.class));
+    }
+
+    @Test
+    void testUndeployExistingUUID() {
+        UUID uuid = UUID.randomUUID();
+        String validDeploymentId = UUID.randomUUID().toString();
+        BpmnVersion bpmnVersion = new BpmnVersion();
+        bpmnVersion.setDeploymentId(UUID.fromString(validDeploymentId));
+
+        when(bpmnVersionRepoMock.findAllById(uuid)).thenReturn(Uni.createFrom().item(List.of(bpmnVersion)));
+        when(processClientMock.undeploy(validDeploymentId)).thenReturn(Uni.createFrom().voidItem());
+
+        bpmnVersionServiceImpl.undeploy(uuid)
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted();
+
+        verify(bpmnVersionRepoMock, times(1)).findAllById(uuid);
+        verify(processClientMock, times(1)).undeploy(validDeploymentId);
+    }
+
+    @Test
+    void testUndeployErrorDuringProcessClient() {
+        UUID uuid = UUID.randomUUID();
+        String validDeploymentId = UUID.randomUUID().toString();
+        BpmnVersion bpmnVersion = new BpmnVersion();
+        bpmnVersion.setDeploymentId(UUID.fromString(validDeploymentId));
+
+        when(bpmnVersionRepoMock.findAllById(uuid)).thenReturn(Uni.createFrom().item(List.of(bpmnVersion)));
+        when(processClientMock.undeploy(validDeploymentId)).thenReturn(Uni.createFrom().failure(new RuntimeException("Errore nel processClient")));
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            bpmnVersionServiceImpl.undeploy(uuid).await().indefinitely();
+        });
+
+        assertEquals("Errore nel processClient", thrown.getMessage());
+
+        verify(bpmnVersionRepoMock, times(1)).findAllById(uuid);
+        verify(processClientMock, times(1)).undeploy(validDeploymentId);
     }
 
     @Test
