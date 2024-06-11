@@ -14,14 +14,13 @@ import it.gov.pagopa.atmlayer.service.model.repository.ProfileRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserProfilesRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
-import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @ApplicationScoped
 @Slf4j
@@ -77,13 +76,32 @@ public class UserProfilesServiceImpl implements UserProfilesService {
     @Override
     public Uni<List<UserProfiles>> insertUserProfiles(UserProfilesInsertionDTO userProfilesInsertionDTO) {
         List<UserProfiles> userProfilesList = userProfilesMapper.toEntityInsertion(userProfilesInsertionDTO);
-        List<Uni<UserProfiles>> insertUnis = userProfilesList.stream()
-                .map(this::insertSingleUserProfile)
+        List<Uni<Boolean>> checks = userProfilesList.stream()
+                .map(this::isUserProfileExisting)
                 .toList();
 
-        return Uni.join().all(insertUnis)
-                .usingConcurrencyOf(1)
-                .andFailFast();
+        return Uni.join().all(checks)
+                .andCollectFailures()
+                .onItem()
+                .transform(existingFlags -> {
+                    boolean anyProfileAlreadyExists = existingFlags.stream().anyMatch(exists -> exists);
+                    if (anyProfileAlreadyExists) {
+                        throw new AtmLayerException(Response.Status.BAD_REQUEST, AppErrorCodeEnum.USER_PROFILE_ALREADY_EXIST);
+                    }
+                    return userProfilesList;
+                })
+                .onItem()
+                .transformToUni(profilesToInsert -> {
+                    List<Uni<UserProfiles>> insertUnis = profilesToInsert.stream()
+                            .map(this::insertSingleUserProfile)
+                            .toList();
+
+                    return Uni.join().all(insertUnis)
+                            .usingConcurrencyOf(1)
+                            .andCollectFailures()
+                            .onItem()
+                            .transform(list -> list);
+                });
     }
 
     @WithTransaction
@@ -101,6 +119,12 @@ public class UserProfilesServiceImpl implements UserProfilesService {
                                             .onItem()
                                             .transformToUni(isUserVoid -> userProfilesRepository.persist(userProfiles)));
                 });
+    }
+
+    @WithTransaction
+    protected Uni<Boolean> isUserProfileExisting(UserProfiles userProfiles) {
+        return this.userProfilesRepository.findById(userProfiles.getUserProfilesPK())
+                .onItem().transform(Objects::nonNull);
     }
 
     @Override
