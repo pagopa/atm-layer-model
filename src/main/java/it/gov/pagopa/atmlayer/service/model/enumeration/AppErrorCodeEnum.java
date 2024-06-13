@@ -69,7 +69,8 @@ public enum AppErrorCodeEnum {
     PROFILE_NOT_FOUND("ATMLM_4000058", "Non esiste un profilo con l'id indicato", CONSTRAINT_VIOLATION),
     PROFILE_OR_USER_NOT_FOUND("ATMLM_4000059","Utente o profilo non trovato", CONSTRAINT_VIOLATION),
     NO_ASSOCIATION_FOUND("ATMLM_4000060","Nessuna associazione trovata", CONSTRAINT_VIOLATION),
-    ALL_FIELDS_ARE_BLANK("ATMLM_4000061", "Tutti i campi sono vuoti", AppErrorType.BLANK_FIELDS);
+    ALL_FIELDS_ARE_BLANK("ATMLM_4000061", "Tutti i campi sono vuoti", AppErrorType.BLANK_FIELDS),
+    RESOURCES_CREATION_ERROR("ATMLM_4000062", "Errore nella creazione di resource multipli", GENERIC );
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;

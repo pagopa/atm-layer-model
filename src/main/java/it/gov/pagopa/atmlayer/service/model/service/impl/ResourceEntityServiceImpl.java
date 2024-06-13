@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
@@ -140,6 +141,58 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                                 }));
                             }));
                 }));
+    }
+
+    @Override
+    public Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<File> files,
+                                                    List<String> filenames, String path, String description) {
+        List<String> errors = new ArrayList<>();
+
+        return Multi.createFrom().items(resourceEntityList.stream())
+                .onItem().transformToUniAndConcatenate(resourceEntity -> {
+                    int index = resourceEntityList.indexOf(resourceEntity);
+                    File file = files.get(index);
+                    String filename = filenames.get(index);
+
+                    return findBySHA256(resourceEntity.getSha256())
+                            .onItem().transformToUni(x -> {
+                                if (x.isPresent()) {
+                                    errors.add(String.format("File %s: Esiste già una risorsa con lo stesso contenuto", filename));
+                                    return Uni.createFrom().nullItem();
+                                }
+                                return resourceFileService.findByStorageKey(resourceEntity.getStorageKey())
+                                        .onItem()
+                                        .transformToUni(resource -> {
+                                            if (resource.isPresent()) {
+                                                errors.add(String.format("File %s: Impossibile caricare: la risorsa con lo stesso nome file e percorso esiste già", filename));
+                                                return Uni.createFrom().nullItem();
+                                            }
+                                            return saveAndUpload(resourceEntity, file, filename, path)
+                                                    .onItem().transformToUni(bpmn -> this.findByUUID(resourceEntity.getResourceId())
+                                                            .onItem().transformToUni(optionalResource -> {
+                                                                if (optionalResource.isEmpty()) {
+                                                                    errors.add(String.format("File %s: Problema di sincronizzazione sulla creazione della risorsa", filename));
+                                                                    return Uni.createFrom().nullItem();
+                                                                }
+                                                                return Uni.createFrom().item(optionalResource.get());
+                                                            }));
+                                        });
+                            })
+                            .onFailure().recoverWithItem(throwable -> {
+                                errors.add(String.format("File %s: %s", filename, throwable.getMessage()));
+                                return null;
+                            });
+                })
+                .collect().asList()
+                .onItem().transform(resourceDTOList -> {
+                    if (!errors.isEmpty()) {
+                        throw new AtmLayerException("Alcuni file non sono stati creati: " + String.join(", ", errors),
+                                Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
+                    }else{
+                        errors.add("file creati senza errori");
+                    }
+                    return errors;  // This will be empty if no errors occurred
+                });
     }
 
     @Override

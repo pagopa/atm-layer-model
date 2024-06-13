@@ -4,6 +4,7 @@ import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
+import it.gov.pagopa.atmlayer.service.model.dto.ResourceMultipleCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
@@ -25,6 +26,10 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartForm;
+import org.jboss.resteasy.reactive.server.core.multipart.FormData;
+import org.jboss.resteasy.reactive.server.multipart.MultipartFormDataInput;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +63,22 @@ public class ResourceEntityResource {
                         resourceCreationDto.getFilename(), resourceCreationDto.getPath(), resourceCreationDto.getDescription())
                 .onItem()
                 .transformToUni(resource -> Uni.createFrom().item(resourceEntityMapper.toDTO(resource)));
+    }
+
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/multiple")
+    public Uni<List<String>> createResourceMultiple(
+            @RequestBody(required = true) ResourceMultipleCreationDto multipartFormDataInput) {
+        log.info("start multiple with form data = {}", multipartFormDataInput );
+
+        return null;
+        /*
+        ResourceMultipleCreationDto resourceMultipleCreationDto = resourceEntityMapper.fromMultipartFormDataInput(multipartFormDataInput);
+        List<ResourceEntity> resourceEntityList = resourceEntityMapper.toEntityCreationList(resourceEntityMapper.convertToResourceCreationDtoList(resourceEntityMapper.fromMultipartFormDataInput(multipartFormDataInput)));
+        return resourceEntityService.createResourceMultiple(resourceEntityList,resourceMultipleCreationDto.getFileList(),
+                        resourceMultipleCreationDto.getFilenamList(), resourceMultipleCreationDto.getPath(), resourceMultipleCreationDto.getDescription());*/
     }
 
     @PUT
