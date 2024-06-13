@@ -1,33 +1,21 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
-import it.gov.pagopa.atmlayer.service.model.dto.ResourceMultipleCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
-import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
 import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import jakarta.inject.Inject;
-import org.apache.commons.io.IOUtils;
-import org.jboss.resteasy.reactive.server.multipart.FileItem;
-import org.jboss.resteasy.reactive.server.multipart.FormValue;
-import org.jboss.resteasy.reactive.server.multipart.MultipartFormDataInput;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "cdi")
 public abstract class ResourceEntityMapper {
@@ -48,7 +36,7 @@ public abstract class ResourceEntityMapper {
         return resourceEntity;
     }
 
-    public ResourceMultipleCreationDto fromMultipartFormDataInput(MultipartFormDataInput multipartFormDataInput) {
+ /*   public ResourceMultipleCreationDto fromMultipartFormDataInput(MultipartFormDataInput multipartFormDataInput) {
 
         List<String> filenameList = multipartFormDataInput.getValues().get("filename").stream().map(FormValue::getValue).collect(Collectors.toList());
 
@@ -60,15 +48,15 @@ public abstract class ResourceEntityMapper {
         ResourceMultipleCreationDto response = new ResourceMultipleCreationDto();
 
         response.setFilenamList(filenameList);
-        response.setFileList(fileList);
+       // response.setFileList(fileList);
         response.setDescription(description);
         response.setResourceType(resourceType);
         response.setPath(path);
 
         return response;
-    }
+    }*/
 
-    private File fileItemToFile(FileItem fileItem) {
+/*    private File fileItemToFile(FileItem fileItem) {
         try {
             // Crea un file temporaneo
             File tempFile = File.createTempFile("upload-", ".tmp");
@@ -83,10 +71,10 @@ public abstract class ResourceEntityMapper {
         } catch (IOException e) {
             throw new RuntimeException("Errore durante la scrittura del file", e);
         }
-    }
+    }*/
 
 
-    public List<ResourceEntity> toEntityCreationList(List<ResourceCreationDto> resourceCreationDtoList) {
+/*    public List<ResourceEntity> toEntityCreationList(List<ResourceCreationDto> resourceCreationDtoList) {
         return resourceCreationDtoList.stream().map(resourceCreationDto -> {
                     try {
                         return toEntityCreation(resourceCreationDto);
@@ -98,18 +86,18 @@ public abstract class ResourceEntityMapper {
                 .collect(Collectors.toList());
     }
 
-    public List<ResourceCreationDto> convertToResourceCreationDtoList(ResourceMultipleCreationDto multipleDto) {
+    public List<ResourceCreationDto> convertToResourceCreationDtoList(ResourceMultipleCreationDtoJSON multipleDto) {
         List<ResourceCreationDto> resourceCreationDtoList = new ArrayList<>();
 
-        if (multipleDto.getFileList().size() != multipleDto.getFilenamList().size()) {
+        if (multipleDto.getFileList().size() != multipleDto.getFilenameList().size()) {
             throw new IllegalArgumentException("File list and filename list must have the same size");
         }
 
-        for (int i = 0; i < multipleDto.getFilenamList().size(); i++) {
+        for (int i = 0; i < multipleDto.getFilenameList().size(); i++) {
             ResourceCreationDto resourceCreationDto = new ResourceCreationDto();
 
-            resourceCreationDto.setFile(multipleDto.getFileList().get(i));
-            resourceCreationDto.setFilename(multipleDto.getFilenamList().get(i));
+ //           resourceCreationDto.setFile(multipleDto.getFileList().get(i));
+            resourceCreationDto.setFilename(multipleDto.getFilenameList().get(i));
             resourceCreationDto.setResourceType(multipleDto.getResourceType());
             resourceCreationDto.setPath(multipleDto.getPath());
             resourceCreationDto.setDescription(multipleDto.getDescription());
@@ -118,7 +106,7 @@ public abstract class ResourceEntityMapper {
         }
 
         return resourceCreationDtoList;
-    }
+    }*/
 
     public abstract ResourceDTO toDTO(ResourceEntity resourceEntity);
 

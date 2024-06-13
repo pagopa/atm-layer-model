@@ -1,6 +1,5 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

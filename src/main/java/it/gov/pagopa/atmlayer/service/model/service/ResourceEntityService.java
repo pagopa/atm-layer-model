@@ -26,8 +26,10 @@ public interface ResourceEntityService {
 
     Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file, String filename, String path, String description);
 
+/*
     Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<File> files,
                                              List<String> filenames, String paths, String descriptions);
+*/
 
     Uni<ResourceEntity> updateResource(UUID uuid, File file);
 

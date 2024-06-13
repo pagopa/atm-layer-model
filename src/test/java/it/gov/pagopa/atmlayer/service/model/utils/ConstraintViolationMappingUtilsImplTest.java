@@ -1,16 +1,17 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.validation.ConstraintViolation;
+import org.hibernate.validator.internal.engine.path.NodeImpl;
+import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.junit.jupiter.api.Test;
+
+import java.util.HashSet;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.validation.ConstraintViolation;
-import java.util.HashSet;
-import org.hibernate.validator.internal.engine.path.NodeImpl;
-import org.hibernate.validator.internal.engine.path.PathImpl;
-import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 class ConstraintViolationMappingUtilsImplTest {

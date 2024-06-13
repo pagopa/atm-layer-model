@@ -2,7 +2,6 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
@@ -143,7 +142,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                 }));
     }
 
-    @Override
+/*    @Override
     public Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<File> files,
                                                     List<String> filenames, String path, String description) {
         List<String> errors = new ArrayList<>();
@@ -193,7 +192,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     }
                     return errors;  // This will be empty if no errors occurred
                 });
-    }
+    }*/
 
     @Override
     @WithTransaction

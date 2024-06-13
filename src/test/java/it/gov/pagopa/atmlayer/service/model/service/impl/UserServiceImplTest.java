@@ -12,8 +12,6 @@ import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
-import it.gov.pagopa.atmlayer.service.model.mapper.UserProfilesMapper;
-import it.gov.pagopa.atmlayer.service.model.repository.UserProfilesRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
 import org.junit.jupiter.api.Assertions;

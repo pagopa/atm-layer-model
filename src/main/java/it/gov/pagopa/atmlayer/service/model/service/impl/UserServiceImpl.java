@@ -11,7 +11,6 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
-import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

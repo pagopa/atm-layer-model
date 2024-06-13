@@ -10,7 +10,6 @@ import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
-import it.gov.pagopa.atmlayer.service.model.model.ProfileDTO;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Test;
