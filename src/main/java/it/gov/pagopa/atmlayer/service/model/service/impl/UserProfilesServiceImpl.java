@@ -129,11 +129,16 @@ public class UserProfilesServiceImpl implements UserProfilesService {
 
     @Override
     @WithSession
-    public Uni<UserProfiles> findById(String userId, int profileId) {
+    public Uni<UserProfiles> getById(String userId, int profileId) {
         UserProfilesPK userProfilesPK = new UserProfilesPK(userId, profileId);
         return userProfilesRepository.findById(userProfilesPK)
                 .onItem()
-                .transformToUni(userProfile -> Uni.createFrom().item(userProfile));
+                .transform(userProfile -> {
+                    if (userProfile == null) {
+                        throw new AtmLayerException(Response.Status.NOT_FOUND, AppErrorCodeEnum.NO_ASSOCIATION_FOUND);
+                    }
+                    return userProfile;
+                });
     }
 
     @Override

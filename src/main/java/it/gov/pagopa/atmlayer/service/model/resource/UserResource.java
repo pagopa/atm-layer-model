@@ -6,6 +6,7 @@ import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
+import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -29,6 +30,9 @@ public class UserResource {
 
     @Inject
     UserService userService;
+
+    @Inject
+    UserRepository userRepository;
 
     @POST
     @Path("/insert")
@@ -69,7 +73,7 @@ public class UserResource {
     public Uni<UserWithProfilesDTO> insertWithProfiles(@RequestBody(required = true) @Valid UserInsertionWithProfilesDTO userInsertionWithProfilesDTO) {
         return this.userService.insertUserWithProfiles(userInsertionWithProfilesDTO)
                 .onItem()
-                .transformToUni(insertedProfiles -> userService.findUser(userInsertionWithProfilesDTO.getUserId()))
+                .transformToUni(insertedProfiles -> userRepository.findByIdCustom(userInsertionWithProfilesDTO.getUserId()))
                 .onItem()
                 .transformToUni(insertedUser -> Uni.createFrom().item(this.userMapper.toProfilesDTO(insertedUser)));
     }
@@ -90,7 +94,7 @@ public class UserResource {
     @Path("/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<UserWithProfilesDTO> getByIdWithProfiles(@PathParam("userId") String userId) {
-        return this.userService.findById(userId)
+        return this.userService.getById(userId)
                 .onItem()
                 .transform(foundUser -> userMapper.toProfilesDTO(foundUser));
     }

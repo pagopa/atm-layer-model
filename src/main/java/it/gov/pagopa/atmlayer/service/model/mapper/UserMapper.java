@@ -36,7 +36,7 @@ public abstract class UserMapper {
         user.setUserId(userInsertionWithProfilesDTO.getUserId());
         user.setName(userInsertionWithProfilesDTO.getName());
         user.setSurname(userInsertionWithProfilesDTO.getSurname());
-        userInsertionWithProfilesDTO.getProfileIds().stream().forEach(x -> userProfilesList.add(new UserProfiles(new UserProfilesPK(user.getUserId(), x))));
+        userInsertionWithProfilesDTO.getProfileIds().forEach(x -> userProfilesList.add(new UserProfiles(new UserProfilesPK(user.getUserId(), x))));
         user.setUserProfiles(userProfilesList);
         return user;
     }

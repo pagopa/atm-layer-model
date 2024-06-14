@@ -54,7 +54,7 @@ public class UserProfilesResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<UserProfilesDTO> getById(@PathParam("userId") String userId,
                                         @PathParam("profileId") int profileId) {
-        return this.userProfilesService.findById(userId, profileId)
+        return this.userProfilesService.getById(userId, profileId)
                 .onItem()
                 .transform(user -> userProfilesMapper.toDTO(user));
     }

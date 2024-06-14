@@ -6,12 +6,13 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
+import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
-import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -51,8 +52,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @WithSession
-    public Uni<User> findUser (String userId) {
-       return this.userRepository.findById(userId);
+    public Uni<User> findUser(String userId) {
+        return this.userRepository.findById(userId);
     }
 
     @Override
@@ -75,7 +76,7 @@ public class UserServiceImpl implements UserService {
     public Uni<User> updateUser(UserInsertionDTO userInsertionDTO) {
         String userId = userInsertionDTO.getUserId();
         log.info("Updating user with userId : {}", userId);
-        return this.findById(userInsertionDTO.getUserId())
+        return this.getById(userInsertionDTO.getUserId())
                 .onItem()
                 .transformToUni(Unchecked.function(userFound -> {
                     if (userInsertionDTO.getName().isBlank() && userInsertionDTO.getSurname().isBlank()) {
@@ -97,7 +98,7 @@ public class UserServiceImpl implements UserService {
     @WithTransaction
     public Uni<Boolean> deleteUser(String userId) {
         log.info("Deleting user with userId : {}", userId);
-        return this.findById(userId)
+        return this.getById(userId)
                 .onItem()
                 .transformToUni(x -> this.userRepository.deleteById(userId));
     }
@@ -105,7 +106,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @WithSession
     public Uni<List<User>> getAllUsers() {
-        return this.userRepository.findAll().list();
+        return this.userRepository.findAllCustom().list();
     }
 
     @Override
@@ -115,8 +116,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @WithSession
-    public Uni<User> findById(String userId) {
-        return this.userRepository.findById(userId)
+    public Uni<User> getById(String userId) {
+        return this.userRepository.findByIdCustom(userId)
                 .onItem()
                 .ifNull()
                 .switchTo(() -> {

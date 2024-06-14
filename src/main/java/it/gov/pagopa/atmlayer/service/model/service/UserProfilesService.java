@@ -11,7 +11,7 @@ public interface UserProfilesService {
 
     Uni<List<UserProfiles>> insertUserProfiles(UserProfilesInsertionDTO userProfilesInsertionDTO);
 
-    Uni<UserProfiles> findById(String userId, int profileId);
+    Uni<UserProfiles> getById(String userId, int profileId);
 
     Uni<Void> deleteUserProfiles(UserProfilesPK userProfilesIDs);
 

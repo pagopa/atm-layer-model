@@ -9,12 +9,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class UserRepository implements PanacheRepositoryBase<User, String> {
-     public Uni<User> findById(String userId) {
-         return find("select u from User u left join fetch u.userProfiles where u.userId = :userId",
-                 Parameters.with("userId", userId)).firstResult();
+    public Uni<User> findByIdCustom(String userId) {
+        return find("select u from User u left join fetch u.userProfiles where u.userId = :userId",
+                Parameters.with("userId", userId)).firstResult();
     }
 
-    public PanacheQuery<User> findAll() {
+    public PanacheQuery<User> findAllCustom() {
         return find("select u from User u left join fetch u.userProfiles");
     }
 }

@@ -129,7 +129,7 @@ class UserProfilesResourceTest {
         int profileId = 1;
         UserProfiles userProfiles = new UserProfiles();
 
-        when(userProfilesService.findById(userId, profileId)).thenReturn(
+        when(userProfilesService.getById(userId, profileId)).thenReturn(
                 Uni.createFrom().item(userProfiles));
         UserProfilesDTO dto = new UserProfilesDTO();
         when(userProfilesMapper.toDTO(userProfiles)).thenReturn(dto);
@@ -142,7 +142,7 @@ class UserProfilesResourceTest {
                 .then()
                 .statusCode(200);
 
-        verify(userProfilesService, times(1)).findById(userId, profileId);
+        verify(userProfilesService, times(1)).getById(userId, profileId);
         verify(userProfilesMapper, times(1)).toDTO(userProfiles);
     }
 

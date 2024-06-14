@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.service;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface UserService {
 
     Uni<Boolean> deleteUser(String userId);
 
-    Uni<User> findById(String userId);
+    Uni<User> getById(String userId);
 
     Uni<List<User>> getAllUsers();
 
