@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
@@ -26,10 +27,7 @@ public interface ResourceEntityService {
 
     Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file, String filename, String path, String description);
 
-/*
-    Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<File> files,
-                                             List<String> filenames, String paths, String descriptions);
-*/
+    Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<ResourceCreationDto> resourceCreationDtoList);
 
     Uni<ResourceEntity> updateResource(UUID uuid, File file);
 

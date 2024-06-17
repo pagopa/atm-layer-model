@@ -68,13 +68,10 @@ public class ResourceEntityResource {
     public Uni<List<String>> createResourceMultiple(@RequestBody(required = true) ResourceMultipleCreationDtoJSON resourceMultipleCreationDto) {
         log.info("start multiple with form data = {}", resourceMultipleCreationDto );
 
+        List<ResourceCreationDto> resourceCreationDtoList = resourceEntityMapper.convertToResourceCreationDtoList(resourceMultipleCreationDto);
+        List<ResourceEntity> resourceEntityList = resourceEntityMapper.toEntityCreationList(resourceCreationDtoList);
+        return resourceEntityService.createResourceMultiple(resourceEntityList, resourceCreationDtoList);
 
-        return null;
-        /*
-        ResourceMultipleCreationDto resourceMultipleCreationDto = resourceEntityMapper.fromMultipartFormDataInput(multipartFormDataInput);
-        List<ResourceEntity> resourceEntityList = resourceEntityMapper.toEntityCreationList(resourceEntityMapper.convertToResourceCreationDtoList(resourceEntityMapper.fromMultipartFormDataInput(multipartFormDataInput)));
-        return resourceEntityService.createResourceMultiple(resourceEntityList,resourceMultipleCreationDto.getFileList(),
-                        resourceMultipleCreationDto.getFilenamList(), resourceMultipleCreationDto.getPath(), resourceMultipleCreationDto.getDescription());*/
     }
 
     @PUT

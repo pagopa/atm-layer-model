@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,13 +15,17 @@ import org.w3c.dom.Element;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.CANNOT_EXTRACT_FILE_DEFINITION_KEY;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.*;
 
 @ApplicationScoped
 @Slf4j
@@ -89,6 +94,24 @@ public class FileUtilities {
         }
         return hexString.toString();
     }
+
+    public static File fromStringToFile(String fileBase64, String fileName) {
+        try {
+            byte[] decodedBytes = Base64.getDecoder().decode(fileBase64);
+            File tempFile = File.createTempFile("tempfile", ".tmp");
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(decodedBytes);
+            }
+            return tempFile;
+        } catch (IllegalArgumentException e) {
+            log.error("Errore nella decodifica del Base64: " + e.getMessage());
+            throw new AtmLayerException("Errore nella decodifica del File Base64", Response.Status.NOT_ACCEPTABLE, AppErrorCodeEnum.FILE_DECODE_ERROR);
+        } catch (IOException e) {
+            log.error("Errore nella scrittura del file: " + e.getMessage());
+            throw new AtmLayerException("Errore nella scrittura del file", Response.Status.NOT_ACCEPTABLE, AppErrorCodeEnum.FILE_DECODE_ERROR);
+        }
+    }
+
 
 //    public static boolean isExtensionValid(File file, String fileName) throws IOException, MimeTypeException {
 //        String detectedExtension = getExtension(file);

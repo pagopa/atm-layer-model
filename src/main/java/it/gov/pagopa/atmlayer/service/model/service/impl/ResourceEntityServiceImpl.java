@@ -2,9 +2,11 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
+import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
@@ -142,16 +144,15 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                 }));
     }
 
-/*    @Override
-    public Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<File> files,
-                                                    List<String> filenames, String path, String description) {
+    @Override
+    public Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<ResourceCreationDto> resourceCreationDtoList) {
         List<String> errors = new ArrayList<>();
 
         return Multi.createFrom().items(resourceEntityList.stream())
                 .onItem().transformToUniAndConcatenate(resourceEntity -> {
                     int index = resourceEntityList.indexOf(resourceEntity);
-                    File file = files.get(index);
-                    String filename = filenames.get(index);
+                    File file = resourceCreationDtoList.get(index).getFile();
+                    String filename = resourceCreationDtoList.get(index).getFilename();
 
                     return findBySHA256(resourceEntity.getSha256())
                             .onItem().transformToUni(x -> {
@@ -166,7 +167,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                                 errors.add(String.format("File %s: Impossibile caricare: la risorsa con lo stesso nome file e percorso esiste già", filename));
                                                 return Uni.createFrom().nullItem();
                                             }
-                                            return saveAndUpload(resourceEntity, file, filename, path)
+                                            return saveAndUpload(resourceEntity, file, filename, resourceCreationDtoList.get(index).getPath())
                                                     .onItem().transformToUni(bpmn -> this.findByUUID(resourceEntity.getResourceId())
                                                             .onItem().transformToUni(optionalResource -> {
                                                                 if (optionalResource.isEmpty()) {
@@ -192,7 +193,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     }
                     return errors;  // This will be empty if no errors occurred
                 });
-    }*/
+    }
 
     @Override
     @WithTransaction
