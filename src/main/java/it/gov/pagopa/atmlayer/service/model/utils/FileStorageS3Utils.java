@@ -1,14 +1,11 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
-import io.quarkus.logging.Log;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-<<<<<<< HEAD
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
-=======
 import lombok.extern.slf4j.Slf4j;
->>>>>>> 28c3ab7108f2086b53238f1f583be41f0827caa4
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
@@ -84,6 +81,14 @@ public class FileStorageS3Utils {
 
         log.info("valore output: {}", outputPath);
         return outputPath.toString();
+    }
+
+    public DeleteObjectRequest buildDeleteRequest(String storageKey) {
+
+        return DeleteObjectRequest.builder()
+                .bucket(objectStoreProperties.bucket().name())
+                .key(storageKey)
+                .build();
     }
 
 }

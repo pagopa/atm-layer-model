@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
@@ -23,6 +24,7 @@ import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -139,6 +141,22 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
                     log.info("success uploading disabled file from s3");
                     return Uni.createFrom().item(ObjectStoreResponse.builder().storageKey(copyObjectRequest.destinationKey()).build());
                 });
+    }
+
+    public Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity){
+
+        DeleteObjectRequest deleteObjectRequest = fileStorageS3Utils.buildDeleteRequest(resourceEntity.getStorageKey());
+        return Uni.createFrom().future(() -> s3.deleteObject(deleteObjectRequest))
+                .onFailure().transform(error -> {
+                    String errorMessage = "Errore nel caricamento del file da disabilitare su S3";
+                    log.error(errorMessage, error);
+                    return new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
+                })
+                .onItem().transformToUni(res -> {
+                    log.info("success uploading disabled file from s3");
+                    return Uni.createFrom().item(ObjectStoreResponse.builder().storageKey(deleteObjectRequest.key()).build());
+                });
+
     }
 
     private String getMimetype(S3ResourceTypeEnum fileType, String filename) {

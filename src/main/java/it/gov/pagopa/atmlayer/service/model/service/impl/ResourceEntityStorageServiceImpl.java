@@ -75,6 +75,10 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
                 .onItem()
                 .transformToUni(objectStorePutResponse -> Uni.createFrom().item(resourceEntity.getResourceFile()));
     }
+    @Override
+    public Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity){
+        return objectStoreService.delete(resourceEntity);
+    }
 
     @Override
     public Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath) {

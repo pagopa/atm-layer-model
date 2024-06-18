@@ -6,6 +6,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
+import it.gov.pagopa.atmlayer.service.model.model.ObjectStoreResponse;
 import org.jboss.resteasy.reactive.RestMulti;
 
 import java.io.File;
@@ -28,5 +29,6 @@ public interface ResourceEntityStorageService {
   String calculateStorageKey(NoDeployableResourceType resourceType, String relativePath, String fileName);
 
   Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath);
+  Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity);
 
 }

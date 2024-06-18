@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
+import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStoreResponse;
@@ -22,4 +23,6 @@ public interface ObjectStoreService {
     Uni<URL> generatePresignedUrl(String objectKey);
 
     RestMulti<Buffer> download(String key);
+
+    Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity);
 }
