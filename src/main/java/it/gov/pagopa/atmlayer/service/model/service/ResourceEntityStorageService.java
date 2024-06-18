@@ -15,6 +15,8 @@ public interface ResourceEntityStorageService {
 
   Uni<ResourceFile> uploadFile(File file, ResourceEntity resourceEntity, String filename, String path, boolean creation);
 
+  Uni<ResourceFile> uploadDisabledFile(ResourceEntity resourceEntity);
+
   Uni<URL> generatePresignedUrl(String storageKey);
 
   RestMulti<Buffer> download(String storageKey);

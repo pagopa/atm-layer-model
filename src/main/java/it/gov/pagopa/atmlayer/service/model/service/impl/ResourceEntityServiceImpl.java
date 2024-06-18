@@ -255,6 +255,8 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     public Uni<Void> disable(UUID uuid) {
         return this.setDisabledResourceEntityAttributes(uuid)
                 .onItem()
+                .transformToUni(resourceEntity -> resourceEntityStorageService.uploadDisabledFile(resourceEntity))
+                .onItem()
                 .transformToUni(disabledResourceEntity -> Uni.createFrom().voidItem());
     }
 

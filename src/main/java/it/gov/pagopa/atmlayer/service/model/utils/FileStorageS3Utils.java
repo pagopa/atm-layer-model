@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.utils;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
@@ -29,6 +30,19 @@ public class FileStorageS3Utils {
         return GetObjectRequest.builder()
                 .bucket(objectStoreProperties.bucket().name())
                 .key(key)
+                .build();
+    }
+
+    public CopyObjectRequest buildCopyRequest(String sourceKey, String destinationKey, String mimetype) {
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("Content-Type", mimetype);
+
+        return CopyObjectRequest.builder()
+                .sourceKey(sourceKey)
+                .sourceBucket(objectStoreProperties.bucket().name())
+                .destinationBucket(objectStoreProperties.bucket().name())
+                .destinationKey(destinationKey)
+                .metadata(metadata)
                 .build();
     }
 

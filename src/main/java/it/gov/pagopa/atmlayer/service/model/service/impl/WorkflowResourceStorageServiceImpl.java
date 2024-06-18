@@ -13,7 +13,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
-import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
+import it.gov.pagopa.atmlayer.service.model.model.ObjectStoreResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceFileService;
@@ -99,7 +99,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
     }
 
     @WithTransaction
-    public Uni<ResourceFile> writeResourceInfoToDatabase(WorkflowResource workflowResource, ObjectStorePutResponse putObjectResponse, String filename) {
+    public Uni<ResourceFile> writeResourceInfoToDatabase(WorkflowResource workflowResource, ObjectStoreResponse putObjectResponse, String filename) {
         ResourceFile entity = ResourceFile.builder()
                 .fileName(filename)
                 .resourceType(convertEnum(workflowResource.getResourceType()))

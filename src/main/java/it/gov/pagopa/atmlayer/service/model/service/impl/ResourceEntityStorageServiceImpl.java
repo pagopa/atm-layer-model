@@ -10,7 +10,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
-import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
+import it.gov.pagopa.atmlayer.service.model.model.ObjectStoreResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
@@ -67,6 +67,16 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     }
 
     @Override
+    public Uni<ResourceFile> uploadDisabledFile(ResourceEntity resourceEntity) {
+        Context context = Vertx.currentContext();
+        S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
+        return objectStoreService.uploadDisabledFile(resourceEntity.getStorageKey(), resourceType, resourceEntity.getFileName())
+                .emitOn(command -> context.runOnContext(x -> command.run()))
+                .onItem()
+                .transformToUni(objectStorePutResponse -> Uni.createFrom().item(resourceEntity.getResourceFile()));
+    }
+
+    @Override
     public Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath) {
         String finalPath = calculateCompletePath(resourceEntity.getNoDeployableResourceType(),relativePath);
         log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
@@ -85,7 +95,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
 
     @WithTransaction
     public Uni<ResourceFile> writeResourceInfoToDatabase(ResourceEntity resourceEntity,
-                                                         ObjectStorePutResponse putObjectResponse, String filename) {
+                                                         ObjectStoreResponse putObjectResponse, String filename) {
         ResourceFile entity = ResourceFile.builder()
                 .fileName(filename)
                 .resourceType(convertEnum(resourceEntity.getNoDeployableResourceType()))
