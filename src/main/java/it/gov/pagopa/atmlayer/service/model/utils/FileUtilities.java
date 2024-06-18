@@ -18,14 +18,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.*;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.CANNOT_EXTRACT_FILE_DEFINITION_KEY;
 
 @ApplicationScoped
 @Slf4j
