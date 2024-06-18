@@ -31,6 +31,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.*;
+import static it.gov.pagopa.atmlayer.service.model.utils.FileStorageS3Utils.modifyPath;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculateSha256;
 
 @ApplicationScoped
@@ -112,6 +113,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     @Override
     public Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file,
                                               String filename, String path, String description) {
+        modifyPath("RESOURCE/files/HTML/ciao/mi/chiamo/mario/filename.html");
         return findBySHA256(resourceEntity.getSha256())
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.isPresent()) {
@@ -188,7 +190,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     if (!errors.isEmpty()) {
                         throw new AtmLayerException("Alcuni file non sono stati creati: " + String.join(", ", errors),
                                 Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
-                    }else{
+                    } else {
                         errors.add("file creati senza errori");
                     }
                     return errors;  // This will be empty if no errors occurred
