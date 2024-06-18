@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static it.gov.pagopa.atmlayer.service.model.utils.FileStorageS3Utils.modifyPath;
+
 @ApplicationScoped
 @Slf4j
 public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
@@ -126,11 +128,9 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
                 });
     }
 
-    public Uni<ObjectStoreResponse> uploadDisabledFile(String path, S3ResourceTypeEnum fileType, String filename) {
+    public Uni<ObjectStoreResponse> uploadDisabledFile(String storageKey, S3ResourceTypeEnum fileType, String filename) {
 
-        String storageKey = path.concat("/").concat(filename);
-
-        CopyObjectRequest copyObjectRequest = fileStorageS3Utils.buildCopyRequest(storageKey, "DELETE/"+ storageKey, getMimetype(fileType, filename));
+        CopyObjectRequest copyObjectRequest = fileStorageS3Utils.buildCopyRequest(storageKey, modifyPath(storageKey), getMimetype(fileType, filename));
         return Uni.createFrom().future(() -> s3.copyObject(copyObjectRequest))
                 .onFailure().transform(error -> {
                     String errorMessage = "Errore nel caricamento del file da disabilitare su S3";

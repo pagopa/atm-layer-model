@@ -54,12 +54,10 @@ public class FileStorageS3Utils {
     }
     public static String modifyPath(String inputPath) {
         Path path = Paths.get(inputPath);
-        log.info("valore input: {}", inputPath);
-
         int count = path.getNameCount();
         StringBuilder outputPath = new StringBuilder();
 
-        outputPath.append(path.getRoot() != null ? path.getRoot() : ""); // se esiste una root (es. C:\), aggiungila
+        outputPath.append(path.getRoot() != null ? path.getRoot() : "");
         outputPath.append(path.getName(0));
         outputPath.append("/");
         outputPath.append(path.getName(1));
@@ -72,14 +70,13 @@ public class FileStorageS3Utils {
             outputPath.append(path.getName(i));
         }
 
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS"));
         outputPath.append("/");
         outputPath.append(timestamp);
 
         outputPath.append("/");
         outputPath.append(path.getFileName().toString());
 
-        log.info("valore output: {}", outputPath);
         return outputPath.toString();
     }
 
