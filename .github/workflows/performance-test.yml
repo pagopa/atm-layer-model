@@ -22,10 +22,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
 
       - name: Run k6 local test
-        uses: grafana/k6-action@v0.3.1
+        uses: grafana/k6-action@e4714b734f2b0afaabeb7b4a69142745548ab9ec # v0.3.1
         env:
           MODEL_APPLICATION_BASE_URL: ${{ vars.APPLICATION_BASE_URL }}
           MODEL_APPLICATION_BASE_PATH: ${{ vars.APPLICATION_BASE_PATH }}
@@ -35,7 +35,7 @@ jobs:
 
       - name: Upload performance test file
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
         with:
           name: performance-report
           path: performance_summary.html
