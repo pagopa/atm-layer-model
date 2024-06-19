@@ -145,7 +145,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
 
     public Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity){
 
-        DeleteObjectRequest deleteObjectRequest = fileStorageS3Utils.buildDeleteRequest(resourceEntity.getStorageKey());
+        DeleteObjectRequest deleteObjectRequest = fileStorageS3Utils.buildDeleteRequest(resourceEntity.getResourceFile().getStorageKey());
         return Uni.createFrom().future(() -> s3.deleteObject(deleteObjectRequest))
                 .onFailure().transform(error -> {
                     String errorMessage = "Errore nel caricamento del file da disabilitare su S3";

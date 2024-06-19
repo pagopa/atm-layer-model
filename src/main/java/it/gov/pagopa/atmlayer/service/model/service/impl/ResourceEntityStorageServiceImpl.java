@@ -51,38 +51,39 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
 
     @Override
     public Uni<ResourceFile> uploadFile(File file, ResourceEntity resourceEntity, String filenameWithExtension, String finalPath, boolean creation) {
-                    Context context = Vertx.currentContext();
-                    S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
-                    return objectStoreService.uploadFile(file, finalPath, resourceType, filenameWithExtension)
-                            .emitOn(command -> context.runOnContext(x -> command.run()))
-                            .onItem()
-                            .transformToUni(objectStorePutResponse -> {
-                                if(creation){
-                                    return this.writeResourceInfoToDatabase(resourceEntity,
-                                            objectStorePutResponse, filenameWithExtension.split("\\.")[0]);
-                                }
-                                return Uni.createFrom().item(resourceEntity.getResourceFile());
-                            });
-
-    }
-
-    @Override
-    public Uni<ResourceFile> uploadDisabledFile(ResourceEntity resourceEntity) {
         Context context = Vertx.currentContext();
         S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
-        return objectStoreService.uploadDisabledFile(resourceEntity.getStorageKey(), resourceType, resourceEntity.getFileName())
+        return objectStoreService.uploadFile(file, finalPath, resourceType, filenameWithExtension)
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem()
-                .transformToUni(objectStorePutResponse -> Uni.createFrom().item(resourceEntity.getResourceFile()));
+                .transformToUni(objectStorePutResponse -> {
+                    if (creation) {
+                        return this.writeResourceInfoToDatabase(resourceEntity,
+                                objectStorePutResponse, filenameWithExtension.split("\\.")[0]);
+                    }
+                    return Uni.createFrom().item(resourceEntity.getResourceFile());
+                });
+
     }
+
     @Override
-    public Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity){
+    public Uni<ObjectStoreResponse> uploadDisabledFile(ResourceEntity resourceEntity) {
+        Context context = Vertx.currentContext();
+        S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
+        return objectStoreService.uploadDisabledFile(resourceEntity.getResourceFile().getStorageKey(), resourceType, resourceEntity.getFileName())
+                .emitOn(command -> context.runOnContext(x -> command.run()))
+                .onItem()
+                .transformToUni(objectStorePutResponse -> Uni.createFrom().item(objectStorePutResponse));
+    }
+
+    @Override
+    public Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity) {
         return objectStoreService.delete(resourceEntity);
     }
 
     @Override
     public Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath) {
-        String finalPath = calculateCompletePath(resourceEntity.getNoDeployableResourceType(),relativePath);
+        String finalPath = calculateCompletePath(resourceEntity.getNoDeployableResourceType(), relativePath);
         log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
         return uploadFile(file, resourceEntity, fileNameWithExtension, finalPath, true);
     }
@@ -126,7 +127,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     }
 
     @Override
-    public String calculateCompletePath(NoDeployableResourceType resourceType, String relativePath){
+    public String calculateCompletePath(NoDeployableResourceType resourceType, String relativePath) {
         S3ResourceTypeEnum s3resourceType = convertEnum(resourceType);
         String path = calculateBasePath(s3resourceType);
         if (!relativePath.isBlank()) {
@@ -136,7 +137,7 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     }
 
     @Override
-    public String calculateStorageKey(NoDeployableResourceType resourceType, String relativePath,String fileName){
-        return calculateCompletePath(resourceType,relativePath).concat("/").concat(fileName);
+    public String calculateStorageKey(NoDeployableResourceType resourceType, String relativePath, String fileName) {
+        return calculateCompletePath(resourceType, relativePath).concat("/").concat(fileName);
     }
 }

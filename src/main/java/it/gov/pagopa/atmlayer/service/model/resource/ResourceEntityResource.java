@@ -9,7 +9,6 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceEntityMapper;
-import it.gov.pagopa.atmlayer.service.model.mapper.ResourceFileMapper;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceFrontEndDTO;
@@ -43,8 +42,6 @@ public class ResourceEntityResource {
     @Inject
     ResourceEntityMapper resourceEntityMapper;
     @Inject
-    ResourceFileMapper resourceFileMapper;
-    @Inject
     ResourceEntityService resourceEntityService;
 
     @POST
@@ -66,7 +63,7 @@ public class ResourceEntityResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/multiple")
     public Uni<List<String>> createResourceMultiple(@RequestBody(required = true) ResourceMultipleCreationDtoJSON resourceMultipleCreationDto) {
-        log.info("start multiple with form data = {}", resourceMultipleCreationDto );
+        log.info("start multiple with form data = {}", resourceMultipleCreationDto);
 
         List<ResourceCreationDto> resourceCreationDtoList = resourceEntityMapper.convertToResourceCreationDtoList(resourceMultipleCreationDto);
         List<ResourceEntity> resourceEntityList = resourceEntityMapper.toEntityCreationList(resourceCreationDtoList);
@@ -124,7 +121,7 @@ public class ResourceEntityResource {
                                                                   @QueryParam("noDeployableResourceType") NoDeployableResourceType noDeployableResourceType,
                                                                   @QueryParam("fileName") String fileName,
                                                                   @QueryParam("storageKey") String storageKey,
-                                                                  @QueryParam("extension") String extension){
+                                                                  @QueryParam("extension") String extension) {
         return resourceEntityService.findResourceFiltered(pageIndex, pageSize, resourceId, sha256, noDeployableResourceType, fileName, storageKey, extension)
                 .onItem()
                 .transform(Unchecked.function(pagedList -> {
@@ -144,7 +141,7 @@ public class ResourceEntityResource {
 
     @DELETE
     @Path("/{uuid}")
-    public Uni<Void> deleteResource(@PathParam("uuid") UUID uuid){
+    public Uni<Void> deleteResource(@PathParam("uuid") UUID uuid) {
         return resourceEntityService.deleteResource(uuid);
     }
 

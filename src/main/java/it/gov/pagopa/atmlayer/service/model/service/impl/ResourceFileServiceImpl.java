@@ -54,6 +54,20 @@ public class ResourceFileServiceImpl implements ResourceFileService {
     }
 
     @Override
+    @WithTransaction
+    public Uni<Void> updateStorageKey(ResourceEntity resourceEntity, String storageKeyDisabledResource) {
+        return resourceFileRepository.findByStorageKey(resourceEntity.getResourceFile().getStorageKey())
+                .onItem().transformToUni(resourceFileFound -> {
+                    if (resourceFileFound == null) {
+                        throw new AtmLayerException("La risorsa di riferimento non esiste: impossibile aggiornare la chiave di archiviazione", Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST);
+                    }
+                    resourceFileFound.setStorageKey(storageKeyDisabledResource);
+                    return resourceFileRepository.persist(resourceFileFound)
+                            .replaceWith(Uni.createFrom().voidItem());
+                });
+    }
+
+    @Override
     @WithSession
     public Uni<String> getCompletePath(ResourceEntity resourceEntity) {
         return getStorageKey(resourceEntity)

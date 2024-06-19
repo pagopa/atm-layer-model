@@ -31,7 +31,6 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.*;
-import static it.gov.pagopa.atmlayer.service.model.utils.FileStorageS3Utils.modifyPath;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculateSha256;
 
 @ApplicationScoped
@@ -256,11 +255,16 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     public Uni<Void> disable(UUID uuid) {
         return this.setDisabledResourceEntityAttributes(uuid)
                 .onItem()
-                .transformToUni(resourceEntity -> {
-                    resourceEntityStorageService.uploadDisabledFile(resourceEntity);
-                    resourceEntityStorageService.delete(resourceEntity);
-                    return  Uni.createFrom().voidItem();
-                });
+                .transformToUni(resourceEntity -> resourceEntityStorageService.uploadDisabledFile(resourceEntity)
+                        .onItem()
+                            .transformToUni(objectStoredResponse -> resourceFileService.updateStorageKey(resourceEntity, objectStoredResponse.getStorageKey())
+                                .onItem()
+                                .transformToUni(itemToDelete -> resourceEntityStorageService.delete(resourceEntity)
+                                        .onItem()
+                                        .transformToUni(deletedFile -> Uni.createFrom().voidItem())
+                                )
+                        )
+                );
 
     }
 
