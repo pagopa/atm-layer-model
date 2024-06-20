@@ -3,7 +3,6 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
-import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
@@ -39,8 +38,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import static it.gov.pagopa.atmlayer.service.model.utils.FileStorageS3Utils.modifyPath;
 
 @ApplicationScoped
 @Slf4j
@@ -90,7 +87,7 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
         return RestMulti.fromUniResponse(Uni.createFrom()
                         .completionStage(() -> s3.getObject(fileStorageS3Utils.buildGetRequest(key),
                                 AsyncResponseTransformer.toPublisher())),
-                response -> Multi.createFrom().safePublisher(AdaptersToFlow.publisher((Publisher<ByteBuffer>) response))
+                response -> Multi.createFrom().safePublisher(AdaptersToFlow.publisher(response))
                         .map(this::toBuffer),
                 response -> Map.of("Content-Disposition", List.of("attachment;filename="), "Content-Type",
                         List.of(response.response().contentType())));
@@ -128,9 +125,9 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
                 });
     }
 
-    public Uni<ObjectStoreResponse> uploadDisabledFile(String storageKey, S3ResourceTypeEnum fileType, String filename) {
+    public Uni<ObjectStoreResponse> uploadDisabledFile(String originalStorageKey, String newStorageKey, S3ResourceTypeEnum fileType, String fileName) {
 
-        CopyObjectRequest copyObjectRequest = fileStorageS3Utils.buildCopyRequest(storageKey, modifyPath(storageKey), getMimetype(fileType, filename));
+        CopyObjectRequest copyObjectRequest = fileStorageS3Utils.buildCopyRequest(originalStorageKey, newStorageKey, getMimetype(fileType, fileName));
         return Uni.createFrom().future(() -> s3.copyObject(copyObjectRequest))
                 .onFailure().transform(error -> {
                     String errorMessage = "Errore nel caricamento del file da disabilitare su S3";
@@ -143,17 +140,16 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
                 });
     }
 
-    public Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity){
-
-        DeleteObjectRequest deleteObjectRequest = fileStorageS3Utils.buildDeleteRequest(resourceEntity.getResourceFile().getStorageKey());
+    public Uni<ObjectStoreResponse> delete(String storageKey) {
+        DeleteObjectRequest deleteObjectRequest = fileStorageS3Utils.buildDeleteRequest(storageKey);
         return Uni.createFrom().future(() -> s3.deleteObject(deleteObjectRequest))
                 .onFailure().transform(error -> {
-                    String errorMessage = "Errore nel caricamento del file da disabilitare su S3";
+                    String errorMessage = "Errore nel eliminazione del file su S3";
                     log.error(errorMessage, error);
                     return new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
                 })
                 .onItem().transformToUni(res -> {
-                    log.info("success uploading disabled file from s3");
+                    log.info("success deleting file on s3");
                     return Uni.createFrom().item(ObjectStoreResponse.builder().storageKey(deleteObjectRequest.key()).build());
                 });
 

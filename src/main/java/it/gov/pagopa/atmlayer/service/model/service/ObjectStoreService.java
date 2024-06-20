@@ -2,7 +2,6 @@ package it.gov.pagopa.atmlayer.service.model.service;
 
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.buffer.Buffer;
-import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStoreResponse;
@@ -18,11 +17,11 @@ public interface ObjectStoreService {
 
     Uni<ObjectStoreResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename);
 
-    Uni<ObjectStoreResponse> uploadDisabledFile(String storageKey, S3ResourceTypeEnum fileType, String filename);
+    Uni<ObjectStoreResponse> uploadDisabledFile(String originalStorageKey, String newStorageKey, S3ResourceTypeEnum fileType, String fileName);
 
     Uni<URL> generatePresignedUrl(String objectKey);
 
     RestMulti<Buffer> download(String key);
 
-    Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity);
+    Uni<ObjectStoreResponse> delete(String storageKey);
 }

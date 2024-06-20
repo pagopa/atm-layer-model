@@ -67,18 +67,21 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     }
 
     @Override
-    public Uni<ObjectStoreResponse> uploadDisabledFile(ResourceEntity resourceEntity) {
+    public Uni<ObjectStoreResponse> uploadDisabledFile(String originalStorageKey, String newStorageKey, S3ResourceTypeEnum resourceType, String fileName) {
         Context context = Vertx.currentContext();
-        S3ResourceTypeEnum resourceType = convertEnum(resourceEntity.getNoDeployableResourceType());
-        return objectStoreService.uploadDisabledFile(resourceEntity.getResourceFile().getStorageKey(), resourceType, resourceEntity.getFileName())
+        return objectStoreService.uploadDisabledFile(originalStorageKey, newStorageKey, resourceType, fileName)
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem()
                 .transformToUni(objectStorePutResponse -> Uni.createFrom().item(objectStorePutResponse));
     }
 
     @Override
-    public Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity) {
-        return objectStoreService.delete(resourceEntity);
+    public Uni<ObjectStoreResponse> delete(String storageKey) {
+        Context context = Vertx.currentContext();
+        return objectStoreService.delete(storageKey)
+                .emitOn(command -> context.runOnContext(x -> command.run()))
+                .onItem()
+                .transformToUni(objectStoreResponse -> Uni.createFrom().item(objectStoreResponse));
     }
 
     @Override

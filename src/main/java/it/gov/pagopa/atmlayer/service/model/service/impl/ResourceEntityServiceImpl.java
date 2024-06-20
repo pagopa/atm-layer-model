@@ -11,6 +11,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
@@ -252,20 +253,27 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     }
 
     @Override
+    @WithTransaction
     public Uni<Void> disable(UUID uuid) {
-        return this.setDisabledResourceEntityAttributes(uuid)
+        return resourceEntityRepository.findById(uuid)
                 .onItem()
-                .transformToUni(resourceEntity -> resourceEntityStorageService.uploadDisabledFile(resourceEntity)
-                        .onItem()
-                            .transformToUni(objectStoredResponse -> resourceFileService.updateStorageKey(resourceEntity, objectStoredResponse.getStorageKey())
-                                .onItem()
-                                .transformToUni(itemToDelete -> resourceEntityStorageService.delete(resourceEntity)
-                                        .onItem()
-                                        .transformToUni(deletedFile -> Uni.createFrom().voidItem())
-                                )
-                        )
-                );
-
+                .transformToUni(resourceEntity -> {
+                    String originalStorageKey = resourceEntity.getResourceFile().getStorageKey();
+                    String originalFileName = resourceEntity.getResourceFile().getFileName();
+                    S3ResourceTypeEnum originalType = resourceEntity.getResourceFile().getResourceType();
+                    return this.setDisabledResourceEntityAttributes(uuid)
+                            .onItem()
+                            .transformToUni(disabledEntity -> resourceFileService.updateStorageKey(disabledEntity)
+                                    .onItem()
+                                    .transformToUni(resourceFileUpdated -> resourceEntityStorageService.uploadDisabledFile(originalStorageKey, resourceFileUpdated.getStorageKey(), originalType, originalFileName)
+                                            .onItem()
+                                            .transformToUni(itemToDelete -> resourceEntityStorageService.delete(originalStorageKey)
+                                                    .onItem()
+                                                    .transformToUni(deletedFile -> Uni.createFrom().voidItem())
+                                            )
+                                    )
+                            );
+                });
     }
 
     @WithTransaction

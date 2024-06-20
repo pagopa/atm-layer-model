@@ -14,21 +14,21 @@ import java.net.URL;
 
 public interface ResourceEntityStorageService {
 
-  Uni<ResourceFile> uploadFile(File file, ResourceEntity resourceEntity, String filename, String path, boolean creation);
+    Uni<ResourceFile> uploadFile(File file, ResourceEntity resourceEntity, String filename, String path, boolean creation);
 
-  Uni<ObjectStoreResponse> uploadDisabledFile(ResourceEntity resourceEntity);
+    Uni<ObjectStoreResponse> uploadDisabledFile(String originalStorageKey, String newStorageKey, S3ResourceTypeEnum resourceType, String fileName);
 
-  Uni<URL> generatePresignedUrl(String storageKey);
+    Uni<URL> generatePresignedUrl(String storageKey);
 
-  RestMulti<Buffer> download(String storageKey);
+    RestMulti<Buffer> download(String storageKey);
 
-  String calculateBasePath(S3ResourceTypeEnum s3ResourceTypeEnum);
+    String calculateBasePath(S3ResourceTypeEnum s3ResourceTypeEnum);
 
-  String calculateCompletePath(NoDeployableResourceType resourceType, String relativePath);
+    String calculateCompletePath(NoDeployableResourceType resourceType, String relativePath);
 
-  String calculateStorageKey(NoDeployableResourceType resourceType, String relativePath, String fileName);
+    String calculateStorageKey(NoDeployableResourceType resourceType, String relativePath, String fileName);
 
-  Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath);
-  Uni<ObjectStoreResponse> delete(ResourceEntity resourceEntity);
+    Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath);
 
+    Uni<ObjectStoreResponse> delete(String storageKey);
 }
