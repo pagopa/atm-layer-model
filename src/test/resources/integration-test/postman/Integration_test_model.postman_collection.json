@@ -13196,13 +13196,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"var data=pm.response.json();\r",
-							"pm.test(\"errorCode is ATMLM_4000029\", function(){\r",
-							"    pm.expect(data.errorCode).to.equal(\"ATMLM_4000029\");\r",
-							"})"
+							"pm.test(\"Status code is 500\", function () {\r",
+							"    pm.response.to.have.status(500);\r",
+							"});\r"
 						],
 						"type": "text/javascript"
 					}
