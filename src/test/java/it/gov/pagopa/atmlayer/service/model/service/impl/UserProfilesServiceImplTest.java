@@ -17,6 +17,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletionStage;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -48,6 +54,44 @@ class UserProfilesServiceImplTest {
                 .assertCompleted();
 
         verify(profileRepository).findById(profileId);
+    }
+
+    @Test
+    void testCheckProfileList_Success() {
+        List<Integer> listInt = Arrays.asList(1, 2, 3);
+
+        when(profileRepository.findById(anyInt()))
+                .thenReturn(Uni.createFrom().item(new Profile()));
+
+        Uni<List<Void>> resultUni = userProfilesService.checkProfileList(listInt);
+
+        CompletionStage<List<Void>> completionStage = resultUni.subscribe().asCompletionStage();
+        List<Void> resultList = completionStage.toCompletableFuture().join();
+
+        assertThat(resultList, hasSize(listInt.size()));
+
+        for (Integer id : listInt) {
+            verify(profileRepository).findById(id);
+        }
+    }
+
+    @Test
+    void testCheckProfileList_ProfileNotFound() {
+        List<Integer> listInt = Arrays.asList(1, 2, 3);
+
+        when(profileRepository.findById(anyInt()))
+                .thenReturn(Uni.createFrom().nullItem());
+
+        Uni<List<Void>> resultUni = userProfilesService.checkProfileList(listInt);
+
+        resultUni
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertFailed();
+
+        for (Integer id : listInt) {
+            verify(profileRepository).findById(id);
+        }
     }
 
     @Test
