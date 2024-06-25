@@ -242,6 +242,35 @@ class UserProfilesServiceImplTest {
         verify(userProfilesRepository, times(1)).findById(userProfilesIDs);
     }
 
+    @Test
+    void testInsertUserProfiles_ProfileAlreadyExists() {
+        String userId = "1";
+        UserProfilesInsertionDTO userProfilesInsertionDTO = new UserProfilesInsertionDTO();
+        userProfilesInsertionDTO.setUserId(userId);
+        userProfilesInsertionDTO.setProfileIds(Arrays.asList(1, 2, 3));
+
+        UserProfilesPK userProfilesPK1 = new UserProfilesPK(userId, 1);
+        UserProfilesPK userProfilesPK2 = new UserProfilesPK(userId, 2);
+        UserProfiles userProfile1 = new UserProfiles(userProfilesPK1);
+        UserProfiles userProfile2 = new UserProfiles(userProfilesPK2);
+
+        List<UserProfiles> userProfilesList = Arrays.asList(userProfile1, userProfile2);
+
+        when(userProfilesMapper.toEntityInsertion(userProfilesInsertionDTO)).thenReturn(userProfilesList);
+        when(userProfilesRepository.findById(userProfilesPK1)).thenReturn(Uni.createFrom().item(userProfile1));
+        when(userProfilesRepository.findById(userProfilesPK2)).thenReturn(Uni.createFrom().nullItem());
+
+        Uni<List<UserProfiles>> resultUni = userProfilesService.insertUserProfiles(userProfilesInsertionDTO);
+
+        resultUni
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class).getFailure();
+
+        verify(userProfilesRepository, times(1)).findById(userProfilesPK1);
+        verify(userProfilesRepository, never()).persist(any(UserProfiles.class));
+    }
+
 
     @Test
     void testUpdateUserProfiles_UserNotFound() {
@@ -258,30 +287,140 @@ class UserProfilesServiceImplTest {
         verify(userProfilesRepository, never()).findByUserId(anyString());
     }
 
-    /*@Test
-    void testUpdateUserProfiles_Success() {
+    @Test
+    void testUpdateUserProfiles_ProfileNotFound() {
         String userId = "1";
         UserProfilesInsertionDTO userProfilesInsertionDTO = new UserProfilesInsertionDTO();
         userProfilesInsertionDTO.setUserId(userId);
         userProfilesInsertionDTO.setProfileIds(Arrays.asList(1, 2, 3));
 
-        List<UserProfiles> userProfilesToUpdate = Arrays.asList(new UserProfiles(), new UserProfiles());
+        User testUser = new User();
+        testUser.setUserId(userId);
 
-        when(userProfilesRepository.findByUserId(userId)).thenReturn(Uni.createFrom().item(List.of(new UserProfiles())));
-        when(userProfilesMapper.toEntityInsertion(userProfilesInsertionDTO)).thenReturn(userProfilesToUpdate);
-        when(userProfilesRepository.deleteUserProfiles(any())).thenReturn(Uni.createFrom().item(1L));
-        doAnswer(invocation -> Uni.createFrom().nullItem()).when(userProfilesRepository).persist((UserProfiles) any());
+        when(userRepository.findById(userId)).thenReturn(Uni.createFrom().item(testUser));
+        when(profileRepository.findById(any(Integer.class))).thenReturn(Uni.createFrom().nullItem());
 
         Uni<List<UserProfiles>> resultUni = userProfilesService.updateUserProfiles(userProfilesInsertionDTO);
-
-        verify(userProfilesRepository).findByUserId(userProfilesInsertionDTO.getUserId());
-        verify(userProfilesRepository).deleteUserProfiles(any());
-        verify(userProfilesRepository).persist((UserProfiles) any());
 
         resultUni
                 .subscribe()
                 .withSubscriber(UniAssertSubscriber.create())
-                .assertCompleted()
-                .assertItem(List.of(new UserProfiles()));
-    }*/
+                .assertFailedWith(AtmLayerException.class);
+
+        verify(userRepository).findById(userId);
+        verify(profileRepository, times(3)).findById(any(Integer.class));
+        verify(userProfilesRepository, never()).findByUserId(any());
+        verify(userProfilesRepository, never()).deleteUserProfiles(any());
+        verify(userProfilesRepository, never()).persist(anyList());
+    }
+
+    @Test
+    void testUpdateUserProfiles_ErrorFetchingExistingProfiles() {
+        String userId = "1";
+        UserProfilesInsertionDTO userProfilesInsertionDTO = new UserProfilesInsertionDTO();
+        userProfilesInsertionDTO.setUserId(userId);
+        userProfilesInsertionDTO.setProfileIds(Arrays.asList(1, 2, 3));
+
+        User testUser = new User();
+        testUser.setUserId(userId);
+
+        when(userRepository.findById(userId)).thenReturn(Uni.createFrom().item(testUser));
+        when(profileRepository.findById(any(Integer.class))).thenReturn(Uni.createFrom().item(new Profile()));
+        when(userProfilesRepository.findByUserId(userId)).thenReturn(Uni.createFrom().failure(new RuntimeException("Database error")));
+
+        Uni<List<UserProfiles>> resultUni = userProfilesService.updateUserProfiles(userProfilesInsertionDTO);
+
+        resultUni
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(RuntimeException.class);
+
+        verify(userRepository).findById(userId);
+        verify(profileRepository, times(3)).findById(any(Integer.class));
+        verify(userProfilesRepository).findByUserId(userId);
+        verify(userProfilesRepository, never()).deleteUserProfiles(any());
+        verify(userProfilesRepository, never()).persist(anyList());
+    }
+
+    @Test
+    void testUpdateUserProfiles_ErrorPersistingProfiles() {
+        String userId = "1";
+        UserProfilesInsertionDTO userProfilesInsertionDTO = new UserProfilesInsertionDTO();
+        userProfilesInsertionDTO.setUserId(userId);
+        userProfilesInsertionDTO.setProfileIds(Arrays.asList(1, 2, 3));
+
+        UserProfilesPK userProfilesPK1 = new UserProfilesPK(userId, 1);
+        UserProfilesPK userProfilesPK2 = new UserProfilesPK(userId, 2);
+        UserProfilesPK userProfilesPK3 = new UserProfilesPK(userId, 3);
+        UserProfiles userProfile1 = new UserProfiles(userProfilesPK1);
+        UserProfiles userProfile2 = new UserProfiles(userProfilesPK2);
+        UserProfiles userProfile3 = new UserProfiles(userProfilesPK3);
+        User testUser = new User();
+        testUser.setUserId(userId);
+
+        List<UserProfiles> userProfilesToUpdate = Arrays.asList(userProfile1, userProfile2, userProfile3);
+        List<UserProfiles> existingUserProfiles = Arrays.asList(
+                new UserProfiles(new UserProfilesPK(userId, 1)),
+                new UserProfiles(new UserProfilesPK(userId, 4))
+        );
+
+        when(userProfilesMapper.toEntityInsertion(userProfilesInsertionDTO)).thenReturn(userProfilesToUpdate);
+        when(userRepository.findById(userId)).thenReturn(Uni.createFrom().item(testUser));
+        when(profileRepository.findById(any(Integer.class))).thenReturn(Uni.createFrom().item(new Profile()));
+        when(userProfilesRepository.findByUserId(userId)).thenReturn(Uni.createFrom().item(existingUserProfiles));
+        when(userProfilesRepository.deleteUserProfiles(any())).thenReturn(Uni.createFrom().item(1L));
+        when(userProfilesRepository.persist(anyList())).thenReturn(Uni.createFrom().failure(new RuntimeException("Persistence error")));
+
+        Uni<List<UserProfiles>> resultUni = userProfilesService.updateUserProfiles(userProfilesInsertionDTO);
+
+        resultUni
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(RuntimeException.class);
+
+        verify(userProfilesRepository, times(1)).findByUserId(userId);
+        verify(userProfilesRepository).deleteUserProfiles(any());
+        verify(userProfilesRepository).persist(anyList());
+    }
+
+    @Test
+    void testUpdateUserProfiles_ErrorDeletingProfiles() {
+        String userId = "1";
+        UserProfilesInsertionDTO userProfilesInsertionDTO = new UserProfilesInsertionDTO();
+        userProfilesInsertionDTO.setUserId(userId);
+        userProfilesInsertionDTO.setProfileIds(Arrays.asList(1, 2, 3));
+
+        UserProfilesPK userProfilesPK1 = new UserProfilesPK(userId, 1);
+        UserProfilesPK userProfilesPK2 = new UserProfilesPK(userId, 2);
+        UserProfilesPK userProfilesPK3 = new UserProfilesPK(userId, 3);
+        UserProfiles userProfile1 = new UserProfiles(userProfilesPK1);
+        UserProfiles userProfile2 = new UserProfiles(userProfilesPK2);
+        UserProfiles userProfile3 = new UserProfiles(userProfilesPK3);
+        User testUser = new User();
+        testUser.setUserId(userId);
+
+        List<UserProfiles> userProfilesToUpdate = Arrays.asList(userProfile1, userProfile2, userProfile3);
+        List<UserProfiles> existingUserProfiles = Arrays.asList(
+                new UserProfiles(new UserProfilesPK(userId, 1)),
+                new UserProfiles(new UserProfilesPK(userId, 4))
+        );
+
+        when(userProfilesMapper.toEntityInsertion(userProfilesInsertionDTO)).thenReturn(userProfilesToUpdate);
+        when(userRepository.findById(userId)).thenReturn(Uni.createFrom().item(testUser));
+        when(profileRepository.findById(any(Integer.class))).thenReturn(Uni.createFrom().item(new Profile()));
+        when(userProfilesRepository.findByUserId(userId)).thenReturn(Uni.createFrom().item(existingUserProfiles));
+        when(userProfilesRepository.deleteUserProfiles(any())).thenReturn(Uni.createFrom().failure(new RuntimeException("Deletion error")));
+
+        Uni<List<UserProfiles>> resultUni = userProfilesService.updateUserProfiles(userProfilesInsertionDTO);
+
+        resultUni
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(RuntimeException.class);
+
+        verify(userProfilesRepository).findByUserId(userId);
+        verify(userProfilesRepository).deleteUserProfiles(any());
+        verify(userProfilesRepository, never()).persist(anyList());
+    }
+
 }
