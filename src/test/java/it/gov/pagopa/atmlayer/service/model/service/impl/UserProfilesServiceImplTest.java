@@ -15,6 +15,7 @@ import it.gov.pagopa.atmlayer.service.model.repository.ProfileRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserProfilesRepository;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -145,6 +146,42 @@ class UserProfilesServiceImplTest {
     }
 
     @Test
+    void testFindByIdSuccess() {
+        String userId = "testUser";
+        int profileId = 1;
+        UserProfilesPK userProfilesPK = new UserProfilesPK(userId, profileId);
+        UserProfiles expectedProfile = new UserProfiles();
+        expectedProfile.setUserProfilesPK(userProfilesPK);
+
+        when(userProfilesRepository.findById(userProfilesPK))
+                .thenReturn(Uni.createFrom().item(expectedProfile));
+
+        Uni<UserProfiles> result = userProfilesService.findById(userId, profileId);
+
+        result.subscribe().with(
+                actualProfile -> assertEquals(expectedProfile, actualProfile),
+                throwable -> fail("Test fallito a causa di: " + throwable)
+        );
+    }
+
+    @Test
+    void testFindByIdNotFound() {
+        String userId = "nonExistingUser";
+        int profileId = 999;
+        UserProfilesPK userProfilesPK = new UserProfilesPK(userId, profileId);
+
+        when(userProfilesRepository.findById(userProfilesPK))
+                .thenReturn(Uni.createFrom().nullItem());
+
+        Uni<UserProfiles> result = userProfilesService.findById(userId, profileId);
+
+        result.subscribe().with(
+                Assertions::assertNull,
+                throwable -> fail("Test fallito a causa di: " + throwable)
+        );
+    }
+
+    @Test
     void testInsertSingleUserProfileOK() {
         UserProfilesPK pk = new UserProfilesPK("testUserId", 1);
         UserProfiles userProfiles = new UserProfiles();
@@ -270,7 +307,6 @@ class UserProfilesServiceImplTest {
         verify(userProfilesRepository, times(1)).findById(userProfilesPK1);
         verify(userProfilesRepository, never()).persist(any(UserProfiles.class));
     }
-
 
     @Test
     void testUpdateUserProfiles_UserNotFound() {
