@@ -83,7 +83,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         return this.findBySHA256(workflowResource.getSha256())
                 .onItem().transform(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException(String.format("Esiste già un file di risorsa aggiuntiva per processo con lo stesso contenuto: %s", x.get().getDeployedFileName()), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
+                        throw new AtmLayerException(String.format("Esiste già un file di risorsa aggiuntiva per processo con lo stesso contenuto: %s", x.get().getResourceFile().getFileName()), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
                     }
                     return x;
                 }))
