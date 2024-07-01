@@ -55,6 +55,9 @@ class WorkflowResourceServiceImplTest {
     void saveContentAlreadySaved() {
         WorkflowResource workflowResource = new WorkflowResource();
         workflowResource.setSha256("sha256");
+        ResourceFile resourceFile = new ResourceFile();
+        resourceFile.setFileName("filename");
+        workflowResource.setResourceFile(resourceFile);
         when(workflowResourceRepository.findBySHA256(any(String.class))).thenReturn(Uni.createFrom().item(workflowResource));
         workflowResourceService.save(workflowResource)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
