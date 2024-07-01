@@ -112,6 +112,9 @@ class BpmnVersionServiceImplTest {
     void testSaveExistingFileException() {
         BpmnVersion bpmnVersion = new BpmnVersion();
         bpmnVersion.setSha256("testSha256");
+        ResourceFile resourceFile = new ResourceFile();
+        resourceFile.setFileName("filename");
+        bpmnVersion.setResourceFile(resourceFile);
         when(bpmnVersionRepoMock.findBySHA256("testSha256")).thenReturn(Uni.createFrom().item(bpmnVersion));
         bpmnVersionServiceImpl.save(bpmnVersion)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
