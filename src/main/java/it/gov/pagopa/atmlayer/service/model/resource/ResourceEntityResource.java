@@ -16,6 +16,7 @@ import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -106,15 +107,15 @@ public class ResourceEntityResource {
     @Path("/filter")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<PageInfo<ResourceFrontEndDTO>> getResourceFiltered(@QueryParam("pageIndex") @DefaultValue("0")
-                                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                                  @Parameter(required = true, schema = @Schema(minimum = "1", maximum = "10000")) int pageIndex,
                                                                   @QueryParam("pageSize") @DefaultValue("10")
-                                                                  @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
+                                                                  @Parameter(required = true, schema = @Schema(minimum = "1", maximum = "100")) int pageSize,
                                                                   @QueryParam("resourceId") UUID resourceId,
-                                                                  @QueryParam("sha256") String sha256,
+                                                                  @QueryParam("sha256") @Size(max=255) String sha256,
                                                                   @QueryParam("noDeployableResourceType") NoDeployableResourceType noDeployableResourceType,
-                                                                  @QueryParam("fileName") String fileName,
-                                                                  @QueryParam("storageKey") String storageKey,
-                                                                  @QueryParam("extension") String extension){
+                                                                  @QueryParam("fileName") @Size(max=255) String fileName,
+                                                                  @QueryParam("storageKey") @Size(max=255) String storageKey,
+                                                                  @QueryParam("extension") @Size(max=255) String extension){
         return resourceEntityService.findResourceFiltered(pageIndex, pageSize, resourceId, sha256, noDeployableResourceType, fileName, storageKey, extension)
                 .onItem()
                 .transform(Unchecked.function(pagedList -> {

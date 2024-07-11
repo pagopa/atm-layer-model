@@ -13,6 +13,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +55,7 @@ public class UserProfileResource {
             @APIResponse(responseCode = "200", description = "Successfully retrieved"),
             @APIResponse(responseCode = "404", description = "Not found")
     })
-    public Uni<UserProfileDto> findByUserId(@NotNull @QueryParam("userId") String userId) {
+    public Uni<UserProfileDto> findByUserId(@NotNull @QueryParam("userId") @Size(max=255) String userId) {
         return this.userProfileService.findByUserId(userId)
                 .onItem()
                 .transformToUni(Unchecked.function( x -> {
@@ -106,7 +107,7 @@ public class UserProfileResource {
             @APIResponse(responseCode = "204", description = "Successfully deleted"),
             @APIResponse(responseCode = "404", description = "Not found")
     })
-    public Uni<Void> deleteUser(@NotNull @QueryParam("userId") String userId) {
+    public Uni<Void> deleteUser(@NotNull @QueryParam("userId") @Size(max=255) String userId) {
         return this.userProfileService.deleteUser(userId);
     }
 

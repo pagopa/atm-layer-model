@@ -119,7 +119,7 @@ public class BpmnResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnDTO> getEncodedFile(@PathParam("bpmnId") UUID bpmnId,
-                                       @PathParam("version") Long version) {
+                                       @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
         BpmnVersionPK key = BpmnVersionPK.builder()
                 .bpmnId(bpmnId)
                 .modelVersion(version)
@@ -172,7 +172,7 @@ public class BpmnResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{bpmnId}/version/{version}")
     public Uni<Void> deleteBpmn(@PathParam("bpmnId") UUID bpmnId,
-                                @PathParam("version") Long version) {
+                                @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
         return this.bpmnVersionService.delete(new BpmnVersionPK(bpmnId, version))
                 .onItem()
                 .ignore()
@@ -202,7 +202,7 @@ public class BpmnResource {
     @Path("/download/{uuid}/version/{version}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Multi<Buffer> downloadBpmn(@PathParam("uuid") UUID bpmnId,
-                                      @PathParam("version") Long version) {
+                                      @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
         BpmnVersionPK key = BpmnVersionPK.builder()
                 .bpmnId(bpmnId)
                 .modelVersion(version)
@@ -230,7 +230,7 @@ public class BpmnResource {
     @Path("/downloadFrontEnd/{uuid}/version/{version}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<FileS3Dto> downloadBpmnFrontEnd(@PathParam("uuid") UUID bpmnId,
-                                               @PathParam("version") Long version) {
+                                               @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
         BpmnVersionPK key = BpmnVersionPK.builder()
                 .bpmnId(bpmnId)
                 .modelVersion(version)
@@ -257,10 +257,10 @@ public class BpmnResource {
     @GET
     @Path("/function/{functionType}/bank/{acquirerId}/branch/{branchId}/terminal/{terminalId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<BpmnDTO> findBPMNByTriad(@PathParam("functionType") String functionType,
-                                        @PathParam("acquirerId") String acquirerId,
-                                        @PathParam("branchId") String branchId,
-                                        @PathParam("terminalId") String terminalId) {
+    public Uni<BpmnDTO> findBPMNByTriad(@PathParam("functionType") @Size(max=255) String functionType,
+                                        @PathParam("acquirerId") @Size(max=255) String acquirerId,
+                                        @PathParam("branchId") @Size(max=255) String branchId,
+                                        @PathParam("terminalId") @Size(max=255) String terminalId) {
         return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId,
                         functionType)
                 .onItem()
@@ -308,10 +308,10 @@ public class BpmnResource {
     @Path("/process/function/{functionType}/bank/{acquirerId}/branch/{branchId}/terminal/{terminalId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnProcessDTO> findBPMNByTriadForProcessService(
-            @PathParam("functionType") String functionType,
-            @PathParam("acquirerId") String acquirerId,
-            @PathParam("branchId") String branchId,
-            @PathParam("terminalId") String terminalId) {
+            @PathParam("functionType") @Size(max=255) String functionType,
+            @PathParam("acquirerId") @Size(max=255) String acquirerId,
+            @PathParam("branchId") @Size(max=255) String branchId,
+            @PathParam("terminalId") @Size(max=255) String terminalId) {
         return this.findBPMNByTriad(functionType, acquirerId, branchId, terminalId)
                 .onItem()
                 .transformToUni(bpmn -> Uni.createFrom().item(bpmnVersionMapper.toProcessDTO(bpmn)));
@@ -344,24 +344,24 @@ public class BpmnResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/filter")
     public Uni<PageInfo<BpmnFrontEndDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
-                                                          @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
+                                                          @Parameter(required = true, schema = @Schema(minimum = "0", maximum = "10000")) int pageIndex,
                                                           @QueryParam("pageSize") @DefaultValue("10")
-                                                          @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize,
-                                                          @QueryParam("functionType") String functionType,
-                                                          @QueryParam("modelVersion") String modelVersion,
-                                                          @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
+                                                          @Parameter(required = true, schema = @Schema(minimum = "1", maximum="100")) int pageSize,
+                                                          @QueryParam("functionType") @Size(max=255) String functionType,
+                                                          @QueryParam("modelVersion") @Size(max=5) String modelVersion,
+                                                          @QueryParam("definitionVersionCamunda") @Size(max=5) String definitionVersionCamunda,
                                                           @QueryParam("bpmnId") UUID bpmnId,
                                                           @QueryParam("deploymentId") UUID deploymentId,
-                                                          @QueryParam("camundaDefinitionId") String camundaDefinitionId,
-                                                          @QueryParam("definitionKey") String definitionKey,
-                                                          @QueryParam("deployedFileName") String deployedFileName,
-                                                          @QueryParam("resource") String resource,
-                                                          @QueryParam("sha256") String sha256,
+                                                          @QueryParam("camundaDefinitionId") @Size(max=255) String camundaDefinitionId,
+                                                          @QueryParam("definitionKey") @Size(max=255) String definitionKey,
+                                                          @QueryParam("deployedFileName") @Size(max=255) String deployedFileName,
+                                                          @QueryParam("resource") @Size(max=255) String resource,
+                                                          @QueryParam("sha256") @Size(max=255) String sha256,
                                                           @QueryParam("status") StatusEnum status,
-                                                          @QueryParam("acquirerId") String acquirerId,
-                                                          @QueryParam("branchId") String branchId,
-                                                          @QueryParam("terminalId") String terminalId,
-                                                          @QueryParam("fileName") String fileName) {
+                                                          @QueryParam("acquirerId") @Size(max=255) String acquirerId,
+                                                          @QueryParam("branchId") @Size(max=255) String branchId,
+                                                          @QueryParam("terminalId") @Size(max=255) String terminalId,
+                                                          @QueryParam("fileName") @Size(max=255) String fileName) {
         return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda,
                         bpmnId, deploymentId, camundaDefinitionId, definitionKey, deployedFileName, resource, sha256, status, acquirerId, branchId, terminalId, fileName)
                 .onItem()
@@ -377,8 +377,8 @@ public class BpmnResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/associations/{uuid}/version/{version}")
     public Uni<PageInfo<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
-                                                                  @QueryParam("pageIndex") @DefaultValue("0") @Schema(minimum = "1", maximum = "2147483647") int pageIndex,
-                                                                  @QueryParam("pageSize") @DefaultValue("10") @Schema(minimum = "1", maximum = "2147483647") int pageSize) {
+                                                                  @QueryParam("pageIndex") @DefaultValue("0") @Schema(minimum = "1", maximum = "10000") int pageIndex,
+                                                                  @QueryParam("pageSize") @DefaultValue("10") @Schema(minimum = "1", maximum = "100") int pageSize) {
         return bpmnBankConfigService.findByBpmnPKPaged(new BpmnVersionPK(bpmnId, version), pageIndex, pageSize)
                 .onItem()
                 .transformToUni(pagedAssociations -> {

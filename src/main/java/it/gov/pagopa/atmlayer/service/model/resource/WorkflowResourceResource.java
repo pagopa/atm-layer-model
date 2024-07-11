@@ -25,6 +25,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -90,22 +91,22 @@ public class WorkflowResourceResource {
     @Path("/filter")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<PageInfo<WorkflowResourceFrontEndDTO>> getAllFiltered(@QueryParam("pageIndex") @DefaultValue("0")
-                                                                     @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) Integer page,
+                                                                     @Parameter(required = true, schema = @Schema(minimum = "1", maximum = "10000")) Integer page,
                                                                      @QueryParam("pageSize") @DefaultValue("10")
-                                                                     @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) Integer size,
+                                                                     @Parameter(required = true, schema = @Schema(minimum = "1", maximum = "100")) Integer size,
                                                                      @QueryParam("status")
                                                                      @Schema(implementation = String.class, type = SchemaType.STRING, enumeration = {"CREATED", "WAITING_DEPLOY", "UPDATED_BUT_NOT_DEPLOYED", "DEPLOYED", "DEPLOY_ERROR"}) StatusEnum status,
                                                                      @QueryParam("workflowResourceId") UUID workflowResourceId,
-                                                                     @QueryParam("deployedFileName") String deployedFileName,
-                                                                     @QueryParam("definitionKey") String definitionKey,
+                                                                     @QueryParam("deployedFileName") @Size(max=255) String deployedFileName,
+                                                                     @QueryParam("definitionKey") @Size(max=255) String definitionKey,
                                                                      @QueryParam("resourceType") DeployableResourceType resourceType,
-                                                                     @QueryParam("sha256") String sha256,
-                                                                     @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
-                                                                     @QueryParam("camundaDefinitionId") String camundaDefinitionId,
-                                                                     @QueryParam("description") String description,
-                                                                     @QueryParam("resource") String resource,
+                                                                     @QueryParam("sha256") @Size(max=255) String sha256,
+                                                                     @QueryParam("definitionVersionCamunda") @Size(max=5) String definitionVersionCamunda,
+                                                                     @QueryParam("camundaDefinitionId") @Size(max=255) String camundaDefinitionId,
+                                                                     @QueryParam("description") @Size(max=255) String description,
+                                                                     @QueryParam("resource") @Size(max=255) String resource,
                                                                      @QueryParam("deploymentId") UUID deploymentId,
-                                                                     @QueryParam("fileName") String fileName) {
+                                                                     @QueryParam("fileName") @Size(max=255) String fileName) {
         return this.workflowResourceService.getAllFiltered(page, size, status, workflowResourceId, deployedFileName, definitionKey, resourceType, sha256, definitionVersionCamunda, camundaDefinitionId, description, resource, deploymentId, fileName)
                 .onItem()
                 .transform(Unchecked.function(pagedList -> {
