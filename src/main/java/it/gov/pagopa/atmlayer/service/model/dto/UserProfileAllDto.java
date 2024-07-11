@@ -15,8 +15,8 @@ public class UserProfileAllDto {
     @Schema(example = "email@domain.com", maxLength = 255)
     private String userId;
     private UserProfileEnum profile;
-    @Schema(example = "2024-02-07T11:38:58.445+00:00")
+    @Schema(example = "{\"date\":\"2023-11-03T14:18:36.635+00:00\"}")
     private Timestamp createdAt;
-    @Schema(example = "2024-02-07T11:38:58.445+00:00")
+    @Schema(example = "{\"date\":\"2023-11-03T14:18:36.635+00:00\"}")
     private Timestamp lastUpdatedAt;
 }

@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.model;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
@@ -17,17 +18,18 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @RegisterForReflection
 public class ErrorResponse {
 
+  @Size(max=255)
   private String type;
 
-  @Schema(example = "Internal Server Error")
+  @Schema(example = "Internal Server Error", maxLength = 255)
   private String title;
 
-  @Schema(example = "500")
+  @Schema(example = "500", minimum = "1", maximum = "999")
   private int status;
 
-  @Schema(example = "An unexpected error has occurred. Please contact support.")
+  @Schema(example = "An unexpected error has occurred. Please contact support.", maxLength = 1000)
   private String detail;
 
-  @Schema(example = "ATMLM-500")
+  @Schema(example = "ATMLM-500", maxLength = 255)
   private String instance;
 }

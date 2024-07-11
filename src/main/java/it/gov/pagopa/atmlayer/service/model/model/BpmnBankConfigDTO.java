@@ -26,9 +26,9 @@ public class BpmnBankConfigDTO {
     private String terminalId;
     @Size(max = 255)
     private String functionType;
-    @Schema(description = "Creation Timestamp", format = "date-time", pattern = "DD/MM/YYYY", example = "2023-11-03T14:18:36.635+00:00")
+    @Schema(description = "Creation Timestamp", format = "date-time", pattern = "DD/MM/YYYY", example = "{\"date\":\"2023-11-03T14:18:36.635+00:00\"}")
     private Timestamp createdAt;
-    @Schema(description = "Last Update Timestamp", format = "date-time", pattern = "DD/MM/YYYY", example = "2023-11-03T14:18:36.635+00:00")
+    @Schema(description = "Last Update Timestamp", format = "date-time", pattern = "DD/MM/YYYY", example = "{\"date\":\"2023-11-03T14:18:36.635+00:00\"}")
     private Timestamp lastUpdatedAt;
     @Size(max = 255)
     private String createdBy;
