@@ -35,7 +35,10 @@ import it.gov.pagopa.atmlayer.service.model.validators.BpmnEntityValidator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -51,10 +54,13 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.hibernate.validator.constraints.Range;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -95,18 +101,18 @@ public class BpmnResource {
         this.tracer = tracer;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<BpmnDTO>> getAllBpmn() {
-        return this.bpmnVersionService.getAll()
-                .onItem()
-                .transform(Unchecked.function(list -> {
-                    if (list.isEmpty()) {
-                        log.info("No BPMN files saved in database");
-                    }
-                    return bpmnVersionMapper.toDTOList(list);
-                }));
-    }
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Uni<List<BpmnDTO>> getAllBpmn() {
+//        return this.bpmnVersionService.getAll()
+//                .onItem()
+//                .transform(Unchecked.function(list -> {
+//                    if (list.isEmpty()) {
+//                        log.info("No BPMN files saved in database");
+//                    }
+//                    return bpmnVersionMapper.toDTOList(list);
+//                }));
+//    }
 
     @GET
     @Path("/{bpmnId}/version/{version}")
@@ -133,8 +139,8 @@ public class BpmnResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Collection<BpmnBankConfigDTO>> associateBPMN(
-            @PathParam("acquirerId") String acquirerId,
-            @PathParam("functionType") String functionType,
+            @PathParam("acquirerId") @Size(max=255) String acquirerId,
+            @PathParam("functionType") @Size(max=255) String functionType,
             @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto) {
         List<BpmnBankConfig> configs = getAcquirerConfigs(bpmnAssociationDto, acquirerId,
                 functionType.toUpperCase());
@@ -177,7 +183,7 @@ public class BpmnResource {
     @Path("/deploy/{uuid}/version/{version}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<BpmnDTO> deployBPMN(@PathParam("uuid") UUID uuid,
-                                   @PathParam("version") Long version) {
+                                   @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
         return this.bpmnVersionService.deploy(new BpmnVersionPK(uuid, version))
                 .onItem()
                 .transformToUni(bpmn -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn)));
@@ -323,13 +329,13 @@ public class BpmnResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/associations/bank/{acquirerId}")
-    public Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") String acquirerId) {
+    public Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") @Size(max=255) String acquirerId) {
         return bpmnBankConfigService.findByAcquirerId(acquirerId);
     }
 
     @POST
     @Path("/disable/{uuid}/version/{version}")
-    public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version) {
+    public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
         BpmnVersionPK bpmnVersionPK = new BpmnVersionPK(bpmnId, version);
         return bpmnVersionService.disable(bpmnVersionPK);
     }
@@ -370,9 +376,9 @@ public class BpmnResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/associations/{uuid}/version/{version}")
-    public Uni<PageInfo<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
-                                                                  @QueryParam("pageIndex") @DefaultValue("0") @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) int pageIndex,
-                                                                  @QueryParam("pageSize") @DefaultValue("10") @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) int pageSize) {
+    public Uni<PageInfo<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
+                                                                  @QueryParam("pageIndex") @DefaultValue("0") @Schema(minimum = "1", maximum = "2147483647") int pageIndex,
+                                                                  @QueryParam("pageSize") @DefaultValue("10") @Schema(minimum = "1", maximum = "2147483647") int pageSize) {
         return bpmnBankConfigService.findByBpmnPKPaged(new BpmnVersionPK(bpmnId, version), pageIndex, pageSize)
                 .onItem()
                 .transformToUni(pagedAssociations -> {
@@ -387,7 +393,7 @@ public class BpmnResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/associations/{uuid}/version/{version}")
-    public Uni<BpmnBankConfigDTO> addSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
+    public Uni<BpmnBankConfigDTO> addSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
                                                        @RequestBody(required = true) BankConfigTripletDto bankConfigTripletDto) {
         validateBankConfigTriplet(bankConfigTripletDto);
         return bpmnVersionService.addSingleAssociation(new BpmnVersionPK(bpmnId, version), bankConfigTripletDto)
@@ -396,10 +402,10 @@ public class BpmnResource {
 
     @DELETE
     @Path("/associations/{uuid}/version/{version}")
-    public Uni<Void> deleteSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
-                                             @QueryParam("acquirerId") @NotEmpty String acquirerId,
-                                             @QueryParam("branchId") String branchId,
-                                             @QueryParam("terminalId") String terminalId) {
+    public Uni<Void> deleteSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
+                                             @QueryParam("acquirerId") @NotEmpty @Size(max=255) String acquirerId,
+                                             @QueryParam("branchId") @Size(max=255) String branchId,
+                                             @QueryParam("terminalId") @Size(max=255) String terminalId) {
         validateBankConfigTriplet(new BankConfigTripletDto(acquirerId, branchId, terminalId));
         BankConfigDeleteDto bankConfigDeleteDto = new BankConfigDeleteDto(bpmnId, version, acquirerId, branchId, terminalId);
         return bpmnVersionService.deleteSingleAssociation(bankConfigDeleteDto);
@@ -409,7 +415,7 @@ public class BpmnResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/associations/{uuid}/version/{version}")
-    public Uni<BpmnBankConfigDTO> replaceSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") Long version,
+    public Uni<BpmnBankConfigDTO> replaceSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
                                                            @RequestBody(required = true) BankConfigTripletDto bankConfigTripletDto) {
         validateBankConfigTriplet(bankConfigTripletDto);
         return bpmnVersionService.replaceSingleAssociation(new BpmnVersionPK(bpmnId, version), bankConfigTripletDto)
