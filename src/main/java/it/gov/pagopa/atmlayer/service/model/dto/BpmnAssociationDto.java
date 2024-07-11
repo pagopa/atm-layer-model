@@ -23,6 +23,6 @@ public class BpmnAssociationDto {
     @Schema(minimum = "1", maximum = "10000")
     private Long defaultTemplateVersion;
 
-    @Schema(maxItems = 50000)
+    @Schema(maxItems = 10000)
     private List<BranchConfigs> branchesConfigs;
 }

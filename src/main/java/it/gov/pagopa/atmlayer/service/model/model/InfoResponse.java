@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
@@ -15,14 +16,18 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @JsonPropertyOrder({"name", "version", "environment", "description"})
 public class InfoResponse {
     @Schema(example = "atm-layer-model")
+    @Size(max = 255)
     private String name;
 
     @Schema(example = "1.2.3")
+    @Size(max = 255)
     private String version;
 
     @Schema(example = "dev")
+    @Size(max = 255)
     private String environment;
 
     @Schema(example = "ATM Layer - Model Service")
+    @Size(max = 255)
     private String description;
 }
