@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +16,8 @@ public class TerminalConfigs {
     @NotNull
     private UUID templateId;
     @NotNull
+    @Schema(minimum = "1", maximum = "10000")
     private Long templateVersion;
-
+    @Schema(maxItems = 2147483647)
     private List<String> terminalIds;
 }

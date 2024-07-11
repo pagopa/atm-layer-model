@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserProfileAllDto {
-    @Schema(example = "email@domain.com")
+    @Schema(example = "email@domain.com", maxLength = 255)
     private String userId;
     private UserProfileEnum profile;
     @Schema(example = "2024-02-07T11:38:58.445+00:00")

@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.model.dto;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.FormParam;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class ResourceCreationDto {
   @Pattern(regexp = "^[a-zA-Z0-9_-]+\\.[a-zA-Z]+$", message = "it must be of form ${regexp}")
   @Schema(description = "Description of the filename parameter: example_filename.txt",
       required = true,
-      pattern = "^[a-zA-Z0-9_-]+\\.[a-zA-Z]+$")
+      pattern = "^[a-zA-Z0-9_-]+\\.[a-zA-Z]+$", maxLength = 255)
   private String filename;
 
   @FormParam("resourceType")
@@ -35,8 +36,9 @@ public class ResourceCreationDto {
   @Pattern(regexp = "(^$)|(^(?!/)[a-zA-Z0-9/]+(?<!/)$)", message = "String must not start or end with '/' and must not contain white spaces and special characters")
   @DefaultValue("")
   @Schema(description = "Description of the path parameter: example/path",
-      pattern = "(^$)|(^(?!/)[a-zA-Z0-9/]+(?<!/)$)")
+      pattern = "(^$)|(^(?!/)[a-zA-Z0-9/]+(?<!/)$)", maxLength = 255)
   private String path;
   @FormParam("description")
+  @Size(max = 255)
   private String description;
 }
