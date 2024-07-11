@@ -59,6 +59,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import org.eclipse.microprofile.openapi.annotations.security.SecuritySchemes;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.hibernate.validator.constraints.Range;
 
@@ -138,7 +139,7 @@ public class BpmnResource {
     @Path("/bank/{acquirerId}/associations/function/{functionType}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Collection<BpmnBankConfigDTO>> associateBPMN(
+    public @Schema(maxItems = 50000) Uni<Collection<BpmnBankConfigDTO>> associateBPMN(
             @PathParam("acquirerId") @Size(max=255) String acquirerId,
             @PathParam("functionType") @Size(max=255) String functionType,
             @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto) {
@@ -329,7 +330,7 @@ public class BpmnResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/associations/bank/{acquirerId}")
-    public Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") @Size(max=255) String acquirerId) {
+    public @Schema(type = SchemaType.ARRAY, maxItems = 50000) Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") @Size(max=255) String acquirerId) {
         return bpmnBankConfigService.findByAcquirerId(acquirerId);
     }
 

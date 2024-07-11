@@ -64,22 +64,22 @@ public class UserProfileResource {
                 }));
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponses(value = {
-            @APIResponse(responseCode = "200", description = "Successfully retrieved"),
-            @APIResponse(responseCode = "404", description = "Not found")
-    })
-    public Uni<List<UserProfileAllDto>> getUsers(){
-        return this.userProfileService.getUsers()
-                .onItem()
-                .transform(Unchecked.function(list -> {
-                    if (list.isEmpty()) {
-                        log.info("No User profiles saved in database");
-                    }
-                    return userProfileMapper.toDtoAllList(list);
-                }));
-    }
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @APIResponses(value = {
+//            @APIResponse(responseCode = "200", description = "Successfully retrieved"),
+//            @APIResponse(responseCode = "404", description = "Not found")
+//    })
+//    public Uni<List<UserProfileAllDto>> getUsers(){
+//        return this.userProfileService.getUsers()
+//                .onItem()
+//                .transform(Unchecked.function(list -> {
+//                    if (list.isEmpty()) {
+//                        log.info("No User profiles saved in database");
+//                    }
+//                    return userProfileMapper.toDtoAllList(list);
+//                }));
+//    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

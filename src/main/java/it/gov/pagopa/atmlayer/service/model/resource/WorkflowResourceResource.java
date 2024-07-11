@@ -74,18 +74,18 @@ public class WorkflowResourceResource {
         this.tracer = tracer;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<WorkflowResourceDTO>> getAll() {
-        return this.workflowResourceService.getAll()
-                .onItem()
-                .transform(Unchecked.function(list -> {
-                    if (list.isEmpty()) {
-                        log.info("No Workflow Resource files saved in database");
-                    }
-                    return workflowResourceMapper.toDTOList(list);
-                }));
-    }
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Uni<List<WorkflowResourceDTO>> getAll() {
+//        return this.workflowResourceService.getAll()
+//                .onItem()
+//                .transform(Unchecked.function(list -> {
+//                    if (list.isEmpty()) {
+//                        log.info("No Workflow Resource files saved in database");
+//                    }
+//                    return workflowResourceMapper.toDTOList(list);
+//                }));
+//    }
 
     @GET
     @Path("/filter")
