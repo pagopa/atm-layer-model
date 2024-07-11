@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +11,11 @@ import java.util.Objects;
 @Getter
 @Setter
 public class BankConfigTripletDto {
+    @Size(max = 255)
     private String acquirerId;
+    @Size(max = 255)
     private String branchId;
+    @Size(max = 255)
     private String terminalId;
 
     @Override
