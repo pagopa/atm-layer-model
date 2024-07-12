@@ -63,6 +63,10 @@ public class UserProfileResource {
     @GET
     @Path("/search")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            operationId = "findByUserId",
+            description = "cerca per userId"
+    )
     @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = UserProfileDto.class)))
     @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
     @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
@@ -98,6 +102,10 @@ public class UserProfileResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NonBlocking
+    @Operation(
+            operationId = "createUser",
+            description = "creazione user"
+    )
     @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = UserProfileAllDto.class)))
     @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
     @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
@@ -116,7 +124,10 @@ public class UserProfileResource {
 
     @DELETE
     @Path("/search")
-    @Operation()
+    @Operation(
+            operationId = "deleteUser",
+            description = "elimina user"
+    )
     @APIResponse(responseCode= "204", description = "Ok")
     @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
     @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
@@ -129,6 +140,10 @@ public class UserProfileResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            operationId = "updateUser",
+            description = "aggiorna user"
+    )
     @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = UserProfileAllDto.class)))
     @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
     @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
