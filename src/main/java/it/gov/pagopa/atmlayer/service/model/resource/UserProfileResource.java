@@ -18,12 +18,18 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import org.eclipse.microprofile.openapi.annotations.security.SecuritySchemes;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.List;
@@ -32,6 +38,12 @@ import java.util.List;
 @Path("/users")
 @Tag(name = "USERS", description = "USERS operations")
 @Slf4j
+@SecuritySchemes({
+        @SecurityScheme(securitySchemeName = "OAuth2",
+                type = SecuritySchemeType.OAUTH2,
+                flows = @OAuthFlows(implicit = @OAuthFlow(authorizationUrl = "example", refreshUrl = "example", scopes = {})))
+})
+@SecurityRequirement(name="OAuth2", scopes = {})
 public class UserProfileResource {
 
 

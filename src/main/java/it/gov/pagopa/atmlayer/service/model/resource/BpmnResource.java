@@ -52,11 +52,17 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import org.eclipse.microprofile.openapi.annotations.security.SecuritySchemes;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
@@ -75,6 +81,13 @@ import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.validateBankC
 @Path("/bpmn")
 @Tag(name = "BPMN", description = "BPMN operations")
 @Slf4j
+@SecuritySchemes({
+        @SecurityScheme(securitySchemeName = "OAuth2",
+                type = SecuritySchemeType.OAUTH2,
+                flows = @OAuthFlows(implicit = @OAuthFlow(authorizationUrl = "example", refreshUrl = "example", scopes = {})),
+                description = "RFC8725 Compliant JWT")
+})
+@SecurityRequirement(name="OAuth2", scopes = {})
 public class BpmnResource {
 
     private final BpmnVersionService bpmnVersionService;

@@ -42,9 +42,15 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import org.eclipse.microprofile.openapi.annotations.security.SecuritySchemes;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.File;
@@ -61,6 +67,12 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @Path("/workflow-resource")
 @Tag(name = "Workflow Resource", description = "Workflow Resource Operations")
 @Slf4j
+@SecuritySchemes({
+        @SecurityScheme(securitySchemeName = "OAuth2",
+                type = SecuritySchemeType.OAUTH2,
+                flows = @OAuthFlows(implicit = @OAuthFlow(authorizationUrl = "example", refreshUrl = "example", scopes = {})))
+})
+@SecurityRequirement(name="OAuth2", scopes = {})
 public class WorkflowResourceResource {
     private final WorkflowResourceService workflowResourceService;
     private final WorkflowResourceMapper workflowResourceMapper;
