@@ -4,6 +4,7 @@ package it.gov.pagopa.atmlayer.service.model.model;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.util.List;
@@ -19,6 +20,6 @@ public class PageInfo<T> {
     private Integer itemsFound;
     @Schema(minimum = "1", maximum = "10000")
     private Integer totalPages;
-    @Schema(maxLength = 1000000)
+    @Schema(type = SchemaType.ARRAY, maxItems = 10000)
     private List<T> results;
 }
