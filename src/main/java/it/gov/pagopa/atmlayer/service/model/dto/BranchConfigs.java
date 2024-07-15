@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class BranchConfigs {
 
-    @Size(max = 255)
+    @Schema(format = "byte", maxLength = 255)
     private String branchId;
 
     private UUID branchDefaultTemplateId;

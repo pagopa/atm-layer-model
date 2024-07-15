@@ -154,6 +154,7 @@ public class ResourceEntityResource {
             operationId = "getResourceFiltered",
             description = "filtra tra tutti i Resource file"
     )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = PageInfo.class)))
     @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
     @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
@@ -163,11 +164,11 @@ public class ResourceEntityResource {
                                                                   @QueryParam("pageSize") @DefaultValue("10")
                                                                   @Parameter(required = true, schema = @Schema(minimum = "1", maximum = "100")) int pageSize,
                                                                   @QueryParam("resourceId") UUID resourceId,
-                                                                  @QueryParam("sha256") @Size(max=255) String sha256,
+                                                                  @QueryParam("sha256") @Schema(format = "byte", maxLength = 255) String sha256,
                                                                   @QueryParam("noDeployableResourceType") NoDeployableResourceType noDeployableResourceType,
-                                                                  @QueryParam("fileName") @Size(max=255) String fileName,
-                                                                  @QueryParam("storageKey") @Size(max=255) String storageKey,
-                                                                  @QueryParam("extension") @Size(max=255) String extension){
+                                                                  @QueryParam("fileName") @Schema(format = "byte", maxLength = 255) String fileName,
+                                                                  @QueryParam("storageKey") @Schema(format = "byte", maxLength = 255) String storageKey,
+                                                                  @QueryParam("extension") @Schema(format = "byte", maxLength = 255) String extension){
         return resourceEntityService.findResourceFiltered(pageIndex, pageSize, resourceId, sha256, noDeployableResourceType, fileName, storageKey, extension)
                 .onItem()
                 .transform(Unchecked.function(pagedList -> {

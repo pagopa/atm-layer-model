@@ -39,6 +39,6 @@ public class ResourceCreationDto {
       pattern = "(^$)|(^(?!/)[a-zA-Z0-9/]+(?<!/)$)", maxLength = 255)
   private String path;
   @FormParam("description")
-  @Size(max = 255)
+  @Schema(format = "byte", maxLength = 255)
   private String description;
 }

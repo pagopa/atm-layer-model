@@ -167,8 +167,8 @@ public class BpmnResource {
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public @Schema(maxItems = 50000) Uni<Collection<BpmnBankConfigDTO>> associateBPMN(
-            @PathParam("acquirerId") @Size(max=255) String acquirerId,
-            @PathParam("functionType") @Size(max=255) String functionType,
+            @PathParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId,
+            @PathParam("functionType") @Schema(format = "byte", maxLength = 255) String functionType,
             @RequestBody(required = true) @Valid BpmnAssociationDto bpmnAssociationDto) {
         List<BpmnBankConfig> configs = getAcquirerConfigs(bpmnAssociationDto, acquirerId,
                 functionType.toUpperCase());
@@ -348,10 +348,10 @@ public class BpmnResource {
     @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
-    public Uni<BpmnDTO> findBPMNByTriad(@PathParam("functionType") @Size(max=255) String functionType,
-                                        @PathParam("acquirerId") @Size(max=255) String acquirerId,
-                                        @PathParam("branchId") @Size(max=255) String branchId,
-                                        @PathParam("terminalId") @Size(max=255) String terminalId) {
+    public Uni<BpmnDTO> findBPMNByTriad(@PathParam("functionType") @Schema(format = "byte", maxLength = 255) String functionType,
+                                        @PathParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId,
+                                        @PathParam("branchId") @Schema(format = "byte", maxLength = 255) String branchId,
+                                        @PathParam("terminalId") @Schema(format = "byte", maxLength = 255) String terminalId) {
         return bpmnBankConfigService.findByConfigurationsAndFunction(acquirerId, branchId, terminalId,
                         functionType)
                 .onItem()
@@ -408,10 +408,10 @@ public class BpmnResource {
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<BpmnProcessDTO> findBPMNByTriadForProcessService(
-            @PathParam("functionType") @Size(max=255) String functionType,
-            @PathParam("acquirerId") @Size(max=255) String acquirerId,
-            @PathParam("branchId") @Size(max=255) String branchId,
-            @PathParam("terminalId") @Size(max=255) String terminalId) {
+            @PathParam("functionType") @Schema(format = "byte", maxLength = 255) String functionType,
+            @PathParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId,
+            @PathParam("branchId") @Schema(format = "byte", maxLength = 255) String branchId,
+            @PathParam("terminalId") @Schema(format = "byte", maxLength = 255) String terminalId) {
         return this.findBPMNByTriad(functionType, acquirerId, branchId, terminalId)
                 .onItem()
                 .transformToUni(bpmn -> Uni.createFrom().item(bpmnVersionMapper.toProcessDTO(bpmn)));
@@ -447,7 +447,7 @@ public class BpmnResource {
     @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
-    public @Schema(type = SchemaType.ARRAY, maxItems = 50000) Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") @Size(max=255) String acquirerId) {
+    public @Schema(type = SchemaType.ARRAY, maxItems = 50000) Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId) {
         return bpmnBankConfigService.findByAcquirerId(acquirerId);
     }
 
@@ -474,6 +474,7 @@ public class BpmnResource {
             operationId = "getBpmnFiltered",
             description = "cerca BPMN mettendo dei filtri"
     )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = PageInfo.class)))
     @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
     @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
@@ -482,21 +483,21 @@ public class BpmnResource {
                                                           @Parameter(required = true, schema = @Schema(minimum = "0", maximum = "10000")) int pageIndex,
                                                           @QueryParam("pageSize") @DefaultValue("10")
                                                           @Parameter(required = true, schema = @Schema(minimum = "1", maximum="100")) int pageSize,
-                                                          @QueryParam("functionType") @Size(max=255) String functionType,
-                                                          @QueryParam("modelVersion") @Size(max=5) String modelVersion,
-                                                          @QueryParam("definitionVersionCamunda") @Size(max=5) String definitionVersionCamunda,
+                                                          @QueryParam("functionType") @Schema(format = "byte", maxLength = 255) String functionType,
+                                                          @QueryParam("modelVersion") @Schema(format = "byte", maxLength = 5) String modelVersion,
+                                                          @QueryParam("definitionVersionCamunda") @Schema(format = "byte", maxLength = 5) String definitionVersionCamunda,
                                                           @QueryParam("bpmnId") UUID bpmnId,
                                                           @QueryParam("deploymentId") UUID deploymentId,
-                                                          @QueryParam("camundaDefinitionId") @Size(max=255) String camundaDefinitionId,
-                                                          @QueryParam("definitionKey") @Size(max=255) String definitionKey,
-                                                          @QueryParam("deployedFileName") @Size(max=255) String deployedFileName,
-                                                          @QueryParam("resource") @Size(max=255) String resource,
-                                                          @QueryParam("sha256") @Size(max=255) String sha256,
+                                                          @QueryParam("camundaDefinitionId") @Schema(format = "byte", maxLength = 255) String camundaDefinitionId,
+                                                          @QueryParam("definitionKey") @Schema(format = "byte", maxLength = 255) String definitionKey,
+                                                          @QueryParam("deployedFileName") @Schema(format = "byte", maxLength = 255) String deployedFileName,
+                                                          @QueryParam("resource") @Schema(format = "byte", maxLength = 255) String resource,
+                                                          @QueryParam("sha256") @Schema(format = "byte", maxLength = 255) String sha256,
                                                           @QueryParam("status") StatusEnum status,
-                                                          @QueryParam("acquirerId") @Size(max=255) String acquirerId,
-                                                          @QueryParam("branchId") @Size(max=255) String branchId,
-                                                          @QueryParam("terminalId") @Size(max=255) String terminalId,
-                                                          @QueryParam("fileName") @Size(max=255) String fileName) {
+                                                          @QueryParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId,
+                                                          @QueryParam("branchId") @Schema(format = "byte", maxLength = 255) String branchId,
+                                                          @QueryParam("terminalId") @Schema(format = "byte", maxLength = 255) String terminalId,
+                                                          @QueryParam("fileName") @Schema(format = "byte", maxLength = 255) String fileName) {
         return bpmnVersionService.findBpmnFiltered(pageIndex, pageSize, functionType, modelVersion, definitionVersionCamunda,
                         bpmnId, deploymentId, camundaDefinitionId, definitionKey, deployedFileName, resource, sha256, status, acquirerId, branchId, terminalId, fileName)
                 .onItem()
@@ -515,6 +516,7 @@ public class BpmnResource {
             operationId = "getAssociationsByBpmn",
             description = "cerca associazioni di un BPMN"
     )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = PageInfo.class)))
     @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
     @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
@@ -564,9 +566,9 @@ public class BpmnResource {
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<Void> deleteSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
-                                             @QueryParam("acquirerId") @NotEmpty @Size(max=255) String acquirerId,
-                                             @QueryParam("branchId") @Size(max=255) String branchId,
-                                             @QueryParam("terminalId") @Size(max=255) String terminalId) {
+                                             @QueryParam("acquirerId") @NotEmpty @Schema(format = "byte", maxLength = 255) String acquirerId,
+                                             @QueryParam("branchId") @Schema(format = "byte", maxLength = 255) String branchId,
+                                             @QueryParam("terminalId") @Schema(format = "byte", maxLength = 255) String terminalId) {
         validateBankConfigTriplet(new BankConfigTripletDto(acquirerId, branchId, terminalId));
         BankConfigDeleteDto bankConfigDeleteDto = new BankConfigDeleteDto(bpmnId, version, acquirerId, branchId, terminalId);
         return bpmnVersionService.deleteSingleAssociation(bankConfigDeleteDto);
