@@ -522,7 +522,7 @@ public class BpmnResource {
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<PageInfo<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
-                                                                  @QueryParam("pageIndex") @DefaultValue("0") @Schema(minimum = "1", maximum = "10000") int pageIndex,
+                                                                  @QueryParam("pageIndex") @DefaultValue("0") @Schema(minimum = "0", maximum = "10000") int pageIndex,
                                                                   @QueryParam("pageSize") @DefaultValue("10") @Schema(minimum = "1", maximum = "100") int pageSize) {
         return bpmnBankConfigService.findByBpmnPKPaged(new BpmnVersionPK(bpmnId, version), pageIndex, pageSize)
                 .onItem()
