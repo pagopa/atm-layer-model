@@ -1,15 +1,15 @@
 
 # Coverage Report: JaCoCo
 
-* S3PreSignerLocalTest (QuarkusTest)
+* IntegrationTest (QuarkusTest)
       
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 91.93%               |
-| :heavy_check_mark: Number of Lines Covered | 2245    |
-| :x: Number of Lines Missed  | 197     |
-| Total Number of Lines   | 2442     |
+| Code Coverage %         | 91.74%               |
+| :heavy_check_mark: Number of Lines Covered | 2222    |
+| :x: Number of Lines Missed  | 200     |
+| Total Number of Lines   | 2422     |
 
 
 ## Details:
@@ -638,11 +638,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityServiceImpl.java
+:x: ResourceEntityServiceImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
