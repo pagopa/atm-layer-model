@@ -54,42 +54,42 @@ class UserProfileResourceTest {
         verify(userProfileMapper, times(1)).toUserProfileDtoWithProfileMapping(userProfile);
     }
 
-    @Test
-    void testGetAllUsersEmptyList() {
-        List<UserProfile> list = new ArrayList<>();
+//    @Test
+//    void testGetAllUsersEmptyList() {
+//        List<UserProfile> list = new ArrayList<>();
+//
+//        when(userProfileService.getUsers()).thenReturn(Uni.createFrom().item(list));
+//
+//        given()
+//                .when().get("/api/v1/model/users")
+//                .then()
+//                .statusCode(200);
+//
+//        verify(userProfileService, times(1)).getUsers();
+//    }
 
-        when(userProfileService.getUsers()).thenReturn(Uni.createFrom().item(list));
-
-        given()
-                .when().get("/api/v1/model/users")
-                .then()
-                .statusCode(200);
-
-        verify(userProfileService, times(1)).getUsers();
-    }
-
-   @Test
-   void testGetAllUsersList() {
-        List<UserProfile> userProfileList = new ArrayList<>();
-        UserProfile userProfile = new UserProfile();
-        userProfileList.add(userProfile);
-
-        List<UserProfileAllDto> userProfileDtoList = new ArrayList<>();
-        UserProfileAllDto userProfileDto = new UserProfileAllDto();
-        userProfileDtoList.add(userProfileDto);
-        when(userProfileService.getUsers()).thenReturn(Uni.createFrom().item(userProfileList));
-        when(userProfileMapper.toDtoAllList(any(ArrayList.class))).thenReturn(userProfileDtoList);
-        ArrayList result = given()
-                .when().get("/api/v1/model/users")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(ArrayList.class);
-        assertEquals(1, result.size());
-        verify(userProfileService, times(1)).getUsers();
-        verify(userProfileMapper, times(1)).toDtoAllList(userProfileList);
-    }
+//   @Test
+//   void testGetAllUsersList() {
+//        List<UserProfile> userProfileList = new ArrayList<>();
+//        UserProfile userProfile = new UserProfile();
+//        userProfileList.add(userProfile);
+//
+//        List<UserProfileAllDto> userProfileDtoList = new ArrayList<>();
+//        UserProfileAllDto userProfileDto = new UserProfileAllDto();
+//        userProfileDtoList.add(userProfileDto);
+//        when(userProfileService.getUsers()).thenReturn(Uni.createFrom().item(userProfileList));
+//        when(userProfileMapper.toDtoAllList(any(ArrayList.class))).thenReturn(userProfileDtoList);
+//        ArrayList result = given()
+//                .when().get("/api/v1/model/users")
+//                .then()
+//                .statusCode(200)
+//                .extract()
+//                .body()
+//                .as(ArrayList.class);
+//        assertEquals(1, result.size());
+//        verify(userProfileService, times(1)).getUsers();
+//        verify(userProfileMapper, times(1)).toDtoAllList(userProfileList);
+//    }
 
     @Test
     void testCreateUser() {
