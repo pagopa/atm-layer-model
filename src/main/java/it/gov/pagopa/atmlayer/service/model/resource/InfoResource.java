@@ -26,12 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 @Path("/info")
 @Tag(name = "Info", description = "Application info")
-@SecuritySchemes({
-        @SecurityScheme(securitySchemeName = "OAuth2",
-                type = SecuritySchemeType.OAUTH2,
-                flows = @OAuthFlows(implicit = @OAuthFlow(authorizationUrl = "example", refreshUrl = "example", scopes = {})))
-})
-@SecurityRequirement(name="OAuth2", scopes = {})
 public class InfoResource {
 
     private final Logger logger = LoggerFactory.getLogger(InfoResource.class);

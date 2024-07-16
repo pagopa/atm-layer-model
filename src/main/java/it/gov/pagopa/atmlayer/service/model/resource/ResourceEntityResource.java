@@ -49,13 +49,6 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @Path("/resources")
 @Tag(name = "RESOURCES", description = "RESOURCES operations")
 @Slf4j
-@SecuritySchemes({
-        @SecurityScheme(securitySchemeName = "OAuth2",
-                type = SecuritySchemeType.OAUTH2,
-                flows = @OAuthFlows(implicit = @OAuthFlow(authorizationUrl = "example", refreshUrl = "example", scopes = {}))
-        )
-})
-@SecurityRequirement(name="OAuth2", scopes = {})
 public class ResourceEntityResource {
 
     private final ResourceEntityMapper resourceEntityMapper;
@@ -77,8 +70,6 @@ public class ResourceEntityResource {
             description = "creazione file"
     )
     @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = ResourceDTO.class)))
-    @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
-    @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<ResourceDTO> createResource(
@@ -100,8 +91,6 @@ public class ResourceEntityResource {
             description = "aggiorna file"
     )
     @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = ResourceDTO.class)))
-    @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
-    @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<ResourceDTO> updateResource(@RequestBody(required = true) @FormParam("file") File file,
@@ -132,8 +121,6 @@ public class ResourceEntityResource {
             description = "cerca per Id"
     )
     @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = ResourceDTO.class)))
-    @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
-    @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<ResourceDTO> getById(@PathParam("uuid") UUID uuid) {
@@ -155,8 +142,6 @@ public class ResourceEntityResource {
             description = "filtra tra tutti i Resource file"
     )
     @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = PageInfo.class)))
-    @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
-    @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<PageInfo<ResourceFrontEndDTO>> getResourceFiltered(@QueryParam("pageIndex") @DefaultValue("0")
@@ -187,8 +172,6 @@ public class ResourceEntityResource {
             description = "disabilita file"
     )
     @APIResponse(responseCode= "204", description = "Ok")
-    @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
-    @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<Void> disable(@PathParam("uuid") UUID uuid) {
@@ -202,8 +185,6 @@ public class ResourceEntityResource {
             description = "elimina file"
     )
     @APIResponse(responseCode= "204", description = "Ok")
-    @APIResponse(responseCode = "401", description = "Unauthorized", content = @Content(example = "{\"type\":\"UNAUTHORIZED\", \"statusCode\":\"401\", \"message\":\"Richiesta non autorizzata\", \"errorCode\":\"ATMLM_401\"}" ))
-    @APIResponse(responseCode = "429", description = "Rate limit", content = @Content(example = "{\"type\":\"RATE_LIMIT\", \"statusCode\":\"429\", \"message\":\"Rate limit raggiunto; riprovare in seguito\", \"errorCode\":\"ATMLM_429\"}" ))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<Void> deleteResource(@PathParam("uuid") UUID uuid){
