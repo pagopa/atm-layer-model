@@ -416,7 +416,7 @@ public class BpmnResource {
     @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = BpmnBankConfigDTO.class)))
     @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
-    public @Schema(type = SchemaType.ARRAY, maxItems = 50000) Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId) {
+    public Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId) {
         return bpmnBankConfigService.findByAcquirerId(acquirerId);
     }
 

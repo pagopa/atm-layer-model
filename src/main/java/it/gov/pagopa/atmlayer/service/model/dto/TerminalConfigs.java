@@ -23,5 +23,5 @@ public class TerminalConfigs {
     private Long templateVersion;
 
    @Schema(type = SchemaType.ARRAY, maxItems = 10000)
-    private List<@NotNull @Size(max=20)String> terminalIds;
+    private List<String> terminalIds;
 }
