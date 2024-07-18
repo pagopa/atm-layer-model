@@ -21,8 +21,7 @@ class ResourceFileMapperImplTest {
 
     @Test
     void toDTOTest_null(){
-        ResourceFile resourceFile = null;
-        ResourceFileDTO resource = resourceFileMapper.toDTO(resourceFile);
+        ResourceFileDTO resource = resourceFileMapper.toDTO(null);
         assertNull(resource);
     }
 
@@ -45,8 +44,7 @@ class ResourceFileMapperImplTest {
 
     @Test
     void toEntity_null(){
-        ResourceFileDTO  resourceFile = null;
-        ResourceFile resource = resourceFileMapper.toEntity(resourceFile);
+        ResourceFile resource = resourceFileMapper.toEntity(null);
         assertNull(resource);
     }
 

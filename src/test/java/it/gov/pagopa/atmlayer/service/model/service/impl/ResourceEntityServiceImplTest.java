@@ -29,7 +29,7 @@ class ResourceEntityServiceImplTest {
     @Mock
     ResourceFileServiceImpl resourceFileService;
     @InjectMocks
-    private ResourceEntityServiceImpl resourceEntityService;
+    ResourceEntityServiceImpl resourceEntityService;
 
     @BeforeEach
     public void setUp() {

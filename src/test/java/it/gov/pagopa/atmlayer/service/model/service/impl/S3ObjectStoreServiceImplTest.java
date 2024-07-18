@@ -14,49 +14,44 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @QuarkusTest
-public class S3ObjectStoreServiceImplTest {
+class S3ObjectStoreServiceImplTest {
 
     @InjectMocks
     S3ObjectStoreServiceImpl s3ObjectStoreService;
-
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
-
     @Test
-    public void testUploadFile_invalidFilename() {
-         File file = new File("validFile.txt");
+    void testUploadFile_invalidFilename() {
+        File file = new File("validFile.txt");
         String path = "validPath";
         S3ResourceTypeEnum fileType = S3ResourceTypeEnum.BPMN;
         String invalidFilename = "";
 
         assertThrows(AtmLayerException.class, () -> s3ObjectStoreService.uploadFile(file, path, fileType, invalidFilename));
-
     }
 
     @Test
-    public void testUploadFile_invalidPath() {
+    void testUploadFile_invalidPath() {
         File file = new File("validFile.txt");
         String invalidPath = "";
         S3ResourceTypeEnum fileType = S3ResourceTypeEnum.BPMN;
         String filename = "filename";
 
         assertThrows(AtmLayerException.class, () -> s3ObjectStoreService.uploadFile(file, invalidPath, fileType, filename));
-
     }
 
     @Test
-    public void testUploadFile_invalidFile() {
+    void testUploadFile_invalidFile() {
         File invalidFile = null;
         String path = "validPath";
         S3ResourceTypeEnum fileType = S3ResourceTypeEnum.BPMN;
         String filename = "filename";
 
         assertThrows(AtmLayerException.class, () -> s3ObjectStoreService.uploadFile(invalidFile, path, fileType, filename));
-
     }
 
 }

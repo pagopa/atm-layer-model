@@ -22,6 +22,7 @@ import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -31,23 +32,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 class BpmnVersionServiceImplTest {
@@ -67,6 +57,59 @@ class BpmnVersionServiceImplTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testUndeployWithNonExistingUUID() {
+        UUID uuid = UUID.randomUUID();
+
+        when(bpmnVersionRepoMock.findAllById(uuid)).thenReturn(Uni.createFrom().item(List.of()));
+
+        AtmLayerException thrown = assertThrows(AtmLayerException.class, () -> {
+            bpmnVersionServiceImpl.undeploy(uuid).await().indefinitely();
+        });
+
+        assertEquals("Il file BPMN di riferimento non può essere undeployed", thrown.getMessage());
+        verify(bpmnVersionRepoMock, times(1)).findAllById(uuid);
+        verify(processClientMock, never()).undeploy(any(String.class));
+    }
+
+    @Test
+    void testUndeployExistingUUID() {
+        UUID uuid = UUID.randomUUID();
+        String validDeploymentId = UUID.randomUUID().toString();
+        BpmnVersion bpmnVersion = new BpmnVersion();
+        bpmnVersion.setDeploymentId(UUID.fromString(validDeploymentId));
+
+        when(bpmnVersionRepoMock.findAllById(uuid)).thenReturn(Uni.createFrom().item(List.of(bpmnVersion)));
+        when(processClientMock.undeploy(validDeploymentId)).thenReturn(Uni.createFrom().voidItem());
+
+        bpmnVersionServiceImpl.undeploy(uuid)
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted();
+
+        verify(bpmnVersionRepoMock, times(1)).findAllById(uuid);
+        verify(processClientMock, times(1)).undeploy(validDeploymentId);
+    }
+
+    @Test
+    void testUndeployErrorDuringProcessClient() {
+        UUID uuid = UUID.randomUUID();
+        String validDeploymentId = UUID.randomUUID().toString();
+        BpmnVersion bpmnVersion = new BpmnVersion();
+        bpmnVersion.setDeploymentId(UUID.fromString(validDeploymentId));
+
+        when(bpmnVersionRepoMock.findAllById(uuid)).thenReturn(Uni.createFrom().item(List.of(bpmnVersion)));
+        when(processClientMock.undeploy(validDeploymentId)).thenReturn(Uni.createFrom().failure(new RuntimeException("Errore nel processClient")));
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            bpmnVersionServiceImpl.undeploy(uuid).await().indefinitely();
+        });
+
+        assertEquals("Errore nel processClient", thrown.getMessage());
+
+        verify(bpmnVersionRepoMock, times(1)).findAllById(uuid);
+        verify(processClientMock, times(1)).undeploy(validDeploymentId);
     }
 
     @Test
@@ -263,16 +306,16 @@ class BpmnVersionServiceImplTest {
     }
 
     @Test
-    void testMethodsBpmnDoesNotExist(){
-        BpmnVersionPK bpmnVersionPK=new BpmnVersionPK(UUID.randomUUID(),new Random().nextLong());
+    void testMethodsBpmnDoesNotExist() {
+        BpmnVersionPK bpmnVersionPK = new BpmnVersionPK(UUID.randomUUID(), new Random().nextLong());
         String expectedErrorMessageSetDisabled = String.format("La chiave BPMN a cui si fa riferimento non esiste: %s", bpmnVersionPK);
         bpmnVersionServiceImpl.setDisabledBpmnAttributes(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,expectedErrorMessageSetDisabled);
-        String expectedErrorMessageCheckExistence=String.format("Uno o alcuni dei file BPMN a cui si fa riferimento non esistono: %s",bpmnVersionPK);
+                .assertFailedWith(AtmLayerException.class, expectedErrorMessageSetDisabled);
+        String expectedErrorMessageCheckExistence = String.format("Uno o alcuni dei file BPMN a cui si fa riferimento non esistono: %s", bpmnVersionPK);
         bpmnVersionServiceImpl.checkBpmnFileExistenceDeployable(bpmnVersionPK)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,expectedErrorMessageCheckExistence);
+                .assertFailedWith(AtmLayerException.class, expectedErrorMessageCheckExistence);
     }
 
     @Test
@@ -483,7 +526,7 @@ class BpmnVersionServiceImplTest {
     }
 
     @Test
-    void testDeployURLGenerationFailure() throws MalformedURLException {
+    void testDeployURLGenerationFailure() {
         BpmnVersionPK bpmnVersionPK = new BpmnVersionPK(UUID.randomUUID(), 1L);
         BpmnVersion bpmnVersion = new BpmnVersion();
         bpmnVersion.setStatus(StatusEnum.CREATED);
@@ -575,7 +618,7 @@ class BpmnVersionServiceImplTest {
         BpmnVersion bpmnVersion1 = new BpmnVersion();
         BpmnVersion bpmnVersion2 = new BpmnVersion();
         UUID uuid = UUID.randomUUID();
-        List<BpmnVersion> bpmnList = new ArrayList<BpmnVersion>();
+        List<BpmnVersion> bpmnList = new ArrayList<>();
         bpmnList.add(bpmnVersion1);
         bpmnList.add(bpmnVersion2);
         when(bpmnVersionRepoMock.findAllByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
@@ -609,7 +652,7 @@ class BpmnVersionServiceImplTest {
         bpmnVersion.setFunctionType("MENU");
         bpmnVersion.setDefinitionKey("demo11_06");
         bpmnVersion.setSha256("sha256");
-        List<BpmnVersion> bpmnList = new ArrayList<BpmnVersion>();
+        List<BpmnVersion> bpmnList = new ArrayList<>();
         bpmnList.add(bpmnVersion);
         bpmnVersion2.setModelVersion(2L);
         ResourceFile resourceFile = new ResourceFile();
@@ -637,7 +680,7 @@ class BpmnVersionServiceImplTest {
         BpmnVersion bpmnVersion = new BpmnVersion();
         bpmnVersion.setDefinitionKey("different key");
         bpmnVersion.setSha256("sha256");
-        List<BpmnVersion> bpmnList = new ArrayList<BpmnVersion>();
+        List<BpmnVersion> bpmnList = new ArrayList<>();
         bpmnList.add(bpmnVersion);
         when(bpmnVersionRepoMock.findAllByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
         bpmnVersionServiceImpl.upgrade(bpmnUpgradeDto)
@@ -658,7 +701,7 @@ class BpmnVersionServiceImplTest {
         BpmnVersion bpmnVersion = new BpmnVersion();
         bpmnVersion.setDefinitionKey("demo11_06");
         bpmnVersion.setSha256("sha256");
-        List<BpmnVersion> bpmnList = new ArrayList<BpmnVersion>();
+        List<BpmnVersion> bpmnList = new ArrayList<>();
         bpmnList.add(bpmnVersion);
         when(bpmnVersionRepoMock.findAllByIdAndFunction(any(UUID.class), any(String.class))).thenReturn(Uni.createFrom().item(bpmnList));
         when(bpmnVersionMapperMock.toEntityUpgrade(any(BpmnUpgradeDto.class), any(Long.class), any(String.class))).thenThrow(new RuntimeException());

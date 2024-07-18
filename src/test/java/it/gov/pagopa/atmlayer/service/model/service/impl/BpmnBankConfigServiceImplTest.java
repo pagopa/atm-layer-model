@@ -19,20 +19,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
 class BpmnBankConfigServiceImplTest {
     @InjectMocks
-    private BpmnBankConfigService bankConfigService;
+    BpmnBankConfigService bankConfigService;
     @Mock
-    private BpmnBankConfigRepository bankConfigRepository;
+    BpmnBankConfigRepository bankConfigRepository;
     @Mock
-    private BpmnConfigMapperImpl bpmnConfigMapper;
+    BpmnConfigMapperImpl bpmnConfigMapper;
 
     @BeforeEach
     public void setUp() {
@@ -107,7 +105,7 @@ class BpmnBankConfigServiceImplTest {
     }
 
     @Test
-    void testFindByAcquirerIdOK(){
+    void testFindByAcquirerIdOK() {
         List<BpmnBankConfig> expectedList = new ArrayList<>();
         expectedList.add(new BpmnBankConfig());
         when(bankConfigRepository.findByAcquirerId(any(String.class))).thenReturn(Uni.createFrom().item(expectedList));
@@ -118,12 +116,12 @@ class BpmnBankConfigServiceImplTest {
     }
 
     @Test
-    void testfindByAcquirerIdEmptyList(){
+    void testfindByAcquirerIdEmptyList() {
         List<BpmnBankConfig> expectedList = new ArrayList<>();
         when(bankConfigRepository.findByAcquirerId(any(String.class))).thenReturn(Uni.createFrom().item(expectedList));
         bankConfigService.findByAcquirerId("acquirer")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class,"Nessuna configurazione BPMN trovata per questa banca");
+                .assertFailedWith(AtmLayerException.class, "Nessuna configurazione BPMN trovata per questa banca");
     }
 
 

@@ -10,8 +10,6 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.*;
 @Getter
 public enum AppErrorCodeEnum {
     ATMLM_500("ATMLM_500", "Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni", GENERIC),
-    ATMLM_401("ATMLM_401", "Richiesta non autorizzata", UNAUTHORIZED),
-    ATMLM_429("ATMLM_429", "Rate limit raggiunto; riprovare in seguito", RATE_LIMIT),
     BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST("ATMLM_4000001", "Una risorsa di processo con lo stesso contenuto esiste già", CONSTRAINT_VIOLATION),
     BPMN_FILE_DOES_NOT_EXIST("ATMLM_4000002", "La risorsa di processo indicata non esiste", NOT_EXISTING_REFERENCED_ENTITY),
     BPMN_FILE_NOT_DEPLOYED("ATMLM_4000003", "La risorsa di processo indicata non è stata rilasciata", NOT_DEPLOYED_STATUS),
@@ -62,7 +60,16 @@ public enum AppErrorCodeEnum {
     CONFIGURATION_TRIPLET_NOT_ASSOCIATED("ATMLM_4000049", "La banca/filiale/terminale indicata non ha associazioni per il tipo di funzione indicato. Creare un'associazione prima di sostituirla", CANNOT_REPLACE_ASSOCIATION),
     WORKFLOW_RESOURCE_INTERNAL_ERROR("ATMLM_4000050", "Nessun file associato alla risorsa aggiuntiva di processo o nessuna storageKey trovata", INTERNAL),
     BPMN_INTERNAL_ERROR("ATMLM_4000051", "Nessun file associato a BPMN o nessuna storageKey trovata", INTERNAL),
-    BPMN_FILE_CANNOT_BE_UNDEPLOYED("ATMLM_4000052", "La risorsa di processo indicata non può essere rilasciata", INTERNAL) ;
+    BPMN_FILE_CANNOT_BE_UNDEPLOYED("ATMLM_4000052", "La risorsa di processo indicata non può essere rilasciata", INTERNAL),
+    USER_WITH_SAME_ID_ALREADY_EXIST("ATMLM_4000053", "Un utente con lo stesso id esiste già", CONSTRAINT_VIOLATION),
+    USER_PROFILE_ALREADY_EXIST("ATMLM_4000054", "Profilo già associato all'utente", CONSTRAINT_VIOLATION),
+    NO_USER_PROFILE_FOUND("ATMLM_4000055", "Nessun user profile trovato", CONSTRAINT_VIOLATION),
+    NO_USER_FOUND_FOR_ID("ATMLM_4000056", "Nessun utente trovato per l'id selezionato", NOT_EXISTING_USER_ID),
+    PROFILE_ALREADY_EXIST("ATMLM_4000057", "Esiste già un profilo con lo stesso id", CONSTRAINT_VIOLATION),
+    PROFILE_NOT_FOUND("ATMLM_4000058", "Non esiste un profilo con l'id indicato", CONSTRAINT_VIOLATION),
+    PROFILE_OR_USER_NOT_FOUND("ATMLM_4000059","Utente o profilo non trovato", CONSTRAINT_VIOLATION),
+    NO_ASSOCIATION_FOUND("ATMLM_4000060","Nessuna associazione trovata", CONSTRAINT_VIOLATION),
+    ALL_FIELDS_ARE_BLANK("ATMLM_4000061", "Tutti i campi sono vuoti", AppErrorType.BLANK_FIELDS);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;
