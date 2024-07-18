@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 91.81%               |
-| :heavy_check_mark: Number of Lines Covered | 2220    |
-| :x: Number of Lines Missed  | 198     |
-| Total Number of Lines   | 2418     |
+| Code Coverage %         | 91.78%               |
+| :heavy_check_mark: Number of Lines Covered | 2223    |
+| :x: Number of Lines Missed  | 199     |
+| Total Number of Lines   | 2422     |
 
 
 ## Details:
@@ -377,15 +377,15 @@
         
 #### Lines Missed:
         
-- Line #75
+- Line #78
 ```
                 .transformToUni(session ->
 ```
-- Line #77
+- Line #80
 ```
-                                .setParameter("bpmnId", uuid)
+                                .setParameter(BPMN_ID, uuid)
 ```
-- Line #78
+- Line #81
 ```
                                 .getResultList());
 ```
@@ -638,11 +638,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityServiceImpl.java
+:x: ResourceEntityServiceImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -668,15 +668,19 @@
         
 #### Lines Missed:
         
-- Line #98
+- Line #94
 ```
                                 .recoverWithUni(failure -> {
 ```
-- Line #284
+- Line #158
+```
+                .transformToUni(bpmnVersion -> {
+```
+- Line #255
 ```
                                                         .recoverWithUni(failure -> {
 ```
-- Line #425
+- Line #396
 ```
                 .transformToUni(exists -> {
 ```
@@ -716,7 +720,7 @@
         
 #### Lines Missed:
         
-- Line #130
+- Line #134
 ```
         } catch (Exception e) {
 ```

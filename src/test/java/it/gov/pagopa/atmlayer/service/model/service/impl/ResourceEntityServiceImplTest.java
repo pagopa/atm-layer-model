@@ -36,6 +36,7 @@ class ResourceEntityServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
+
     @Test
     void uploadFailure() {
         File file = new File("src/test/resources/Test.bpmn");

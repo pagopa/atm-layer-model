@@ -34,19 +34,20 @@ import static it.gov.pagopa.atmlayer.service.model.utils.EnumConverter.convertEn
 @ApplicationScoped
 @Slf4j
 public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageService {
-    @Inject
-    ObjectStoreStrategy objectStoreStrategy;
+    private final ObjectStoreStrategy objectStoreStrategy;
     private final ObjectStoreService objectStoreService;
-    @Inject
-    ObjectStoreProperties objectStoreProperties;
-    @Inject
-    ResourceFileService resourceFileService;
+    private final ObjectStoreProperties objectStoreProperties;
+    private final ResourceFileService resourceFileService;
 
+    @Inject
     public ResourceEntityStorageServiceImpl(ObjectStoreStrategy objectStoreStrategy,
-                                            ObjectStoreProperties objectStoreProperties) {
+                                            ObjectStoreProperties objectStoreProperties,
+                                            ResourceFileService resourceFileService) {
         this.objectStoreStrategy = objectStoreStrategy;
         this.objectStoreService = objectStoreStrategy.getType(
                 ObjectStoreStrategyEnum.fromValue(objectStoreProperties.type()));
+        this.objectStoreProperties = objectStoreProperties;
+        this.resourceFileService = resourceFileService;
     }
 
     @Override
@@ -69,7 +70,6 @@ public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageSe
     @Override
     public Uni<ResourceFile> saveFile(ResourceEntity resourceEntity, File file, String fileNameWithExtension, String relativePath) {
         String finalPath = calculateCompletePath(resourceEntity.getNoDeployableResourceType(),relativePath);
-        log.info("Requesting to write file {} in Object Store at path {}", file.getName(), finalPath);
         return uploadFile(file, resourceEntity, fileNameWithExtension, finalPath, true);
     }
 

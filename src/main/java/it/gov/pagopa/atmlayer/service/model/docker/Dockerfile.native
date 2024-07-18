@@ -1,5 +1,5 @@
 # Stage 1: Set up environment for POI
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9 as POI
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9 AS POI
 RUN microdnf update && microdnf install -y freetype fontconfig && microdnf clean all
 # Stage 2: BUILD
 FROM quay.io/quarkus/ubi-quarkus-graalvmce-builder-image:jdk-21 AS build

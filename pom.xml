@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>it.gov.pagopa</groupId>
     <artifactId>atm-layer-model</artifactId>
-    <version>1.6.0-dev.30</version>
+    <version>1.19.0-dev.2</version>
     <name>atm-layer-model</name>
     <properties>
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
@@ -28,6 +28,9 @@
         <easy.random.version>5.0.0</easy.random.version>
         <commons-io.version>2.15.0</commons-io.version>
         <quarkus-tika.version>2.0.3</quarkus-tika.version>
+        <sonarsource.scanner.version>3.11.0.3922</sonarsource.scanner.version>
+
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -217,6 +220,12 @@
             <artifactId>easy-random-core</artifactId>
             <version>${easy.random.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>${sonarsource.scanner.version}</version>
         </dependency>
 
     </dependencies>

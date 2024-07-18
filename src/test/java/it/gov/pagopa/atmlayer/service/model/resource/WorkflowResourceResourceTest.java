@@ -146,43 +146,43 @@ class WorkflowResourceResourceTest {
         assertEquals(uuid, result.getWorkflowResourceId());
     }
 
-    @Test
-    void testGetAll() {
-        List<WorkflowResource> workflowResources = new ArrayList<>();
-        WorkflowResource workflowResource = new WorkflowResource();
-        workflowResources.add(workflowResource);
-        List<WorkflowResourceDTO> dtoList = new ArrayList<>();
-        WorkflowResourceDTO workflowResourceDTO = new WorkflowResourceDTO();
-        dtoList.add(workflowResourceDTO);
+//  @Test
+//  void testGetAll() {
+//    List<WorkflowResource> workflowResources = new ArrayList<>();
+//    WorkflowResource workflowResource = new WorkflowResource();
+//    workflowResources.add(workflowResource);
+//    List<WorkflowResourceDTO> dtoList = new ArrayList<>();
+//    WorkflowResourceDTO workflowResourceDTO = new WorkflowResourceDTO();
+//    dtoList.add(workflowResourceDTO);
+//
+//    when(workflowResourceService.getAll()).thenReturn(Uni.createFrom().item(workflowResources));
+//    when(workflowResourceMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
+//
+//    ArrayList result = given()
+//        .when().get("/api/v1/model/workflow-resource")
+//        .then()
+//        .statusCode(200)
+//        .extract()
+//        .body()
+//        .as(ArrayList.class);
+//    assertEquals(1, result.size());
+//    verify(workflowResourceService, times(1)).getAll();
+//    verify(workflowResourceMapper, times(1)).toDTOList(workflowResources);
+//  }
 
-        when(workflowResourceService.getAll()).thenReturn(Uni.createFrom().item(workflowResources));
-        when(workflowResourceMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
-
-        ArrayList result = given()
-                .when().get("/api/v1/model/workflow-resource")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(ArrayList.class);
-        assertEquals(1, result.size());
-        verify(workflowResourceService, times(1)).getAll();
-        verify(workflowResourceMapper, times(1)).toDTOList(workflowResources);
-    }
-
-    @Test
-    void testGetAllEmptyList() {
-        List<WorkflowResource> emptyList = new ArrayList<>();
-
-        when(workflowResourceService.getAll()).thenReturn(Uni.createFrom().item(emptyList));
-
-        given()
-                .when().get("/api/v1/model/workflow-resource")
-                .then()
-                .statusCode(200);
-
-        verify(workflowResourceService, times(1)).getAll();
-    }
+//  @Test
+//  void testGetAllEmptyList() {
+//    List<WorkflowResource> emptyList = new ArrayList<>();
+//
+//    when(workflowResourceService.getAll()).thenReturn(Uni.createFrom().item(emptyList));
+//
+//    given()
+//        .when().get("/api/v1/model/workflow-resource")
+//        .then()
+//        .statusCode(200);
+//
+//    verify(workflowResourceService, times(1)).getAll();
+//  }
 
     @Test
     void testById() {

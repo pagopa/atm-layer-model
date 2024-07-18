@@ -15,6 +15,7 @@ import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceFileMapper;
 import it.gov.pagopa.atmlayer.service.model.mapper.WorkflowResourceMapper;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
+import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.model.WorkflowResourceFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.service.WorkflowResourceService;
@@ -22,14 +23,35 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.*;
+import jakarta.validation.constraints.Size;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import org.eclipse.microprofile.openapi.annotations.security.SecuritySchemes;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.File;
@@ -45,48 +67,58 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @Tag(name = "Workflow Resource", description = "Workflow Resource Operations")
 @Slf4j
 public class WorkflowResourceResource {
-    @Inject
-    WorkflowResourceService workflowResourceService;
-    @Inject
-    WorkflowResourceMapper workflowResourceMapper;
-    @Inject
-    ResourceFileMapper resourceFileMapper;
-    @Inject
-    Tracer tracer;
+    private final WorkflowResourceService workflowResourceService;
+    private final WorkflowResourceMapper workflowResourceMapper;
+    private final Tracer tracer;
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<WorkflowResourceDTO>> getAll() {
-        return this.workflowResourceService.getAll()
-                .onItem()
-                .transform(Unchecked.function(list -> {
-                    if (list.isEmpty()) {
-                        log.info("No Workflow Resource files saved in database");
-                    }
-                    return workflowResourceMapper.toDTOList(list);
-                }));
+    @Inject
+    public WorkflowResourceResource(WorkflowResourceService workflowResourceService, WorkflowResourceMapper workflowResourceMapper,
+                            Tracer tracer){
+        this.workflowResourceService = workflowResourceService;
+        this.workflowResourceMapper = workflowResourceMapper;
+        this.tracer = tracer;
     }
+
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Uni<List<WorkflowResourceDTO>> getAll() {
+//        return this.workflowResourceService.getAll()
+//                .onItem()
+//                .transform(Unchecked.function(list -> {
+//                    if (list.isEmpty()) {
+//                        log.info("No Workflow Resource files saved in database");
+//                    }
+//                    return workflowResourceMapper.toDTOList(list);
+//                }));
+//    }
 
     @GET
     @Path("/filter")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            operationId = "getAllFiltered",
+            description = "filtra tra tutti i Workflow Resource file"
+    )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = PageInfo.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<PageInfo<WorkflowResourceFrontEndDTO>> getAllFiltered(@QueryParam("pageIndex") @DefaultValue("0")
-                                                                     @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "0")) Integer page,
+                                                                     @Parameter(required = true, schema = @Schema(minimum = "1", maximum = "10000")) Integer page,
                                                                      @QueryParam("pageSize") @DefaultValue("10")
-                                                                     @Parameter(required = true, schema = @Schema(type = SchemaType.INTEGER, minimum = "1")) Integer size,
+                                                                     @Parameter(required = true, schema = @Schema(minimum = "1", maximum = "100")) Integer size,
                                                                      @QueryParam("status")
                                                                      @Schema(implementation = String.class, type = SchemaType.STRING, enumeration = {"CREATED", "WAITING_DEPLOY", "UPDATED_BUT_NOT_DEPLOYED", "DEPLOYED", "DEPLOY_ERROR"}) StatusEnum status,
                                                                      @QueryParam("workflowResourceId") UUID workflowResourceId,
-                                                                     @QueryParam("deployedFileName") String deployedFileName,
-                                                                     @QueryParam("definitionKey") String definitionKey,
+                                                                     @QueryParam("deployedFileName") @Schema(format = "byte", maxLength = 255) String deployedFileName,
+                                                                     @QueryParam("definitionKey") @Schema(format = "byte", maxLength = 255) String definitionKey,
                                                                      @QueryParam("resourceType") DeployableResourceType resourceType,
-                                                                     @QueryParam("sha256") String sha256,
-                                                                     @QueryParam("definitionVersionCamunda") String definitionVersionCamunda,
-                                                                     @QueryParam("camundaDefinitionId") String camundaDefinitionId,
-                                                                     @QueryParam("description") String description,
-                                                                     @QueryParam("resource") String resource,
+                                                                     @QueryParam("sha256") @Schema(format = "byte", maxLength = 255) String sha256,
+                                                                     @QueryParam("definitionVersionCamunda") @Schema(format = "byte", maxLength = 5) String definitionVersionCamunda,
+                                                                     @QueryParam("camundaDefinitionId") @Schema(format = "byte", maxLength = 255) String camundaDefinitionId,
+                                                                     @QueryParam("description") @Schema(format = "byte", maxLength = 255) String description,
+                                                                     @QueryParam("resource") @Schema(format = "byte", maxLength = 255) String resource,
                                                                      @QueryParam("deploymentId") UUID deploymentId,
-                                                                     @QueryParam("fileName") String fileName) {
+                                                                     @QueryParam("fileName") @Schema(format = "byte", maxLength = 255) String fileName) {
         return this.workflowResourceService.getAllFiltered(page, size, status, workflowResourceId, deployedFileName, definitionKey, resourceType, sha256, definitionVersionCamunda, camundaDefinitionId, description, resource, deploymentId, fileName)
                 .onItem()
                 .transform(Unchecked.function(pagedList -> {
@@ -100,6 +132,13 @@ public class WorkflowResourceResource {
     @GET
     @Path("/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            operationId = "getById",
+            description = "cerca per Id"
+    )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = WorkflowResourceDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<WorkflowResourceDTO> getById(@PathParam("uuid") UUID id) {
         return this.workflowResourceService.findById(id)
                 .onItem()
@@ -115,6 +154,13 @@ public class WorkflowResourceResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @NonBlocking
+    @Operation(
+            operationId = "create",
+            description = "creazione file"
+    )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = WorkflowResourceDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<WorkflowResourceDTO> create(@RequestBody(required = true) @Valid WorkflowResourceCreationDto workflowResourceCreationDto) throws NoSuchAlgorithmException, IOException {
         WorkflowResource workflowResource = workflowResourceMapper.toEntityCreation(workflowResourceCreationDto);
         return this.workflowResourceService.createWorkflowResource(workflowResource, workflowResourceCreationDto.getFile(), workflowResourceCreationDto.getFilename())
@@ -124,6 +170,13 @@ public class WorkflowResourceResource {
     @POST
     @Path("/deploy/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            operationId = "deploy",
+            description = "rilascia file"
+    )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = WorkflowResourceDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<WorkflowResourceDTO> deploy(@PathParam("uuid") UUID uuid) {
         return this.workflowResourceService.findById(uuid)
                 .onItem()
@@ -133,6 +186,13 @@ public class WorkflowResourceResource {
 
     @POST
     @Path("/disable/{uuid}")
+    @Operation(
+            operationId = "disable",
+            description = "disabilita file"
+    )
+    @APIResponse(responseCode= "204", description = "Ok")
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<Void> disable(@PathParam("uuid") UUID uuid) {
         return this.workflowResourceService.disable(uuid);
     }
@@ -141,6 +201,13 @@ public class WorkflowResourceResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{uuid}")
+    @Operation(
+            operationId = "delete",
+            description = "elimina file"
+    )
+    @APIResponse(responseCode= "204", description = "Ok")
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<Void> delete(@PathParam("uuid") UUID uuid) {
         return this.workflowResourceService.delete(uuid)
                 .onItem().ignore().andSwitchTo(Uni.createFrom().voidItem());
@@ -150,6 +217,13 @@ public class WorkflowResourceResource {
     @Path("/update/{uuid}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            operationId = "update",
+            description = "aggiorna file"
+    )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = WorkflowResourceDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<WorkflowResourceDTO> update(@RequestBody(required = true) @FormParam("file") @NotNull(message = "input file is required") File file,
                                            @PathParam("uuid") UUID uuid) throws NoSuchAlgorithmException, IOException {
         return workflowResourceService.update(uuid, file, false)
@@ -160,6 +234,13 @@ public class WorkflowResourceResource {
     @PUT
     @Path("/rollback/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            operationId = "rollback",
+            description = "Rollback"
+    )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = WorkflowResourceDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<WorkflowResourceDTO> rollback(@PathParam("uuid") UUID uuid) {
         return workflowResourceService.rollback(uuid)
                 .onItem()
@@ -169,6 +250,13 @@ public class WorkflowResourceResource {
     @GET
     @Path("/download/{uuid}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Operation(
+            operationId = "download",
+            description = "Scarica file"
+    )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = Buffer.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Multi<Buffer> download(@PathParam("uuid") UUID uuid) {
         return this.workflowResourceService.download(uuid);
     }
@@ -176,6 +264,13 @@ public class WorkflowResourceResource {
     @GET
     @Path("/downloadFrontEnd/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            operationId = "downloadFrontEnd",
+            description = "Scarica file front-end"
+    )
+    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = FileS3Dto.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
     public Uni<FileS3Dto> downloadFrontEnd(@PathParam("uuid") UUID uuid) {
         return this.workflowResourceService.downloadForFrontEnd(uuid)
                 .onItem().transform(FileS3Dto::new);

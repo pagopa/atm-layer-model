@@ -41,14 +41,18 @@ import java.util.Objects;
 @Slf4j
 public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
 
-    @Inject
-    S3AsyncClient s3;
+    private final S3AsyncClient s3;
+
+    private final FileStorageS3Utils fileStorageS3Utils;
+
+    private final S3Presigner presigner;
 
     @Inject
-    FileStorageS3Utils fileStorageS3Utils;
-
-    @Inject
-    S3Presigner presigner;
+    public S3ObjectStoreServiceImpl(S3AsyncClient s3, FileStorageS3Utils fileStorageS3Utils, S3Presigner presigner){
+        this.s3 = s3;
+        this.fileStorageS3Utils = fileStorageS3Utils;
+        this.presigner = presigner;
+    }
 
     @Override
     public ObjectStoreStrategyEnum getType() {
