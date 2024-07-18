@@ -10,8 +10,6 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType.*;
 @Getter
 public enum AppErrorCodeEnum {
     ATMLM_500("ATMLM_500", "Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni", GENERIC),
-    ATMLM_401("ATMLM_401", "Richiesta non autorizzata", UNAUTHORIZED),
-    ATMLM_429("ATMLM_429", "Rate limit raggiunto; riprovare in seguito", RATE_LIMIT),
     BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST("ATMLM_4000001", "Una risorsa di processo con lo stesso contenuto esiste già", CONSTRAINT_VIOLATION),
     BPMN_FILE_DOES_NOT_EXIST("ATMLM_4000002", "La risorsa di processo indicata non esiste", NOT_EXISTING_REFERENCED_ENTITY),
     BPMN_FILE_NOT_DEPLOYED("ATMLM_4000003", "La risorsa di processo indicata non è stata rilasciata", NOT_DEPLOYED_STATUS),

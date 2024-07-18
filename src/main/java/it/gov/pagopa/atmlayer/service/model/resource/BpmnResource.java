@@ -34,17 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
-import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
-import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
-import org.eclipse.microprofile.openapi.annotations.security.SecuritySchemes;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.io.IOException;
@@ -72,7 +66,7 @@ public class BpmnResource {
     @Inject
     public BpmnResource(BpmnVersionService bpmnVersionService, BpmnBankConfigService bpmnBankConfigService,
                         BpmnEntityValidator bpmnEntityValidator, BpmnFileStorageService bpmnFileStorageService,
-                        BpmnVersionMapper bpmnVersionMapper, BpmnConfigMapper bpmnConfigMapper, Tracer tracer){
+                        BpmnVersionMapper bpmnVersionMapper, BpmnConfigMapper bpmnConfigMapper, Tracer tracer) {
         this.bpmnVersionService = bpmnVersionService;
         this.bpmnBankConfigService = bpmnBankConfigService;
         this.bpmnEntityValidator = bpmnEntityValidator;
@@ -103,11 +97,11 @@ public class BpmnResource {
             operationId = "getEncodedFile",
             description = "Recupera il file BPMN codificato"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnDTO.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<BpmnDTO> getEncodedFile(@PathParam("bpmnId") UUID bpmnId,
-                                       @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
+                                       @PathParam("version") @Schema(minimum = "1", maximum = "10000") Long version) {
         BpmnVersionPK key = BpmnVersionPK.builder()
                 .bpmnId(bpmnId)
                 .modelVersion(version)
@@ -130,8 +124,8 @@ public class BpmnResource {
             operationId = "associateBPMN",
             description = "Associa BPMN a un acquirer specifico"
     )
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public @Schema(maxItems = 50000) Uni<Collection<BpmnBankConfigDTO>> associateBPMN(
             @PathParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId,
             @PathParam("functionType") @Schema(format = "byte", maxLength = 255) String functionType,
@@ -155,9 +149,9 @@ public class BpmnResource {
             operationId = "createBPMN",
             description = "Crea un nuovo BPMN"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnDTO.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<BpmnDTO> createBPMN(
             @RequestBody(required = true) @Valid BpmnCreationDto bpmnCreationDto)
             throws NoSuchAlgorithmException, IOException {
@@ -176,11 +170,11 @@ public class BpmnResource {
             operationId = "deleteBpmn",
             description = "Elimina BPMN"
     )
-    @APIResponse(responseCode= "204", description = "Ok")
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "204", description = "Ok")
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<Void> deleteBpmn(@PathParam("bpmnId") UUID bpmnId,
-                                @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
+                                @PathParam("version") @Schema(minimum = "1", maximum = "10000") Long version) {
         return this.bpmnVersionService.delete(new BpmnVersionPK(bpmnId, version))
                 .onItem()
                 .ignore()
@@ -194,11 +188,11 @@ public class BpmnResource {
             operationId = "deployBpmn",
             description = "Rilascio BPMN"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnDTO.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<BpmnDTO> deployBPMN(@PathParam("uuid") UUID uuid,
-                                   @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
+                                   @PathParam("version") @Schema(minimum = "1", maximum = "10000") Long version) {
         return this.bpmnVersionService.deploy(new BpmnVersionPK(uuid, version))
                 .onItem()
                 .transformToUni(bpmn -> Uni.createFrom().item(this.bpmnVersionMapper.toDTO(bpmn)));
@@ -211,9 +205,9 @@ public class BpmnResource {
             operationId = "undeployBpmn",
             description = "Disattiva il rilascio di un file BPMN specifico"
     )
-    @APIResponse(responseCode= "204", description = "Ok")
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "204", description = "Ok")
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<Void> undeployBPMN(@PathParam("uuid") UUID uuid) {
         return this.bpmnVersionService.undeploy(uuid)
                 .onItem()
@@ -227,11 +221,11 @@ public class BpmnResource {
             operationId = "downloadBpmn",
             description = "Scarica file BPMN"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = Buffer.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = Buffer.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Multi<Buffer> downloadBpmn(@PathParam("uuid") UUID bpmnId,
-                                      @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
+                                      @PathParam("version") @Schema(minimum = "1", maximum = "10000") Long version) {
         BpmnVersionPK key = BpmnVersionPK.builder()
                 .bpmnId(bpmnId)
                 .modelVersion(version)
@@ -262,11 +256,11 @@ public class BpmnResource {
             operationId = "downloadBpmnFrontEnd",
             description = "Scarica il file BPMN dal front-end"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = FileS3Dto.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = FileS3Dto.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<FileS3Dto> downloadBpmnFrontEnd(@PathParam("uuid") UUID bpmnId,
-                                               @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
+                                               @PathParam("version") @Schema(minimum = "1", maximum = "10000") Long version) {
         BpmnVersionPK key = BpmnVersionPK.builder()
                 .bpmnId(bpmnId)
                 .modelVersion(version)
@@ -297,9 +291,9 @@ public class BpmnResource {
             operationId = "findBPMNByTriad",
             description = "Cerca file BPMN per tripletta: acquirerId, branchId e terminalId"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnDTO.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<BpmnDTO> findBPMNByTriad(@PathParam("functionType") @Schema(format = "byte", maxLength = 255) String functionType,
                                         @PathParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId,
                                         @PathParam("branchId") @Schema(format = "byte", maxLength = 255) String branchId,
@@ -354,9 +348,9 @@ public class BpmnResource {
             operationId = "findBPMNByTriadForProcessService",
             description = "Cerca file BPMN per tripletta acquirerId, branchId e terminalId per Process Service"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnProcessDTO.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnProcessDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<BpmnProcessDTO> findBPMNByTriadForProcessService(
             @PathParam("functionType") @Schema(format = "byte", maxLength = 255) String functionType,
             @PathParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId,
@@ -375,9 +369,9 @@ public class BpmnResource {
             operationId = "upgradeBPMN",
             description = "Aggiorna il file BPMN aumentando la versione"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnDTO.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<BpmnDTO> upgradeBPMN(@Valid BpmnUpgradeDto bpmnUpgradeDto) {
         bpmnUpgradeDto.setFunctionType(bpmnUpgradeDto.getFunctionType().toUpperCase());
         return bpmnVersionService.upgrade(bpmnUpgradeDto);
@@ -391,8 +385,8 @@ public class BpmnResource {
             description = "cerca associazioni di un acquirerId"
     )
     @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = BpmnBankConfigDTO.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<List<BpmnBankConfigDTO>> getAssociations(@PathParam("acquirerId") @Schema(format = "byte", maxLength = 255) String acquirerId) {
         return bpmnBankConfigService.findByAcquirerId(acquirerId);
     }
@@ -403,10 +397,10 @@ public class BpmnResource {
             operationId = "disableBPMN",
             description = "disabilita un file BPMN"
     )
-    @APIResponse(responseCode= "204", description = "Ok")
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
-    public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version) {
+    @APIResponse(responseCode = "204", description = "Ok")
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
+    public Uni<Void> disableBPMN(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum = "1", maximum = "10000") Long version) {
         BpmnVersionPK bpmnVersionPK = new BpmnVersionPK(bpmnId, version);
         return bpmnVersionService.disable(bpmnVersionPK);
     }
@@ -418,13 +412,13 @@ public class BpmnResource {
             operationId = "getBpmnFiltered",
             description = "cerca BPMN mettendo dei filtri"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = PageInfo.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = PageInfo.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
     public Uni<PageInfo<BpmnFrontEndDTO>> getBpmnFiltered(@QueryParam("pageIndex") @DefaultValue("0")
                                                           @Parameter(required = true, schema = @Schema(minimum = "0", maximum = "10000")) int pageIndex,
                                                           @QueryParam("pageSize") @DefaultValue("10")
-                                                          @Parameter(required = true, schema = @Schema(minimum = "1", maximum="100")) int pageSize,
+                                                          @Parameter(required = true, schema = @Schema(minimum = "1", maximum = "100")) int pageSize,
                                                           @QueryParam("functionType") @Schema(format = "byte", maxLength = 255) String functionType,
                                                           @QueryParam("modelVersion") @Schema(format = "byte", maxLength = 5) String modelVersion,
                                                           @QueryParam("definitionVersionCamunda") @Schema(format = "byte", maxLength = 5) String definitionVersionCamunda,
@@ -458,10 +452,10 @@ public class BpmnResource {
             operationId = "getAssociationsByBpmn",
             description = "cerca associazioni di un BPMN"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = PageInfo.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
-    public Uni<PageInfo<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = PageInfo.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
+    public Uni<PageInfo<BpmnBankConfigDTO>> getAssociationsByBpmn(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum = "1", maximum = "10000") Long version,
                                                                   @QueryParam("pageIndex") @DefaultValue("0") @Schema(minimum = "0", maximum = "10000") int pageIndex,
                                                                   @QueryParam("pageSize") @DefaultValue("10") @Schema(minimum = "1", maximum = "100") int pageSize) {
         return bpmnBankConfigService.findByBpmnPKPaged(new BpmnVersionPK(bpmnId, version), pageIndex, pageSize)
@@ -482,10 +476,10 @@ public class BpmnResource {
             operationId = "addSingleAssociation",
             description = "aggiungi una singola associazione"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnBankConfigDTO.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
-    public Uni<BpmnBankConfigDTO> addSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnBankConfigDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
+    public Uni<BpmnBankConfigDTO> addSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum = "1", maximum = "10000") Long version,
                                                        @RequestBody(required = true) BankConfigTripletDto bankConfigTripletDto) {
         validateBankConfigTriplet(bankConfigTripletDto);
         return bpmnVersionService.addSingleAssociation(new BpmnVersionPK(bpmnId, version), bankConfigTripletDto)
@@ -498,10 +492,10 @@ public class BpmnResource {
             operationId = "deleteSingleAssociation",
             description = "elimina una singola associazione"
     )
-    @APIResponse(responseCode= "204", description = "Ok")
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
-    public Uni<Void> deleteSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
+    @APIResponse(responseCode = "204", description = "Ok")
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
+    public Uni<Void> deleteSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum = "1", maximum = "10000") Long version,
                                              @QueryParam("acquirerId") @NotEmpty @Schema(format = "byte", maxLength = 255) String acquirerId,
                                              @QueryParam("branchId") @Schema(format = "byte", maxLength = 255) String branchId,
                                              @QueryParam("terminalId") @Schema(format = "byte", maxLength = 255) String terminalId) {
@@ -518,10 +512,10 @@ public class BpmnResource {
             operationId = "replaceSingleAssociation",
             description = "sostituisci una singola associazione"
     )
-    @APIResponse(responseCode= "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnBankConfigDTO.class)))
-    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}" ))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}" ))
-    public Uni<BpmnBankConfigDTO> replaceSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum="1", maximum="10000") Long version,
+    @APIResponse(responseCode = "200", description = "Ok", content = @Content(schema = @Schema(implementation = BpmnBankConfigDTO.class)))
+    @APIResponse(responseCode = "4XX", description = "Bad Request", content = @Content(example = "{\"type\":\"BAD_REQUEST\", \"statusCode\":\"4XX\", \"message\":\"Messaggio di errore\", \"errorCode\":\"ATMLM_4000XXX\"}"))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(example = "{\"type\":\"GENERIC\", \"statusCode\":\"500\", \"message\":\"Si è verificato un errore imprevisto, vedere i log per ulteriori informazioni\", \"errorCode\":\"ATMLM_500\"}"))
+    public Uni<BpmnBankConfigDTO> replaceSingleAssociation(@PathParam("uuid") UUID bpmnId, @PathParam("version") @Schema(minimum = "1", maximum = "10000") Long version,
                                                            @RequestBody(required = true) BankConfigTripletDto bankConfigTripletDto) {
         validateBankConfigTriplet(bankConfigTripletDto);
         return bpmnVersionService.replaceSingleAssociation(new BpmnVersionPK(bpmnId, version), bankConfigTripletDto)
