@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 91.78%               |
-| :heavy_check_mark: Number of Lines Covered | 2223    |
-| :x: Number of Lines Missed  | 199     |
-| Total Number of Lines   | 2422     |
+| Code Coverage %         | 92.58%               |
+| :heavy_check_mark: Number of Lines Covered | 2472    |
+| :x: Number of Lines Missed  | 198     |
+| Total Number of Lines   | 2670     |
 
 
 ## Details:
@@ -51,67 +51,6 @@
 </details>
 
     
-### it/gov/pagopa/atmlayer/service/model/resource
-
-<details>
-    <summary>
-:heavy_check_mark: InfoResource.java
-    </summary>
-
-        
-#### All Lines Covered!
-        
-</details>
-
-    
-
-<details>
-    <summary>
-:x: WorkflowResourceResource.java
-    </summary>
-
-        
-#### Lines Missed:
-        
-</details>
-
-    
-
-<details>
-    <summary>
-:x: ResourceEntityResource.java
-    </summary>
-
-        
-#### Lines Missed:
-        
-</details>
-
-    
-
-<details>
-    <summary>
-:x: BpmnResource.java
-    </summary>
-
-        
-#### Lines Missed:
-        
-</details>
-
-    
-
-<details>
-    <summary>
-:heavy_check_mark: UserProfileResource.java
-    </summary>
-
-        
-#### All Lines Covered!
-        
-</details>
-
-    
 ### it/gov/pagopa/atmlayer/service/model/mapper
 
 <details>
@@ -126,18 +65,6 @@
 ```
         catch ( DatatypeConfigurationException ex ) {
 ```
-</details>
-
-    
-
-<details>
-    <summary>
-:heavy_check_mark: UserProfileMapper.java
-    </summary>
-
-        
-#### All Lines Covered!
-        
 </details>
 
     
@@ -166,6 +93,18 @@
 
 <details>
     <summary>
+:heavy_check_mark: UserProfilesMapper.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :heavy_check_mark: BpmnVersionMapper.java
     </summary>
 
@@ -178,11 +117,23 @@
 
 <details>
     <summary>
-:x: UserProfileMapperImpl.java
+:heavy_check_mark: UserMapper.java
     </summary>
 
         
-#### Lines Missed:
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:heavy_check_mark: ProfileMapperImpl.java
+    </summary>
+
+        
+#### All Lines Covered!
         
 </details>
 
@@ -226,6 +177,30 @@
 
 <details>
     <summary>
+:x: UserProfilesMapperImpl.java
+    </summary>
+
+        
+#### Lines Missed:
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:heavy_check_mark: ProfileMapper.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: ResourceFileMapper.java
     </summary>
 
@@ -252,7 +227,108 @@
 
 <details>
     <summary>
+:x: UserMapperImpl.java
+    </summary>
+
+        
+#### Lines Missed:
+        
+- Line #27
+```
+        }
+```
+</details>
+
+    
+
+<details>
+    <summary>
 :heavy_check_mark: ResourceFileMapperImpl.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+### it/gov/pagopa/atmlayer/service/model/resource
+
+<details>
+    <summary>
+:heavy_check_mark: ProfileResource.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:heavy_check_mark: InfoResource.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: WorkflowResourceResource.java
+    </summary>
+
+        
+#### Lines Missed:
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: ResourceEntityResource.java
+    </summary>
+
+        
+#### Lines Missed:
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:heavy_check_mark: UserProfilesResource.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: BpmnResource.java
+    </summary>
+
+        
+#### Lines Missed:
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:heavy_check_mark: UserResource.java
     </summary>
 
         
@@ -303,7 +379,35 @@
 
 <details>
     <summary>
-:x: UserProfileRepository.java
+:x: UserProfilesRepository.java
+    </summary>
+
+        
+#### Lines Missed:
+        
+- Line #22
+```
+                Parameters.with("pKList", pKList));
+```
+</details>
+
+    
+
+<details>
+    <summary>
+:x: ProfileRepository.java
+    </summary>
+
+        
+#### Lines Missed:
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: UserRepository.java
     </summary>
 
         
@@ -377,15 +481,15 @@
         
 #### Lines Missed:
         
-- Line #78
+- Line #74
 ```
                 .transformToUni(session ->
 ```
-- Line #80
+- Line #76
 ```
                                 .setParameter(BPMN_ID, uuid)
 ```
-- Line #81
+- Line #77
 ```
                                 .getResultList());
 ```
@@ -506,6 +610,16 @@
 
 <details>
     <summary>
+:x: ProfileDTO.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: ErrorResponse.java
     </summary>
 
@@ -590,6 +704,18 @@
 
 <details>
     <summary>
+:heavy_check_mark: UserServiceImpl.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :heavy_check_mark: BpmnFileStorageServiceImpl.java
     </summary>
 
@@ -603,6 +729,18 @@
 <details>
     <summary>
 :heavy_check_mark: ResourceFileServiceImpl.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:heavy_check_mark: ProfileServiceImpl.java
     </summary>
 
         
@@ -650,18 +788,6 @@
 
 <details>
     <summary>
-:x: UserProfileServiceImpl.java
-    </summary>
-
-        
-#### Lines Missed:
-        
-</details>
-
-    
-
-<details>
-    <summary>
 :x: BpmnVersionServiceImpl.java
     </summary>
 
@@ -680,10 +806,6 @@
 ```
                                                         .recoverWithUni(failure -> {
 ```
-- Line #396
-```
-                .transformToUni(exists -> {
-```
 </details>
 
     
@@ -696,6 +818,22 @@
         
 #### All Lines Covered!
         
+</details>
+
+    
+
+<details>
+    <summary>
+:x: UserProfilesServiceImpl.java
+    </summary>
+
+        
+#### Lines Missed:
+        
+- Line #173
+```
+                                    List<UserProfiles> userProfilesToAdd = userProfilesToUpdate.stream().filter(j -> !userProfilesSavedIds.contains(j.getUserProfilesPK().getProfileId())).toList();
+```
 </details>
 
     
@@ -877,18 +1015,6 @@
 
 <details>
     <summary>
-:heavy_check_mark: UserProfileEnum.java
-    </summary>
-
-        
-#### All Lines Covered!
-        
-</details>
-
-    
-
-<details>
-    <summary>
 :heavy_check_mark: NoDeployableResourceType.java
     </summary>
 
@@ -1009,7 +1135,39 @@
 
 <details>
     <summary>
+:heavy_check_mark: UserProfiles.java
+    </summary>
+
+        
+#### All Lines Covered!
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: BpmnBankConfigPK.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: Profile.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: UserProfilesPK.java
     </summary>
 
         
@@ -1031,7 +1189,7 @@
 
 <details>
     <summary>
-:x: UserProfile.java
+:x: User.java
     </summary>
 
         
@@ -1074,18 +1232,6 @@
 
 <details>
     <summary>
-:heavy_check_mark: UserProfileValidator.java
-    </summary>
-
-        
-#### All Lines Covered!
-        
-</details>
-
-    
-
-<details>
-    <summary>
 :x: BpmnEntityValidator.java
     </summary>
 
@@ -1096,6 +1242,26 @@
 
     
 ### it/gov/pagopa/atmlayer/service/model/dto
+
+<details>
+    <summary>
+:x: ProfileCreationDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: UserWithProfilesDTO.java
+    </summary>
+
+        
+</details>
+
+    
 
 <details>
     <summary>
@@ -1139,7 +1305,7 @@
 
 <details>
     <summary>
-:x: UserProfileAllDto.java
+:x: UserProfilesInsertionDTO.java
     </summary>
 
         
@@ -1160,6 +1326,16 @@
 <details>
     <summary>
 :x: LinkDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: UserInsertionWithProfilesDTO.java
     </summary>
 
         
@@ -1201,6 +1377,16 @@
 
 <details>
     <summary>
+:x: UserInsertionDTO.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: FileS3Dto.java
     </summary>
 
@@ -1231,6 +1417,16 @@
 
 <details>
     <summary>
+:x: UserProfilesDTO.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: TerminalConfigs.java
     </summary>
 
@@ -1251,27 +1447,7 @@
 
 <details>
     <summary>
-:x: UserProfileDto.java
-    </summary>
-
-        
-</details>
-
-    
-
-<details>
-    <summary>
 :x: WorkflowResourceCreationDto.java
-    </summary>
-
-        
-</details>
-
-    
-
-<details>
-    <summary>
-:x: UserProfileCreationDto.java
     </summary>
 
         
@@ -1312,6 +1488,16 @@
 
 <details>
     <summary>
+:x: UserService.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: BpmnFileStorageService.java
     </summary>
 
@@ -1323,6 +1509,16 @@
 <details>
     <summary>
 :x: S3ObjectStoreService.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: ProfileService.java
     </summary>
 
         
@@ -1362,7 +1558,7 @@
 
 <details>
     <summary>
-:x: UserProfileService.java
+:x: UserProfilesService.java
     </summary>
 
         
