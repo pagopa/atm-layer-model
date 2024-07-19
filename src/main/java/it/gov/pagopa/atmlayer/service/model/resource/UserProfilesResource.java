@@ -51,19 +51,6 @@ public class UserProfilesResource {
     }
 
     @GET
-    @Path("/insert-with-profiles")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> checkSpecificProfiles() {
-        return userProfilesService.checkAtLeastTwoSpecificUserProfiles()
-                .onItem()
-                .transform(isAtLeastTwo -> Response.ok(isAtLeastTwo).build())
-                .onFailure()
-                .recoverWithItem(th -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(th.getMessage())
-                        .build());
-    }
-
-    @GET
     @Path("/userId/{userId}/profileId/{profileId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<UserProfilesDTO> getById(@PathParam("userId") String userId,

@@ -167,18 +167,13 @@ class UserServiceImplTest {
 
     @Test
     void testUpdateUser() {
-        UserInsertionDTO dto = new UserInsertionDTO();
-        dto.setUserId("Paolo@Rossi.com");
-        dto.setName("Paolo");
-        dto.setSurname("Rossi");
-
         User user = new User();
-        user.setUserId(dto.getUserId());
+        user.setUserId("Paolo@Rossi.com");
 
         when(userServiceImpl.getById(any(String.class))).thenReturn(Uni.createFrom().item(user));
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
 
-        userServiceImpl.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
+        userServiceImpl.updateUser("Paolo@Rossi.com", "Paolo", "Rossi").subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(user);
 
@@ -187,18 +182,13 @@ class UserServiceImplTest {
 
     @Test
     void testUpdateUserSuccessPartialNameOnly() {
-        UserInsertionDTO dto = new UserInsertionDTO();
-        dto.setUserId("Paolo@Rossi.com");
-        dto.setName("Paolo");
-        dto.setSurname("");
-
         User user = new User();
-        user.setUserId(dto.getUserId());
+        user.setUserId("Paolo@Rossi.com");
 
         when(userServiceImpl.getById(any(String.class))).thenReturn(Uni.createFrom().item(user));
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
 
-        userServiceImpl.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
+        userServiceImpl.updateUser("Paolo@Rossi.com", "Paolo", "Rossi").subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(user);
 
@@ -207,37 +197,16 @@ class UserServiceImplTest {
 
     @Test
     void testUpdateUserSuccessPartialSurnameOnly() {
-        UserInsertionDTO dto = new UserInsertionDTO();
-        dto.setUserId("Paolo@Rossi.com");
-        dto.setName("");
-        dto.setSurname("Rossi");
-
         User user = new User();
-        user.setUserId(dto.getUserId());
+        user.setUserId("Paolo@Rossi.com");
 
         when(userServiceImpl.getById(any(String.class))).thenReturn(Uni.createFrom().item(user));
         when(userRepository.persist(any(User.class))).thenReturn(Uni.createFrom().item(user));
 
-        userServiceImpl.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
+        userServiceImpl.updateUser("Paolo@Rossi.com", "Paolo", "Rossi").subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(user);
 
-    }
-
-    @Test
-    void testUpdateUserErrorAllFieldsBlank() {
-        UserInsertionDTO dto = new UserInsertionDTO();
-        dto.setUserId("");
-        dto.setName("");
-        dto.setSurname("");
-
-        when(userServiceImpl.getById(any(String.class))).thenReturn(Uni.createFrom().item(new User()));
-
-        userServiceImpl.updateUser(dto).subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailed()
-                .assertFailedWith(AtmLayerException.class, "Tutti i campi sono vuoti");
-
-        verify(userRepository, never()).persist(any(User.class));
     }
 
     @Test
