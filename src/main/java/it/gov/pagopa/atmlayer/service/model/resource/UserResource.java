@@ -6,6 +6,7 @@ import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,10 +15,10 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
-import java.util.List;
 
 @ApplicationScoped
 @Path("/users")
@@ -101,14 +102,21 @@ public class UserResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<UserWithProfilesDTO>> getAll() {
-        return this.userService.getAllUsers()
+    public Uni<PageInfo<UserWithProfilesDTO>> getAllFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+                                                         @Parameter(required = true, schema = @Schema(minimum = "0", maximum = "10000")) int pageIndex,
+                                                             @QueryParam("pageSize") @DefaultValue("10")
+                                                         @Parameter(required = true, schema = @Schema(minimum = "1", maximum = "100")) int pageSize,
+                                                             @QueryParam("name") @Schema(format = "byte", maxLength = 255) String name,
+                                                             @QueryParam("surname") @Schema(format = "byte", maxLength = 255) String surname,
+                                                             @QueryParam("userId") @Schema(format = "byte", maxLength = 255) String userId,
+                                                             @QueryParam("profileId") int profileId) {
+        return this.userService.getAllUsers(pageIndex, pageSize, name, surname, userId, profileId)
                 .onItem()
-                .transform(Unchecked.function(list -> {
-                    if (list.isEmpty()) {
+                .transform(Unchecked.function(pagedList -> {
+                    if (pagedList.getResults().isEmpty()) {
                         log.info("There is not any user saved in database!");
                     }
-                    return userMapper.toDTOList(list);
+                    return userMapper.toDTOListPaged(pagedList);
                 }));
     }
 }
