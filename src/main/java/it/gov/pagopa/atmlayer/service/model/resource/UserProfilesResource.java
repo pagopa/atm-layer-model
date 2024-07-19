@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -47,6 +48,19 @@ public class UserProfilesResource {
         return this.userProfilesService.updateUserProfiles(userProfilesInsertionDTO)
                 .onItem()
                 .transform(updatedUserProfiles -> userProfilesMapper.toDtoList(updatedUserProfiles));
+    }
+
+    @GET
+    @Path("/insert-with-profiles")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> checkSpecificProfiles() {
+        return userProfilesService.checkAtLeastTwoSpecificUserProfiles()
+                .onItem()
+                .transform(isAtLeastTwo -> Response.ok(isAtLeastTwo).build())
+                .onFailure()
+                .recoverWithItem(th -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(th.getMessage())
+                        .build());
     }
 
     @GET

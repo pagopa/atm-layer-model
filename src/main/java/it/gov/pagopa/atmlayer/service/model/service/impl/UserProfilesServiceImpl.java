@@ -179,6 +179,25 @@ public class UserProfilesServiceImpl implements UserProfilesService {
                                 })
                         )
                 );
-
     }
+
+    @WithSession
+    public Uni<Void> checkAtLeastTwoSpecificUserProfiles() {
+        return hasAtLeastTwoSpecificUserProfiles()
+                .onItem()
+                .transform(isAtLeastTwo -> {
+                    if (!isAtLeastTwo) {
+                        throw new AtmLayerException("Meno di due occorrenze trovate per il profilo specificato.", Response.Status.BAD_REQUEST, AppErrorCodeEnum.NO_ASSOCIATION_FOUND);
+                    }
+                    return null;
+                });
+    }
+
+    @WithSession
+    public Uni<Boolean> hasAtLeastTwoSpecificUserProfiles() {
+        return userProfilesRepository.findUserProfilesWithSpecificProfile()
+                .onItem()
+                .transform(userProfiles -> userProfiles.size() >= 2);
+    }
+
 }
