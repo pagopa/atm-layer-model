@@ -171,14 +171,43 @@ public class UserProfilesServiceImpl implements UserProfilesService {
                                     List<Integer> userProfilesToUpdateIds = userProfilesToUpdate.stream().map(y -> y.getUserProfilesPK().getProfileId()).toList();
                                     List<UserProfiles> userProfilesToDelete = userProfilesSaved.stream().filter(w -> !userProfilesToUpdateIds.contains(w.getUserProfilesPK().getProfileId())).toList();
                                     List<UserProfiles> userProfilesToAdd = userProfilesToUpdate.stream().filter(j -> !userProfilesSavedIds.contains(j.getUserProfilesPK().getProfileId())).toList();
+                                    if (userProfilesToDelete.stream().anyMatch(p -> p.getUserProfilesPK().getProfileId() == 5)){
+                                        return checkAtLeastTwoSpecificUserProfiles()
+                                                .onItem()
+                                                .transformToUni(canUpdate -> userProfilesRepository.deleteUserProfiles(userProfilesToDelete.stream().map(UserProfiles::getUserProfilesPK).toList())
+                                                        .onItem()
+                                                        .transformToUni(deletedRows -> userProfilesRepository.persist(userProfilesToAdd))
+                                                        .onItem()
+                                                        .transformToUni(persistedRows -> userProfilesRepository.findByUserId(userProfilesInsertionDTO.getUserId())));
+                                    }
                                     return userProfilesRepository.deleteUserProfiles(userProfilesToDelete.stream().map(UserProfiles::getUserProfilesPK).toList())
-                                            .onItem()
-                                            .transformToUni(deletedRows -> userProfilesRepository.persist(userProfilesToAdd))
-                                            .onItem()
-                                            .transformToUni(persistedRows -> userProfilesRepository.findByUserId(userProfilesInsertionDTO.getUserId()));
+                                                    .onItem()
+                                                    .transformToUni(deletedRows -> userProfilesRepository.persist(userProfilesToAdd))
+                                                    .onItem()
+                                                    .transformToUni(persistedRows -> userProfilesRepository.findByUserId(userProfilesInsertionDTO.getUserId()));
                                 })
                         )
                 );
-
     }
+
+
+    @Override
+    public Uni<Void> checkAtLeastTwoSpecificUserProfiles() {
+        return hasAtLeastTwoSpecificUserProfiles()
+                .onItem()
+                .transformToUni(isAtLeastTwo -> {
+                    if (!isAtLeastTwo) {
+                        throw new AtmLayerException("Un solo utente ha i permessi di 'Gestione utenti': impossibile eliminarli.", Response.Status.BAD_REQUEST, AppErrorCodeEnum.NO_ASSOCIATION_FOUND);
+                    }
+                    return Uni.createFrom().voidItem();
+                });
+    }
+
+    @WithSession
+    public Uni<Boolean> hasAtLeastTwoSpecificUserProfiles() {
+        return userProfilesRepository.findUserProfilesWithSpecificProfile()
+                .onItem()
+                .transform(userProfiles -> userProfiles.size() >= 2);
+    }
+
 }

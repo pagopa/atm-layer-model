@@ -93,7 +93,7 @@ class UserResourceTest {
         userInsertionDTO.setName("Paolo");
         userInsertionDTO.setSurname("Rossi");
 
-        when(userService.updateUser(any(UserInsertionDTO.class))).thenReturn(Uni.createFrom().item(user));
+        when(userService.updateUser(any(String.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().item(user));
         when(userMapper.toProfilesDTO(user)).thenReturn(userWithProfilesDTO);
 
         UserWithProfilesDTO result = given()

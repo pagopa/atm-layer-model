@@ -6,6 +6,7 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
+import it.gov.pagopa.atmlayer.service.model.dto.UserProfilesInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
@@ -13,9 +14,12 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
+import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,17 +37,18 @@ public class UserServiceImpl implements UserService {
     @Inject
     UserMapper userMapper;
 
+    @Inject
+    UserProfilesService userProfilesService;
+
     @Override
     @WithTransaction
     public Uni<User> insertUser(UserInsertionDTO userInsertionDTO) {
         String userId = userInsertionDTO.getUserId();
-        log.info("Inserting user with userId : {}", userId);
         User user = userMapper.toEntityInsertion(userInsertionDTO);
         return this.userRepository.findById(user.getUserId())
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (x != null) {
-                        log.error("userId {} already exists", userId);
                         throw new AtmLayerException(Response.Status.BAD_REQUEST, AppErrorCodeEnum.USER_WITH_SAME_ID_ALREADY_EXIST);
                     }
                     return userRepository.persist(user);
@@ -64,7 +69,6 @@ public class UserServiceImpl implements UserService {
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
                     if (x != null) {
-                        log.error("userId {} already exists", user.getUserId());
                         throw new AtmLayerException(Response.Status.BAD_REQUEST, AppErrorCodeEnum.USER_WITH_SAME_ID_ALREADY_EXIST);
                     }
                     return userRepository.persist(user);
@@ -73,31 +77,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @WithTransaction
-    public Uni<User> updateUser(UserInsertionDTO userInsertionDTO) {
-        String userId = userInsertionDTO.getUserId();
-        log.info("Updating user with userId : {}", userId);
-        return this.getById(userInsertionDTO.getUserId())
+    public Uni<User> updateUser(@NotBlank String userId, @NotBlank String name, @NotBlank String surname) {
+        return this.getById(userId)
                 .onItem()
                 .transformToUni(Unchecked.function(userFound -> {
-                    if (userInsertionDTO.getName().isBlank() && userInsertionDTO.getSurname().isBlank()) {
-                        throw new AtmLayerException(Response.Status.BAD_REQUEST, AppErrorCodeEnum.ALL_FIELDS_ARE_BLANK);
-                    } else if (userInsertionDTO.getSurname().isBlank()) {
-                        userFound.setName(userInsertionDTO.getName());
-                    } else if (userInsertionDTO.getName().isBlank()) {
-                        userFound.setSurname(userInsertionDTO.getSurname());
-                    } else {
-                        userFound.setName(userInsertionDTO.getName());
-                        userFound.setSurname(userInsertionDTO.getSurname());
-                    }
-                    userFound.setLastUpdatedAt(new Timestamp(System.currentTimeMillis()));
+                        userFound.setName(name);
+                        userFound.setSurname(surname);
                     return userRepository.persist(userFound);
                 }));
     }
 
     @Override
     @WithTransaction
+    public Uni<User> updateWithProfiles(UserInsertionWithProfilesDTO input) {
+        return userProfilesService.updateUserProfiles(new UserProfilesInsertionDTO(input.getUserId(), input.getProfileIds()))
+                .onItem()
+                .transformToUni(updatedProfiles ->
+                        this.updateUser(input.getUserId(), input.getName(), input.getSurname())
+                );
+    }
+
+    @Override
+    @WithTransaction
     public Uni<Boolean> deleteUser(String userId) {
-        log.info("Deleting user with userId : {}", userId);
         return this.getById(userId)
                 .onItem()
                 .transformToUni(x -> this.userRepository.deleteById(userId));

@@ -16,4 +16,6 @@ public interface UserProfilesService {
     Uni<Void> deleteUserProfiles(UserProfilesPK userProfilesIDs);
 
     Uni<List<UserProfiles>> updateUserProfiles(UserProfilesInsertionDTO userProfilesInsertionDTO);
+
+    Uni<Void> checkAtLeastTwoSpecificUserProfiles();
 }

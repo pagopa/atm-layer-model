@@ -5,6 +5,7 @@ import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
@@ -16,7 +17,9 @@ public interface UserService {
 
     Uni<User> findUser(String userId);
 
-    Uni<User> updateUser(UserInsertionDTO userInsertionDTO);
+    Uni<User> updateUser(@NotBlank String userId, @NotBlank String name, @NotBlank String surname);
+
+    Uni<User> updateWithProfiles(UserInsertionWithProfilesDTO userInsertionWithProfilesDTO);
 
     Uni<Boolean> deleteUser(String userId);
 
