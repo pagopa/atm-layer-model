@@ -134,17 +134,19 @@ public class UserServiceImpl implements UserService {
         return countUsers()
                 .onItem()
                 .transformToUni(count -> {
-                    if (count != 0){
-                        throw new AtmLayerException("Sono già presenti degli utenti nel sistema", Response.Status.BAD_REQUEST, AppErrorCodeEnum.USERS_ALREADY_ACCESSED);
-                    }
-                    UserInsertionWithProfilesDTO userInsertionWithProfilesDTO = new UserInsertionWithProfilesDTO();
-                    List<Integer> profile = new ArrayList<>();
-                    profile.add(5);
-                    userInsertionWithProfilesDTO.setUserId(userId);
-                    userInsertionWithProfilesDTO.setProfileIds(profile);
-                    return insertUserWithProfiles(userInsertionWithProfilesDTO)
-                            .onItem()
-                            .transformToUni(list -> Uni.createFrom().voidItem());
+                    if (count == 0) {
+                        UserInsertionWithProfilesDTO userInsertionWithProfilesDTO = new UserInsertionWithProfilesDTO();
+                        List<Integer> profile = new ArrayList<>();
+                        profile.add(5);
+                        userInsertionWithProfilesDTO.setUserId(userId);
+                        userInsertionWithProfilesDTO.setProfileIds(profile);
+                        userInsertionWithProfilesDTO.setName("");
+                        userInsertionWithProfilesDTO.setSurname("");
+                        return insertUserWithProfiles(userInsertionWithProfilesDTO)
+                                .onItem()
+                                .transformToUni(list -> Uni.createFrom().voidItem());
+                        }
+                        return Uni.createFrom().voidItem();
                 });
     }
 }

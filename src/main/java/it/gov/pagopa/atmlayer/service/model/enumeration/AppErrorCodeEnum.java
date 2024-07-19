@@ -69,8 +69,7 @@ public enum AppErrorCodeEnum {
     PROFILE_NOT_FOUND("ATMLM_4000058", "Non esiste un profilo con l'id indicato", CONSTRAINT_VIOLATION),
     PROFILE_OR_USER_NOT_FOUND("ATMLM_4000059","Utente o profilo non trovato", CONSTRAINT_VIOLATION),
     NO_ASSOCIATION_FOUND("ATMLM_4000060","Nessuna associazione trovata", CONSTRAINT_VIOLATION),
-    ALL_FIELDS_ARE_BLANK("ATMLM_4000061", "Tutti i campi sono vuoti", BLANK_FIELDS),
-    USERS_ALREADY_ACCESSED("ATMLM_4000062", "Impossibile registrare l'utente come primo accesso: almeno un utente è già presente nel database", NOT_FIRST_ACCESS);
+    ALL_FIELDS_ARE_BLANK("ATMLM_4000061", "Tutti i campi sono vuoti", BLANK_FIELDS);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;

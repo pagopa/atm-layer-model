@@ -342,7 +342,8 @@ class UserServiceImplTest {
         userServiceImpl.checkFirstAccess(userId)
                 .subscribe()
                 .withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class);
+                .assertCompleted()
+                .assertItem(null);
 
         verify(userRepository, times(1)).count();
         verify(userProfilesService, never()).insertUserProfiles(any(UserProfilesInsertionDTO.class));
