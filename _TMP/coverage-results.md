@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 92.62%               |
-| :heavy_check_mark: Number of Lines Covered | 2473    |
-| :x: Number of Lines Missed  | 197     |
-| Total Number of Lines   | 2670     |
+| Code Coverage %         | 91.69%               |
+| :heavy_check_mark: Number of Lines Covered | 2461    |
+| :x: Number of Lines Missed  | 223     |
+| Total Number of Lines   | 2684     |
 
 
 ## Details:
@@ -328,11 +328,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: UserResource.java
+:x: UserResource.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
 </details>
 
@@ -385,7 +385,7 @@
         
 #### Lines Missed:
         
-- Line #22
+- Line #17
 ```
                 Parameters.with("pKList", pKList));
 ```
@@ -704,12 +704,16 @@
 
 <details>
     <summary>
-:heavy_check_mark: UserServiceImpl.java
+:x: UserServiceImpl.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
+- Line #95
+```
+                .transformToUni(updatedProfiles ->
+```
 </details>
 
     
@@ -833,6 +837,10 @@
 - Line #173
 ```
                                     List<UserProfiles> userProfilesToAdd = userProfilesToUpdate.stream().filter(j -> !userProfilesSavedIds.contains(j.getUserProfilesPK().getProfileId())).toList();
+```
+- Line #198
+```
+                .transformToUni(isAtLeastTwo -> {
 ```
 </details>
 
