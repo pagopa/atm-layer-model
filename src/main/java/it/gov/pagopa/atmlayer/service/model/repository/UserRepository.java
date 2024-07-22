@@ -25,7 +25,7 @@ public class UserRepository implements PanacheRepositoryBase<User, String> {
     public Uni<PageInfo<User>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
         StringBuilder query = new StringBuilder("select distinct u from User u left join fetch u.userProfiles up where 1=1 ");
 
-        params.forEach((key, value) -> query.append("and u.").append(key).append(" = :").append(key).append(" "));
+        params.forEach((key, value) -> query.append("and lower(u.").append(key).append(")").append(" LIKE lower(concat(concat(:" + key + "), '%'))"));
 
         query.append("order by u.lastUpdatedAt DESC");
 
