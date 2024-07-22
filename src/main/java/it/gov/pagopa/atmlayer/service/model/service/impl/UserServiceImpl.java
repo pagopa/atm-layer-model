@@ -13,6 +13,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserProfilesService;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
@@ -24,8 +25,7 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @ApplicationScoped
 @Slf4j
@@ -109,6 +109,18 @@ public class UserServiceImpl implements UserService {
     @WithSession
     public Uni<List<User>> getAllUsers() {
         return this.userRepository.findAllCustom().list();
+    }
+
+    @Override
+    public Uni<PageInfo<User>> getUserFiltered(int pageIndex, int pageSize, String name, String surname, String userId) {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("name", name);
+        filters.put("surname", surname);
+        filters.put("userId", userId);
+        filters.remove(null);
+        filters.values().removeAll(Collections.singleton(null));
+        filters.values().removeAll(Collections.singleton(""));
+        return userRepository.findByFilters(filters, pageIndex, pageSize);
     }
 
     @Override

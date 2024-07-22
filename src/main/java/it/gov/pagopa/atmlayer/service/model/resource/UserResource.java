@@ -6,21 +6,17 @@ import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserInsertionWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -128,6 +124,29 @@ public class UserResource {
                         log.info("There is not any user saved in database!");
                     }
                     return userMapper.toDTOList(list);
+                }));
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/filter")
+    public Uni<PageInfo<UserWithProfilesDTO>> getUserFiltered(@QueryParam("pageIndex") @DefaultValue("0")
+                                                              @Parameter(required = true, schema = @Schema(minimum = "0", maximum = "10000")) int pageIndex,
+                                                          @QueryParam("pageSize") @DefaultValue("10")
+                                                              @Parameter(required = true, schema = @Schema(minimum = "1", maximum = "100")) int pageSize,
+                                                          @QueryParam("name")
+                                                          String name,
+                                                          @QueryParam("surname")
+                                                          String surname,
+                                                          @QueryParam("userId")
+                                                          String userId) {
+        return userService.getUserFiltered(pageIndex, pageSize, name, surname, userId)
+                .onItem()
+                .transformToUni(Unchecked.function(pagedList -> {
+                    if (pagedList.getResults().isEmpty()) {
+                        log.info("No user found for the applied filters");
+                    }
+                    return Uni.createFrom().item(userMapper.toFrontEndDTOListPaged(pagedList));
                 }));
     }
 }

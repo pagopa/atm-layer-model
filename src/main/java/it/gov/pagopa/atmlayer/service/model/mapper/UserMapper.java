@@ -6,6 +6,7 @@ import it.gov.pagopa.atmlayer.service.model.dto.UserWithProfilesDTO;
 import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
+import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.model.ProfileDTO;
 import jakarta.inject.Inject;
 import org.mapstruct.IterableMapping;
@@ -42,6 +43,7 @@ public abstract class UserMapper {
     }
 
     @IterableMapping(qualifiedByName = "toProfilesDTO")
+    @Named("toDTOList")
     public abstract List<UserWithProfilesDTO> toDTOList(List<User> list);
 
     @Mapping(source = "userProfiles", target = "profiles", qualifiedByName = "toProfileDTOList")
@@ -72,4 +74,6 @@ public abstract class UserMapper {
                 .collect(Collectors.toList());
     }
 
+    @Mapping(source = "results", target = "results", qualifiedByName = "toDTOList")
+    public abstract PageInfo<UserWithProfilesDTO> toFrontEndDTOListPaged(PageInfo<User> input);
 }
