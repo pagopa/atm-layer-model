@@ -57,7 +57,7 @@ public class UserResource {
     public Uni<UserWithProfilesDTO> firstAccess(@PathParam("userId") String userId) {
         return this.userService.checkFirstAccess(userId)
                 .onItem()
-                .transformToUni(insertedProfiles -> userService.findUser(userId))
+                .transformToUni(insertedProfiles -> userService.getById(userId))
                 .onItem()
                 .transformToUni(user -> Uni.createFrom().item(this.userMapper.toProfilesDTO(user)));
     }

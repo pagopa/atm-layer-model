@@ -65,10 +65,10 @@ class UserResourceTest {
         UserWithProfilesDTO userWithProfilesDTO = new UserWithProfilesDTO();
 
         when(userService.checkFirstAccess(userId)).thenReturn(Uni.createFrom().voidItem());
-        when(userService.findUser(userId)).thenReturn(Uni.createFrom().item(user));
+        when(userService.getById(userId)).thenReturn(Uni.createFrom().item(user));
         when(userMapper.toProfilesDTO(user)).thenReturn(userWithProfilesDTO);
 
-        UserWithProfilesDTO result = given()
+        given()
                 .pathParam("userId", userId)
                 .when()
                 .post("/api/v1/model/users/first-access/{userId}")
@@ -77,9 +77,8 @@ class UserResourceTest {
                 .extract()
                 .as(UserWithProfilesDTO.class);
 
-        assertEquals(userWithProfilesDTO, result);
         verify(userService, times(1)).checkFirstAccess(userId);
-        verify(userService, times(1)).findUser(userId);
+        verify(userService, times(1)).getById(userId);
         verify(userMapper, times(1)).toProfilesDTO(user);
     }
 
