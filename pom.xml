@@ -60,24 +60,25 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-awt</artifactId>
         </dependency>
-
-        <!-- AWS SDK for Cognito -->
         <dependency>
             <groupId>io.quarkiverse.amazonservices</groupId>
-            <artifactId>quarkus-amazon-cognito-user-pools</artifactId>
-            <version>2.12.2</version>
+            <artifactId>quarkus-amazon-s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>url-connection-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk.crt</groupId>
+            <artifactId>aws-crt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>netty-nio-client</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.amazonservices</groupId>
-            <artifactId>quarkus-amazon-common</artifactId>
-            <version>2.12.2</version>
-        </dependency>
-
-
-        <!-- Quarkus dependencies -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive</artifactId>
+            <artifactId>quarkus-amazon-sts</artifactId>
         </dependency>
 
         <dependency>
@@ -125,31 +126,9 @@
             <artifactId>quarkus-smallrye-context-propagation</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.quarkiverse.amazonservices</groupId>
-            <artifactId>quarkus-amazon-s3</artifactId>
-            <version>2.12.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>url-connection-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk.crt</groupId>
-            <artifactId>aws-crt</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>netty-nio-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkiverse.amazonservices</groupId>
-            <artifactId>quarkus-amazon-sts</artifactId>
-            <version>2.12.2</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.logging.logback</groupId>
