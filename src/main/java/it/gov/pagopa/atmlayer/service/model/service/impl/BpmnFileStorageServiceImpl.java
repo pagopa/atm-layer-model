@@ -35,17 +35,18 @@ import java.util.Optional;
 @Slf4j
 public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
     private static final String BPMN_TEMPLATE_PATH_DEFAULT = "BPMN/files/UUID/${uuid}/VERSION/${version}";
-    @Inject
-    ObjectStoreStrategy objectStoreStrategy;
-    private ObjectStoreService objectStoreService;
-    @Inject
-    ObjectStoreProperties objectStoreProperties;
-    @Inject
-    ResourceFileService resourceFileService;
+    private final ObjectStoreStrategy objectStoreStrategy;
+    private final ObjectStoreService objectStoreService;
+    private final ObjectStoreProperties objectStoreProperties;
+    private final ResourceFileService resourceFileService;
 
-    public BpmnFileStorageServiceImpl(ObjectStoreStrategy objectStoreStrategy, ObjectStoreProperties objectStoreProperties) {
+    @Inject
+    public BpmnFileStorageServiceImpl(ObjectStoreStrategy objectStoreStrategy, ObjectStoreProperties objectStoreProperties,
+                                      ResourceFileService resourceFileService) {
         this.objectStoreStrategy = objectStoreStrategy;
         this.objectStoreService = objectStoreStrategy.getType(ObjectStoreStrategyEnum.fromValue(objectStoreProperties.type()));
+        this.objectStoreProperties = objectStoreProperties;
+        this.resourceFileService = resourceFileService;
     }
 
     @WithTransaction
@@ -64,7 +65,7 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
         BpmnIdDto bpmnVersionPK = new BpmnIdDto(bpmnVersion.getBpmnId(), bpmnVersion.getModelVersion());
         String path = calculatePath(bpmnVersionPK);
         String completeName = filename.concat(".").concat(S3ResourceTypeEnum.BPMN.getExtension());
-        log.info("Requesting to write file {} in Object Store at path  {}", file.getName(), path);
+        log.info("Requesting to upload file in Object Store");
         Context context = Vertx.currentContext();
         return objectStoreService.uploadFile(file, path, S3ResourceTypeEnum.BPMN, completeName)
                 .emitOn(command -> context.runOnContext(x -> command.run()))

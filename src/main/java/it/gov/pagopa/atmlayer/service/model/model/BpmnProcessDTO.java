@@ -1,6 +1,8 @@
 package it.gov.pagopa.atmlayer.service.model.model;
 
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Getter
 @Setter
@@ -11,5 +13,6 @@ import lombok.*;
 @EqualsAndHashCode
 public class BpmnProcessDTO {
 
+    @Schema(format = "byte", maxLength = 255)
     private String camundaDefinitionId;
 }

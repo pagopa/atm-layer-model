@@ -44,20 +44,21 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
 
     private static final String WORKFLOW_TEMPLATE_PATH_DEFAULT = "WORKFLOW_RESOURCE/files/${RESOURCE_TYPE}/${uuid}";
 
+    private final ObjectStoreStrategy objectStoreStrategy;
+
+    private final ObjectStoreService objectStoreService;
+
+    private final ObjectStoreProperties objectStoreProperties;
+
+    private final ResourceFileService resourceFileService;
+
     @Inject
-    ObjectStoreStrategy objectStoreStrategy;
-
-    private ObjectStoreService objectStoreService;
-
-    @Inject
-    ObjectStoreProperties objectStoreProperties;
-
-    @Inject
-    ResourceFileService resourceFileService;
-
-    public WorkflowResourceStorageServiceImpl(ObjectStoreStrategy objectStoreStrategy, ObjectStoreProperties objectStoreProperties) {
+    public WorkflowResourceStorageServiceImpl(ObjectStoreStrategy objectStoreStrategy, ObjectStoreProperties objectStoreProperties,
+                                              ResourceFileService resourceFileService) {
         this.objectStoreStrategy = objectStoreStrategy;
         this.objectStoreService = objectStoreStrategy.getType(ObjectStoreStrategyEnum.fromValue(objectStoreProperties.type()));
+        this.objectStoreProperties = objectStoreProperties;
+        this.resourceFileService = resourceFileService;
     }
 
     @Override
@@ -76,7 +77,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
         S3ResourceTypeEnum resourceType = convertEnum(workflowResource.getResourceType());
         String path = FilenameUtils.getFullPath(storageKey);
         Context context = Vertx.currentContext();
-        log.info("Requesting to write file {} in Object Store at path  {}", CommonUtils.getFilenameWithExtensionFromStorageKey(storageKey), path);
+        log.info("Requesting to update file in Object Store");
         return objectStoreService.uploadFile(file, CommonUtils.getPathWithoutFilename(path), resourceType, CommonUtils.getFilenameWithExtensionFromStorageKey(storageKey))
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem().transformToUni(x -> this.resourceFileService.findByStorageKey(storageKey))
@@ -90,7 +91,7 @@ public class WorkflowResourceStorageServiceImpl implements WorkflowResourceStora
 
     private Uni<ResourceFile> doUploadFile(WorkflowResource workflowResource, File file, String path, String filename, String extension, S3ResourceTypeEnum resourceType) {
         Context context = Vertx.currentContext();
-        log.info("Requesting to write file {} in Object Store at path  {}", CommonUtils.getFilenameWithExtension(filename, extension), path);
+        log.info("Requesting to write file in Object Store");
         return objectStoreService.uploadFile(file, path, resourceType, CommonUtils.getFilenameWithExtension(filename, extension))
                 .emitOn(command -> context.runOnContext(x -> command.run()))
                 .onItem()

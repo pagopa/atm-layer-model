@@ -16,9 +16,12 @@ import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion, BpmnVersionPK> {
+
+    private static final String BPMN_ID = "bpmnId";
+
     public Uni<PageInfo<BpmnVersion>> findByFilters(Map<String, Object> params, int pageIndex, int pageSize) {
         String queryFilters = params.keySet().stream().map(key -> switch (key) {
-            case "modelVersion", "definitionVersionCamunda", "bpmnId", "status" -> ("b." + key + " = :" + key);
+            case "modelVersion", "definitionVersionCamunda", BPMN_ID, "status" -> ("b." + key + " = :" + key);
             case "acquirerId", "branchId", "terminalId" -> ("lower(bc.bpmnBankConfigPK." + key + ") = lower(:" + key + ")");
             case "fileName" -> ("lower(b.resourceFile." + key + ") LIKE lower(concat(concat(:" + key + "), '%'))");
             default -> ("lower(b." + key + ") LIKE lower(concat(concat(:" + key + "), '%'))");
@@ -50,7 +53,7 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
     public Uni<List<BpmnVersion>> findByIdAndFunction(UUID uuid, String functionType) {
         return find(
                 "select b from BpmnVersion b where b.bpmnId = :bpmnId and b.functionType = :functionType order by b.modelVersion DESC",
-                Parameters.with("bpmnId", uuid).and("functionType", functionType)).list();
+                Parameters.with(BPMN_ID, uuid).and("functionType", functionType)).list();
     }
 
     public Uni<List<BpmnVersion>> findAllByIdAndFunction(UUID uuid, String functionType) {
@@ -59,7 +62,7 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
                 .onItem()
                 .transformToUni(session ->
                         session.createNativeQuery(sql, BpmnVersion.class)
-                                .setParameter("bpmnId", uuid)
+                                .setParameter(BPMN_ID, uuid)
                                 .setParameter("functionType", functionType)
                                 .getResultList());
     }
@@ -70,7 +73,7 @@ public class BpmnVersionRepository implements PanacheRepositoryBase<BpmnVersion,
                 .onItem()
                 .transformToUni(session ->
                         session.createNativeQuery(sql, BpmnVersion.class)
-                                .setParameter("bpmnId", uuid)
+                                .setParameter(BPMN_ID, uuid)
                                 .getResultList());
     }
 

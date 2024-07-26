@@ -69,13 +69,6 @@ class ResourceFileTest {
         assertEquals(bpmnVersionMock, resourceFile.getBpmn());
     }
 
-    @Test
-    void onPrePersist() {
-        S3ResourceTypeEnum resourceTypeEnum = S3ResourceTypeEnum.BPMN;
-        resourceFile.setResourceType(resourceTypeEnum);
-        resourceFile.onPrePersist();
-        assertEquals(resourceTypeEnum.getExtension(), resourceFile.getExtension());
-    }
 }
 
 

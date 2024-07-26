@@ -17,9 +17,13 @@ public class UserProfilesRepository implements PanacheRepositoryBase<UserProfile
                 Parameters.with("pKList", pKList));
     }
 
-    public Uni<List<UserProfiles>> findByUserId(String userId) {
+    public Uni<List<UserProfiles>> findByUserId (String userId) {
         return find("select a from UserProfiles a where a.userProfilesPK.userId = :userId",
                 Parameters.with("userId", userId)).list();
+    }
+
+    public Uni<List<UserProfiles>> findUserProfilesWithSpecificProfile() {
+        return find("select a from UserProfiles a where a.userProfilesPK.profileId = 5").list();
     }
 
 }

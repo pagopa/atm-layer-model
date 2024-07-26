@@ -61,7 +61,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
         return this.findBySHA256(workflowResource.getSha256())
                 .onItem().transform(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException("Esiste già un file di risorsa aggiuntiva per processo con lo stesso contenuto", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
+                        throw new AtmLayerException(String.format("Esiste già un file di risorsa aggiuntiva per processo con lo stesso contenuto: %s", x.get().getResourceFile().getFileName()), Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
                     }
                     return x;
                 }))
@@ -365,7 +365,7 @@ public class WorkflowResourceServiceImpl implements WorkflowResourceService {
                     log.info("storage key {}", storageKey);
                     String shaUpdateFile = calculateSha256(file);
                     if (workflowFound.getSha256().equals(shaUpdateFile)) {
-                        throw new AtmLayerException("Risorsa aggiuntiva per processo già presente", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
+                        throw new AtmLayerException("Il file caricato ha lo stesso contenuto della risorsa aggiuntiva per processo che si vuole aggiornare", Response.Status.BAD_REQUEST, WORKFLOW_RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
                     }
                     workflowFound.setSha256(shaUpdateFile);
                     if (!workflowFound.getDefinitionKey().equals(definitionKey)) {

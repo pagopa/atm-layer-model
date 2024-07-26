@@ -38,7 +38,6 @@ class ErrorResponseTest {
                 .instance("ATMLM-500")
                 .build();
 
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             String json = objectMapper.writeValueAsString(errorResponse);
             String expectedJson = "{\"type\":\"error\",\"title\":\"Internal Server Error\",\"status\":500,\"detail\":\"An unexpected error has occurred. Please contact support.\",\"instance\":\"ATMLM-500\"}";

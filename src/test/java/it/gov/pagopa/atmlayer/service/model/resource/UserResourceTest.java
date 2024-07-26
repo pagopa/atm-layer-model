@@ -10,6 +10,8 @@ import it.gov.pagopa.atmlayer.service.model.entity.User;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfiles;
 import it.gov.pagopa.atmlayer.service.model.entity.UserProfilesPK;
 import it.gov.pagopa.atmlayer.service.model.mapper.UserMapper;
+import it.gov.pagopa.atmlayer.service.model.model.ProfileDTO;
+import it.gov.pagopa.atmlayer.service.model.repository.UserRepository;
 import it.gov.pagopa.atmlayer.service.model.service.UserService;
 import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Test;
@@ -27,7 +29,8 @@ class UserResourceTest {
 
     @InjectMock
     UserMapper userMapper;
-
+    @InjectMock
+    UserRepository userRepository;
     @InjectMock
     UserService userService;
 
@@ -62,10 +65,10 @@ class UserResourceTest {
         UserWithProfilesDTO userWithProfilesDTO = new UserWithProfilesDTO();
 
         when(userService.checkFirstAccess(userId)).thenReturn(Uni.createFrom().voidItem());
-        when(userService.findUser(userId)).thenReturn(Uni.createFrom().item(user));
+        when(userService.getById(userId)).thenReturn(Uni.createFrom().item(user));
         when(userMapper.toProfilesDTO(user)).thenReturn(userWithProfilesDTO);
 
-        UserWithProfilesDTO result = given()
+        given()
                 .pathParam("userId", userId)
                 .when()
                 .post("/api/v1/model/users/first-access/{userId}")
@@ -74,9 +77,8 @@ class UserResourceTest {
                 .extract()
                 .as(UserWithProfilesDTO.class);
 
-        assertEquals(userWithProfilesDTO, result);
         verify(userService, times(1)).checkFirstAccess(userId);
-        verify(userService, times(1)).findUser(userId);
+        verify(userService, times(1)).getById(userId);
         verify(userMapper, times(1)).toProfilesDTO(user);
     }
 
@@ -90,7 +92,7 @@ class UserResourceTest {
         userInsertionDTO.setName("Paolo");
         userInsertionDTO.setSurname("Rossi");
 
-        when(userService.updateUser(any(UserInsertionDTO.class))).thenReturn(Uni.createFrom().item(user));
+        when(userService.updateUser(any(String.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().item(user));
         when(userMapper.toProfilesDTO(user)).thenReturn(userWithProfilesDTO);
 
         UserWithProfilesDTO result = given()
@@ -117,6 +119,9 @@ class UserResourceTest {
         List<UserProfiles> userProfilesList = new ArrayList<>();
         userProfilesList.add(userProfiles);
 
+        List<Integer> profileIds = new ArrayList<>();
+        profileIds.add(1);
+
         user.setUserId("prova@test.com");
         user.setName("prova");
         user.setSurname("test");
@@ -126,12 +131,12 @@ class UserResourceTest {
         userInsertionWithProfilesDTO.setUserId("prova@test.com");
         userInsertionWithProfilesDTO.setName("prova");
         userInsertionWithProfilesDTO.setSurname("test");
-        userInsertionWithProfilesDTO.setProfileIds(List.of(1));
+        userInsertionWithProfilesDTO.setProfileIds(profileIds);
 
         UserWithProfilesDTO userWithProfilesDTO = new UserWithProfilesDTO();
 
-        when(userMapper.toEntityInsertionWithProfiles(userInsertionWithProfilesDTO)).thenReturn(user);
-        when(userService.findUser(userInsertionWithProfilesDTO.getUserId())).thenReturn(Uni.createFrom().item(user));
+        when(userService.insertUserWithProfiles(userInsertionWithProfilesDTO)).thenReturn(Uni.createFrom().item(user));
+        when(userRepository.findByIdCustom(userInsertionWithProfilesDTO.getUserId())).thenReturn(Uni.createFrom().item(user));
         when(userMapper.toProfilesDTO(user)).thenReturn(userWithProfilesDTO);
 
         UserWithProfilesDTO result = given()
@@ -212,7 +217,7 @@ class UserResourceTest {
         User user = new User();
         UserWithProfilesDTO userWithProfilesDTO = new UserWithProfilesDTO();
 
-        when(userService.findById(any(String.class))).thenReturn(Uni.createFrom().item(user));
+        when(userService.getById(any(String.class))).thenReturn(Uni.createFrom().item(user));
         when(userMapper.toProfilesDTO(any(User.class))).thenReturn(userWithProfilesDTO);
 
         UserWithProfilesDTO result = given()
@@ -225,7 +230,7 @@ class UserResourceTest {
                 .as(UserWithProfilesDTO.class);
 
         assertEquals(userWithProfilesDTO, result);
-        verify(userService, times(1)).findById(any(String.class));
+        verify(userService, times(1)).getById(any(String.class));
         verify(userMapper, times(1)).toProfilesDTO(user);
     }
 

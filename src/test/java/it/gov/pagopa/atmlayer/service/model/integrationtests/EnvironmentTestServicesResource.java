@@ -25,7 +25,6 @@ public class EnvironmentTestServicesResource {
                     .withExposedService("minio", 9000)
                     .withExposedService("postgres-int", 5432)
                     .withExposedService("mockoon", 3000);
-//                    .withLogConsumer("createbuckets", new Slf4jLogConsumer(LOGGER).withPrefix("minio-mc"));
 
             dockerComposeContainer.withLogConsumer("minio", new Slf4jLogConsumer(LOGGER).withPrefix("minio"));
             dockerComposeContainer.withLogConsumer("postgres-int", new Slf4jLogConsumer(LOGGER).withPrefix("postgres-int"));

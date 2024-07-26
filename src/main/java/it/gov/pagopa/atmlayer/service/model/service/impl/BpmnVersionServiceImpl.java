@@ -73,7 +73,6 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     return x;
                 }))
                 .onItem().transformToUni(t -> {
-                    log.info("Persisting bpmn {} to database", bpmnVersion.getDeployedFileName());
                     return this.bpmnVersionRepository.persist(bpmnVersion);
                 });
     }
@@ -81,7 +80,6 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
     @WithTransaction
     @Override
     public Uni<Boolean> delete(BpmnVersionPK bpmnVersionPK) {
-        log.info("Deleting BPMN with id {}", bpmnVersionPK.toString());
         return this.findByPk(bpmnVersionPK)
                 .onItem()
                 .transformToUni(Unchecked.function(x -> {
@@ -136,61 +134,36 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @WithTransaction
     public Uni<BpmnVersion> setBpmnVersionStatus(BpmnVersionPK key, StatusEnum status) {
-        return this.findByPk(key)
+        return this.checkBpmnFileExistence(key)
                 .onItem()
-                .transformToUni(Unchecked.function(optionalBpmn -> {
-                            if (optionalBpmn.isEmpty()) {
-                                String errorMessage = String.format(
-                                        "La chiave BPMN a cui si fa riferimento non esiste: %s", key);
-                                throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
-                                        BPMN_FILE_DOES_NOT_EXIST);
-                            }
-                            BpmnVersion bpmnToDeploy = optionalBpmn.get();
-                            bpmnToDeploy.setStatus(status);
-                            return this.bpmnVersionRepository.persist(bpmnToDeploy);
-                        })
-                );
+                .transformToUni(bpmnToDeploy -> {
+                    bpmnToDeploy.setStatus(status);
+                    return this.bpmnVersionRepository.persist(bpmnToDeploy);});
     }
 
     @WithTransaction
     public Uni<BpmnVersion> setDisabledBpmnAttributes(BpmnVersionPK bpmnVersionPK) {
-        return this.findByPk(bpmnVersionPK)
+        return this.checkBpmnFileExistence(bpmnVersionPK)
                 .onItem()
-                .transformToUni(Unchecked.function(optionalBpmn -> {
-                            if (optionalBpmn.isEmpty()) {
-                                String errorMessage = String.format(
-                                        "La chiave BPMN a cui si fa riferimento non esiste: %s", bpmnVersionPK);
-                                throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
-                                        BPMN_FILE_DOES_NOT_EXIST);
-                            }
-                            BpmnVersion bpmnVersion = optionalBpmn.get();
-                            bpmnVersion.setEnabled(false);
-                            String disabledSha = bpmnVersion.getSha256().concat(UtilityValues.DISABLED_FLAG.getValue()).concat(bpmnVersion.getBpmnId().toString());
-                            bpmnVersion.setSha256(disabledSha);
-                            return this.bpmnVersionRepository.persist(bpmnVersion);
-                        })
-                );
+                .transformToUni(bpmnVersion -> {
+                    bpmnVersion.setEnabled(false);
+                    String disabledSha = bpmnVersion.getSha256().concat(UtilityValues.DISABLED_FLAG.getValue()).concat(bpmnVersion.getBpmnId().toString());
+                    bpmnVersion.setSha256(disabledSha);
+                    return this.bpmnVersionRepository.persist(bpmnVersion);
+                });
     }
 
     @WithTransaction
     public Uni<BpmnVersion> setEnabledBpmnAttributes(BpmnVersionPK bpmnVersionPK) {
-        return this.findByPk(bpmnVersionPK)
+        return this.checkBpmnFileExistence(bpmnVersionPK)
                 .onItem()
-                .transformToUni(Unchecked.function(optionalBpmn -> {
-                            if (optionalBpmn.isEmpty()) {
-                                String errorMessage = String.format(
-                                        "La chiave BPMN a cui si fa riferimento non esiste: %s", bpmnVersionPK);
-                                throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
-                                        BPMN_FILE_DOES_NOT_EXIST);
-                            }
-                            BpmnVersion bpmnVersion = optionalBpmn.get();
-                            bpmnVersion.setEnabled(true);
-                            String[] parts = bpmnVersion.getSha256().split(Pattern.quote(UtilityValues.DISABLED_FLAG.getValue()));
-                            String enabledSha = parts[0];
-                            bpmnVersion.setSha256(enabledSha);
-                            return this.bpmnVersionRepository.persist(bpmnVersion);
-                        })
-                );
+                .transformToUni(bpmnVersion -> {
+                    bpmnVersion.setEnabled(true);
+                    String[] parts = bpmnVersion.getSha256().split(Pattern.quote(UtilityValues.DISABLED_FLAG.getValue()));
+                    String enabledSha = parts[0];
+                    bpmnVersion.setSha256(enabledSha);
+                    return this.bpmnVersionRepository.persist(bpmnVersion);
+                });
     }
 
     public Uni<BpmnVersion> checkBpmnFileExistence(BpmnVersionPK bpmnVersionPK) {
@@ -435,16 +408,9 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @WithTransaction
     public Uni<BpmnVersion> setDeployInfo(BpmnVersionPK key, DeployResponseDto response) {
-        return this.findByPk(key)
+        return checkBpmnFileExistence(key)
                 .onItem()
-                .transformToUni(Unchecked.function(optionalBpmn -> {
-                    if (optionalBpmn.isEmpty()) {
-                        String errorMessage = String.format(
-                                "Uno o alcuni dei file BPMN a cui si fa riferimento non esistono: %s", key);
-                        throw new AtmLayerException(errorMessage, Response.Status.BAD_REQUEST,
-                                BPMN_FILE_DOES_NOT_EXIST);
-                    }
-                    BpmnVersion bpmnVersion = optionalBpmn.get();
+                .transformToUni(bpmnVersion -> {
                     Map<String, DeployedBPMNProcessDefinitionDto> deployedProcessDefinitions = response.getDeployedProcessDefinitions();
                     Optional<DeployedBPMNProcessDefinitionDto> optionalDeployedProcessInfo = deployedProcessDefinitions.values()
                             .stream().findFirst();
@@ -460,7 +426,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                     bpmnVersion.setResource(deployedProcessInfo.getResource());
                     bpmnVersion.setStatus(StatusEnum.DEPLOYED);
                     return this.bpmnVersionRepository.persist(bpmnVersion);
-                }));
+                });
     }
 
     @WithSession

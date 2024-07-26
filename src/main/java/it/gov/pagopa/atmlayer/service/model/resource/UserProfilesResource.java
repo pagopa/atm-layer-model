@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -54,7 +55,7 @@ public class UserProfilesResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<UserProfilesDTO> getById(@PathParam("userId") String userId,
                                         @PathParam("profileId") int profileId) {
-        return this.userProfilesService.findById(userId, profileId)
+        return this.userProfilesService.getById(userId, profileId)
                 .onItem()
                 .transform(user -> userProfilesMapper.toDTO(user));
     }

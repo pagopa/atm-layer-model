@@ -19,8 +19,12 @@ import java.util.Map;
 @Slf4j
 @ApplicationScoped
 public class FileStorageS3Utils {
-    @Inject
     ObjectStoreProperties objectStoreProperties;
+
+    @Inject
+    public FileStorageS3Utils(ObjectStoreProperties objectStoreProperties){
+        this.objectStoreProperties = objectStoreProperties;
+    }
 
     public PutObjectRequest buildPutRequest(String filename, String mimetype, String path) {
         Map<String, String> metadata = new HashMap<>();

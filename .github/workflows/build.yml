@@ -34,6 +34,28 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Build docker image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.DOCKER_IMAGE_NAME}}
+          DOCKER_IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -f src/main/java/it/gov/pagopa/atmlayer/service/model/docker/Dockerfile.native -t $REGISTRY/$REPOSITORY:$DOCKER_IMAGE_TAG . \
+          --build-arg QUARKUS_PROFILE=prod \
+          --build-arg APP_NAME=atm-layer-model
+
+  test-and-coverage:
+    strategy:
+      matrix:
+        environment: [dev]
+    name: "coverage"
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.environment }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
         with:
@@ -90,12 +112,9 @@ jobs:
           script: |
             core.setFailed('Overall coverage is less than 90%!')
 
-      - name: Build docker image
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ vars.DOCKER_IMAGE_NAME}}
-          DOCKER_IMAGE_TAG: ${{ github.sha }}
+      - name: Code Review
         run: |
-          docker build -f src/main/java/it/gov/pagopa/atmlayer/service/model/docker/Dockerfile.native -t $REGISTRY/$REPOSITORY:$DOCKER_IMAGE_TAG . \
-          --build-arg QUARKUS_PROFILE=prod \
-          --build-arg APP_NAME=atm-layer-model
+          mvn sonar:sonar -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=pagopa_atm-layer-model \
+          -Dsonar.organization=pagopa -Dsonar.java.binaries=src/main \
+          -Dsonar.coverage.jacoco.xmlReportPaths=../atm-layer-model/target/jacoco-report/jacoco.xml -Pcoverage \
+          -Dsonar.exclusions=src/main/java/it/gov/pagopa/atmlayer/service/model/docker/Dockerfile.native

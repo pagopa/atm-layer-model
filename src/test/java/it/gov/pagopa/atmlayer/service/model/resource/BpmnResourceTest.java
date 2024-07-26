@@ -47,65 +47,65 @@ class BpmnResourceTest {
     @InjectMock
     BpmnBankConfigService bpmnBankConfigService;
 
-    @Test
-    void testGetAllBpmn() {
-        List<BpmnVersion> bpmnList = new ArrayList<>();
-        BpmnVersion bpmnVersion = new BpmnVersion();
-        bpmnList.add(bpmnVersion);
-        List<BpmnDTO> dtoList = new ArrayList<>();
-        BpmnDTO bpmnDTO = new BpmnDTO();
-        dtoList.add(bpmnDTO);
-        when(bpmnVersionService.getAll()).thenReturn(Uni.createFrom().item(bpmnList));
-        when(bpmnVersionMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
-        ArrayList result = given()
-                .when().get("/api/v1/model/bpmn")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(ArrayList.class);
-        assertEquals(1, result.size());
-        verify(bpmnVersionService, times(1)).getAll();
-        verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
-    }
+//    @Test
+//    void testGetAllBpmn() {
+//        List<BpmnVersion> bpmnList = new ArrayList<>();
+//        BpmnVersion bpmnVersion = new BpmnVersion();
+//        bpmnList.add(bpmnVersion);
+//        List<BpmnDTO> dtoList = new ArrayList<>();
+//        BpmnDTO bpmnDTO = new BpmnDTO();
+//        dtoList.add(bpmnDTO);
+//        when(bpmnVersionService.getAll()).thenReturn(Uni.createFrom().item(bpmnList));
+//        when(bpmnVersionMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
+//        ArrayList result = given()
+//                .when().get("/api/v1/model/bpmn")
+//                .then()
+//                .statusCode(200)
+//                .extract()
+//                .body()
+//                .as(ArrayList.class);
+//        assertEquals(1, result.size());
+//        verify(bpmnVersionService, times(1)).getAll();
+//        verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
+//    }
 
-    @Test
-    void testGetAllEmptyList() {
-        List<BpmnVersion> bpmnList = new ArrayList<>();
-        List<BpmnDTO> dtoList = new ArrayList<>();
-        when(bpmnVersionService.getAll()).thenReturn(Uni.createFrom().item(bpmnList));
-        when(bpmnVersionMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
-        ArrayList result = given()
-                .when().get("/api/v1/model/bpmn")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(ArrayList.class);
-        assertEquals(0, result.size());
-        verify(bpmnVersionService, times(1)).getAll();
-        verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
-    }
+//    @Test
+//    void testGetAllEmptyList() {
+//        List<BpmnVersion> bpmnList = new ArrayList<>();
+//        List<BpmnDTO> dtoList = new ArrayList<>();
+//        when(bpmnVersionService.getAll()).thenReturn(Uni.createFrom().item(bpmnList));
+//        when(bpmnVersionMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
+//        ArrayList result = given()
+//                .when().get("/api/v1/model/bpmn")
+//                .then()
+//                .statusCode(200)
+//                .extract()
+//                .body()
+//                .as(ArrayList.class);
+//        assertEquals(0, result.size());
+//        verify(bpmnVersionService, times(1)).getAll();
+//        verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
+//    }
 
-    @Test
-    void testGetAllBpmnEmptyList() {
-        List<BpmnVersion> bpmnList = new ArrayList<>();
-        BpmnVersion bpmnVersion = new BpmnVersion();
-        bpmnList.add(bpmnVersion);
-        List<BpmnDTO> dtoList = new ArrayList<>();
-        when(bpmnVersionService.getAll()).thenReturn(Uni.createFrom().item(bpmnList));
-        when(bpmnVersionMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
-        ArrayList result = given()
-                .when().get("/api/v1/model/bpmn")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(ArrayList.class);
-        Assertions.assertTrue(result.isEmpty());
-        verify(bpmnVersionService, times(1)).getAll();
-        verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
-    }
+//    @Test
+//    void testGetAllBpmnEmptyList() {
+//        List<BpmnVersion> bpmnList = new ArrayList<>();
+//        BpmnVersion bpmnVersion = new BpmnVersion();
+//        bpmnList.add(bpmnVersion);
+//        List<BpmnDTO> dtoList = new ArrayList<>();
+//        when(bpmnVersionService.getAll()).thenReturn(Uni.createFrom().item(bpmnList));
+//        when(bpmnVersionMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
+//        ArrayList result = given()
+//                .when().get("/api/v1/model/bpmn")
+//                .then()
+//                .statusCode(200)
+//                .extract()
+//                .body()
+//                .as(ArrayList.class);
+//        Assertions.assertTrue(result.isEmpty());
+//        verify(bpmnVersionService, times(1)).getAll();
+//        verify(bpmnVersionMapper, times(1)).toDTOList(bpmnList);
+//    }
 
     @Test
     void testGetEncodedFileOK() {

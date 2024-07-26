@@ -22,6 +22,7 @@ import it.gov.pagopa.atmlayer.service.model.repository.BpmnVersionRepository;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -154,6 +155,9 @@ class BpmnVersionServiceImplTest {
     void testSaveExistingFileException() {
         BpmnVersion bpmnVersion = new BpmnVersion();
         bpmnVersion.setSha256("testSha256");
+        ResourceFile resourceFile = new ResourceFile();
+        resourceFile.setFileName("filename");
+        bpmnVersion.setResourceFile(resourceFile);
         when(bpmnVersionRepoMock.findBySHA256("testSha256")).thenReturn(Uni.createFrom().item(bpmnVersion));
         bpmnVersionServiceImpl.save(bpmnVersion)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
@@ -591,7 +595,7 @@ class BpmnVersionServiceImplTest {
         when(bpmnVersionRepoMock.findById(bpmnVersionPK)).thenReturn(Uni.createFrom().nullItem());
         bpmnVersionServiceImpl.setDeployInfo(bpmnVersionPK, deployResponseDto)
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Uno o alcuni dei file BPMN a cui si fa riferimento non esistono: BpmnVersionPK(bpmnId=" + bpmnVersionPK.getBpmnId() + ", modelVersion=" + bpmnVersionPK.getModelVersion() + ")");
+                .assertFailedWith(AtmLayerException.class, "La chiave BPMN a cui si fa riferimento non esiste: BpmnVersionPK(bpmnId=" + bpmnVersionPK.getBpmnId() + ", modelVersion=" + bpmnVersionPK.getModelVersion() + ")");
         verify(bpmnVersionRepoMock, times(1)).findById(bpmnVersionPK);
     }
 

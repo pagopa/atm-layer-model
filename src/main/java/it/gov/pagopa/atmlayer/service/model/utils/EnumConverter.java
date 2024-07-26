@@ -11,6 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EnumConverter {
 
+    private EnumConverter(){
+        throw new IllegalStateException("Utility class");
+    }
+
     public static <T extends Enum<T>> S3ResourceTypeEnum convertEnum(T specificEnum) {
         try{
             return S3ResourceTypeEnum.valueOf(String.valueOf(specificEnum));

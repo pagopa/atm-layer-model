@@ -7,16 +7,19 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import lombok.AllArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @ApplicationScoped
-@AllArgsConstructor
 public class ObjectStoreStrategyConfig {
+
+    private final Instance<ObjectStoreService> notificationStrategies;
+
     @Inject
-    Instance<ObjectStoreService> notificationStrategies;
+    public ObjectStoreStrategyConfig(Instance<ObjectStoreService> notificationStrategies){
+        this.notificationStrategies = notificationStrategies;
+    }
 
     @Singleton
     public Map<ObjectStoreStrategyEnum, ObjectStoreService> sendNotificationByType() {
