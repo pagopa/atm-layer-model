@@ -99,7 +99,10 @@ class ResourceEntityServiceImplTest {
     void testCreateResourceWithDuplicateSHA256() {
         String sha256 = "duplicateSHA256";
         File file = new File("path/to/file");
+        ResourceFile resourceFile = new ResourceFile();
+        resourceFile.setStorageKey("storageKey");
         ResourceEntity newResourceEntity = new ResourceEntity();
+        newResourceEntity.setResourceFile(resourceFile);
         newResourceEntity.setSha256("duplicateSHA256");
         resourceEntity.setSha256(sha256);
 

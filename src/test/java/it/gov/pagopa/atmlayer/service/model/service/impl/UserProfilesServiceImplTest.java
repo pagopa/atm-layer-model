@@ -264,10 +264,10 @@ class UserProfilesServiceImplTest {
         UserProfiles expectedProfile = new UserProfiles();
         expectedProfile.setUserProfilesPK(userProfilesPK);
 
-        when(userProfilesRepository.findById(userProfilesPK))
+        when(userProfilesRepository.findById(any(UserProfilesPK.class)))
                 .thenReturn(Uni.createFrom().item(expectedProfile));
 
-        Uni<UserProfiles> result = userProfilesService.findById(userId, profileId);
+        Uni<UserProfiles> result = userProfilesService.getById(userId, profileId);
 
         result.subscribe().with(
                 actualProfile -> assertEquals(expectedProfile, actualProfile),
@@ -277,19 +277,13 @@ class UserProfilesServiceImplTest {
 
     @Test
     void testFindByIdNotFound() {
-        String userId = "nonExistingUser";
-        int profileId = 999;
-        UserProfilesPK userProfilesPK = new UserProfilesPK(userId, profileId);
+        UserProfilesPK userProfilesPK = new UserProfilesPK("prova@test.com", 2);
+        when(userProfilesRepository.findById(userProfilesPK)).thenReturn(Uni.createFrom().nullItem());
 
-        when(userProfilesRepository.findById(userProfilesPK))
-                .thenReturn(Uni.createFrom().nullItem());
-
-        Uni<UserProfiles> result = userProfilesService.findById(userId, profileId);
-
-        result.subscribe().with(
-                Assertions::assertNull,
-                throwable -> fail("Test fallito a causa di: " + throwable)
-        );
+        userProfilesService.getById(userProfilesPK.getUserId(), userProfilesPK.getProfileId())
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertFailed();
     }
 
     @Test

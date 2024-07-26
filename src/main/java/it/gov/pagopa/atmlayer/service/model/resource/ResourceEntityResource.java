@@ -9,6 +9,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.ResourceEntityMapper;
+import it.gov.pagopa.atmlayer.service.model.mapper.ResourceFileMapper;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceFrontEndDTO;
@@ -31,6 +32,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_FILE_DOES_NOT_EXIST;
