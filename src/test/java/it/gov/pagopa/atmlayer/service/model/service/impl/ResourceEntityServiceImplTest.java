@@ -4,6 +4,7 @@ import io.quarkus.hibernate.reactive.panache.PanacheQuery;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
+import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
@@ -12,6 +13,7 @@ import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.ObjectStoreResponse;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.repository.ResourceEntityRepository;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,6 +22,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -313,5 +317,82 @@ class ResourceEntityServiceImplTest {
                 .withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted();
     }
+
+    @Test
+    void testCreateResourceMultipleResourceExistsException() {
+        ResourceEntity resourceEntity1 = getResourceEntityInstance();
+        ResourceFile resourceFile = new ResourceFile();
+        when(resourceEntityRepository.findBySHA256(any(String.class))).thenReturn(Uni.createFrom().item(resourceEntity1));
+        when(resourceEntityStorageService.saveFile(any(ResourceEntity.class), any(File.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().item(resourceFile));
+        resourceEntityService.createResourceMultiple(getResourceEntityListInstance(), getResourceCreationDtoInstance())
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class, "Alcuni file non sono stati creati: ");
+    }
+
+    @Test
+    void testCreateResourceMultipleStorageKeyExistsException() {
+        ResourceEntity resourceEntity1 = getResourceEntityInstance();
+        ResourceFile resourceFile = new ResourceFile();
+        when(resourceEntityRepository.findBySHA256(any(String.class))).thenReturn(Uni.createFrom().nullItem());
+        when(resourceFileService.findByStorageKey(any(String.class))).thenReturn(Uni.createFrom().item(Optional.of(resourceFile)));
+        when(resourceEntityStorageService.saveFile(any(ResourceEntity.class), any(File.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().item(resourceFile));
+        resourceEntityService.createResourceMultiple(getResourceEntityListInstance(), getResourceCreationDtoInstance())
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class, "Alcuni file non sono stati creati: ");
+    }
+
+    @Test
+    void testCreateResourceMultipleSyncProblemException() {
+        ResourceEntity resourceEntity1 = getResourceEntityInstance();
+        ResourceFile resourceFile = new ResourceFile();
+        when(resourceEntityRepository.findBySHA256(any(String.class))).thenReturn(Uni.createFrom().item(resourceEntity1));
+        when(resourceEntityRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
+        when(resourceFileService.findByStorageKey(any(String.class))).thenReturn(Uni.createFrom().item(Optional.empty()));
+        when(resourceEntityStorageService.saveFile(any(ResourceEntity.class), any(File.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().item(resourceFile));
+        resourceEntityService.createResourceMultiple(getResourceEntityListInstance(), getResourceCreationDtoInstance())
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class, "Alcuni file non sono stati creati: ");
+    }
+
+    @Test
+    void testCreateResourceMultipleOK() {
+        ResourceEntity resourceEntity = getResourceEntityInstance();
+        ResourceFile resourceFile = new ResourceFile();
+        when(resourceEntityRepository.findBySHA256(any(String.class))).thenReturn(Uni.createFrom().nullItem());
+        when(resourceEntityRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().item(resourceEntity));
+        when(resourceFileService.findByStorageKey(any(String.class))).thenReturn(Uni.createFrom().item(Optional.empty()));
+        when(resourceEntityRepository.persist(any(ResourceEntity.class))).thenReturn(Uni.createFrom().item(resourceEntity));
+        when(resourceEntityStorageService.saveFile(any(ResourceEntity.class), any(File.class), any(String.class), any(String.class))).thenReturn(Uni.createFrom().item(resourceFile));
+        resourceEntityService.createResourceMultiple(getResourceEntityListInstance(), getResourceCreationDtoInstance())
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .assertCompleted();
+    }
+
+    private List<ResourceCreationDto> getResourceCreationDtoInstance(){
+        ResourceCreationDto resourceCreationDto = new ResourceCreationDto(new File("test.txt"), "filename", NoDeployableResourceType.HTML, "path", "description");
+        List<ResourceCreationDto> dtoList = new ArrayList<>();
+        dtoList.add(resourceCreationDto);
+        return dtoList;
+    }
+
+    private List<ResourceEntity> getResourceEntityListInstance() {
+        ResourceEntity resourceEntity1 = getResourceEntityInstance();
+        List<ResourceEntity> entityList = new ArrayList<>();
+        entityList.add(resourceEntity1);
+        return entityList;
+    }
+
+    private ResourceEntity getResourceEntityInstance(){
+        ResourceEntity resourceEntity1 = new ResourceEntity();
+        resourceEntity1.setSha256("sha256");
+        resourceEntity1.setStorageKey("storageKey");
+        resourceEntity1.setResourceId(UUID.randomUUID());
+        return resourceEntity1;
+    }
+
 
 }
