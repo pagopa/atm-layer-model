@@ -10,21 +10,21 @@ class ObjectStorePutResponseTest {
 
     @Test
     void testAllArgsConstructor() {
-        ObjectStorePutResponse response = new ObjectStorePutResponse("12345");
+        ObjectStoreResponse response = new ObjectStoreResponse("12345");
         assertNotNull(response);
         assertEquals("12345", response.getStorageKey());
     }
 
     @Test
     void testNoArgsConstructor() {
-        ObjectStorePutResponse response = new ObjectStorePutResponse();
+        ObjectStoreResponse response = new ObjectStoreResponse();
         assertNotNull(response);
         assertNull(response.getStorageKey());
     }
 
     @Test
     void testBuilder() {
-        ObjectStorePutResponse response = ObjectStorePutResponse.builder()
+        ObjectStoreResponse response = ObjectStoreResponse.builder()
                 .storageKey("67890")
                 .build();
 
@@ -34,23 +34,23 @@ class ObjectStorePutResponseTest {
 
     @Test
     void testGetterAndSetter() {
-        ObjectStorePutResponse response = new ObjectStorePutResponse();
+        ObjectStoreResponse response = new ObjectStoreResponse();
         response.setStorageKey("54321");
         assertEquals("54321", response.getStorageKey());
     }
 
     @Test
     void testToString() {
-        ObjectStorePutResponse response = new ObjectStorePutResponse("99999");
-        String expectedToString = "ObjectStorePutResponse(storageKey=99999)";
+        ObjectStoreResponse response = new ObjectStoreResponse("99999");
+        String expectedToString = "ObjectStoreResponse(storageKey=99999)";
         assertEquals(expectedToString, response.toString());
     }
 
     @Test
     void testEqualsAndHashCode() {
-        ObjectStorePutResponse response1 = new ObjectStorePutResponse("12345");
-        ObjectStorePutResponse response2 = new ObjectStorePutResponse("12345");
-        ObjectStorePutResponse response3 = new ObjectStorePutResponse("67890");
+        ObjectStoreResponse response1 = new ObjectStoreResponse("12345");
+        ObjectStoreResponse response2 = new ObjectStoreResponse("12345");
+        ObjectStoreResponse response3 = new ObjectStoreResponse("67890");
         assertEquals(response1, response2);
         assertNotEquals(response1, response3);
         assertEquals(response1.hashCode(), response2.hashCode());

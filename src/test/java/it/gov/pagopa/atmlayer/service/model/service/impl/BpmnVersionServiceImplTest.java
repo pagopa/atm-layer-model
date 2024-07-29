@@ -11,10 +11,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.BpmnBankConfig;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersionPK;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
-import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
-import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
-import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
-import it.gov.pagopa.atmlayer.service.model.enumeration.StatusEnum;
+import it.gov.pagopa.atmlayer.service.model.enumeration.*;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.mapper.BpmnVersionMapper;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
@@ -34,8 +31,7 @@ import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -57,6 +53,23 @@ class BpmnVersionServiceImplTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testSetEnabledBpmnAttributes() {
+        BpmnVersionPK pk = new BpmnVersionPK();
+        BpmnVersion bpmnVersion = new BpmnVersion();
+        bpmnVersion.setSha256("sha256value" + UtilityValues.DISABLED_FLAG.getValue());
+
+        when(bpmnVersionRepoMock.findById(pk)).thenReturn(Uni.createFrom().item(bpmnVersion));
+        when(bpmnVersionRepoMock.persist(bpmnVersion)).thenReturn(Uni.createFrom().item(bpmnVersion));
+
+        Uni<BpmnVersion> resultUni = bpmnVersionServiceImpl.setEnabledBpmnAttributes(pk);
+
+        BpmnVersion result = resultUni.subscribe().asCompletionStage().join();
+        assertNotNull(result);
+        assertTrue(result.getEnabled());
+        assertEquals("sha256value", result.getSha256());
     }
 
     @Test

@@ -2,13 +2,16 @@ package it.gov.pagopa.atmlayer.service.model.service.impl;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.client.ProcessClient;
+import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
+import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.UtilityValues;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
@@ -138,6 +141,57 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     }
 
     @Override
+    public Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<ResourceCreationDto> resourceCreationDtoList) {
+        List<String> errors = new ArrayList<>();
+
+        return Multi.createFrom().items(resourceEntityList.stream())
+                .onItem().transformToUniAndConcatenate(resourceEntity -> {
+                    int index = resourceEntityList.indexOf(resourceEntity);
+                    File file = resourceCreationDtoList.get(index).getFile();
+                    String filename = resourceCreationDtoList.get(index).getFilename();
+
+                    return findBySHA256(resourceEntity.getSha256())
+                            .onItem().transformToUni(x -> {
+                                if (x.isPresent()) {
+                                    errors.add(String.format("File %s: Esiste già una risorsa con lo stesso contenuto", filename));
+                                    return Uni.createFrom().nullItem();
+                                }
+                                return resourceFileService.findByStorageKey(resourceEntity.getStorageKey())
+                                        .onItem()
+                                        .transformToUni(resource -> {
+                                            if (resource.isPresent()) {
+                                                errors.add(String.format("File %s: Impossibile caricare: la risorsa con lo stesso nome file e percorso esiste già", filename));
+                                                return Uni.createFrom().nullItem();
+                                            }
+                                            return saveAndUpload(resourceEntity, file, filename, resourceCreationDtoList.get(index).getPath())
+                                                    .onItem().transformToUni(bpmn -> this.findByUUID(resourceEntity.getResourceId())
+                                                            .onItem().transformToUni(optionalResource -> {
+                                                                if (optionalResource.isEmpty()) {
+                                                                    errors.add(String.format("File %s: Problema di sincronizzazione sulla creazione della risorsa", filename));
+                                                                    return Uni.createFrom().nullItem();
+                                                                }
+                                                                return Uni.createFrom().item(optionalResource.get());
+                                                            }));
+                                        });
+                            })
+                            .onFailure().recoverWithItem(throwable -> {
+                                errors.add(String.format("File %s: %s", filename, throwable.getMessage()));
+                                return null;
+                            });
+                })
+                .collect().asList()
+                .onItem().transform(resourceDTOList -> {
+                    if (!errors.isEmpty()) {
+                        throw new AtmLayerException("Alcuni file non sono stati creati: " + String.join(", ", errors),
+                                Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
+                    } else {
+                        errors.add("file creati senza errori");
+                    }
+                    return errors;  // This will be empty if no errors occurred
+                });
+    }
+
+    @Override
     @WithTransaction
     public Uni<ResourceEntity> updateResource(UUID uuid, File file) {
         return this.findByUUID(uuid)
@@ -188,10 +242,27 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     }
 
     @Override
+    @WithTransaction
     public Uni<Void> disable(UUID uuid) {
-        return this.setDisabledResourceEntityAttributes(uuid)
+        return resourceEntityRepository.findById(uuid)
                 .onItem()
-                .transformToUni(disabledResourceEntity -> Uni.createFrom().voidItem());
+                .transformToUni(resourceEntity -> {
+                    String originalStorageKey = resourceEntity.getResourceFile().getStorageKey();
+                    String originalFileName = resourceEntity.getResourceFile().getFileName();
+                    S3ResourceTypeEnum originalType = resourceEntity.getResourceFile().getResourceType();
+                    return this.setDisabledResourceEntityAttributes(uuid)
+                            .onItem()
+                            .transformToUni(disabledEntity -> resourceFileService.updateStorageKey(disabledEntity)
+                                    .onItem()
+                                    .transformToUni(resourceFileUpdated -> resourceEntityStorageService.uploadDisabledFile(originalStorageKey, resourceFileUpdated.getStorageKey(), originalType, originalFileName)
+                                            .onItem()
+                                            .transformToUni(itemToDelete -> resourceEntityStorageService.delete(originalStorageKey)
+                                                    .onItem()
+                                                    .transformToUni(deletedFile -> Uni.createFrom().voidItem())
+                                            )
+                                    )
+                            );
+                });
     }
 
     @WithTransaction

@@ -8,7 +8,7 @@ import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorType;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
-import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
+import it.gov.pagopa.atmlayer.service.model.model.ObjectStoreResponse;
 import it.gov.pagopa.atmlayer.service.model.service.S3ObjectStoreService;
 import it.gov.pagopa.atmlayer.service.model.utils.FileStorageS3Utils;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,6 +22,8 @@ import org.reactivestreams.Publisher;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -89,14 +91,14 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
         return RestMulti.fromUniResponse(Uni.createFrom()
                         .completionStage(() -> s3.getObject(fileStorageS3Utils.buildGetRequest(key),
                                 AsyncResponseTransformer.toPublisher())),
-                response -> Multi.createFrom().safePublisher(AdaptersToFlow.publisher((Publisher<ByteBuffer>) response))
+                response -> Multi.createFrom().safePublisher(AdaptersToFlow.publisher(response))
                         .map(this::toBuffer),
                 response -> Map.of("Content-Disposition", List.of("attachment;filename="), "Content-Type",
                         List.of(response.response().contentType())));
     }
 
 
-    public Uni<ObjectStorePutResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) {
+    public Uni<ObjectStoreResponse> uploadFile(File file, String path, S3ResourceTypeEnum fileType, String filename) {
         if (StringUtils.isBlank(filename)) {
             String errorMessage = String.format("Aggiornamento file S3: nome file %s non valido", filename);
             log.error(errorMessage);
@@ -123,8 +125,38 @@ public class S3ObjectStoreServiceImpl implements S3ObjectStoreService {
                 })
                 .onItem().transformToUni(res -> {
                     log.info("success uploading from s3");
-                    return Uni.createFrom().item(ObjectStorePutResponse.builder().storageKey(putObjectRequest.key()).build());
+                    return Uni.createFrom().item(ObjectStoreResponse.builder().storageKey(putObjectRequest.key()).build());
                 });
+    }
+
+    public Uni<ObjectStoreResponse> uploadDisabledFile(String originalStorageKey, String newStorageKey, S3ResourceTypeEnum fileType, String fileName) {
+
+        CopyObjectRequest copyObjectRequest = fileStorageS3Utils.buildCopyRequest(originalStorageKey, newStorageKey, getMimetype(fileType, fileName));
+        return Uni.createFrom().future(() -> s3.copyObject(copyObjectRequest))
+                .onFailure().transform(error -> {
+                    String errorMessage = "Errore nel caricamento del file da disabilitare su S3";
+                    log.error(errorMessage, error);
+                    return new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
+                })
+                .onItem().transformToUni(res -> {
+                    log.info("success uploading disabled file from s3");
+                    return Uni.createFrom().item(ObjectStoreResponse.builder().storageKey(copyObjectRequest.destinationKey()).build());
+                });
+    }
+
+    public Uni<ObjectStoreResponse> delete(String storageKey) {
+        DeleteObjectRequest deleteObjectRequest = fileStorageS3Utils.buildDeleteRequest(storageKey);
+        return Uni.createFrom().future(() -> s3.deleteObject(deleteObjectRequest))
+                .onFailure().transform(error -> {
+                    String errorMessage = "Errore nel eliminazione del file su S3";
+                    log.error(errorMessage, error);
+                    return new AtmLayerException(errorMessage, Response.Status.INTERNAL_SERVER_ERROR, AppErrorType.INTERNAL.name());
+                })
+                .onItem().transformToUni(res -> {
+                    log.info("success deleting file on s3");
+                    return Uni.createFrom().item(ObjectStoreResponse.builder().storageKey(deleteObjectRequest.key()).build());
+                });
+
     }
 
     private String getMimetype(S3ResourceTypeEnum fileType, String filename) {

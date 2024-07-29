@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.FormParam;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -14,6 +15,7 @@ import java.io.File;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ResourceCreationDto {
 
   @FormParam("file")

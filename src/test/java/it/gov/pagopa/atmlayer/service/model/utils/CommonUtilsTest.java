@@ -1,10 +1,11 @@
 package it.gov.pagopa.atmlayer.service.model.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
+
 import java.nio.file.FileSystems;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
 class CommonUtilsTest {

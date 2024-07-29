@@ -4,6 +4,7 @@ import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
+import it.gov.pagopa.atmlayer.service.model.dto.ResourceMultipleCreationDtoJSON;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.enumeration.NoDeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
@@ -31,6 +32,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.UUID;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_FILE_DOES_NOT_EXIST;
@@ -70,6 +72,19 @@ public class ResourceEntityResource {
                         resourceCreationDto.getFilename(), resourceCreationDto.getPath(), resourceCreationDto.getDescription())
                 .onItem()
                 .transformToUni(resource -> Uni.createFrom().item(resourceEntityMapper.toDTO(resource)));
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/multiple")
+    public Uni<List<String>> createResourceMultiple(@RequestBody(required = true) ResourceMultipleCreationDtoJSON resourceMultipleCreationDto) {
+        log.info("start multiple with form data = {}", resourceMultipleCreationDto);
+
+        List<ResourceCreationDto> resourceCreationDtoList = resourceEntityMapper.convertToResourceCreationDtoList(resourceMultipleCreationDto);
+        List<ResourceEntity> resourceEntityList = resourceEntityMapper.toEntityCreationList(resourceCreationDtoList);
+        return resourceEntityService.createResourceMultiple(resourceEntityList, resourceCreationDtoList);
+
     }
 
     @PUT

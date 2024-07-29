@@ -11,7 +11,7 @@ import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.enumeration.ObjectStoreStrategyEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.S3ResourceTypeEnum;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnIdDto;
-import it.gov.pagopa.atmlayer.service.model.model.ObjectStorePutResponse;
+import it.gov.pagopa.atmlayer.service.model.model.ObjectStoreResponse;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
 import it.gov.pagopa.atmlayer.service.model.service.BpmnFileStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.ObjectStoreService;
@@ -50,7 +50,7 @@ public class BpmnFileStorageServiceImpl implements BpmnFileStorageService {
     }
 
     @WithTransaction
-    public Uni<ResourceFile> writeResourceInfoToDatabase(BpmnVersion bpmn, ObjectStorePutResponse putObjectResponse, String filename) {
+    public Uni<ResourceFile> writeResourceInfoToDatabase(BpmnVersion bpmn, ObjectStoreResponse putObjectResponse, String filename) {
         ResourceFile entity = ResourceFile.builder()
                 .fileName(filename)
                 .resourceType(S3ResourceTypeEnum.BPMN)

@@ -9,6 +9,6 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
-public class ObjectStorePutResponse {
+public class ObjectStoreResponse {
     String storageKey;
 }
