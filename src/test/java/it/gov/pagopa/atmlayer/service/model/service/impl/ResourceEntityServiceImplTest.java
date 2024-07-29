@@ -100,16 +100,15 @@ class ResourceEntityServiceImplTest {
         String sha256 = "duplicateSHA256";
         File file = new File("path/to/file");
         ResourceFile resourceFile = new ResourceFile();
-        resourceFile.setStorageKey("storageKey");
-        ResourceEntity newResourceEntity = new ResourceEntity();
-        newResourceEntity.setResourceFile(resourceFile);
-        newResourceEntity.setSha256("duplicateSHA256");
-        resourceEntity.setSha256(sha256);
+        resourceFile.setStorageKey("storageKeyThatIsLongEnoughToAvoidException");
+        ResourceEntity existingResourceEntity = new ResourceEntity();
+        existingResourceEntity.setResourceFile(resourceFile);
+        existingResourceEntity.setSha256(sha256);
 
 
-        when(resourceEntityRepository.findBySHA256(sha256)).thenReturn(Uni.createFrom().item(newResourceEntity));
+        when(resourceEntityRepository.findBySHA256(sha256)).thenReturn(Uni.createFrom().item(existingResourceEntity));
 
-        resourceEntityService.createResource(newResourceEntity, file, "filename", "path", "description")
+        resourceEntityService.createResource(existingResourceEntity, file, "filename", "path", "description")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "Esiste già una risorsa con lo stesso contenuto");
     }
