@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 90.31%               |
-| :heavy_check_mark: Number of Lines Covered | 2460    |
-| :x: Number of Lines Missed  | 264     |
-| Total Number of Lines   | 2724     |
+| Code Coverage %         | 90.08%               |
+| :heavy_check_mark: Number of Lines Covered | 2587    |
+| :x: Number of Lines Missed  | 285     |
+| Total Number of Lines   | 2872     |
 
 
 ## Details:
@@ -165,12 +165,16 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityMapper.java
+:x: ResourceEntityMapper.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
+- Line #70
+```
+                    } catch (NoSuchAlgorithmException | IOException e) {
+```
 </details>
 
     
@@ -520,7 +524,7 @@
 
 <details>
     <summary>
-:x: ObjectStorePutResponse.java
+:x: ObjectStoreResponse.java
     </summary>
 
         
@@ -798,15 +802,11 @@
         
 #### Lines Missed:
         
-- Line #94
+- Line #96
 ```
                                 .recoverWithUni(failure -> {
 ```
-- Line #158
-```
-                .transformToUni(bpmnVersion -> {
-```
-- Line #255
+- Line #257
 ```
                                                         .recoverWithUni(failure -> {
 ```
@@ -834,10 +834,6 @@
         
 #### Lines Missed:
         
-- Line #173
-```
-                                    List<UserProfiles> userProfilesToAdd = userProfilesToUpdate.stream().filter(j -> !userProfilesSavedIds.contains(j.getUserProfilesPK().getProfileId())).toList();
-```
 - Line #198
 ```
                 .transformToUni(isAtLeastTwo -> {
@@ -866,7 +862,7 @@
         
 #### Lines Missed:
         
-- Line #134
+- Line #166
 ```
         } catch (Exception e) {
 ```
@@ -1112,6 +1108,10 @@
         
 #### Lines Missed:
         
+- Line #107
+```
+        } catch (IOException e) {
+```
 </details>
 
     
@@ -1240,11 +1240,11 @@
 
 <details>
     <summary>
-:x: BpmnEntityValidator.java
+:heavy_check_mark: BpmnEntityValidator.java
     </summary>
 
         
-#### Lines Missed:
+#### All Lines Covered!
         
 </details>
 
@@ -1416,6 +1416,16 @@
 <details>
     <summary>
 :x: ResourceCreationDto.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
+:x: ResourceMultipleCreationDtoJSON.java
     </summary>
 
         
