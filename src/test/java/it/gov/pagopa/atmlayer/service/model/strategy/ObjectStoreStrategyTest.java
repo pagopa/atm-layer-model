@@ -33,8 +33,6 @@ class ObjectStoreStrategyTest {
         ObjectStoreStrategy objectStoreStrategy = new ObjectStoreStrategy(selectObjectStoreByType);
         when(selectObjectStoreByType.getOrDefault(any(ObjectStoreStrategyEnum.class), null))
                 .thenReturn(null);
-        Assertions.assertThrows(AtmLayerException.class, () -> {
-            objectStoreStrategy.getType(ObjectStoreStrategyEnum.AWS_S3);
-        });
+        Assertions.assertThrows(AtmLayerException.class, () -> objectStoreStrategy.getType(ObjectStoreStrategyEnum.AWS_S3));
     }
 }

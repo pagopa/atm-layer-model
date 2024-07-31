@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Optional;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_DOES_NOT_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.utils.FileStorageS3Utils.modifyPath;
 import static java.lang.String.valueOf;
 
 @ApplicationScoped
@@ -55,6 +56,22 @@ public class ResourceFileServiceImpl implements ResourceFileService {
                     }
                     return Uni.createFrom().item(optionalResourceFile.get().getStorageKey());
                 }));
+    }
+
+    @Override
+    @WithTransaction
+    public Uni<ResourceFile> updateStorageKey(ResourceEntity resourceEntity) {
+        return resourceFileRepository.findByStorageKey(resourceEntity.getResourceFile().getStorageKey())
+                .onItem().transformToUni(resourceFileFound -> {
+                    if (resourceFileFound == null) {
+                        throw new AtmLayerException("La risorsa di riferimento non esiste: impossibile aggiornare la chiave di archiviazione", Response.Status.BAD_REQUEST, RESOURCE_DOES_NOT_EXIST);
+                    }
+                    String newStorageKey = modifyPath(resourceFileFound.getStorageKey());
+                    resourceFileFound.setStorageKey(newStorageKey);
+                    return resourceFileRepository.persist(resourceFileFound)
+                            .onItem()
+                            .transformToUni(newResourceFile -> Uni.createFrom().item(newResourceFile));
+                });
     }
 
     @Override

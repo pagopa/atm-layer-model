@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import it.gov.pagopa.atmlayer.service.model.dto.ResourceCreationDto;
+import it.gov.pagopa.atmlayer.service.model.dto.ResourceMultipleCreationDtoJSON;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceEntity;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceDTO;
@@ -15,7 +16,11 @@ import org.mapstruct.Named;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.fromStringToFile;
 
 @Mapper(componentModel = "cdi")
 public abstract class ResourceEntityMapper {
@@ -35,6 +40,41 @@ public abstract class ResourceEntityMapper {
         resourceEntity.setEnabled(true);
         return resourceEntity;
     }
+
+    public List<ResourceCreationDto> convertToResourceCreationDtoList(ResourceMultipleCreationDtoJSON multipleDto) {
+        List<ResourceCreationDto> resourceCreationDtoList = new ArrayList<>();
+
+        if (multipleDto.getFileList().size() != multipleDto.getFilenameList().size()) {
+            throw new IllegalArgumentException("File list and filename list must have the same size");
+        }
+
+        for (int i = 0; i < multipleDto.getFilenameList().size(); i++) {
+            ResourceCreationDto resourceCreationDto = new ResourceCreationDto();
+
+            resourceCreationDto.setFile(fromStringToFile(multipleDto.getFileList().get(i), multipleDto.getPath()));
+            resourceCreationDto.setFilename(multipleDto.getFilenameList().get(i));
+            resourceCreationDto.setResourceType(multipleDto.getResourceType());
+            resourceCreationDto.setPath(multipleDto.getPath());
+            resourceCreationDto.setDescription(multipleDto.getDescription());
+
+            resourceCreationDtoList.add(resourceCreationDto);
+        }
+
+        return resourceCreationDtoList;
+    }
+
+   public List<ResourceEntity> toEntityCreationList(List<ResourceCreationDto> resourceCreationDtoList) {
+        return resourceCreationDtoList.stream().map(resourceCreationDto -> {
+                    try {
+                        return toEntityCreation(resourceCreationDto);
+                    } catch (NoSuchAlgorithmException | IOException e) {
+                        //todo lanciare eccezione custom
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
 
     public abstract ResourceDTO toDTO(ResourceEntity resourceEntity);
 

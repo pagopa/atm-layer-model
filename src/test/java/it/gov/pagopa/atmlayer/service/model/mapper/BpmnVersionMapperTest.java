@@ -1,18 +1,19 @@
 package it.gov.pagopa.atmlayer.service.model.mapper;
 
 import io.quarkus.test.junit.QuarkusTest;
+import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
+import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import it.gov.pagopa.atmlayer.service.model.model.BpmnFrontEndDTO;
 import it.gov.pagopa.atmlayer.service.model.model.PageInfo;
 import jakarta.inject.Inject;
-
-import it.gov.pagopa.atmlayer.service.model.entity.BpmnVersion;
-import it.gov.pagopa.atmlayer.service.model.model.BpmnDTO;
 import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @QuarkusTest
 class BpmnVersionMapperTest {
 

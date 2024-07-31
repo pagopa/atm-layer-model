@@ -2,13 +2,13 @@ package it.gov.pagopa.atmlayer.service.model.utils;
 
 import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.properties.ObjectStoreProperties;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,10 +21,10 @@ import static org.mockito.Mockito.when;
 class FileStorageS3UtilsTest {
 
     @InjectMocks
-    private FileStorageS3Utils fileStorageS3Utils;
+    FileStorageS3Utils fileStorageS3Utils;
 
     @Mock
-    private ObjectStoreProperties objectStoreProperties;
+    ObjectStoreProperties objectStoreProperties;
 
     @BeforeEach
     void setUp() {

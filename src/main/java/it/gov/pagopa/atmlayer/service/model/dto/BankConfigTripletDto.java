@@ -1,8 +1,10 @@
 package it.gov.pagopa.atmlayer.service.model.dto;
 
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.util.Objects;
 
@@ -10,8 +12,11 @@ import java.util.Objects;
 @Getter
 @Setter
 public class BankConfigTripletDto {
+    @Schema(format = "byte", maxLength = 255)
     private String acquirerId;
+    @Schema(format = "byte", maxLength = 255)
     private String branchId;
+    @Schema(format = "byte", maxLength = 255)
     private String terminalId;
 
     @Override

@@ -68,11 +68,13 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
         return this.findBySHA256(bpmnVersion.getSha256())
                 .onItem().transform(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException(String.format("Esiste già un file BPMN con lo stesso contenuto: %s", x.get().getDeployedFileName()), Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
+                        throw new AtmLayerException(String.format("Esiste già un file BPMN con lo stesso contenuto: %s , versione %s", x.get().getResourceFile().getFileName(), x.get().getModelVersion()), Response.Status.BAD_REQUEST, BPMN_FILE_WITH_SAME_CONTENT_ALREADY_EXIST);
                     }
                     return x;
                 }))
-                .onItem().transformToUni(t -> this.bpmnVersionRepository.persist(bpmnVersion));
+                .onItem().transformToUni(t -> {
+                    return this.bpmnVersionRepository.persist(bpmnVersion);
+                });
     }
 
     @WithTransaction
