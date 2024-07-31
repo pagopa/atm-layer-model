@@ -51,17 +51,17 @@ public enum AppErrorCodeEnum {
     BPMN_ALREADY_DISABLED("ATMLM_4000039", "La risorsa di processo indicata è già disabilitata", CANNOT_DISABLE),
     DUPLICATE_ASSOCIATION_CONFIGS("ATMLM_4000040", "Impossibile salvare le associazioni: banca/filiale/terminale duplicata in input", INVALID_ARGUMENT),
     PAGE_SIZE_WRONG_VALUE("ATMLM_4000041", "Pagina e dimensione non devono essere nulli o vuoti, e la dimensione deve essere maggiore di zero", INVALID_ARGUMENT),
-    ILLEGAL_CONFIGURATION_TRIPLET("ATMLM_4000042", "L'id della banca deve essere specificato per l'id della filiale, e l'id della filiale deve essere specificato per l'id del terminale", INVALID_ARGUMENT),
-    CONFIGURATION_TRIPLET_ALREADY_ASSOCIATED("ATMLM_4000043", "La banca/filiale/terminale indicata è già associata a una risorsa di processo", CANNOT_ASSOCIATE),
-    CONFIGURATION_DOES_NOT_EXIST("ATMLM_4000044", "La banca/filiale/terminale indicata non esiste", NOT_EXISTING_REFERENCED_ENTITY),
-    CONFIGURATION_TRIPLET_NOT_ASSOCIATED("ATMLM_4000045", "La banca/filiale/terminale indicata non ha associazioni per il tipo di funzione indicato. Creare un'associazione prima di sostituirla", CANNOT_REPLACE_ASSOCIATION),
-    WORKFLOW_RESOURCE_INTERNAL_ERROR("ATMLM_4000046", "Nessun file associato alla risorsa aggiuntiva di processo o nessuna storageKey trovata", INTERNAL),
-    BPMN_INTERNAL_ERROR("ATMLM_4000047", "Nessun file associato a BPMN o nessuna storageKey trovata", INTERNAL),
-    BPMN_FILE_CANNOT_BE_UNDEPLOYED("ATMLM_4000048", "La risorsa di processo indicata non può essere rilasciata", INTERNAL),
-    NO_ASSOCIATION_FOUND("ATMLM_4000049","Nessuna associazione trovata", CONSTRAINT_VIOLATION),
-    ALL_FIELDS_ARE_BLANK("ATMLM_4000050", "Tutti i campi sono vuoti", AppErrorType.BLANK_FIELDS),
-    RESOURCES_CREATION_ERROR("ATMLM_4000051", "Errore nella creazione di resource multipli", GENERIC ),
-    FILE_DECODE_ERROR("ATMLM_4000052", "Errore nella decodifica del file", GENERIC );
+    ILLEGAL_CONFIGURATION_TRIPLET("ATMLM_4000046", "L'id della banca deve essere specificato per l'id della filiale, e l'id della filiale deve essere specificato per l'id del terminale", INVALID_ARGUMENT),
+    CONFIGURATION_TRIPLET_ALREADY_ASSOCIATED("ATMLM_4000047", "La banca/filiale/terminale indicata è già associata a una risorsa di processo", CANNOT_ASSOCIATE),
+    CONFIGURATION_DOES_NOT_EXIST("ATMLM_4000048", "La banca/filiale/terminale indicata non esiste", NOT_EXISTING_REFERENCED_ENTITY),
+    CONFIGURATION_TRIPLET_NOT_ASSOCIATED("ATMLM_4000049", "La banca/filiale/terminale indicata non ha associazioni per il tipo di funzione indicato. Creare un'associazione prima di sostituirla", CANNOT_REPLACE_ASSOCIATION),
+    WORKFLOW_RESOURCE_INTERNAL_ERROR("ATMLM_4000050", "Nessun file associato alla risorsa aggiuntiva di processo o nessuna storageKey trovata", INTERNAL),
+    BPMN_INTERNAL_ERROR("ATMLM_4000051", "Nessun file associato a BPMN o nessuna storageKey trovata", INTERNAL),
+    BPMN_FILE_CANNOT_BE_UNDEPLOYED("ATMLM_4000052", "La risorsa di processo indicata non può essere rilasciata", INTERNAL),
+    NO_ASSOCIATION_FOUND("ATMLM_4000060","Nessuna associazione trovata", CONSTRAINT_VIOLATION),
+    ALL_FIELDS_ARE_BLANK("ATMLM_4000061", "Tutti i campi sono vuoti", AppErrorType.BLANK_FIELDS),
+    RESOURCES_CREATION_ERROR("ATMLM_4000062", "Errore nella creazione di resource multipli", GENERIC ),
+    FILE_DECODE_ERROR("ATMLM_4000063", "Errore nella decodifica del file", GENERIC );
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;
