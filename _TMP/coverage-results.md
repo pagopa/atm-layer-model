@@ -1,7 +1,7 @@
 
 # Coverage Report: JaCoCo
 
-* IntegrationTest (QuarkusTest)
+* S3PreSignerLocalTest (QuarkusTest)
       
       
 | Outcome                 | Value                                                               |
