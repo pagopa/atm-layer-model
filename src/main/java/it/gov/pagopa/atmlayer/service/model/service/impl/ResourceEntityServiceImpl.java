@@ -143,13 +143,11 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     @Override
     public Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<ResourceCreationDto> resourceCreationDtoList) {
         List<String> errors = new ArrayList<>();
-
         return Multi.createFrom().items(resourceEntityList.stream())
                 .onItem().transformToUniAndConcatenate(resourceEntity -> {
                     int index = resourceEntityList.indexOf(resourceEntity);
                     File file = resourceCreationDtoList.get(index).getFile();
                     String filename = resourceCreationDtoList.get(index).getFilename();
-
                     return findBySHA256(resourceEntity.getSha256())
                             .onItem().transformToUni(x -> {
                                 if (x.isPresent()) {
@@ -203,25 +201,33 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     }
                     ResourceEntity resourceEntity = optionalResource.get();
                     String newFileSha256 = calculateSha256(file);
-                    if (Objects.equals(resourceEntity.getSha256(), newFileSha256)) {
-                        throw new AtmLayerException("La risorsa è già presente", Response.Status.BAD_REQUEST, RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
-                    }
-                    resourceEntity.setSha256(newFileSha256);
-                    Date date = new Date();
-                    resourceEntity.setLastUpdatedAt(new Timestamp(date.getTime()));
-                    resourceEntity.getResourceFile().setLastUpdatedAt(new Timestamp(date.getTime()));
-                    return resourceEntityRepository.persist(resourceEntity)
-                            .onItem()
-                            .transformToUni(x -> {
-                                String storageKey = resourceEntity.getResourceFile().getStorageKey();
-                                String fileName = FilenameUtils.getBaseName(storageKey);
-                                String extension = FilenameUtils.getExtension(storageKey);
-                                String path = FilenameUtils.getFullPath(storageKey);
-                                return resourceEntityStorageService.uploadFile(file, resourceEntity, CommonUtils.getFilenameWithExtension(fileName, extension), CommonUtils.getPathWithoutFilename(path), false)
+//                    if (Objects.equals(resourceEntity.getSha256(), newFileSha256)) {
+//                        throw new AtmLayerException("La risorsa è già presente", Response.Status.BAD_REQUEST, RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
+//                    }
+                    return findBySHA256(newFileSha256)
+                            .onItem().transformToUni(Unchecked.function(x -> {
+                                if (x.isPresent()) {
+                                    throw new AtmLayerException(String.format("Esiste già una risorsa con lo stesso contenuto: %s", x.get().getResourceFile().getStorageKey().substring(15)),
+                                            Response.Status.BAD_REQUEST,
+                                            RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
+                                }
+                                resourceEntity.setSha256(newFileSha256);
+                                Date date = new Date();
+                                resourceEntity.setLastUpdatedAt(new Timestamp(date.getTime()));
+                                resourceEntity.getResourceFile().setLastUpdatedAt(new Timestamp(date.getTime()));
+                                return resourceEntityRepository.persist(resourceEntity)
                                         .onItem()
-                                        .transformToUni(fileUpdated -> this.findByUUID(uuid)
-                                                .onItem().transformToUni(optionalResourceUpdated -> Uni.createFrom().item(optionalResource.get())));
-                            });
+                                        .transformToUni(savedResource -> {
+                                            String storageKey = resourceEntity.getResourceFile().getStorageKey();
+                                            String fileName = FilenameUtils.getBaseName(storageKey);
+                                            String extension = FilenameUtils.getExtension(storageKey);
+                                            String path = FilenameUtils.getFullPath(storageKey);
+                                            return resourceEntityStorageService.uploadFile(file, resourceEntity, CommonUtils.getFilenameWithExtension(fileName, extension), CommonUtils.getPathWithoutFilename(path), false)
+                                                    .onItem()
+                                                    .transformToUni(fileUpdated -> this.findByUUID(uuid)
+                                                            .onItem().transformToUni(optionalResourceUpdated -> Uni.createFrom().item(optionalResource.get())));
+                                        });
+                            }));
                 }));
     }
 
