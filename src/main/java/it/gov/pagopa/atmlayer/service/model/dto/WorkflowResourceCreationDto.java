@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.MediaType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.validator.constraints.Length;
 import org.jboss.resteasy.reactive.PartType;
 
 import java.io.File;
@@ -25,7 +26,8 @@ public class WorkflowResourceCreationDto {
     @FormParam("filename")
     @NotNull(message = "filename  is required")
     @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "deve essere della forma ${regexp} e non contenere l'estensione del file")
-    @Schema(format = "byte", maxLength = 255)
+    @Schema(format = "byte", maxLength = 60)
+    @Length(max = 60)
     private String filename;
 
     @FormParam("resourceType")
