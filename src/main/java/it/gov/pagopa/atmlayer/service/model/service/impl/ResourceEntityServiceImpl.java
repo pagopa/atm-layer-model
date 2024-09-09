@@ -141,6 +141,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     }
 
     @Override
+    @WithTransaction
     public Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<ResourceCreationDto> resourceCreationDtoList) {
         List<String> errors = new ArrayList<>();
         return Multi.createFrom().items(resourceEntityList.stream())
