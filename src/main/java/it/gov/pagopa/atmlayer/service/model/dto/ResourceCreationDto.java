@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.validator.constraints.Length;
 
 import java.io.File;
 
@@ -27,7 +28,8 @@ public class ResourceCreationDto {
   @Pattern(regexp = "^[a-zA-Z0-9_-]+\\.[a-zA-Z]+$", message = "it must be of form ${regexp}")
   @Schema(description = "Description of the filename parameter: example_filename.txt",
       required = true,
-      pattern = "^[a-zA-Z0-9_-]+\\.[a-zA-Z]+$", maxLength = 255)
+      pattern = "^[a-zA-Z0-9_-]+\\.[a-zA-Z]+$", maxLength = 60)
+  @Length(max = 60)
   private String filename;
 
   @FormParam("resourceType")
@@ -40,6 +42,7 @@ public class ResourceCreationDto {
   @Schema(description = "Description of the path parameter: example/path",
       pattern = "(^$)|(^(?!/)[a-zA-Z0-9/]+(?<!/)$)", maxLength = 255)
   private String path;
+
   @FormParam("description")
   @Schema(format = "byte", maxLength = 255)
   private String description;
