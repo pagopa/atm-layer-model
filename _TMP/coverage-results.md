@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 91.89%               |
-| :heavy_check_mark: Number of Lines Covered | 2244    |
-| :x: Number of Lines Missed  | 198     |
-| Total Number of Lines   | 2442     |
+| Code Coverage %         | 92.04%               |
+| :heavy_check_mark: Number of Lines Covered | 2266    |
+| :x: Number of Lines Missed  | 196     |
+| Total Number of Lines   | 2462     |
 
 
 ## Details:
@@ -100,18 +100,6 @@
 </details>
 
     
-
-<details>
-    <summary>
-:heavy_check_mark: UserProfileResource.java
-    </summary>
-
-        
-#### All Lines Covered!
-        
-</details>
-
-    
 ### it/gov/pagopa/atmlayer/service/model/mapper
 
 <details>
@@ -126,18 +114,6 @@
 ```
         catch ( DatatypeConfigurationException ex ) {
 ```
-</details>
-
-    
-
-<details>
-    <summary>
-:heavy_check_mark: UserProfileMapper.java
-    </summary>
-
-        
-#### All Lines Covered!
-        
 </details>
 
     
@@ -178,18 +154,6 @@
 
 <details>
     <summary>
-:x: UserProfileMapperImpl.java
-    </summary>
-
-        
-#### Lines Missed:
-        
-</details>
-
-    
-
-<details>
-    <summary>
 :x: BpmnConfigMapperImpl.java
     </summary>
 
@@ -214,12 +178,16 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityMapper.java
+:x: ResourceEntityMapper.java
     </summary>
 
         
-#### All Lines Covered!
+#### Lines Missed:
         
+- Line #70
+```
+                    } catch (NoSuchAlgorithmException | IOException e) {
+```
 </details>
 
     
@@ -303,18 +271,6 @@
 
 <details>
     <summary>
-:x: UserProfileRepository.java
-    </summary>
-
-        
-#### Lines Missed:
-        
-</details>
-
-    
-
-<details>
-    <summary>
 :x: BpmnBankConfigRepository.java
     </summary>
 
@@ -377,15 +333,15 @@
         
 #### Lines Missed:
         
-- Line #78
+- Line #74
 ```
                 .transformToUni(session ->
 ```
-- Line #80
+- Line #76
 ```
                                 .setParameter(BPMN_ID, uuid)
 ```
-- Line #81
+- Line #77
 ```
                                 .getResultList());
 ```
@@ -416,7 +372,7 @@
 
 <details>
     <summary>
-:x: ObjectStorePutResponse.java
+:x: ObjectStoreResponse.java
     </summary>
 
         
@@ -638,19 +594,7 @@
 
 <details>
     <summary>
-:heavy_check_mark: ResourceEntityServiceImpl.java
-    </summary>
-
-        
-#### All Lines Covered!
-        
-</details>
-
-    
-
-<details>
-    <summary>
-:x: UserProfileServiceImpl.java
+:x: ResourceEntityServiceImpl.java
     </summary>
 
         
@@ -668,21 +612,13 @@
         
 #### Lines Missed:
         
-- Line #94
+- Line #96
 ```
                                 .recoverWithUni(failure -> {
 ```
-- Line #158
-```
-                .transformToUni(bpmnVersion -> {
-```
-- Line #255
+- Line #257
 ```
                                                         .recoverWithUni(failure -> {
-```
-- Line #396
-```
-                .transformToUni(exists -> {
 ```
 </details>
 
@@ -720,7 +656,7 @@
         
 #### Lines Missed:
         
-- Line #134
+- Line #166
 ```
         } catch (Exception e) {
 ```
@@ -877,18 +813,6 @@
 
 <details>
     <summary>
-:heavy_check_mark: UserProfileEnum.java
-    </summary>
-
-        
-#### All Lines Covered!
-        
-</details>
-
-    
-
-<details>
-    <summary>
 :heavy_check_mark: NoDeployableResourceType.java
     </summary>
 
@@ -978,6 +902,10 @@
         
 #### Lines Missed:
         
+- Line #107
+```
+        } catch (IOException e) {
+```
 </details>
 
     
@@ -1031,16 +959,6 @@
 
 <details>
     <summary>
-:x: UserProfile.java
-    </summary>
-
-        
-</details>
-
-    
-
-<details>
-    <summary>
 :x: WorkflowResource.java
     </summary>
 
@@ -1074,23 +992,11 @@
 
 <details>
     <summary>
-:heavy_check_mark: UserProfileValidator.java
+:heavy_check_mark: BpmnEntityValidator.java
     </summary>
 
         
 #### All Lines Covered!
-        
-</details>
-
-    
-
-<details>
-    <summary>
-:x: BpmnEntityValidator.java
-    </summary>
-
-        
-#### Lines Missed:
         
 </details>
 
@@ -1130,16 +1036,6 @@
 <details>
     <summary>
 :x: BpmnUpgradeDto.java
-    </summary>
-
-        
-</details>
-
-    
-
-<details>
-    <summary>
-:x: UserProfileAllDto.java
     </summary>
 
         
@@ -1231,6 +1127,16 @@
 
 <details>
     <summary>
+:x: ResourceMultipleCreationDtoJSON.java
+    </summary>
+
+        
+</details>
+
+    
+
+<details>
+    <summary>
 :x: TerminalConfigs.java
     </summary>
 
@@ -1251,27 +1157,7 @@
 
 <details>
     <summary>
-:x: UserProfileDto.java
-    </summary>
-
-        
-</details>
-
-    
-
-<details>
-    <summary>
 :x: WorkflowResourceCreationDto.java
-    </summary>
-
-        
-</details>
-
-    
-
-<details>
-    <summary>
-:x: UserProfileCreationDto.java
     </summary>
 
         
@@ -1353,16 +1239,6 @@
 <details>
     <summary>
 :x: ResourceEntityService.java
-    </summary>
-
-        
-</details>
-
-    
-
-<details>
-    <summary>
-:x: UserProfileService.java
     </summary>
 
         

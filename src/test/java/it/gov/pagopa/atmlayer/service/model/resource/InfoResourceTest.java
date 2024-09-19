@@ -1,20 +1,16 @@
 package it.gov.pagopa.atmlayer.service.model.resource;
 
-import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.model.InfoResponse;
-import jakarta.inject.Inject;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
+import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @QuarkusTest
 class InfoResourceTest {
-
-    @Inject
-    InfoResource sut;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

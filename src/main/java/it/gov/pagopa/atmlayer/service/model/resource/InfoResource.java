@@ -34,7 +34,7 @@ public class InfoResource {
     String environment;
 
 
-    @Operation(summary = "Application info - ATM Layer - Model")
+    @Operation(summary = "Application info - ATM Layer - Model", operationId = "info", description = "Info")
     @APIResponses(
             value = {
                     @APIResponse(ref = "#/components/responses/InternalServerError"),

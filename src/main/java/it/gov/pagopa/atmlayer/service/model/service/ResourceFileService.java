@@ -13,6 +13,8 @@ public interface ResourceFileService {
 
     Uni<String> getStorageKey(ResourceEntity resourceEntity);
 
+    Uni<ResourceFile> updateStorageKey(ResourceEntity resourceEntity);
+
     Uni<String> getCompletePath(ResourceEntity resourceEntity);
 
     Uni<String> getRelativePath(ResourceEntity resourceEntity);

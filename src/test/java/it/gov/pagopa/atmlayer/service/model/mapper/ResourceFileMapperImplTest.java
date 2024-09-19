@@ -3,12 +3,10 @@ package it.gov.pagopa.atmlayer.service.model.mapper;
 import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.model.entity.ResourceFile;
 import it.gov.pagopa.atmlayer.service.model.model.ResourceFileDTO;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 @QuarkusTest
 class ResourceFileMapperImplTest {
 
@@ -21,8 +19,7 @@ class ResourceFileMapperImplTest {
 
     @Test
     void toDTOTest_null(){
-        ResourceFile resourceFile = null;
-        ResourceFileDTO resource = resourceFileMapper.toDTO(resourceFile);
+        ResourceFileDTO resource = resourceFileMapper.toDTO(null);
         assertNull(resource);
     }
 
@@ -45,8 +42,7 @@ class ResourceFileMapperImplTest {
 
     @Test
     void toEntity_null(){
-        ResourceFileDTO  resourceFile = null;
-        ResourceFile resource = resourceFileMapper.toEntity(resourceFile);
+        ResourceFile resource = resourceFileMapper.toEntity(null);
         assertNull(resource);
     }
 
