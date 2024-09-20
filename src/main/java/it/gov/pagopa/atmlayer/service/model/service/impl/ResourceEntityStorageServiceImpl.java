@@ -34,20 +34,19 @@ import static it.gov.pagopa.atmlayer.service.model.utils.EnumConverter.convertEn
 @ApplicationScoped
 @Slf4j
 public class ResourceEntityStorageServiceImpl implements ResourceEntityStorageService {
-    private final ObjectStoreStrategy objectStoreStrategy;
-    private final ObjectStoreService objectStoreService;
-    private final ObjectStoreProperties objectStoreProperties;
-    private final ResourceFileService resourceFileService;
-
     @Inject
+    ObjectStoreStrategy objectStoreStrategy;
+    private final ObjectStoreService objectStoreService;
+    @Inject
+    ObjectStoreProperties objectStoreProperties;
+    @Inject
+    ResourceFileService resourceFileService;
+
     public ResourceEntityStorageServiceImpl(ObjectStoreStrategy objectStoreStrategy,
-                                            ObjectStoreProperties objectStoreProperties,
-                                            ResourceFileService resourceFileService) {
+                                            ObjectStoreProperties objectStoreProperties) {
         this.objectStoreStrategy = objectStoreStrategy;
         this.objectStoreService = objectStoreStrategy.getType(
                 ObjectStoreStrategyEnum.fromValue(objectStoreProperties.type()));
-        this.objectStoreProperties = objectStoreProperties;
-        this.resourceFileService = resourceFileService;
     }
 
     @Override
