@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -97,7 +98,8 @@ public class FileUtilities {
     public static File fromStringToFile(String fileBase64) {
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(fileBase64);
-            File tempFile = Files.createTempFile("tempfile", ".tmp").toFile();
+            Files.createDirectories(Path.of("/decoded"));
+            File tempFile = File.createTempFile("tempfile", ".tmp", new File("/decoded"));
             try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                 fos.write(decodedBytes);
             }
