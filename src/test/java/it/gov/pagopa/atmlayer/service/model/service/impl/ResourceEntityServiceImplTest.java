@@ -40,8 +40,6 @@ class ResourceEntityServiceImplTest {
     ResourceEntityStorageServiceImpl resourceEntityStorageService;
     @Mock
     ResourceFileServiceImpl resourceFileService;
-    @Mock
-    ResourceEntity resourceEntity;
     @InjectMocks
     ResourceEntityServiceImpl resourceEntityService;
 
@@ -189,61 +187,6 @@ class ResourceEntityServiceImplTest {
                 .assertFailedWith(AtmLayerException.class, String.format("La risorsa con Id %s non esiste: impossibile aggiornarla", uuid));
     }
 
-    /*@Test
-    public void testUpdateResource_ResourceAlreadyExists(@TempDir Path tempDir) throws NoSuchAlgorithmException, IOException {
-        UUID uuid = UUID.randomUUID();
-        Path tempFilePath = Files.createFile(tempDir.resolve("testFile"));
-        File file = tempFilePath.toFile();
-        ResourceEntity existingResource = new ResourceEntity();
-        existingResource.setSha256("existingSha256");
-        Optional<ResourceEntity> optionalResource = Optional.of(existingResource);
-
-        when(resourceEntityService.findByUUID(uuid)).thenReturn(Uni.createFrom().item(optionalResource));
-
-        AtmLayerException exception = Assertions.assertThrows(AtmLayerException.class, () -> {
-            resourceEntityService.updateResource(uuid, file).await().indefinitely();
-        });
-        Assertions.assertEquals("La risorsa è già presente", exception.getMessage());
-    }
-
-    @Test
-    public void testUpdateResource_ResourceUpdatedSuccessfully(@TempDir Path tempDir) throws IOException {
-        UUID uuid = UUID.randomUUID();
-        Path tempFilePath = Files.createFile(tempDir.resolve("testFile"));
-        File file = tempFilePath.toFile();
-
-        ResourceEntity existingResource = new ResourceEntity();
-        existingResource.setSha256("oldSha256");
-        existingResource.setFileName("oldFileName.txt");
-        existingResource.setResourceFile(new ResourceFile());
-        existingResource.getResourceFile().setStorageKey("path/to/oldFile.txt");
-        Optional<ResourceEntity> optionalResource = Optional.of(existingResource);
-
-        when(resourceEntityService.findByUUID(uuid)).thenReturn(Uni.createFrom().item(optionalResource));
-
-        String newSha256 = "newSha256";
-
-        ResourceEntity updatedResource = new ResourceEntity();
-        updatedResource.setSha256(newSha256);
-        updatedResource.setFileName(existingResource.getFileName());
-        updatedResource.setResourceFile(existingResource.getResourceFile());
-
-        when(resourceEntityRepository.persist(any(ResourceEntity.class))).thenAnswer(invocation -> {
-            ResourceEntity entityToPersist = invocation.getArgument(0);
-            entityToPersist.setSha256(newSha256); // Simula l'aggiornamento effettivo nel repository
-            return Uni.createFrom().item(entityToPersist);
-        });
-
-        when(resourceEntityStorageService.uploadFile(any(File.class), any(ResourceEntity.class), anyString(), anyString(), anyBoolean()))
-                .thenReturn(Uni.createFrom().item(existingResource.getResourceFile()));
-
-        resourceEntityService.updateResource(uuid, file)
-                .subscribe()
-                .withSubscriber(UniAssertSubscriber.create())
-                .assertCompleted()
-                .assertItem(updatedResource);
-    }*/
-
     @Test
     public void testFindResourceFiltered() {
         UUID resourceId = UUID.randomUUID();
@@ -327,12 +270,11 @@ class ResourceEntityServiceImplTest {
         resourceEntityService.createResourceMultiple(getResourceEntityListInstance(), getResourceCreationDtoInstance())
                 .subscribe()
                 .withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Alcuni file non sono stati creati: ");
+                .assertFailedWith(AtmLayerException.class, "Errore nel caricamento dovuto ai seguenti file: ");
     }
 
     @Test
     void testCreateResourceMultipleStorageKeyExistsException() {
-        ResourceEntity resourceEntity1 = getResourceEntityInstance();
         ResourceFile resourceFile = new ResourceFile();
         when(resourceEntityRepository.findBySHA256(any(String.class))).thenReturn(Uni.createFrom().nullItem());
         when(resourceFileService.findByStorageKey(any(String.class))).thenReturn(Uni.createFrom().item(Optional.of(resourceFile)));
@@ -340,7 +282,7 @@ class ResourceEntityServiceImplTest {
         resourceEntityService.createResourceMultiple(getResourceEntityListInstance(), getResourceCreationDtoInstance())
                 .subscribe()
                 .withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Alcuni file non sono stati creati: ");
+                .assertFailedWith(AtmLayerException.class, "Errore nel caricamento dovuto ai seguenti file: ");
     }
 
     @Test
@@ -354,7 +296,7 @@ class ResourceEntityServiceImplTest {
         resourceEntityService.createResourceMultiple(getResourceEntityListInstance(), getResourceCreationDtoInstance())
                 .subscribe()
                 .withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "Alcuni file non sono stati creati: ");
+                .assertFailedWith(AtmLayerException.class, "Errore nel caricamento dovuto ai seguenti file: ");
     }
 
     @Test

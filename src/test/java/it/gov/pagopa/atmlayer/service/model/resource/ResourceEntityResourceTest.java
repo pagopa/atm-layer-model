@@ -81,43 +81,6 @@ class ResourceEntityResourceTest {
         assertEquals(resourceDTO, result);
     }
 
-
-//  @Test
-//  void testGetAllResources() {
-//    List<ResourceEntity> resourceEntities = new ArrayList<>();
-//    ResourceEntity resourceEntity = new ResourceEntity();
-//    resourceEntities.add(resourceEntity);
-//    List<ResourceDTO> dtoList = new ArrayList<>();
-//    ResourceDTO resourceDTO = new ResourceDTO();
-//    dtoList.add(resourceDTO);
-//    when(resourceEntityService.getAll()).thenReturn(Uni.createFrom().item(resourceEntities));
-//    when(resourceEntityMapper.toDTOList(any(ArrayList.class))).thenReturn(dtoList);
-//    ArrayList result = given()
-//        .when().get("/api/v1/model/resources")
-//        .then()
-//        .statusCode(200)
-//        .extract()
-//        .body()
-//        .as(ArrayList.class);
-//    assertEquals(1, result.size());
-//    verify(resourceEntityService, times(1)).getAll();
-//    verify(resourceEntityMapper, times(1)).toDTOList(resourceEntities);
-//  }
-
-//  @Test
-//  void testGetAllResourcesEmptyList() {
-//    List<ResourceEntity> emptyList = new ArrayList<>();
-//
-//    when(resourceEntityService.getAll()).thenReturn(Uni.createFrom().item(emptyList));
-//
-//    given()
-//        .when().get("/api/v1/model/resources")
-//        .then()
-//        .statusCode(200);
-//
-//    verify(resourceEntityService, times(1)).getAll();
-//  }
-
     @Test
     void testGetResourceById() {
         UUID uuid = UUID.randomUUID();

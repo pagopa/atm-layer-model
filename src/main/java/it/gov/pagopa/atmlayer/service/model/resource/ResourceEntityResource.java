@@ -105,19 +105,6 @@ public class ResourceEntityResource {
                 .transformToUni(updatedResource -> Uni.createFrom().item(resourceEntityMapper.toDTO(updatedResource)));
     }
 
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Uni<List<ResourceDTO>> getAll() {
-//        return this.resourceEntityService.getAll()
-//                .onItem()
-//                .transform(Unchecked.function(list -> {
-//                    if (list.isEmpty()) {
-//                        log.info("No Resource files saved in database");
-//                    }
-//                    return resourceEntityMapper.toDTOList(list);
-//                }));
-//    }
-
     @GET
     @Path("/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
