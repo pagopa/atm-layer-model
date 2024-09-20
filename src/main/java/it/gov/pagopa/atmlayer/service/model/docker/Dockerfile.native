@@ -1,8 +1,8 @@
 # Stage 1: Set up environment for POI
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9 AS POI
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9@sha256:2fa47fa9df7b98e2776f447855699c01d06c3271b2d7259b8b314084580cf591 AS POI
 RUN microdnf update && microdnf install -y freetype fontconfig && microdnf clean all
 # Stage 2: BUILD
-FROM quay.io/quarkus/ubi-quarkus-graalvmce-builder-image:jdk-21 AS build
+FROM quay.io/quarkus/ubi-quarkus-graalvmce-builder-image:jdk-21@sha256:fc5c7970ce45c0d07a70ab3955fa72af79a2be65a7a89e0a29e0ab785a1dda74 AS build
 COPY --chown=quarkus:quarkus mvnw /code/mvnw
 COPY --chown=quarkus:quarkus .mvn /code/.mvn
 COPY --chown=quarkus:quarkus pom.xml /code/
@@ -15,7 +15,7 @@ ARG APP_NAME
 RUN ./mvnw package -Pnative -Dquarkus.application.name=atm-layer-model -Dquarkus.profile=prod -DskipTests
 
 # Stage 3 : create the docker final image
-FROM quay.io/quarkus/quarkus-micro-image:2.0
+FROM quay.io/quarkus/quarkus-micro-image:2.0@sha256:38c75e7b4f5b2a60da4300d7d0c2751e8df806e816d1b434b07e8bbd62cfe8d0
 
 COPY --from=POI \
    /lib64/libfreetype.so.6 \
