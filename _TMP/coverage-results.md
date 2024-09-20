@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 92.08%               |
-| :heavy_check_mark: Number of Lines Covered | 2268    |
-| :x: Number of Lines Missed  | 195     |
-| Total Number of Lines   | 2463     |
+| Code Coverage %         | 91.84%               |
+| :heavy_check_mark: Number of Lines Covered | 2263    |
+| :x: Number of Lines Missed  | 201     |
+| Total Number of Lines   | 2464     |
 
 
 ## Details:
@@ -902,7 +902,7 @@
         
 #### Lines Missed:
         
-- Line #108
+- Line #110
 ```
         } catch (IOException e) {
 ```
