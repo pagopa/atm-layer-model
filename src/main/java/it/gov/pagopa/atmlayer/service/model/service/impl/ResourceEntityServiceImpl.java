@@ -144,6 +144,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     @WithTransaction
     public Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<ResourceCreationDto> resourceCreationDtoList) {
         List<String> errors = new ArrayList<>();
+        List<String> uploadedFiles = new ArrayList<>();
         return Multi.createFrom().items(resourceEntityList.stream())
                 .onItem().transformToUniAndConcatenate(resourceEntity -> {
                     int index = resourceEntityList.indexOf(resourceEntity);
@@ -169,6 +170,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                                                     errors.add(String.format("%s-Problema di sincronizzazione sulla creazione della risorsa", filename));
                                                                     return Uni.createFrom().nullItem();
                                                                 }
+                                                                uploadedFiles.add(optionalResource.get().getStorageKey());
                                                                 return Uni.createFrom().item(optionalResource.get());
                                                             }));
                                         });
@@ -179,12 +181,25 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                             });
                 })
                 .collect().asList()
-                .onItem().transform(resourceDTOList -> {
+                .onItem().transformToUni(resourceDTOList -> {
                     if (!errors.isEmpty()) {
-                        throw new AtmLayerException("Errore nel caricamento dovuto ai seguenti file: " + String.join(", ", errors),
-                                Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
+                        return deleteResourcesFromStorage(uploadedFiles, errors);
                     }
                     return errors;  // This will be empty if no errors occurred
+                });
+    }
+
+    public Uni<List<String>> deleteResourcesFromStorage(List<String> storageKeys, List<String> errorMessages){
+        return Multi.createFrom().items(storageKeys.stream())
+                .onItem().transformToUniAndConcatenate(uploadedStorageKey -> resourceEntityStorageService.delete(uploadedStorageKey)
+                        .onItem().transform(objectStoreResponse -> String.format("Deleted %s",objectStoreResponse.getStorageKey())))
+                        .collect().asList()
+                .onItem().transform(deletedKeys -> {
+                    if (!deletedKeys.isEmpty()){
+                        throw new AtmLayerException("Errore nel caricamento dovuto ai seguenti file: " + String.join(", ", errorMessages),
+                                Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
+                    }
+                    return deletedKeys;
                 });
     }
 
