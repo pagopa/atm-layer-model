@@ -152,21 +152,21 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     return findBySHA256(resourceEntity.getSha256())
                             .onItem().transformToUni(x -> {
                                 if (x.isPresent()) {
-                                    errors.add(String.format("File %s: Esiste già una risorsa con lo stesso contenuto", filename));
+                                    errors.add(String.format("%s-Esiste già una risorsa con lo stesso contenuto", filename));
                                     return Uni.createFrom().nullItem();
                                 }
                                 return resourceFileService.findByStorageKey(resourceEntity.getStorageKey())
                                         .onItem()
                                         .transformToUni(resource -> {
                                             if (resource.isPresent()) {
-                                                errors.add(String.format("File %s: Impossibile caricare: la risorsa con lo stesso nome file e percorso esiste già", filename));
+                                                errors.add(String.format("%s-Impossibile caricare: la risorsa con lo stesso nome file e percorso esiste già", filename));
                                                 return Uni.createFrom().nullItem();
                                             }
                                             return saveAndUpload(resourceEntity, file, filename, resourceCreationDtoList.get(index).getPath())
                                                     .onItem().transformToUni(bpmn -> this.findByUUID(resourceEntity.getResourceId())
                                                             .onItem().transformToUni(optionalResource -> {
                                                                 if (optionalResource.isEmpty()) {
-                                                                    errors.add(String.format("File %s: Problema di sincronizzazione sulla creazione della risorsa", filename));
+                                                                    errors.add(String.format("%s-Problema di sincronizzazione sulla creazione della risorsa", filename));
                                                                     return Uni.createFrom().nullItem();
                                                                 }
                                                                 return Uni.createFrom().item(optionalResource.get());
@@ -174,17 +174,15 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                         });
                             })
                             .onFailure().recoverWithItem(throwable -> {
-                                errors.add(String.format("File %s: %s", filename, throwable.getMessage()));
+                                errors.add(String.format("%s: %s", filename, throwable.getMessage()));
                                 return null;
                             });
                 })
                 .collect().asList()
                 .onItem().transform(resourceDTOList -> {
                     if (!errors.isEmpty()) {
-                        throw new AtmLayerException("Alcuni file non sono stati creati: " + String.join(", ", errors),
+                        throw new AtmLayerException("Errore nel caricamento dovuto ai seguenti file: " + String.join(", ", errors),
                                 Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
-                    } else {
-                        errors.add("file creati senza errori");
                     }
                     return errors;  // This will be empty if no errors occurred
                 });
@@ -202,9 +200,6 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     }
                     ResourceEntity resourceEntity = optionalResource.get();
                     String newFileSha256 = calculateSha256(file);
-//                    if (Objects.equals(resourceEntity.getSha256(), newFileSha256)) {
-//                        throw new AtmLayerException("La risorsa è già presente", Response.Status.BAD_REQUEST, RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
-//                    }
                     return findBySHA256(newFileSha256)
                             .onItem().transformToUni(Unchecked.function(x -> {
                                 if (x.isPresent()) {

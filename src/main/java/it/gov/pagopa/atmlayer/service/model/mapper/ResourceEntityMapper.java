@@ -51,7 +51,7 @@ public abstract class ResourceEntityMapper {
         for (int i = 0; i < multipleDto.getFilenameList().size(); i++) {
             ResourceCreationDto resourceCreationDto = new ResourceCreationDto();
 
-            resourceCreationDto.setFile(fromStringToFile(multipleDto.getFileList().get(i), multipleDto.getPath()));
+            resourceCreationDto.setFile(fromStringToFile(multipleDto.getFileList().get(i)));
             resourceCreationDto.setFilename(multipleDto.getFilenameList().get(i));
             resourceCreationDto.setResourceType(multipleDto.getResourceType());
             resourceCreationDto.setPath(multipleDto.getPath());
