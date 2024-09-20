@@ -25,20 +25,20 @@ import static org.mockito.Mockito.when;
 @QuarkusTest
 class FileUtilitiesTest {
 
-//    @Test
-//    void testFromStringToFile_ValidBase64() throws IOException {
-//        String validBase64 = Base64.getEncoder().encodeToString("Hello World!".getBytes());
-//        String fileName = "filename";
-//
-//        File result = fromStringToFile(validBase64);
-//
-//        assertNotNull(result);
-//        assertTrue(result.exists());
-//
-//        byte[] fileContent = Files.readAllBytes(result.toPath());
-//        assertEquals("Hello World!", new String(fileContent));
-//
-//    }
+    @Test
+    void testFromStringToFile_ValidBase64() throws IOException {
+        String validBase64 = Base64.getEncoder().encodeToString("Hello World!".getBytes());
+        String fileName = "filename";
+
+        File result = fromStringToFile(validBase64);
+
+        assertNotNull(result);
+        assertTrue(result.exists());
+
+        byte[] fileContent = Files.readAllBytes(result.toPath());
+        assertEquals("Hello World!", new String(fileContent));
+
+    }
 
     @Test
     void testFromStringToFile_InvalidBase64() {
