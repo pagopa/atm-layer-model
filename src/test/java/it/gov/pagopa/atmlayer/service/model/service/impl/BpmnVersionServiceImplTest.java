@@ -78,11 +78,10 @@ class BpmnVersionServiceImplTest {
 
         when(bpmnVersionRepoMock.findAllById(uuid)).thenReturn(Uni.createFrom().item(List.of()));
 
-        AtmLayerException thrown = assertThrows(AtmLayerException.class, () -> {
-            bpmnVersionServiceImpl.undeploy(uuid).await().indefinitely();
-        });
+        bpmnVersionServiceImpl.undeploy(uuid)
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(AtmLayerException.class,"Il file BPMN di riferimento non può essere undeployed");
 
-        assertEquals("Il file BPMN di riferimento non può essere undeployed", thrown.getMessage());
         verify(bpmnVersionRepoMock, times(1)).findAllById(uuid);
         verify(processClientMock, never()).undeploy(any(String.class));
     }
@@ -115,11 +114,9 @@ class BpmnVersionServiceImplTest {
         when(bpmnVersionRepoMock.findAllById(uuid)).thenReturn(Uni.createFrom().item(List.of(bpmnVersion)));
         when(processClientMock.undeploy(validDeploymentId)).thenReturn(Uni.createFrom().failure(new RuntimeException("Errore nel processClient")));
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            bpmnVersionServiceImpl.undeploy(uuid).await().indefinitely();
-        });
-
-        assertEquals("Errore nel processClient", thrown.getMessage());
+        bpmnVersionServiceImpl.undeploy(uuid)
+                .subscribe().withSubscriber(UniAssertSubscriber.create())
+                .assertFailedWith(RuntimeException.class,"Errore nel processClient");
 
         verify(bpmnVersionRepoMock, times(1)).findAllById(uuid);
         verify(processClientMock, times(1)).undeploy(validDeploymentId);

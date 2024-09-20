@@ -30,7 +30,7 @@ class FileUtilitiesTest {
         String validBase64 = Base64.getEncoder().encodeToString("Hello World!".getBytes());
         String fileName = "filename";
 
-        File result = fromStringToFile(validBase64, fileName);
+        File result = fromStringToFile(validBase64);
 
         assertNotNull(result);
         assertTrue(result.exists());
@@ -38,7 +38,6 @@ class FileUtilitiesTest {
         byte[] fileContent = Files.readAllBytes(result.toPath());
         assertEquals("Hello World!", new String(fileContent));
 
-        result.delete();
     }
 
     @Test
@@ -46,7 +45,7 @@ class FileUtilitiesTest {
         String invalidBase64 = "Invalid@@Base64###";
         String fileName = "filename";
 
-        AtmLayerException exception = assertThrows(AtmLayerException.class, () -> fromStringToFile(invalidBase64, fileName));
+        AtmLayerException exception = assertThrows(AtmLayerException.class, () -> fromStringToFile(invalidBase64));
 
         assertEquals("Errore nella decodifica del File Base64", exception.getMessage());
         assertEquals(Response.Status.NOT_ACCEPTABLE.getStatusCode(), exception.getStatusCode());
