@@ -98,7 +98,8 @@ public class FileUtilities {
     public static File fromStringToFile(String fileBase64) {
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(fileBase64);
-            File tempFile = File.createTempFile("tempfile", ".tmp");
+            Path tempDir = Files.createTempDirectory("multipleUpload");
+            File tempFile = File.createTempFile("tempfile", ".tmp", tempDir.toFile());
             try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                 fos.write(decodedBytes);
             }
