@@ -185,7 +185,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     if (!errors.isEmpty()) {
                         return deleteResourcesFromStorage(uploadedFiles, errors);
                     }
-                    return errors;  // This will be empty if no errors occurred
+                    return Uni.createFrom().item(errors);  // This will be empty if no errors occurred
                 });
     }
 
