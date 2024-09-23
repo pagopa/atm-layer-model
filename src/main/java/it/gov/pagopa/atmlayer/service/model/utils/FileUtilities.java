@@ -100,20 +100,11 @@ public class FileUtilities {
     public static File fromStringToFile(String fileBase64) {
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(fileBase64);
-
             Path tempDir = Files.createTempDirectory("multipleUpload");
-
-            Files.setPosixFilePermissions(tempDir,
-                    EnumSet.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE));
-
             File tempFile = File.createTempFile("tempfile", ".tmp", tempDir.toFile());
-
             try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                 fos.write(decodedBytes);
             }
-
-            tempFile.deleteOnExit();
-
             return tempFile;
         } catch (IllegalArgumentException e) {
             log.error("Errore nella decodifica del Base64: " + e.getMessage());
