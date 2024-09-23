@@ -195,11 +195,8 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                         .onItem().transform(objectStoreResponse -> String.format("Deleted %s",objectStoreResponse.getStorageKey())))
                         .collect().asList()
                 .onItem().transform(deletedKeys -> {
-                    if (!deletedKeys.isEmpty()){
                         throw new AtmLayerException("Errore nel caricamento dovuto ai seguenti file: " + String.join(", ", errorMessages),
                                 Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
-                    }
-                    return deletedKeys;
                 });
     }
 
