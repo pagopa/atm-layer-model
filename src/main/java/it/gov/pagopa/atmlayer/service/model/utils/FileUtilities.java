@@ -25,6 +25,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.EnumSet;
+import java.util.Set;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.CANNOT_EXTRACT_FILE_DEFINITION_KEY;
@@ -99,12 +100,23 @@ public class FileUtilities {
 
     public static File fromStringToFile(String fileBase64) {
         try {
+
+            fileBase64 = fileBase64.replace('-', '+').replace('_', '/');
+
             byte[] decodedBytes = Base64.getDecoder().decode(fileBase64);
+
             Path tempDir = Files.createTempDirectory("multipleUpload");
+
+            setPermissions(tempDir);
+
             File tempFile = File.createTempFile("tempfile", ".tmp", tempDir.toFile());
+
             try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                 fos.write(decodedBytes);
             }
+
+            tempFile.deleteOnExit();
+
             return tempFile;
         } catch (IllegalArgumentException e) {
             log.error("Errore nella decodifica del Base64: " + e.getMessage());
@@ -115,6 +127,16 @@ public class FileUtilities {
         }
     }
 
+    private static void setPermissions(Path tempDir) throws IOException {
+        try {
+            Set<PosixFilePermission> perms = EnumSet.of(PosixFilePermission.OWNER_READ,
+                    PosixFilePermission.OWNER_WRITE,
+                    PosixFilePermission.OWNER_EXECUTE);
+            Files.setPosixFilePermissions(tempDir, perms);
+        } catch (UnsupportedOperationException e) {
+            log.warn("Posix file permissions are not supported on this system.");
+        }
+    }
 
 
 }
