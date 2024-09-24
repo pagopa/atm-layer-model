@@ -9,6 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -20,7 +21,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -101,12 +104,39 @@ public class FileUtilities {
     public static File fromStringToFile(String fileBase64) {
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(fileBase64);
+
             Path tempDir = Files.createTempDirectory("multipleUpload");
-            File tempFile = File.createTempFile("tempfile", ".tmp", tempDir.toFile());
-            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+
+            Path tempFilePath;
+
+            if (SystemUtils.IS_OS_UNIX) {
+                Set<PosixFilePermission> permissions = EnumSet.of(
+                        PosixFilePermission.OWNER_READ,
+                        PosixFilePermission.OWNER_WRITE,
+                        PosixFilePermission.OWNER_EXECUTE
+                );
+                FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions.asFileAttribute(permissions);
+
+                tempFilePath = Files.createTempFile(tempDir, "tempfile", ".tmp", fileAttributes);
+            } else {
+                tempFilePath = Files.createTempFile(tempDir, "tempfile", ".tmp");
+
+                File tempFile = tempFilePath.toFile();
+
+                boolean readable = tempFile.setReadable(true, true);
+                boolean writable = tempFile.setWritable(true, true);
+                boolean executable = tempFile.setExecutable(true, true);
+
+                if (!readable || !writable || !executable) {
+                    throw new IOException("Impossibile impostare i permessi di sicurezza sul file temporaneo.");
+                }
+            }
+
+            try (FileOutputStream fos = new FileOutputStream(tempFilePath.toFile())) {
                 fos.write(decodedBytes);
             }
-            return tempFile;
+
+            return tempFilePath.toFile();
         } catch (IllegalArgumentException e) {
             log.error("Errore nella decodifica del Base64: " + e.getMessage());
             throw new AtmLayerException("Errore nella decodifica del File Base64", Response.Status.NOT_ACCEPTABLE, AppErrorCodeEnum.FILE_DECODE_ERROR);
