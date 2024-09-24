@@ -100,23 +100,12 @@ public class FileUtilities {
 
     public static File fromStringToFile(String fileBase64) {
         try {
-
-            fileBase64 = fileBase64.replace('-', '+').replace('_', '/');
-
             byte[] decodedBytes = Base64.getDecoder().decode(fileBase64);
-
             Path tempDir = Files.createTempDirectory("multipleUpload");
-
-            setPermissions(tempDir);
-
             File tempFile = File.createTempFile("tempfile", ".tmp", tempDir.toFile());
-
             try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                 fos.write(decodedBytes);
             }
-
-            tempFile.deleteOnExit();
-
             return tempFile;
         } catch (IllegalArgumentException e) {
             log.error("Errore nella decodifica del Base64: " + e.getMessage());
@@ -124,17 +113,6 @@ public class FileUtilities {
         } catch (IOException e) {
             log.error("Errore nella scrittura del file: " + e.getMessage());
             throw new AtmLayerException("Errore nella scrittura del file", Response.Status.NOT_ACCEPTABLE, AppErrorCodeEnum.FILE_DECODE_ERROR);
-        }
-    }
-
-    private static void setPermissions(Path tempDir) throws IOException {
-        try {
-            Set<PosixFilePermission> perms = EnumSet.of(PosixFilePermission.OWNER_READ,
-                    PosixFilePermission.OWNER_WRITE,
-                    PosixFilePermission.OWNER_EXECUTE);
-            Files.setPosixFilePermissions(tempDir, perms);
-        } catch (UnsupportedOperationException e) {
-            log.warn("Posix file permissions are not supported on this system.");
         }
     }
 
