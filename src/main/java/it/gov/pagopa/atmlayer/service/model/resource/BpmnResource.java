@@ -61,19 +61,17 @@ public class BpmnResource {
     private final BpmnFileStorageService bpmnFileStorageService;
     private final BpmnVersionMapper bpmnVersionMapper;
     private final BpmnConfigMapper bpmnConfigMapper;
-    private final Tracer tracer;
 
     @Inject
     public BpmnResource(BpmnVersionService bpmnVersionService, BpmnBankConfigService bpmnBankConfigService,
                         BpmnEntityValidator bpmnEntityValidator, BpmnFileStorageService bpmnFileStorageService,
-                        BpmnVersionMapper bpmnVersionMapper, BpmnConfigMapper bpmnConfigMapper, Tracer tracer) {
+                        BpmnVersionMapper bpmnVersionMapper, BpmnConfigMapper bpmnConfigMapper) {
         this.bpmnVersionService = bpmnVersionService;
         this.bpmnBankConfigService = bpmnBankConfigService;
         this.bpmnEntityValidator = bpmnEntityValidator;
         this.bpmnFileStorageService = bpmnFileStorageService;
         this.bpmnVersionMapper = bpmnVersionMapper;
         this.bpmnConfigMapper = bpmnConfigMapper;
-        this.tracer = tracer;
     }
 
     @GET
