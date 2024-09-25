@@ -30,7 +30,7 @@ database:
     password: PASSWORD_DB
 
 tracing:
-  enabled: "true"
+  enabled: "false"
   endpointBasePath: "http://jeager-manual-trace-ecs-priv-b19cfd091be2d616.elb.eu-south-1.amazonaws.com:4317"
   enableJDBCMonitoring: "true"
 
