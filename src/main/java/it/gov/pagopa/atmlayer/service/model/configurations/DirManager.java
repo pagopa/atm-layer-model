@@ -23,7 +23,7 @@ public class DirManager {
 
     @Startup
     static void init(@Observes StartupEvent ev) throws IOException {
-        String secureDirPath = System.getProperty("java.io.tmpdir") + "/mySecureDirectory";
+        String secureDirPath = System.getProperty("java.io.tmpdir") + "/decodedFilesDirectory";
         decodedFilesDirectory = new File(secureDirPath);
         if (!decodedFilesDirectory.exists() && !decodedFilesDirectory.mkdirs()) {
             throw new IOException("Impossibile creare una directory sicura per il salvataggio di file temporanei.");
