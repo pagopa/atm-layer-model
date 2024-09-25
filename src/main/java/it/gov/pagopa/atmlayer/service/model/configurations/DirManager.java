@@ -7,6 +7,7 @@ import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import lombok.Getter;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
@@ -39,8 +40,8 @@ public class DirManager {
     }
 
     @Shutdown
-    static boolean shutdown(@Observes ShutdownEvent ev) {
-        return decodedFilesDirectory.delete();
+    static void shutdown(@Observes ShutdownEvent ev) throws IOException {
+        FileUtils.deleteDirectory(decodedFilesDirectory);
     }
 
     private DirManager() {

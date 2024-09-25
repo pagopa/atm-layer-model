@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -27,6 +28,7 @@ import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Set;
 
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.BPMN_FILE_DOES_NOT_HAVE_DEFINITION_KEY;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.CANNOT_EXTRACT_FILE_DEFINITION_KEY;
 
@@ -101,9 +103,9 @@ public class FileUtilities {
         if (!DirManager.decodedFilesDirectory.exists()) {
             throw new AtmLayerException("Impossibile convertire i file in input: non è stata creata una directory sicura per il salvataggio di file temporanei.", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.ATMLM_500);
         }
+        File tempFile = null;
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(fileBase64);
-            File tempFile;
             if (SystemUtils.IS_OS_UNIX) {
                 Set<PosixFilePermission> filePermissions = EnumSet.of(
                         PosixFilePermission.OWNER_READ,
@@ -133,4 +135,13 @@ public class FileUtilities {
             throw new AtmLayerException("Errore nella scrittura del file", Response.Status.NOT_ACCEPTABLE, AppErrorCodeEnum.FILE_DECODE_ERROR);
         }
     }
+
+    public static void cleanDecodedFilesDirectory() {
+        try {
+            FileUtils.cleanDirectory(DirManager.decodedFilesDirectory);
+        } catch (IOException e) {
+            throw new AtmLayerException("Errore nell'eliminazione dei file temporanei", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500);
+        }
+    }
+
 }

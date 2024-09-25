@@ -20,6 +20,7 @@ import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityService;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceEntityStorageService;
 import it.gov.pagopa.atmlayer.service.model.service.ResourceFileService;
 import it.gov.pagopa.atmlayer.service.model.utils.CommonUtils;
+import it.gov.pagopa.atmlayer.service.model.utils.FileUtilities;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -28,6 +29,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -185,8 +187,10 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     if (!errors.isEmpty()) {
                         return deleteResourcesFromStorage(uploadedFiles, errors);
                     }
+                    FileUtilities.cleanDecodedFilesDirectory();
                     return Uni.createFrom().item(errors);  // This will be empty if no errors occurred
                 });
+
     }
 
     public Uni<List<String>> deleteResourcesFromStorage(List<String> storageKeys, List<String> errorMessages){
@@ -195,7 +199,8 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                         .onItem().transform(objectStoreResponse -> String.format("Deleted %s",objectStoreResponse.getStorageKey())))
                         .collect().asList()
                 .onItem().transform(deletedKeys -> {
-                        throw new AtmLayerException("Errore nel caricamento dovuto ai seguenti file: " + String.join(", ", errorMessages),
+                    FileUtilities.cleanDecodedFilesDirectory();
+                    throw new AtmLayerException("Errore nel caricamento dovuto ai seguenti file: " + String.join(", ", errorMessages),
                                 Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
                 });
     }
