@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.model.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.atmlayer.service.model.configurations.DirManager;
 import it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.model.enumeration.DeployableResourceType;
 import it.gov.pagopa.atmlayer.service.model.exception.AtmLayerException;
@@ -19,11 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -36,7 +33,6 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 @ApplicationScoped
 @Slf4j
 public class FileUtilities {
-
     public static String extractIdValue(File file, DeployableResourceType resourceTypeEnum) {
         switch (resourceTypeEnum) {
             case BPMN, DMN -> {
@@ -102,55 +98,32 @@ public class FileUtilities {
     }
 
     public static File fromStringToFile(String fileBase64) {
+        if (!DirManager.decodedFilesDirectory.exists()) {
+            throw new AtmLayerException("Impossibile convertire i file in input: non è stata creata una directory sicura per il salvataggio di file temporanei.", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.ATMLM_500);
+        }
         try {
-
             byte[] decodedBytes = Base64.getDecoder().decode(fileBase64);
-
-            String secureDirPath = System.getProperty("java.io.tmpdir") + "/mySecureDirectory";
-            File secureDir = new File(secureDirPath);
-            if (!secureDir.exists() && !secureDir.mkdirs()) {
-                throw new IOException("Impossibile creare la directory sicura.");
-            }
-
-
-            if (SystemUtils.IS_OS_UNIX) {
-                Set<PosixFilePermission> dirPermissions = EnumSet.of(
-                        PosixFilePermission.OWNER_READ,
-                        PosixFilePermission.OWNER_WRITE,
-                        PosixFilePermission.OWNER_EXECUTE
-                );
-                java.nio.file.Files.setPosixFilePermissions(secureDir.toPath(), dirPermissions);
-            }
-
             File tempFile;
-
             if (SystemUtils.IS_OS_UNIX) {
-
                 Set<PosixFilePermission> filePermissions = EnumSet.of(
                         PosixFilePermission.OWNER_READ,
                         PosixFilePermission.OWNER_WRITE,
                         PosixFilePermission.OWNER_EXECUTE
                 );
-
-                tempFile = File.createTempFile("tempfile", ".tmp", secureDir);
+                tempFile = File.createTempFile("tempfile", ".tmp", DirManager.decodedFilesDirectory);
                 java.nio.file.Files.setPosixFilePermissions(tempFile.toPath(), filePermissions);
             } else {
-
-                tempFile = File.createTempFile("tempfile", ".tmp", secureDir);
-
+                tempFile = File.createTempFile("tempfile", ".tmp", DirManager.decodedFilesDirectory);
                 boolean readable = tempFile.setReadable(true, true);
                 boolean writable = tempFile.setWritable(true, true);
                 boolean executable = tempFile.setExecutable(true, true);
-
                 if (!readable || !writable || !executable) {
                     throw new IOException("Impossibile impostare i permessi di sicurezza sul file temporaneo.");
                 }
             }
-
             try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                 fos.write(decodedBytes);
             }
-
             return tempFile;
         } catch (IllegalArgumentException e) {
             log.error("Errore nella decodifica del Base64: " + e.getMessage());
@@ -160,6 +133,4 @@ public class FileUtilities {
             throw new AtmLayerException("Errore nella scrittura del file", Response.Status.NOT_ACCEPTABLE, AppErrorCodeEnum.FILE_DECODE_ERROR);
         }
     }
-
-
 }
