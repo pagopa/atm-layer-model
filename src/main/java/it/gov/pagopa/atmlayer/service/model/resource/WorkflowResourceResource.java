@@ -48,14 +48,11 @@ import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.
 public class WorkflowResourceResource {
     private final WorkflowResourceService workflowResourceService;
     private final WorkflowResourceMapper workflowResourceMapper;
-    private final Tracer tracer;
 
     @Inject
-    public WorkflowResourceResource(WorkflowResourceService workflowResourceService, WorkflowResourceMapper workflowResourceMapper,
-                                    Tracer tracer) {
+    public WorkflowResourceResource(WorkflowResourceService workflowResourceService, WorkflowResourceMapper workflowResourceMapper) {
         this.workflowResourceService = workflowResourceService;
         this.workflowResourceMapper = workflowResourceMapper;
-        this.tracer = tracer;
     }
 
     @GET
