@@ -103,25 +103,40 @@ public class FileUtilities {
 
     public static File fromStringToFile(String fileBase64) {
         try {
+
             byte[] decodedBytes = Base64.getDecoder().decode(fileBase64);
 
-            Path tempDir = Files.createTempDirectory("multipleUpload");
+            String secureDirPath = System.getProperty("java.io.tmpdir") + "/mySecureDirectory";
+            File secureDir = new File(secureDirPath);
+            if (!secureDir.exists() && !secureDir.mkdirs()) {
+                throw new IOException("Impossibile creare la directory sicura.");
+            }
 
-            Path tempFilePath;
 
             if (SystemUtils.IS_OS_UNIX) {
-                Set<PosixFilePermission> permissions = EnumSet.of(
+                Set<PosixFilePermission> dirPermissions = EnumSet.of(
                         PosixFilePermission.OWNER_READ,
                         PosixFilePermission.OWNER_WRITE,
                         PosixFilePermission.OWNER_EXECUTE
                 );
-                FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions.asFileAttribute(permissions);
+                java.nio.file.Files.setPosixFilePermissions(secureDir.toPath(), dirPermissions);
+            }
 
-                tempFilePath = Files.createTempFile(tempDir, "tempfile", ".tmp", fileAttributes);
+            File tempFile;
+
+            if (SystemUtils.IS_OS_UNIX) {
+
+                Set<PosixFilePermission> filePermissions = EnumSet.of(
+                        PosixFilePermission.OWNER_READ,
+                        PosixFilePermission.OWNER_WRITE,
+                        PosixFilePermission.OWNER_EXECUTE
+                );
+
+                tempFile = File.createTempFile("tempfile", ".tmp", secureDir);
+                java.nio.file.Files.setPosixFilePermissions(tempFile.toPath(), filePermissions);
             } else {
-                tempFilePath = Files.createTempFile(tempDir, "tempfile", ".tmp");
 
-                File tempFile = tempFilePath.toFile();
+                tempFile = File.createTempFile("tempfile", ".tmp", secureDir);
 
                 boolean readable = tempFile.setReadable(true, true);
                 boolean writable = tempFile.setWritable(true, true);
@@ -132,11 +147,11 @@ public class FileUtilities {
                 }
             }
 
-            try (FileOutputStream fos = new FileOutputStream(tempFilePath.toFile())) {
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                 fos.write(decodedBytes);
             }
 
-            return tempFilePath.toFile();
+            return tempFile;
         } catch (IllegalArgumentException e) {
             log.error("Errore nella decodifica del Base64: " + e.getMessage());
             throw new AtmLayerException("Errore nella decodifica del File Base64", Response.Status.NOT_ACCEPTABLE, AppErrorCodeEnum.FILE_DECODE_ERROR);
