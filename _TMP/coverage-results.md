@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 91.79%               |
-| :heavy_check_mark: Number of Lines Covered | 2282    |
-| :x: Number of Lines Missed  | 204     |
-| Total Number of Lines   | 2486     |
+| Code Coverage %         | 91.64%               |
+| :heavy_check_mark: Number of Lines Covered | 2292    |
+| :x: Number of Lines Missed  | 209     |
+| Total Number of Lines   | 2501     |
 
 
 ## Details:
@@ -701,6 +701,18 @@
 </details>
 
     
+
+<details>
+    <summary>
+:x: DirManager.java
+    </summary>
+
+        
+#### Lines Missed:
+        
+</details>
+
+    
 ### it/gov/pagopa/atmlayer/service/model/enumeration
 
 <details>
@@ -902,7 +914,11 @@
         
 #### Lines Missed:
         
-- Line #158
+- Line #133
+```
+        } catch (IOException e) {
+```
+- Line #142
 ```
         } catch (IOException e) {
 ```
