@@ -1,14 +1,14 @@
 
 # Coverage Report: JaCoCo
 
-* S3PreSignerLocalTest (QuarkusTest)
+* IntegrationTest (QuarkusTest)
       
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 91.46%               |
-| :heavy_check_mark: Number of Lines Covered | 2302    |
-| :x: Number of Lines Missed  | 215     |
+| Code Coverage %         | 91.42%               |
+| :heavy_check_mark: Number of Lines Covered | 2301    |
+| :x: Number of Lines Missed  | 216     |
 | Total Number of Lines   | 2517     |
 
 
