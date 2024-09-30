@@ -96,7 +96,14 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                         .onItem().transformToUni(putObjectResponse -> {
                             log.info("Completed Resource Entity Creation");
                             return Uni.createFrom().item(element);
-                        }));
+                        }))
+                //TODO: quest'eccezione copre quella dell'object store se a fallire è l'upload > adeguare messaggio d'errore generico
+                .onFailure().recoverWithUni(dbException -> {
+                    log.error(dbException.getMessage());
+                    return Uni.createFrom().failure(new AtmLayerException(
+                            "Errore nel salvataggio della risorsa nel database. Vedere log per i dettagli",
+                            Response.Status.INTERNAL_SERVER_ERROR, DATABASE_SAVE_FILE_ERROR));
+                });
     }
 
     @Override
@@ -278,7 +285,13 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                             .transformToUni(itemToDelete -> resourceEntityStorageService.delete(originalStorageKey)
                                                     .onItem()
                                                     .transformToUni(deletedFile -> Uni.createFrom().voidItem())
+                                                    //TODO: onFailure() rollback del metodo uploadDisabledFile()
                                             )
+                                    )
+                                    .onFailure().recoverWithUni(failure ->
+                                            Uni.createFrom().failure(new AtmLayerException(
+                                                    failure.getMessage(),
+                                                    Response.Status.INTERNAL_SERVER_ERROR, DATABASE_SAVE_FILE_ERROR))
                                     )
                             );
                 });
