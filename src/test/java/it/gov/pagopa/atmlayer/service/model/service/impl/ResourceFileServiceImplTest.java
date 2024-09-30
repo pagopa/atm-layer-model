@@ -102,7 +102,7 @@ class ResourceFileServiceImplTest {
         resourceFileService.updateStorageKey(resourceEntity)
                 .subscribe()
                 .withSubscriber(UniAssertSubscriber.create())
-                .assertFailedWith(AtmLayerException.class, "La risorsa di riferimento non esiste: impossibile aggiornare la chiave di archiviazione");
+                .assertFailedWith(AtmLayerException.class, "Impossibile eliminare la risorsa. Aggiornamento della storage key interrotto");
 
         verify(resourceFileRepository, times(1)).findByStorageKey(storageKey);
     }
