@@ -62,7 +62,8 @@ public enum AppErrorCodeEnum {
     ALL_FIELDS_ARE_BLANK("ATMLM_4000061", "Tutti i campi sono vuoti", AppErrorType.BLANK_FIELDS),
     RESOURCES_CREATION_ERROR("ATMLM_4000062", "Errore nella creazione di resource multipli", GENERIC ),
     FILE_DECODE_ERROR("ATMLM_4000063", "Errore nella decodifica del file", GENERIC ),
-    DATABASE_SAVE_FILE_ERROR("ATMLM_4000064", "Errore nella persistenza del file sul database", INTERNAL);
+    DATABASE_SAVE_FILE_ERROR("ATMLM_4000064", "Errore nella persistenza del file sul database", INTERNAL),
+    OBJECT_STORE_COPY_FILE_ERROR("ATMLM_4000065", "Errore nella copia del file nella cartella DELETE su Object Store", INTERNAL);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;
