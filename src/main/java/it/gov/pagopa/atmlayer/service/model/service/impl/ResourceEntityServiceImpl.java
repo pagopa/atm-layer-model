@@ -29,11 +29,22 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.*;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DATABASE_SAVE_FILE_ERROR;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCES_CREATION_ERROR;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_DOES_NOT_EXIST;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculateSha256;
 
 @ApplicationScoped
@@ -98,8 +109,8 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                             return Uni.createFrom().item(element);
                         }))
                 .onFailure().recoverWithUni(dbException -> Uni.createFrom().failure(new AtmLayerException(
-                            String.format("Errore nel salvataggio della risorsa. %s", dbException.getMessage()),
-                            Response.Status.INTERNAL_SERVER_ERROR, DATABASE_SAVE_FILE_ERROR))
+                        String.format("Errore nel salvataggio della risorsa. %s", dbException.getMessage()),
+                        Response.Status.INTERNAL_SERVER_ERROR, DATABASE_SAVE_FILE_ERROR))
                 );
     }
 
@@ -194,18 +205,17 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     FileUtilities.cleanDecodedFilesDirectory();
                     return Uni.createFrom().item(errors);  // This will be empty if no errors occurred
                 });
-
     }
 
-    public Uni<List<String>> deleteResourcesFromStorage(List<String> storageKeys, List<String> errorMessages){
+    public Uni<List<String>> deleteResourcesFromStorage(List<String> storageKeys, List<String> errorMessages) {
         return Multi.createFrom().items(storageKeys.stream())
                 .onItem().transformToUniAndConcatenate(uploadedStorageKey -> resourceEntityStorageService.delete(uploadedStorageKey)
-                        .onItem().transform(objectStoreResponse -> String.format("Deleted %s",objectStoreResponse.getStorageKey())))
-                        .collect().asList()
+                        .onItem().transform(objectStoreResponse -> String.format("Deleted %s", objectStoreResponse.getStorageKey())))
+                .collect().asList()
                 .onItem().transform(deletedKeys -> {
                     FileUtilities.cleanDecodedFilesDirectory();
                     throw new AtmLayerException("Errore nel caricamento dovuto ai seguenti file: " + String.join(", ", errorMessages),
-                                Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
+                            Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
                 });
     }
 
@@ -287,20 +297,21 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                                             .onItem()
                                                             .transform(deletedCopy -> {
                                                                 throw new AtmLayerException(
-                                                                    deleteException.getMessage(),
-                                                                    Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_COPY_FILE_ERROR);}))
+                                                                        deleteException.getMessage(),
+                                                                        Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500);
+                                                            }))
                                             )
                                             .onFailure().recoverWithUni(failure ->
                                                     Uni.createFrom().failure(new AtmLayerException(
                                                             failure.getMessage(),
-                                                            Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_COPY_FILE_ERROR))
-                                    )
-                                    .onFailure().recoverWithUni(failure ->
-                                            Uni.createFrom().failure(new AtmLayerException(
-                                                    failure.getMessage(),
-                                                    Response.Status.INTERNAL_SERVER_ERROR, DATABASE_SAVE_FILE_ERROR))
-                                    )
-                            ));
+                                                            Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500))
+                                            )
+                                            .onFailure().recoverWithUni(failure ->
+                                                    Uni.createFrom().failure(new AtmLayerException(
+                                                            failure.getMessage(),
+                                                            Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500))
+                                            )
+                                    ));
                 });
     }
 
