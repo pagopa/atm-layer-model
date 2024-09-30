@@ -29,22 +29,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ATMLM_500;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DATABASE_SAVE_FILE_ERROR;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.OBJECT_STORE_SAVE_FILE_ERROR;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCES_CREATION_ERROR;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_DOES_NOT_EXIST;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.*;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.calculateSha256;
 
 @ApplicationScoped
@@ -69,7 +58,13 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     @Override
     @WithTransaction
     public Uni<ResourceEntity> save(ResourceEntity resourceEntity) {
-        return resourceEntityRepository.persist(resourceEntity);
+        return resourceEntityRepository.persist(resourceEntity)
+                .onFailure().recoverWithUni(dbException -> {
+                    log.info(dbException.getMessage());
+                    return Uni.createFrom().failure(new AtmLayerException(
+                            String.format("Errore nel salvataggio della risorsa. %s", dbException.getMessage()),
+                            Response.Status.INTERNAL_SERVER_ERROR, DATABASE_SAVE_FILE_ERROR));
+                });
     }
 
     @Override
@@ -107,11 +102,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                         .onItem().transformToUni(putObjectResponse -> {
                             log.info("Completed Resource Entity Creation");
                             return Uni.createFrom().item(element);
-                        }))
-                .onFailure().recoverWithUni(dbException -> Uni.createFrom().failure(new AtmLayerException(
-                        String.format("Errore nel salvataggio della risorsa. %s", dbException.getMessage()),
-                        Response.Status.INTERNAL_SERVER_ERROR, DATABASE_SAVE_FILE_ERROR))
-                );
+                        }));
     }
 
     @Override
@@ -212,11 +203,11 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                 .onItem().transformToUniAndConcatenate(uploadedStorageKey -> resourceEntityStorageService.delete(uploadedStorageKey)
                         .onItem().transform(objectStoreResponse -> String.format("Deleted %s", objectStoreResponse.getStorageKey())))
                 .collect().asList()
-                .onItem().transform(deletedKeys -> {
+                .onItem().transform(Unchecked.function(deletedKeys -> {
                     FileUtilities.cleanDecodedFilesDirectory();
                     throw new AtmLayerException("Errore nel caricamento dovuto ai seguenti file: " + String.join(", ", errorMessages),
                             Response.Status.BAD_REQUEST, RESOURCES_CREATION_ERROR);
-                });
+                }));
     }
 
     @Override
@@ -277,6 +268,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     @Override
     @WithTransaction
     public Uni<Void> disable(UUID uuid) {
+        String errorMessage = "Errore durante la cancellazione della risorsa: Controllare i log per i dettagli";
         return resourceEntityRepository.findById(uuid)
                 .onItem()
                 .transformToUni(resourceEntity -> {
@@ -295,23 +287,18 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                                     .onFailure()
                                                     .recoverWithUni(deleteException -> resourceEntityStorageService.delete(resourceFileUpdated.getStorageKey())
                                                             .onItem()
-                                                            .transform(deletedCopy -> {
+                                                            .transform(Unchecked.function(deletedCopy -> {
                                                                 throw new AtmLayerException(
-                                                                        deleteException.getMessage(),
-                                                                        Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500);
-                                                            }))
+                                                                        errorMessage,
+                                                                        Response.Status.INTERNAL_SERVER_ERROR, OBJECT_STORE_COPY_FILE_ERROR);})))
                                             )
-                                            .onFailure().recoverWithUni(failure ->
-                                                    Uni.createFrom().failure(new AtmLayerException(
-                                                            failure.getMessage(),
-                                                            Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500))
-                                            )
-                                            .onFailure().recoverWithUni(failure ->
-                                                    Uni.createFrom().failure(new AtmLayerException(
-                                                            failure.getMessage(),
-                                                            Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500))
-                                            )
-                                    ));
+                                    )
+                                    .onFailure().recoverWithUni(failure ->
+                                            Uni.createFrom().failure(new AtmLayerException(
+                                                    errorMessage,
+                                                    Response.Status.INTERNAL_SERVER_ERROR, DATABASE_SAVE_FILE_ERROR))
+                                    )
+                            );
                 });
     }
 
