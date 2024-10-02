@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
 
@@ -19,8 +20,8 @@ public class ResourceMultipleCreationDtoJSON {
     private List<String> filenameList;
     @NonNull
     private NoDeployableResourceType resourceType;
-
+    @Length(max = 150)
     private String path;
-
+    @Length(max = 255)
     private String description;
 }

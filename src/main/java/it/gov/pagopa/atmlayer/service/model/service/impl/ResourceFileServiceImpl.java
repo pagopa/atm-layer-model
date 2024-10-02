@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DATABASE_SAVE_FILE_ERROR;
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.RESOURCE_DOES_NOT_EXIST;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileStorageS3Utils.modifyPath;
 import static java.lang.String.valueOf;
@@ -71,7 +72,12 @@ public class ResourceFileServiceImpl implements ResourceFileService {
                     return resourceFileRepository.persist(resourceFileFound)
                             .onItem()
                             .transformToUni(newResourceFile -> Uni.createFrom().item(newResourceFile));
-                });
+                })
+                .onFailure().recoverWithUni(failure ->
+                    Uni.createFrom().failure(new AtmLayerException(
+                            "Impossibile eliminare la risorsa. Aggiornamento della storage key interrotto",
+                            Response.Status.INTERNAL_SERVER_ERROR, DATABASE_SAVE_FILE_ERROR))
+                );
     }
 
     @Override
