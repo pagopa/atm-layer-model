@@ -59,11 +59,12 @@ public enum AppErrorCodeEnum {
     BPMN_INTERNAL_ERROR("ATMLM_4000051", "Nessun file associato a BPMN o nessuna storageKey trovata", INTERNAL),
     BPMN_FILE_CANNOT_BE_UNDEPLOYED("ATMLM_4000052", "La risorsa di processo indicata non può essere rilasciata", INTERNAL),
     NO_ASSOCIATION_FOUND("ATMLM_4000060","Nessuna associazione trovata", CONSTRAINT_VIOLATION),
-    ALL_FIELDS_ARE_BLANK("ATMLM_4000061", "Tutti i campi sono vuoti", AppErrorType.BLANK_FIELDS),
+    ALL_FIELDS_ARE_BLANK("ATMLM_4000061", "Tutti i campi sono vuoti", BLANK_FIELDS),
     RESOURCES_CREATION_ERROR("ATMLM_4000062", "Errore nella creazione di resource multipli", GENERIC ),
     FILE_DECODE_ERROR("ATMLM_4000063", "Errore nella decodifica del file", GENERIC ),
     DATABASE_SAVE_FILE_ERROR("ATMLM_4000064", "Errore nella persistenza del file sul database", INTERNAL),
-    OBJECT_STORE_COPY_FILE_ERROR("ATMLM_4000065", "Errore nella copia del file nella cartella DELETE su Object Store", INTERNAL);
+    OBJECT_STORE_COPY_FILE_ERROR("ATMLM_4000065", "Errore nella copia del file nella cartella DELETE su Object Store", INTERNAL),
+    INVALID_FILE_EXTENSION("ATMLM_4000066", "Estensione del file non valida", INVALID_EXTENSION);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;
