@@ -29,7 +29,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -120,12 +119,14 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     @Override
     public Uni<ResourceEntity> createResource(ResourceEntity resourceEntity, File file,
                                               String filename, String path, String description) {
+        validateFileExtension(filename, Arrays.asList("html", "jpeg", "jpg", "png", "svg"));
+
         return findBySHA256(resourceEntity.getSha256())
                 .onItem().transformToUni(Unchecked.function(x -> {
                     if (x.isPresent()) {
-                        throw new AtmLayerException(String.format("Esiste già una risorsa con lo stesso contenuto: %s", x.get().getResourceFile().getStorageKey().substring(15)),
-                                Response.Status.BAD_REQUEST,
-                                RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
+                        throw new AtmLayerException(String.format("Esiste già una risorsa con lo stesso contenuto: %s",
+                                x.get().getResourceFile().getStorageKey().substring(15)),
+                                Response.Status.BAD_REQUEST, RESOURCE_WITH_SAME_SHA256_ALREADY_EXISTS);
                     }
                     return resourceFileService.findByStorageKey(resourceEntity.getStorageKey())
                             .onItem()
@@ -148,6 +149,21 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                 }));
     }
 
+
+    private void validateFileExtension(String filename, List<String> validExtensions) {
+        String fileExtension = Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(filename.lastIndexOf(".") + 1).toLowerCase())
+                .orElse("");
+
+        if (!validExtensions.contains(fileExtension)) {
+            throw new AtmLayerException(String.format("Estensione del file non valida: %s. Estensioni consentite: %s",
+                    fileExtension, String.join(", ", validExtensions)),
+                    Response.Status.BAD_REQUEST, AppErrorCodeEnum.INVALID_FILE_EXTENSION);
+        }
+    }
+
+
     @Override
     @WithTransaction
     public Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<ResourceCreationDto> resourceCreationDtoList) {
@@ -158,6 +174,14 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                     int index = resourceEntityList.indexOf(resourceEntity);
                     File file = resourceCreationDtoList.get(index).getFile();
                     String filename = resourceCreationDtoList.get(index).getFilename();
+
+                    try {
+                        validateFileExtension(filename, Arrays.asList("html", "jpeg", "jpg", "png", "svg"));
+                    } catch (AtmLayerException ex) {
+                        errors.add(String.format("%s-%s", filename, ex.getMessage()));
+                        return Uni.createFrom().nullItem();
+                    }
+
                     return findBySHA256(resourceEntity.getSha256())
                             .onItem().transformToUni(x -> {
                                 if (x.isPresent()) {
