@@ -43,11 +43,9 @@ objectStore:
   resource_template_path: RESOURCE/files/[RESOURCE_TYPE]
 
 cdn:
+  resourceBasePath: "https://resources.uat.atmlayer-pagopa.it"
   offset_path: RESOURCE/
-  credentialsSecretEnabled: true
-  credentialsSecretName: "pagopa-uat-atm-layer-model-cdn-base-path"
-  credentialsSecretKeys:
-    cdn_base_path: CDN_BASE_PATH
+
 
 secretProviderClass:
   enabled: true
