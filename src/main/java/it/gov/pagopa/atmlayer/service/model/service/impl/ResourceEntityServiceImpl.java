@@ -218,7 +218,6 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                         });
                             })
                             .onFailure().recoverWithItem(throwable -> {
-                                log.error("Error processing file {}: {}", filename, throwable.getMessage());
                                 errors.add(String.format("%s: %s", filename, throwable.getMessage()));
                                 return null;
                             });
