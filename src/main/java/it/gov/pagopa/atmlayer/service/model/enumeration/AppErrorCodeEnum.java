@@ -64,7 +64,8 @@ public enum AppErrorCodeEnum {
     FILE_DECODE_ERROR("ATMLM_4000063", "Errore nella decodifica del file", GENERIC ),
     DATABASE_SAVE_FILE_ERROR("ATMLM_4000064", "Errore nella persistenza del file sul database", INTERNAL),
     OBJECT_STORE_COPY_FILE_ERROR("ATMLM_4000065", "Errore nella copia del file nella cartella DELETE su Object Store", INTERNAL),
-    INVALID_FILE_EXTENSION("ATMLM_4000066", "Estensione del file non valida", INVALID_EXTENSION);
+    INVALID_FILE_EXTENSION("ATMLM_4000066", "Estensione del file non valida", INVALID_EXTENSION),
+    BPMN_FILE_SIZE_EXCEEDS_LIMIT("ATMLM_4000066", "La dimensione del file supera quella consentita", FILE_SIZE_EXCEEDED);
     private final String errorCode;
     private final String errorMessage;
     private final AppErrorType type;

@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.*;
+import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.checkFileSize;
 import static it.gov.pagopa.atmlayer.service.model.utils.BpmnUtils.getSingleConfig;
 import static it.gov.pagopa.atmlayer.service.model.utils.FileUtilities.extractIdValue;
 
@@ -215,6 +216,7 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
 
     @Override
     public Uni<BpmnVersion> createBPMN(BpmnVersion bpmnVersion, File file, String filename) {
+        checkFileSize(file);
         String definitionKey = extractIdValue(file, resourceType);
         bpmnVersion.setDefinitionKey(definitionKey);
         return findByDefinitionKey(definitionKey)
@@ -442,8 +444,9 @@ public class BpmnVersionServiceImpl implements BpmnVersionService {
                 });
     }
 
-    @Override
     public Uni<BpmnDTO> upgrade(BpmnUpgradeDto bpmnUpgradeDto) {
+        checkFileSize(bpmnUpgradeDto.getFile());
+
         String definitionKey = extractIdValue(bpmnUpgradeDto.getFile(), resourceType);
         return this.getLatestVersion(bpmnUpgradeDto.getUuid(), bpmnUpgradeDto.getFunctionType())
                 .onItem()
