@@ -169,6 +169,16 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
     public Uni<List<String>> createResourceMultiple(List<ResourceEntity> resourceEntityList, List<ResourceCreationDto> resourceCreationDtoList) {
         List<String> errors = new ArrayList<>();
         List<String> uploadedFiles = new ArrayList<>();
+
+        long totalFileSize = resourceCreationDtoList.stream()
+                .mapToLong(dto -> dto.getFile().length())  // ottieni la dimensione del file in byte
+                .sum();
+
+        // Se la somma delle dimensioni dei file supera 10MB, solleva un'eccezione
+        if (totalFileSize > 10 * 1024 * 1024) {
+            throw new AtmLayerException("La dimensione totale dei file supera il limite di 10MB", Response.Status.INTERNAL_SERVER_ERROR, ATMLM_500);
+        }
+
         return Multi.createFrom().items(resourceEntityList.stream())
                 .onItem().transformToUniAndConcatenate(resourceEntity -> {
                     int index = resourceEntityList.indexOf(resourceEntity);
@@ -208,6 +218,7 @@ public class ResourceEntityServiceImpl implements ResourceEntityService {
                                         });
                             })
                             .onFailure().recoverWithItem(throwable -> {
+                                log.error("Error processing file {}: {}", filename, throwable.getMessage());
                                 errors.add(String.format("%s: %s", filename, throwable.getMessage()));
                                 return null;
                             });
