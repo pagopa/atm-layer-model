@@ -13,11 +13,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.DUPLICATE_ASSOCIATION_CONFIGS;
-import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.ILLEGAL_CONFIGURATION_TRIPLET;
+import static it.gov.pagopa.atmlayer.service.model.enumeration.AppErrorCodeEnum.*;
 
 @ApplicationScoped
 public class BpmnUtils {
@@ -128,5 +128,11 @@ public class BpmnUtils {
                 bankConfigTripletDto.getAcquirerId(), bankConfigTripletDto.getBranchId(), bankConfigTripletDto.getTerminalId()));
         bpmnBankConfig.setFunctionType(functionType);
         return bpmnBankConfig;
+    }
+
+    public static void checkFileSize(File file) {
+        if (file.length() > 1024 * 1024) {
+            throw new AtmLayerException("La dimensione del file supera 1MB", Response.Status.BAD_REQUEST, BPMN_FILE_SIZE_EXCEEDS_LIMIT);
+        }
     }
 }

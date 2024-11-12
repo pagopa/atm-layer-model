@@ -6,10 +6,10 @@
       
 | Outcome                 | Value                                                               |
 |-------------------------|---------------------------------------------------------------------|
-| Code Coverage %         | 91.42%               |
-| :heavy_check_mark: Number of Lines Covered | 2301    |
-| :x: Number of Lines Missed  | 216     |
-| Total Number of Lines   | 2517     |
+| Code Coverage %         | 91.32%               |
+| :heavy_check_mark: Number of Lines Covered | 2325    |
+| :x: Number of Lines Missed  | 221     |
+| Total Number of Lines   | 2546     |
 
 
 ## Details:
@@ -600,6 +600,10 @@
         
 #### Lines Missed:
         
+- Line #190
+```
+                    } catch (AtmLayerException ex) {
+```
 </details>
 
     
@@ -612,11 +616,11 @@
         
 #### Lines Missed:
         
-- Line #96
+- Line #97
 ```
                                 .recoverWithUni(failure -> {
 ```
-- Line #257
+- Line #259
 ```
                                                         .recoverWithUni(failure -> {
 ```

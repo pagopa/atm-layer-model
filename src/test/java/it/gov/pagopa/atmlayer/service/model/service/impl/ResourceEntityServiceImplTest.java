@@ -70,7 +70,7 @@ class ResourceEntityServiceImplTest {
         resourceEntity.setStorageKey("storageKey");
         when(resourceEntityRepository.findBySHA256(any(String.class))).thenReturn(Uni.createFrom().nullItem());
         when(resourceFileService.findByStorageKey(any(String.class))).thenReturn(Uni.createFrom().item(Optional.of(resourceFile)));
-        resourceEntityService.createResource(resourceEntity, file, "filename", "path", "description")
+        resourceEntityService.createResource(resourceEntity, file, "filename.html", "path", "description")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "Impossibile caricare storageKey: la risorsa con lo stesso nome file e percorso esiste già");
     }
@@ -92,7 +92,7 @@ class ResourceEntityServiceImplTest {
         when(resourceEntityStorageService.saveFile(any(ResourceEntity.class), any(File.class), any(String.class), any(String.class)))
                 .thenReturn(Uni.createFrom().item(resourceFile));
         when(resourceEntityRepository.findById(any(UUID.class))).thenReturn(Uni.createFrom().nullItem());
-        resourceEntityService.createResource(resourceEntity, new File("path/to/file"), "filename.xml", "path", "description")
+        resourceEntityService.createResource(resourceEntity, new File("path/to/file"), "filename.jpeg", "path", "description")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "Problema di sincronizzazione sulla creazione della risorsa");
     }
@@ -110,7 +110,7 @@ class ResourceEntityServiceImplTest {
 
         when(resourceEntityRepository.findBySHA256(sha256)).thenReturn(Uni.createFrom().item(existingResourceEntity));
 
-        resourceEntityService.createResource(existingResourceEntity, file, "filename", "path", "description")
+        resourceEntityService.createResource(existingResourceEntity, file, "filename.jpg", "path", "description")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertFailedWith(AtmLayerException.class, "Esiste già una risorsa con lo stesso contenuto");
     }
@@ -128,10 +128,10 @@ class ResourceEntityServiceImplTest {
         when(resourceEntityRepository.findBySHA256(sha256)).thenReturn(Uni.createFrom().nullItem());
         when(resourceFileService.findByStorageKey(any(String.class))).thenReturn(Uni.createFrom().item(Optional.empty()));
         when(resourceEntityRepository.persist(any(ResourceEntity.class))).thenReturn(Uni.createFrom().item(resourceEntity1));
-        when(resourceEntityStorageService.saveFile(resourceEntity1, file, "prova.txt", "/file/prova")).thenReturn(Uni.createFrom().item(resourceFile));
+        when(resourceEntityStorageService.saveFile(resourceEntity1, file, "prova.png", "/file/prova")).thenReturn(Uni.createFrom().item(resourceFile));
         when(resourceEntityRepository.findById(uuid)).thenReturn(Uni.createFrom().item(resourceEntity1));
 
-        resourceEntityService.createResource(resourceEntity1, file, "filename", "path", "description")
+        resourceEntityService.createResource(resourceEntity1, file, "filename.svg", "path", "description")
                 .subscribe().withSubscriber(UniAssertSubscriber.create())
                 .assertCompleted()
                 .assertItem(resourceEntity1);
@@ -315,7 +315,7 @@ class ResourceEntityServiceImplTest {
     }
 
     private List<ResourceCreationDto> getResourceCreationDtoInstance(){
-        ResourceCreationDto resourceCreationDto = new ResourceCreationDto(new File("test.txt"), "filename", NoDeployableResourceType.HTML, "path", "description");
+        ResourceCreationDto resourceCreationDto = new ResourceCreationDto(new File("test.jpg"), "filename.jpg", NoDeployableResourceType.HTML, "path", "description");
         List<ResourceCreationDto> dtoList = new ArrayList<>();
         dtoList.add(resourceCreationDto);
         return dtoList;
